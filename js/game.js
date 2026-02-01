@@ -83,10 +83,7 @@ function yeniOyun() {
 
 function tarafDegistir() {
   bilgisayarRengi = bilgisayarRengi === "beyaz" ? "siyah" : "beyaz";
-  const msg = bilgisayarRengi === "beyaz" ? t("switchedToBlack") : t("switchedToWhite"); // Logic inverted in original code? No: if computer is white, human is black.
-  // Original: bilgisayarRengi === "beyaz" ? "SİYAH" : "BEYAZ" (Human color)
-  // My translation keys: switchedToBlack (Human plays black), switchedToWhite (Human plays white)
-  // If computer becomes white, human becomes black.
+  const msg = bilgisayarRengi === "beyaz" ? t("switchedToBlack") : t("switchedToWhite");
   bildirimGoster(msg);
   yeniOyun();
 }
@@ -435,7 +432,6 @@ function showMainMenu() {
   const startScreen = document.getElementById("startScreen");
   startScreen.classList.remove("hidden");
 
-  // Keep background blurred
   const container = document.getElementById("mainGameContainer");
   container.style.filter = "blur(5px)";
   container.style.opacity = "0.5";
@@ -446,17 +442,10 @@ function reviewGame() {
   const gameOverScreen = document.getElementById("gameOverScreen");
   gameOverScreen.classList.add("hidden");
 
-  // Show board for review (keep oyunBitti true so no moves can be made)
   const container = document.getElementById("mainGameContainer");
   container.style.filter = "none";
   container.style.opacity = "1";
   container.style.pointerEvents = "all";
-
-  // Optional: You might want to let them Undo to see previous states
-  // The 'Undo' button in settings should work if we allow pointerEvents = all
-  // But we need to make sure kareTiklandi doesn't allow new moves.
-  // It already checks: if (oyunBitti || aiCalisiyor) return;
-  // So they can view, but not play.
 }
 
 function tumGecerliHamleleriBul(beyazIcin) {
@@ -689,7 +678,6 @@ function tahtayiDegerlendir(testTahta) {
   return skor;
 }
 
-// Removed auto-start yeniOyun();
 initMobilePanels();
 window.addEventListener("resize", initMobilePanels);
 
@@ -706,27 +694,33 @@ function toggleMobileSettings() {
 }
 
 function startGame() {
-  // Get values from start screen
   const diffSelect = document.getElementById("startDifficulty");
   const langSelect = document.getElementById("startLanguage");
+  const modeSelect = document.getElementById("gameMode");
 
-  // Set game state
   const level = parseInt(diffSelect.value);
+  const selectedMode = modeSelect ? modeSelect.value : "4x5";
   aiDerinlik = AI_DEPTHS[level] || 3;
 
-  // Sync with main settings panel
   document.getElementById("aiLevel").value = level;
 
-  // Hide start screen
   const startScreen = document.getElementById("startScreen");
   startScreen.classList.add("hidden");
 
-  // Show main container
-  const container = document.getElementById("mainGameContainer");
-  container.style.filter = "none";
-  container.style.opacity = "1";
-  container.style.pointerEvents = "all";
+  if (selectedMode === "classic") {
+    // Start classic 8x8 chess
+    startClassicChess();
+  } else if (selectedMode === "fourPlayer") {
+    // Start 4 player chess
+    startFourPlayerChess();
+  } else {
+    // Start 4x5 chess
+    const container = document.getElementById("mainGameContainer");
+    container.style.filter = "none";
+    container.style.opacity = "1";
+    container.style.pointerEvents = "all";
+    container.style.display = "flex";
 
-  // Start the game
-  yeniOyun();
+    yeniOyun();
+  }
 }

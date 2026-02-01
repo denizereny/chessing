@@ -32,6 +32,15 @@
           </div>
 
           <div class="control-group">
+            <label for="gameMode">Game Mode / Oyun Modu</label>
+            <select id="gameMode">
+              <option value="4x5" selected>♔ 4×5 Chess Pro</option>
+              <option value="classic">♛ Classic 8×8 Chess</option>
+              <option value="fourPlayer">👑 4 Player Chess</option>
+            </select>
+          </div>
+
+          <div class="control-group">
             <label for="startDifficulty">Difficulty / Zorluk</label>
             <select id="startDifficulty">
               <option value="1">🟢 Easy / Kolay</option>
@@ -169,5 +178,7 @@
 
     <script src="js/translations.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/classic-chess.js"></script>
+    <script src="js/four-player-chess.js"></script>
   </body>
 </html>
