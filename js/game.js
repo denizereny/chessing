@@ -157,6 +157,14 @@ function tahtayiCiz() {
       if (tas) {
         const tasEl = document.createElement("div");
         tasEl.className = "piece";
+        
+        // Add color class based on piece color
+        if (beyazMi(tas)) {
+          tasEl.classList.add("white-piece");
+        } else {
+          tasEl.classList.add("black-piece");
+        }
+        
         tasEl.textContent = TASLAR[tas];
         kare.appendChild(tasEl);
       }
@@ -710,9 +718,6 @@ function startGame() {
   if (selectedMode === "classic") {
     // Start classic 8x8 chess
     startClassicChess();
-  } else if (selectedMode === "fourPlayer") {
-    // Start 4 player chess
-    startFourPlayerChess();
   } else {
     // Start 4x5 chess
     const container = document.getElementById("mainGameContainer");
@@ -724,3 +729,501 @@ function startGame() {
     yeniOyun();
   }
 }
+
+// 3-Dots Menu Functions
+function toggleGameMenu() {
+  const dropdown = document.getElementById("gameMenuDropdown");
+  if (dropdown) {
+    dropdown.classList.toggle("hidden");
+  }
+}
+
+function openSettings() {
+  toggleGameMenu(); // Close menu first
+  toggleMobileSettings(); // Open settings panel
+}
+
+function openProfile() {
+  toggleGameMenu(); // Close menu first
+  
+  // Create or show profile modal
+  let modal = document.getElementById("profileModal");
+  if (!modal) {
+    createProfileModal();
+    modal = document.getElementById("profileModal");
+  }
+  
+  modal.classList.remove("hidden");
+  updateProfileData();
+}
+
+function toggleColorSettings() {
+  const content = document.getElementById("colorSettingsContent");
+  const chevron = document.getElementById("colorChevron");
+  
+  if (content.classList.contains("collapsed")) {
+    content.classList.remove("collapsed");
+    chevron.textContent = "▴";
+  } else {
+    content.classList.add("collapsed");
+    chevron.textContent = "▾";
+  }
+}
+
+function pauseGame() {
+  toggleGameMenu(); // Close menu first
+  
+  if (zamanSayaci) {
+    clearInterval(zamanSayaci);
+    zamanSayaci = null;
+    bildirimGoster(t("gamePaused") || "Game Paused");
+  } else {
+    // Resume game
+    zamanSayaci = setInterval(() => {
+      oyunSuresi++;
+      const dk = Math.floor(oyunSuresi / 60)
+        .toString()
+        .padStart(2, "0");
+      const sn = (oyunSuresi % 60).toString().padStart(2, "0");
+      document.getElementById("timer").textContent = `⏱️ ${dk}:${sn}`;
+    }, 1000);
+    bildirimGoster(t("gameResumed") || "Game Resumed");
+  }
+}
+
+function createProfileModal() {
+  const modal = document.createElement("div");
+  modal.id = "profileModal";
+  modal.className = "profile-modal hidden";
+  
+  modal.innerHTML = `
+    <div class="profile-content">
+      <button class="close-modal" onclick="closeProfile()">✖</button>
+      <div class="profile-header">
+        <div class="profile-avatar">👤</div>
+        <h3 class="profile-name">Chess Player</h3>
+        <p class="profile-subtitle">4×5 Chess Pro</p>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-item">
+          <span class="stat-value" id="profileGamesPlayed">0</span>
+          <span class="stat-label">Games Played</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="profileGamesWon">0</span>
+          <span class="stat-label">Games Won</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="profileTotalMoves">0</span>
+          <span class="stat-label">Total Moves</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="profileBestTime">--:--</span>
+          <span class="stat-label">Best Time</span>
+        </div>
+      </div>
+      <div class="profile-achievements">
+        <h4>🏆 Achievements</h4>
+        <div class="achievement-list" id="achievementList">
+          <div class="achievement">🎯 First Game</div>
+          <div class="achievement">⚡ Speed Player</div>
+          <div class="achievement">🧠 Strategic Mind</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close modal when clicking outside
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      closeProfile();
+    }
+  });
+}
+
+function closeProfile() {
+  const modal = document.getElementById("profileModal");
+  if (modal) {
+    modal.classList.add("hidden");
+  }
+}
+
+function updateProfileData() {
+  // Get stats from localStorage or use defaults
+  const stats = JSON.parse(localStorage.getItem("chessStats") || "{}");
+  
+  document.getElementById("profileGamesPlayed").textContent = stats.gamesPlayed || 0;
+  document.getElementById("profileGamesWon").textContent = stats.gamesWon || 0;
+  document.getElementById("profileTotalMoves").textContent = stats.totalMoves || 0;
+  document.getElementById("profileBestTime").textContent = stats.bestTime || "--:--";
+}
+
+// Close menu when clicking outside
+document.addEventListener("click", (e) => {
+  const menu = document.getElementById("gameMenuDropdown");
+  const button = document.getElementById("gameMenuBtn");
+  
+  if (menu && !menu.contains(e.target) && !button.contains(e.target)) {
+    menu.classList.add("hidden");
+  }
+});
+
+// Color Customization Functions
+const colorPresets = {
+  classic: {
+    lightSquare: '#f0d9b5',
+    darkSquare: '#b58863',
+    whitePiece: '#ffffff',
+    blackPiece: '#2c2c2c'
+  },
+  wood: {
+    lightSquare: '#deb887',
+    darkSquare: '#8b4513',
+    whitePiece: '#f5f5dc',
+    blackPiece: '#654321'
+  },
+  marble: {
+    lightSquare: '#f8f8ff',
+    darkSquare: '#708090',
+    whitePiece: '#ffffff',
+    blackPiece: '#2f4f4f'
+  },
+  neon: {
+    lightSquare: '#00ffff',
+    darkSquare: '#ff00ff',
+    whitePiece: '#ffff00',
+    blackPiece: '#00ff00'
+  },
+  ocean: {
+    lightSquare: '#87ceeb',
+    darkSquare: '#4682b4',
+    whitePiece: '#f0f8ff',
+    blackPiece: '#191970'
+  }
+};
+
+function updateBoardColors() {
+  const lightColor = document.getElementById('lightSquareColor').value;
+  const darkColor = document.getElementById('darkSquareColor').value;
+  
+  // Update hex inputs
+  document.getElementById('lightSquareHex').value = lightColor;
+  document.getElementById('darkSquareHex').value = darkColor;
+  
+  // Update CSS variables
+  document.documentElement.style.setProperty('--board-light', lightColor);
+  document.documentElement.style.setProperty('--board-dark', darkColor);
+  
+  // Update preview squares
+  updateColorPreviews();
+  
+  // Save to localStorage
+  saveColorSettings();
+  
+  bildirimGoster(t('boardColorsUpdated') || 'Board colors updated!');
+}
+
+function updateBoardColorsFromHex(type) {
+  const hexInput = document.getElementById(type + 'SquareHex');
+  const colorInput = document.getElementById(type + 'SquareColor');
+  
+  let hexValue = hexInput.value;
+  
+  // Validate hex color
+  if (!hexValue.startsWith('#')) {
+    hexValue = '#' + hexValue;
+  }
+  
+  if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+    colorInput.value = hexValue;
+    hexInput.value = hexValue;
+    
+    // Update CSS
+    if (type === 'light') {
+      document.documentElement.style.setProperty('--board-light', hexValue);
+    } else {
+      document.documentElement.style.setProperty('--board-dark', hexValue);
+    }
+    
+    // Update preview squares
+    updateColorPreviews();
+    
+    saveColorSettings();
+    bildirimGoster(t('boardColorsUpdated') || 'Board colors updated!');
+  } else {
+    bildirimGoster(t('invalidHexColor') || 'Invalid hex color format!');
+    // Reset to previous valid value
+    hexInput.value = colorInput.value;
+  }
+}
+
+function updatePieceColors() {
+  const whiteColor = document.getElementById('whitePieceColor').value;
+  const blackColor = document.getElementById('blackPieceColor').value;
+  
+  // Update hex inputs
+  document.getElementById('whitePieceHex').value = whiteColor;
+  document.getElementById('blackPieceHex').value = blackColor;
+  
+  // Update CSS for piece colors with more specific selectors
+  const style = document.getElementById('dynamic-piece-colors') || document.createElement('style');
+  style.id = 'dynamic-piece-colors';
+  style.textContent = `
+    .piece.white-piece,
+    .chess-piece.white-piece,
+    .white-piece {
+      color: ${whiteColor} !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+    }
+    .piece.black-piece,
+    .chess-piece.black-piece,
+    .black-piece {
+      color: ${blackColor} !important;
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+    }
+    .white-preview {
+      color: ${whiteColor} !important;
+    }
+    .black-preview {
+      color: ${blackColor} !important;
+    }
+  `;
+  
+  if (!document.getElementById('dynamic-piece-colors')) {
+    document.head.appendChild(style);
+  }
+  
+  // Update CSS variables for preview
+  document.documentElement.style.setProperty('--white-piece-color', whiteColor);
+  document.documentElement.style.setProperty('--black-piece-color', blackColor);
+  
+  // Save to localStorage
+  saveColorSettings();
+  
+  bildirimGoster(t('pieceColorsUpdated') || 'Piece colors updated!');
+}
+
+function updatePieceColorsFromHex(type) {
+  const hexInput = document.getElementById(type + 'PieceHex');
+  const colorInput = document.getElementById(type + 'PieceColor');
+  
+  let hexValue = hexInput.value;
+  
+  // Validate hex color
+  if (!hexValue.startsWith('#')) {
+    hexValue = '#' + hexValue;
+  }
+  
+  if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+    colorInput.value = hexValue;
+    hexInput.value = hexValue;
+    
+    // Update CSS with more specific selectors
+    const style = document.getElementById('dynamic-piece-colors') || document.createElement('style');
+    style.id = 'dynamic-piece-colors';
+    
+    const whiteColor = type === 'white' ? hexValue : document.getElementById('whitePieceColor').value;
+    const blackColor = type === 'black' ? hexValue : document.getElementById('blackPieceColor').value;
+    
+    style.textContent = `
+      .piece.white-piece,
+      .chess-piece.white-piece,
+      .white-piece {
+        color: ${whiteColor} !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+      }
+      .piece.black-piece,
+      .chess-piece.black-piece,
+      .black-piece {
+        color: ${blackColor} !important;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+      }
+      .white-preview {
+        color: ${whiteColor} !important;
+      }
+      .black-preview {
+        color: ${blackColor} !important;
+      }
+    `;
+    
+    if (!document.getElementById('dynamic-piece-colors')) {
+      document.head.appendChild(style);
+    }
+    
+    // Update CSS variables for preview
+    document.documentElement.style.setProperty('--white-piece-color', whiteColor);
+    document.documentElement.style.setProperty('--black-piece-color', blackColor);
+    
+    saveColorSettings();
+    bildirimGoster(t('pieceColorsUpdated') || 'Piece colors updated!');
+  } else {
+    bildirimGoster(t('invalidHexColor') || 'Invalid hex color format!');
+    // Reset to previous valid value
+    hexInput.value = colorInput.value;
+  }
+}
+
+function updateColorPreviews() {
+  // This function is called to update preview colors in real-time
+  // The CSS variables are already updated, so previews will update automatically
+}
+
+function applyColorPreset(presetName) {
+  const preset = colorPresets[presetName];
+  if (!preset) return;
+  
+  // Update color inputs
+  document.getElementById('lightSquareColor').value = preset.lightSquare;
+  document.getElementById('lightSquareHex').value = preset.lightSquare;
+  document.getElementById('darkSquareColor').value = preset.darkSquare;
+  document.getElementById('darkSquareHex').value = preset.darkSquare;
+  document.getElementById('whitePieceColor').value = preset.whitePiece;
+  document.getElementById('whitePieceHex').value = preset.whitePiece;
+  document.getElementById('blackPieceColor').value = preset.blackPiece;
+  document.getElementById('blackPieceHex').value = preset.blackPiece;
+  
+  // Apply colors
+  document.documentElement.style.setProperty('--board-light', preset.lightSquare);
+  document.documentElement.style.setProperty('--board-dark', preset.darkSquare);
+  document.documentElement.style.setProperty('--white-piece-color', preset.whitePiece);
+  document.documentElement.style.setProperty('--black-piece-color', preset.blackPiece);
+  
+  const style = document.getElementById('dynamic-piece-colors') || document.createElement('style');
+  style.id = 'dynamic-piece-colors';
+  style.textContent = `
+    .piece.white-piece,
+    .chess-piece.white-piece,
+    .white-piece {
+      color: ${preset.whitePiece} !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+    }
+    .piece.black-piece,
+    .chess-piece.black-piece,
+    .black-piece {
+      color: ${preset.blackPiece} !important;
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+    }
+    .white-preview {
+      color: ${preset.whitePiece} !important;
+    }
+    .black-preview {
+      color: ${preset.blackPiece} !important;
+    }
+  `;
+  
+  if (!document.getElementById('dynamic-piece-colors')) {
+    document.head.appendChild(style);
+  }
+  
+  saveColorSettings();
+  bildirimGoster(t('presetApplied') || `${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset applied!`);
+}
+
+function resetColors() {
+  // Reset to default colors
+  const defaultColors = {
+    lightSquare: '#9ca3af',
+    darkSquare: '#4b5563',
+    whitePiece: '#ffffff',
+    blackPiece: '#2c2c2c'
+  };
+  
+  // Update inputs
+  document.getElementById('lightSquareColor').value = defaultColors.lightSquare;
+  document.getElementById('lightSquareHex').value = defaultColors.lightSquare;
+  document.getElementById('darkSquareColor').value = defaultColors.darkSquare;
+  document.getElementById('darkSquareHex').value = defaultColors.darkSquare;
+  document.getElementById('whitePieceColor').value = defaultColors.whitePiece;
+  document.getElementById('whitePieceHex').value = defaultColors.whitePiece;
+  document.getElementById('blackPieceColor').value = defaultColors.blackPiece;
+  document.getElementById('blackPieceHex').value = defaultColors.blackPiece;
+  
+  // Reset CSS
+  document.documentElement.style.setProperty('--board-light', defaultColors.lightSquare);
+  document.documentElement.style.setProperty('--board-dark', defaultColors.darkSquare);
+  document.documentElement.style.setProperty('--white-piece-color', defaultColors.whitePiece);
+  document.documentElement.style.setProperty('--black-piece-color', defaultColors.blackPiece);
+  
+  // Remove custom piece colors
+  const style = document.getElementById('dynamic-piece-colors');
+  if (style) {
+    style.remove();
+  }
+  
+  // Clear localStorage
+  localStorage.removeItem('chessColorSettings');
+  
+  bildirimGoster(t('colorsReset') || 'Colors reset to default!');
+}
+
+function saveColorSettings() {
+  const settings = {
+    lightSquare: document.getElementById('lightSquareColor').value,
+    darkSquare: document.getElementById('darkSquareColor').value,
+    whitePiece: document.getElementById('whitePieceColor').value,
+    blackPiece: document.getElementById('blackPieceColor').value
+  };
+  
+  localStorage.setItem('chessColorSettings', JSON.stringify(settings));
+}
+
+function loadColorSettings() {
+  const saved = localStorage.getItem('chessColorSettings');
+  if (!saved) return;
+  
+  try {
+    const settings = JSON.parse(saved);
+    
+    // Update inputs
+    document.getElementById('lightSquareColor').value = settings.lightSquare;
+    document.getElementById('lightSquareHex').value = settings.lightSquare;
+    document.getElementById('darkSquareColor').value = settings.darkSquare;
+    document.getElementById('darkSquareHex').value = settings.darkSquare;
+    document.getElementById('whitePieceColor').value = settings.whitePiece;
+    document.getElementById('whitePieceHex').value = settings.whitePiece;
+    document.getElementById('blackPieceColor').value = settings.blackPiece;
+    document.getElementById('blackPieceHex').value = settings.blackPiece;
+    
+    // Apply colors
+    document.documentElement.style.setProperty('--board-light', settings.lightSquare);
+    document.documentElement.style.setProperty('--board-dark', settings.darkSquare);
+    document.documentElement.style.setProperty('--white-piece-color', settings.whitePiece);
+    document.documentElement.style.setProperty('--black-piece-color', settings.blackPiece);
+    
+    const style = document.getElementById('dynamic-piece-colors') || document.createElement('style');
+    style.id = 'dynamic-piece-colors';
+    style.textContent = `
+      .piece.white-piece,
+      .chess-piece.white-piece,
+      .white-piece {
+        color: ${settings.whitePiece} !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+      }
+      .piece.black-piece,
+      .chess-piece.black-piece,
+      .black-piece {
+        color: ${settings.blackPiece} !important;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+      }
+      .white-preview {
+        color: ${settings.whitePiece} !important;
+      }
+      .black-preview {
+        color: ${settings.blackPiece} !important;
+      }
+    `;
+    
+    if (!document.getElementById('dynamic-piece-colors')) {
+      document.head.appendChild(style);
+    }
+  } catch (e) {
+    console.error('Error loading color settings:', e);
+  }
+}
+
+// Load saved colors when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(loadColorSettings, 100);
+});

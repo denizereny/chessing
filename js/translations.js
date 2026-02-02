@@ -30,6 +30,20 @@ const translations = {
     mainMenu: "MAIN MENU",
     gameOver: "GAME OVER",
     reviewGame: "REVIEW GAME",
+    // Color customization
+    colorSettings: "Color Settings",
+    boardColors: "Board Colors",
+    lightSquares: "Light Squares",
+    darkSquares: "Dark Squares",
+    pieceColors: "Piece Colors",
+    whitePieces: "White Pieces",
+    blackPieces: "Black Pieces",
+    colorPresets: "Color Presets",
+    boardColorsUpdated: "Board colors updated!",
+    pieceColorsUpdated: "Piece colors updated!",
+    invalidHexColor: "Invalid hex color format!",
+    presetApplied: "Preset applied!",
+    colorsReset: "Colors reset to default!",
   },
   tr: {
     settings: "Ayarlar",
@@ -62,6 +76,20 @@ const translations = {
     mainMenu: "ANA MENÜ",
     gameOver: "OYUN BİTTİ",
     reviewGame: "OYUNU İNCELE",
+    // Color customization
+    colorSettings: "Renk Ayarları",
+    boardColors: "Tahta Renkleri",
+    lightSquares: "Açık Kareler",
+    darkSquares: "Koyu Kareler",
+    pieceColors: "Taş Renkleri",
+    whitePieces: "Beyaz Taşlar",
+    blackPieces: "Siyah Taşlar",
+    colorPresets: "Renk Şablonları",
+    boardColorsUpdated: "Tahta renkleri güncellendi!",
+    pieceColorsUpdated: "Taş renkleri güncellendi!",
+    invalidHexColor: "Geçersiz hex renk formatı!",
+    presetApplied: "Şablon uygulandı!",
+    colorsReset: "Renkler varsayılana sıfırlandı!",
   },
   es: {
     settings: "Ajustes",
@@ -381,6 +409,53 @@ function updateUIText() {
 
   const historyTitle = document.getElementById("historyTitle");
   if (historyTitle) historyTitle.innerHTML = `<span class="icon">📜</span> ${t("moveHistory")}`;
+
+  // Update color customization labels
+  const lblColorSettings = document.getElementById("lblColorSettings");
+  if (lblColorSettings) lblColorSettings.textContent = `🎨 ${t("colorSettings")}`;
+
+  const lblBoardColors = document.getElementById("lblBoardColors");
+  if (lblBoardColors) lblBoardColors.textContent = `📋 ${t("boardColors")}`;
+
+  const lblLightSquares = document.getElementById("lblLightSquares");
+  if (lblLightSquares) lblLightSquares.textContent = t("lightSquares");
+
+  const lblDarkSquares = document.getElementById("lblDarkSquares");
+  if (lblDarkSquares) lblDarkSquares.textContent = t("darkSquares");
+
+  const lblPieceColors = document.getElementById("lblPieceColors");
+  if (lblPieceColors) lblPieceColors.textContent = `♔ ${t("pieceColors")}`;
+
+  const lblWhitePieces = document.getElementById("lblWhitePieces");
+  if (lblWhitePieces) lblWhitePieces.textContent = t("whitePieces");
+
+  const lblBlackPieces = document.getElementById("lblBlackPieces");
+  if (lblBlackPieces) lblBlackPieces.textContent = t("blackPieces");
+
+  const lblColorPresets = document.getElementById("lblColorPresets");
+  if (lblColorPresets) lblColorPresets.textContent = `🎯 ${t("colorPresets")}`;
+
+  const btnClassicColors = document.getElementById("btnClassicColors");
+  if (btnClassicColors) btnClassicColors.textContent = "Classic";
+
+  const btnWoodColors = document.getElementById("btnWoodColors");
+  if (btnWoodColors) btnWoodColors.textContent = "Wood";
+
+  const btnMarbleColors = document.getElementById("btnMarbleColors");
+  if (btnMarbleColors) btnMarbleColors.textContent = "Marble";
+
+  const btnNeonColors = document.getElementById("btnNeonColors");
+  if (btnNeonColors) btnNeonColors.textContent = "Neon";
+
+  const btnOceanColors = document.getElementById("btnOceanColors");
+  if (btnOceanColors) btnOceanColors.textContent = "Ocean";
+
+  const btnResetColors = document.getElementById("btnResetColors");
+  if (btnResetColors) btnResetColors.textContent = "Reset";
+
+  // Update color settings modal title
+  const colorSettingsTitle = document.getElementById("colorSettingsTitle");
+  if (colorSettingsTitle) colorSettingsTitle.textContent = `🎨 ${t("colorSettings")}`;
 
   // Update game status if game is active
   if (typeof bilgiGuncelle === "function") {

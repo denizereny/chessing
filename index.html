@@ -36,7 +36,6 @@
             <select id="gameMode">
               <option value="4x5" selected>♔ 4×5 Chess Pro</option>
               <option value="classic">♛ Classic 8×8 Chess</option>
-              <option value="fourPlayer">👑 4 Player Chess</option>
             </select>
           </div>
 
@@ -79,6 +78,30 @@
     </button>
 
     <div class="container" id="mainGameContainer" style="filter: blur(5px); opacity: 0.5; pointer-events: none">
+      <!-- 3 Dots Menu Button -->
+      <button id="gameMenuBtn" class="game-menu-btn" onclick="toggleGameMenu()">
+        <span class="dots">⋮</span>
+      </button>
+      
+      <!-- Game Menu Dropdown -->
+      <div id="gameMenuDropdown" class="game-menu-dropdown hidden">
+        <div class="menu-item" onclick="openSettings()">
+          <span class="menu-icon">⚙️</span>
+          <span>Settings</span>
+        </div>
+        <div class="menu-item" onclick="openProfile()">
+          <span class="menu-icon">👤</span>
+          <span>Profile</span>
+        </div>
+        <div class="menu-item" onclick="pauseGame()">
+          <span class="menu-icon">⏸️</span>
+          <span>Pause Game</span>
+        </div>
+        <div class="menu-item" onclick="showMainMenu()">
+          <span class="menu-icon">🏠</span>
+          <span>Main Menu</span>
+        </div>
+      </div>
       <div id="settingsPanel" class="side-panel card">
         <button id="closeSettingsBtn" class="close-settings-btn" onclick="toggleMobileSettings()">✖</button>
         <div class="collapsible-header" onclick="togglePanel('settings')">
@@ -116,6 +139,95 @@
               <option value="3">🔴 Hard</option>
               <option value="4">💀 Expert</option>
             </select>
+          </div>
+
+          <!-- Color Customization Section -->
+          <div class="color-customization">
+            <div class="collapsible-header" onclick="toggleColorSettings()">
+              <h4 id="lblColorSettings">🎨 Color Settings</h4>
+              <span class="chevron" id="colorChevron">▾</span>
+            </div>
+            
+            <div id="colorSettingsContent" class="color-settings-content collapsed">
+              <!-- Board Colors Section -->
+              <div class="color-group">
+                <label id="lblBoardColors">📋 Board Colors</label>
+                <div class="color-preview-section">
+                  <div class="board-preview">
+                    <div class="preview-square light-preview" id="lightPreview"></div>
+                    <div class="preview-square dark-preview" id="darkPreview"></div>
+                    <div class="preview-square dark-preview" id="darkPreview2"></div>
+                    <div class="preview-square light-preview" id="lightPreview2"></div>
+                  </div>
+                  <div class="color-controls">
+                    <div class="color-option">
+                      <label id="lblLightSquares">Light Squares</label>
+                      <div class="color-input-group">
+                        <input type="color" id="lightSquareColor" value="#9ca3af" onchange="updateBoardColors()">
+                        <input type="text" id="lightSquareHex" value="#9ca3af" onchange="updateBoardColorsFromHex('light')" placeholder="#RRGGBB">
+                      </div>
+                    </div>
+                    <div class="color-option">
+                      <label id="lblDarkSquares">Dark Squares</label>
+                      <div class="color-input-group">
+                        <input type="color" id="darkSquareColor" value="#4b5563" onchange="updateBoardColors()">
+                        <input type="text" id="darkSquareHex" value="#4b5563" onchange="updateBoardColorsFromHex('dark')" placeholder="#RRGGBB">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Piece Colors Section -->
+              <div class="color-group">
+                <label id="lblPieceColors">♔ Piece Colors</label>
+                <div class="color-preview-section">
+                  <div class="pieces-preview">
+                    <div class="piece-preview-container">
+                      <div class="preview-square light-preview">
+                        <span class="preview-piece white-preview" id="whitePreview">♙</span>
+                      </div>
+                      <span class="piece-label" id="lblWhitePiecesPreview">White</span>
+                    </div>
+                    <div class="piece-preview-container">
+                      <div class="preview-square dark-preview">
+                        <span class="preview-piece black-preview" id="blackPreview">♟</span>
+                      </div>
+                      <span class="piece-label" id="lblBlackPiecesPreview">Black</span>
+                    </div>
+                  </div>
+                  <div class="color-controls">
+                    <div class="color-option">
+                      <label id="lblWhitePieces">White Pieces</label>
+                      <div class="color-input-group">
+                        <input type="color" id="whitePieceColor" value="#ffffff" onchange="updatePieceColors()">
+                        <input type="text" id="whitePieceHex" value="#ffffff" onchange="updatePieceColorsFromHex('white')" placeholder="#RRGGBB">
+                      </div>
+                    </div>
+                    <div class="color-option">
+                      <label id="lblBlackPieces">Black Pieces</label>
+                      <div class="color-input-group">
+                        <input type="color" id="blackPieceColor" value="#2c2c2c" onchange="updatePieceColors()">
+                        <input type="text" id="blackPieceHex" value="#2c2c2c" onchange="updatePieceColorsFromHex('black')" placeholder="#RRGGBB">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Color Presets -->
+              <div class="color-presets">
+                <label id="lblColorPresets">🎯 Color Presets</label>
+                <div class="preset-buttons">
+                  <button onclick="applyColorPreset('classic')" id="btnClassicColors">Classic</button>
+                  <button onclick="applyColorPreset('wood')" id="btnWoodColors">Wood</button>
+                  <button onclick="applyColorPreset('marble')" id="btnMarbleColors">Marble</button>
+                  <button onclick="applyColorPreset('neon')" id="btnNeonColors">Neon</button>
+                  <button onclick="applyColorPreset('ocean')" id="btnOceanColors">Ocean</button>
+                  <button onclick="resetColors()" id="btnResetColors">Reset</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -179,6 +291,5 @@
     <script src="js/translations.js"></script>
     <script src="js/game.js"></script>
     <script src="js/classic-chess.js"></script>
-    <script src="js/four-player-chess.js"></script>
   </body>
 </html>
