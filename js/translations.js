@@ -207,6 +207,8 @@ const translations = {
     darkTheme: "Dark",
     systemTheme: "System",
     themeChanged: "Theme changed successfully",
+    darkMode: "Dark Mode",
+    lightMode: "Light Mode",
     
     // Enhanced Drag & Drop
     dragToMove: "Drag to move piece",
@@ -539,6 +541,8 @@ const translations = {
     darkTheme: "Koyu",
     systemTheme: "Sistem",
     themeChanged: "Tema başarıyla değiştirildi",
+    darkMode: "Koyu Mod",
+    lightMode: "Açık Mod",
     
     // Enhanced Drag & Drop
     dragToMove: "Taşı hareket ettirmek için sürükle",
@@ -762,6 +766,12 @@ const translations = {
     darkTheme: "Oscuro",
     systemTheme: "Sistema",
     themeChanged: "Tema cambiado exitosamente",
+    darkMode: "Modo Oscuro",
+    lightMode: "Modo Claro",
+    lightTheme: "Claro",
+    darkTheme: "Oscuro",
+    systemTheme: "Sistema",
+    themeChanged: "Tema cambiado exitosamente",
     
     // Enhanced Drag & Drop
     dragToMove: "Arrastra para mover pieza",
@@ -957,6 +967,8 @@ const translations = {
     darkTheme: "Sombre",
     systemTheme: "Système",
     themeChanged: "Thème changé avec succès",
+    darkMode: "Mode Sombre",
+    lightMode: "Mode Clair",
     
     // Enhanced Drag & Drop
     dragToMove: "Glisser pour déplacer la pièce",
@@ -1152,6 +1164,8 @@ const translations = {
     darkTheme: "Dunkel",
     systemTheme: "System",
     themeChanged: "Thema erfolgreich geändert",
+    darkMode: "Dunkler Modus",
+    lightMode: "Heller Modus",
     
     // Enhanced Drag & Drop
     dragToMove: "Ziehen um Figur zu bewegen",
@@ -1347,6 +1361,8 @@ const translations = {
     darkTheme: "Scuro",
     systemTheme: "Sistema",
     themeChanged: "Tema cambiato con successo",
+    darkMode: "Modalità Scura",
+    lightMode: "Modalità Chiara",
     
     // Enhanced Drag & Drop
     dragToMove: "Trascina per muovere il pezzo",
@@ -1506,6 +1522,8 @@ const translations = {
     darkTheme: "Темная",
     systemTheme: "Системная",
     themeChanged: "Тема успешно изменена",
+    darkMode: "Темный Режим",
+    lightMode: "Светлый Режим",
     
     // Enhanced Drag & Drop
     dragToMove: "Перетащите для перемещения фигуры",
@@ -1665,6 +1683,8 @@ const translations = {
     darkTheme: "深色",
     systemTheme: "系统",
     themeChanged: "主题切换成功",
+    darkMode: "深色模式",
+    lightMode: "浅色模式",
     
     // Enhanced Drag & Drop
     dragToMove: "拖拽移动棋子",
@@ -1824,6 +1844,8 @@ const translations = {
     darkTheme: "ダーク",
     systemTheme: "システム",
     themeChanged: "テーマが正常に変更されました",
+    darkMode: "ダークモード",
+    lightMode: "ライトモード",
     
     // Enhanced Drag & Drop
     dragToMove: "ドラッグして駒を移動",
@@ -1983,6 +2005,8 @@ const translations = {
     darkTheme: "Escuro",
     systemTheme: "Sistema",
     themeChanged: "Tema alterado com sucesso",
+    darkMode: "Modo Escuro",
+    lightMode: "Modo Claro",
     
     // Enhanced Drag & Drop
     dragToMove: "Arraste para mover peça",
@@ -2142,6 +2166,8 @@ const translations = {
     darkTheme: "داكن",
     systemTheme: "النظام",
     themeChanged: "تم تغيير المظهر بنجاح",
+    darkMode: "الوضع الداكن",
+    lightMode: "الوضع الفاتح",
     
     // Enhanced Drag & Drop
     dragToMove: "اسحب لتحريك القطعة",
@@ -2435,6 +2461,14 @@ function updateUIText() {
   const btnPieceSetupText = document.getElementById("btnPieceSetupText");
   if (btnPieceSetupText) btnPieceSetupText.textContent = t("pieceSetup");
 
+  // Update theme button text
+  const btnThemeText = document.getElementById("btnThemeText");
+  if (btnThemeText) {
+    // Check current theme to show appropriate text
+    const currentTheme = localStorage.getItem('4x5-chess-theme') || 'light';
+    btnThemeText.textContent = currentTheme === 'dark' ? t("lightMode") : t("darkMode");
+  }
+
   // Update piece setup modal elements
   const setupInstructions = document.getElementById("setupInstructions");
   if (setupInstructions) setupInstructions.textContent = t("setupInstructions");
@@ -2595,9 +2629,29 @@ function updateUIText() {
 document.addEventListener("DOMContentLoaded", () => {
   const savedLang = localStorage.getItem("4x5_lang");
   if (savedLang && translations[savedLang]) {
-    document.getElementById("languageSelect").value = savedLang;
+    // Update both language selectors
+    const startLanguageSelect = document.getElementById("startLanguage");
+    const settingsLanguageSelect = document.getElementById("languageSelect");
+    
+    if (startLanguageSelect) startLanguageSelect.value = savedLang;
+    if (settingsLanguageSelect) settingsLanguageSelect.value = savedLang;
+    
     setLanguage(savedLang);
   } else {
     setLanguage("en");
+  }
+});
+
+// Listen for language changes from other tabs/windows
+window.addEventListener('storage', function(e) {
+  if (e.key === '4x5_lang' && e.newValue && translations[e.newValue]) {
+    // Update both language selectors
+    const startLanguageSelect = document.getElementById("startLanguage");
+    const settingsLanguageSelect = document.getElementById("languageSelect");
+    
+    if (startLanguageSelect) startLanguageSelect.value = e.newValue;
+    if (settingsLanguageSelect) settingsLanguageSelect.value = e.newValue;
+    
+    setLanguage(e.newValue);
   }
 });

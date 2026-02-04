@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Button Translation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .theme-button-demo {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .theme-button-demo:hover {
+            background: #545b62;
+        }
+        .demo-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f8fafc;
+        }
+        [data-theme="dark"] body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .test-section {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .demo-area {
+            background: var(--bg-primary);
+        }
+    </style>
+</head>
+<body>
+    <h1>🌙☀️ Theme Button Translation Test</h1>
+    
+    <div class="test-section">
+        <h2>Current Status</h2>
+        <div id="currentStatus" class="test-result info">
+            Loading...
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Language Selection</h2>
+        <p>Select a language to test theme button translations:</p>
+        
+        <select id="languageSelect" onchange="changeLanguage()">
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ar">🇸🇦 العربية</option>
+        </select>
+    </div>
+
+    <div class="test-section">
+        <h2>Theme Button Demo</h2>
+        <div class="demo-area">
+            <p>This simulates the theme button from the main game:</p>
+            <button class="theme-button-demo" id="demoThemeButton" onclick="toggleDemoTheme()">
+                🌙 <span id="demoThemeText">Dark Mode</span>
+            </button>
+            <p id="themeStatus">Current theme: Light</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Translation Test Results</h2>
+        <div id="translationResults"></div>
+        <button onclick="runTranslationTest()">🧪 Test All Languages</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Quick Actions</h2>
+        <button onclick="openMainGame()">🎮 Open Main Game</button>
+        <button onclick="testWithMainGame()">🔗 Test with Main Game</button>
+    </div>
+
+    <script>
+        // Simplified translation system for testing
+        let currentLang = 'en';
+        let currentTheme = 'light';
+
+        const translations = {
+            en: { darkMode: "Dark Mode", lightMode: "Light Mode" },
+            tr: { darkMode: "Koyu Mod", lightMode: "Açık Mod" },
+            es: { darkMode: "Modo Oscuro", lightMode: "Modo Claro" },
+            fr: { darkMode: "Mode Sombre", lightMode: "Mode Clair" },
+            de: { darkMode: "Dunkler Modus", lightMode: "Heller Modus" },
+            it: { darkMode: "Modalità Scura", lightMode: "Modalità Chiara" },
+            ru: { darkMode: "Темный Режим", lightMode: "Светлый Режим" },
+            zh: { darkMode: "深色模式", lightMode: "浅色模式" },
+            ja: { darkMode: "ダークモード", lightMode: "ライトモード" },
+            pt: { darkMode: "Modo Escuro", lightMode: "Modo Claro" },
+            ar: { darkMode: "الوضع الداكن", lightMode: "الوضع الفاتح" }
+        };
+
+        function t(key) {
+            return translations[currentLang][key] || translations['en'][key] || key;
+        }
+
+        function updateStatus() {
+            const savedLang = localStorage.getItem('4x5_lang');
+            const savedTheme = localStorage.getItem('4x5-chess-theme');
+            
+            document.getElementById('currentStatus').innerHTML = `
+                <strong>Saved Language:</strong> ${savedLang || 'Not set'}<br>
+                <strong>Saved Theme:</strong> ${savedTheme || 'Not set'}<br>
+                <strong>Current Test Language:</strong> ${currentLang}<br>
+                <strong>Current Test Theme:</strong> ${currentTheme}<br>
+                <strong>Dark Mode Translation:</strong> ${t('darkMode')}<br>
+                <strong>Light Mode Translation:</strong> ${t('lightMode')}
+            `;
+        }
+
+        function changeLanguage() {
+            currentLang = document.getElementById('languageSelect').value;
+            localStorage.setItem('4x5_lang', currentLang);
+            
+            // Handle RTL for Arabic
+            if (currentLang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+            
+            updateThemeButton();
+            updateStatus();
+        }
+
+        function toggleDemoTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('4x5-chess-theme', currentTheme);
+            
+            // Apply theme
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            updateThemeButton();
+            updateStatus();
+            
+            document.getElementById('themeStatus').textContent = `Current theme: ${currentTheme}`;
+        }
+
+        function updateThemeButton() {
+            const demoButton = document.getElementById('demoThemeButton');
+            const demoText = document.getElementById('demoThemeText');
+            
+            if (currentTheme === 'dark') {
+                demoButton.innerHTML = '☀️ <span id="demoThemeText">' + t('lightMode') + '</span>';
+            } else {
+                demoButton.innerHTML = '🌙 <span id="demoThemeText">' + t('darkMode') + '</span>';
+            }
+        }
+
+        function runTranslationTest() {
+            const results = document.getElementById('translationResults');
+            results.innerHTML = '<div class="test-result info">🧪 Testing translations...</div>';
+            
+            let testResults = [];
+            const languages = Object.keys(translations);
+            
+            languages.forEach(lang => {
+                const darkMode = translations[lang].darkMode;
+                const lightMode = translations[lang].lightMode;
+                
+                if (darkMode && lightMode) {
+                    testResults.push(`✅ ${lang}: "${darkMode}" / "${lightMode}"`);
+                } else {
+                    testResults.push(`❌ ${lang}: Missing translations`);
+                }
+            });
+            
+            results.innerHTML = testResults.map(result => 
+                `<div class="test-result ${result.includes('❌') ? 'error' : 'success'}">${result}</div>`
+            ).join('');
+        }
+
+        function openMainGame() {
+            window.open('index.html', '_blank');
+        }
+
+        function testWithMainGame() {
+            // Set a test language and theme
+            localStorage.setItem('4x5_lang', currentLang);
+            localStorage.setItem('4x5-chess-theme', currentTheme);
+            
+            alert(`Test settings saved:\nLanguage: ${currentLang}\nTheme: ${currentTheme}\n\nNow open the main game to see if the theme button shows the correct translation.`);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved settings
+            const savedLang = localStorage.getItem('4x5_lang');
+            const savedTheme = localStorage.getItem('4x5-chess-theme');
+            
+            if (savedLang) {
+                currentLang = savedLang;
+                document.getElementById('languageSelect').value = currentLang;
+            }
+            
+            if (savedTheme) {
+                currentTheme = savedTheme;
+                document.documentElement.setAttribute('data-theme', currentTheme);
+            }
+            
+            updateThemeButton();
+            updateStatus();
+        });
+
+        // Listen for changes from main game
+        window.addEventListener('storage', function(e) {
+            if (e.key === '4x5_lang') {
+                currentLang = e.newValue;
+                document.getElementById('languageSelect').value = currentLang;
+                updateThemeButton();
+                updateStatus();
+            } else if (e.key === '4x5-chess-theme') {
+                currentTheme = e.newValue;
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                updateThemeButton();
+                updateStatus();
+            }
+        });
+    </script>
+</body>
+</html>

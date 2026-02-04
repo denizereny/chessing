@@ -53,7 +53,39 @@ function tahtayiBaslat() {
 }
 
 function yeniOyun() {
-  tahtayiBaslat();
+  // Özel pozisyon kontrolü
+  const useCustomPosition = localStorage.getItem('useCustomPosition');
+  const customPosition = localStorage.getItem('customChessPosition');
+  const customPositionInfo = localStorage.getItem('customPositionInfo');
+  
+  if (useCustomPosition === 'true' && customPosition) {
+    try {
+      const customBoard = JSON.parse(customPosition);
+      tahta = customBoard.map(row => [...row]);
+      
+      // Özel pozisyon bayrağını temizle
+      localStorage.removeItem('useCustomPosition');
+      
+      // Pozisyon bilgilerini göster
+      if (customPositionInfo) {
+        try {
+          const info = JSON.parse(customPositionInfo);
+          bildirimGoster(`🎮 ${info.name} yüklendi! (${info.pieces} taş, ${info.created})`, 'success');
+        } catch (e) {
+          bildirimGoster('🎮 Özel pozisyon yüklendi! Bot ile oynayabilirsiniz.', 'success');
+        }
+      } else {
+        bildirimGoster('🎮 Özel pozisyon yüklendi! Bot ile oynayabilirsiniz.', 'success');
+      }
+    } catch (error) {
+      console.error('Özel pozisyon yüklenemedi:', error);
+      tahtayiBaslat(); // Varsayılan pozisyona dön
+      bildirimGoster('⚠️ Özel pozisyon yüklenemedi, varsayılan pozisyon kullanılıyor.', 'error');
+    }
+  } else {
+    tahtayiBaslat();
+  }
+  
   seciliKare = null;
   gecerliHamleler = [];
   beyazSirasi = true;
@@ -681,10 +713,47 @@ function tahtayiDegerlendir(testTahta) {
       if (tas) {
         let deger = DEGERLER[tas.toLowerCase()];
 
+        // Piyon ilerlemesi bonusu
         if (tas.toLowerCase() === "p") {
           deger += beyazMi(tas) ? (3 - s) * 10 : s * 10;
         }
+        
+        // Merkez kontrol bonusu
         if (su === 1 || su === 2) deger += 5;
+        
+        // Kral güvenliği (özel pozisyonlar için)
+        if (tas.toLowerCase() === "k") {
+          // Köşelerde daha güvenli
+          if ((s === 0 || s === 4) && (su === 0 || su === 3)) {
+            deger += 10;
+          }
+          // Kenar pozisyonları da güvenli
+          if (s === 0 || s === 4 || su === 0 || su === 3) {
+            deger += 5;
+          }
+        }
+        
+        // Vezir aktivitesi
+        if (tas.toLowerCase() === "q") {
+          // Merkezi kontrol eden vezir daha değerli
+          if (s >= 1 && s <= 3 && su >= 1 && su <= 2) {
+            deger += 20;
+          }
+        }
+        
+        // Kale aktivitesi
+        if (tas.toLowerCase() === "r") {
+          // Açık sütunlarda daha değerli
+          let sutunAcik = true;
+          for (let checkRow = 0; checkRow < 5; checkRow++) {
+            if (checkRow !== s && testTahta[checkRow][su] && 
+                testTahta[checkRow][su].toLowerCase() === 'p') {
+              sutunAcik = false;
+              break;
+            }
+          }
+          if (sutunAcik) deger += 15;
+        }
 
         skor += beyazMi(tas) ? deger : -deger;
       }
@@ -3398,3 +3467,106 @@ resetToDefaultPosition = function() {
   reinitializeDragDrop();
   bildirimGoster(t('defaultSetup') || 'Default position restored!');
 };
+
+// ===== THEME MANAGEMENT FUNCTIONS =====
+
+// Global theme state
+let currentTheme = 'light';
+
+// Initialize theme system
+function initThemeSystem() {
+    // Load saved theme or use system preference
+    const savedTheme = localStorage.getItem('4x5-chess-theme');
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    
+    // Apply theme
+    applyTheme(currentTheme);
+    
+    // Update button text
+    updateThemeButton();
+    
+    // Listen for system theme changes
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('4x5-chess-theme')) {
+                currentTheme = e.matches ? 'dark' : 'light';
+                applyTheme(currentTheme);
+                updateThemeButton();
+            }
+        });
+    }
+    
+    console.log('Theme system initialized:', currentTheme);
+}
+
+// Toggle theme function
+function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    applyTheme(currentTheme);
+    saveTheme(currentTheme);
+    updateThemeButton();
+    
+    // Show notification
+    const message = currentTheme === 'dark' ? 
+        (t('switchToDark') || 'Switched to dark theme') : 
+        (t('switchToLight') || 'Switched to light theme');
+    bildirimGoster(message);
+}
+
+// Apply theme to document
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.className = document.body.className.replace(/theme-\w+/g, '') + ` theme-${theme}`;
+    
+    // Update meta theme-color for mobile browsers
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+        themeColorMeta.content = theme === 'dark' ? '#0f172a' : '#ffffff';
+    }
+}
+
+// Save theme to localStorage
+function saveTheme(theme) {
+    try {
+        localStorage.setItem('4x5-chess-theme', theme);
+        // Also sync with piece setup page
+        localStorage.setItem('pieceSetupTheme', theme);
+    } catch (error) {
+        console.warn('Failed to save theme preference:', error);
+    }
+}
+
+// Update theme button text and icon
+function updateThemeButton() {
+    const themeBtn = document.getElementById('btnTheme');
+    const themeBtnText = document.getElementById('btnThemeText');
+    
+    if (themeBtn && themeBtnText) {
+        if (currentTheme === 'dark') {
+            themeBtn.innerHTML = '☀️ <span id="btnThemeText">' + (t('lightMode') || 'Light Mode') + '</span>';
+        } else {
+            themeBtn.innerHTML = '🌙 <span id="btnThemeText">' + (t('darkMode') || 'Dark Mode') + '</span>';
+        }
+    }
+}
+
+// Get current theme
+function getCurrentTheme() {
+    return currentTheme;
+}
+
+// Initialize theme system when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initThemeSystem();
+});
+
+// Listen for theme changes from other pages (like piece setup)
+window.addEventListener('storage', function(e) {
+    if (e.key === '4x5-chess-theme' && e.newValue !== currentTheme) {
+        currentTheme = e.newValue;
+        applyTheme(currentTheme);
+        updateThemeButton();
+    }
+});

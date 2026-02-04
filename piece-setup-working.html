@@ -360,9 +360,223 @@
         .notification.info {
             background: #17a2b8;
         }
+
+        /* Language Selector */
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .language-dropdown {
+            background: white;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .language-dropdown:hover {
+            background: #f8f9ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+        }
+
+        .language-dropdown:focus {
+            outline: none;
+            border-color: #0056b3;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+        }
+
+        /* RTL Support for Arabic */
+        [dir="rtl"] .language-selector {
+            left: auto;
+            right: 20px;
+        }
+
+        [dir="rtl"] .main-content {
+            direction: rtl;
+        }
+
+        [dir="rtl"] .piece-palette,
+        [dir="rtl"] .controls {
+            text-align: right;
+        }
+
+        [dir="rtl"] .palette-section h3,
+        [dir="rtl"] .controls h3 {
+            text-align: center;
+        }
+
+        [dir="rtl"] .stat-item {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .btn {
+            text-align: center;
+        }
+
+        [dir="rtl"] .notification {
+            right: auto;
+            left: 20px;
+            transform: translateX(-400px);
+        }
+
+        [dir="rtl"] .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 80px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-button {
+            background: white;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-button:hover {
+            background: #f8f9ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+        }
+
+        .theme-toggle-button:focus {
+            outline: none;
+            border-color: #0056b3;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+        }
+
+        /* RTL Support for Theme Toggle */
+        [dir="rtl"] .theme-toggle {
+            right: auto;
+            left: 80px;
+        }
+
+        /* Dark Theme Styles */
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border-primary: #334155;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .container {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .piece-palette,
+        [data-theme="dark"] .controls {
+            background: var(--bg-primary);
+            border-color: var(--border-primary);
+        }
+
+        [data-theme="dark"] .palette-section h3,
+        [data-theme="dark"] .controls h3 {
+            color: #6366f1;
+        }
+
+        [data-theme="dark"] .palette-piece {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+
+        [data-theme="dark"] .palette-piece:hover {
+            border-color: #6366f1;
+        }
+
+        [data-theme="dark"] .stats {
+            background: var(--bg-primary);
+        }
+
+        [data-theme="dark"] .stat-label {
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .preset-btn {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .preset-btn:hover {
+            border-color: #6366f1;
+            background: #6366f1;
+            color: white;
+        }
+
+        [data-theme="dark"] .theme-toggle-button {
+            background: var(--bg-secondary);
+            border-color: #6366f1;
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .theme-toggle-button:hover {
+            background: var(--bg-primary);
+        }
+
+        [data-theme="dark"] .language-dropdown {
+            background: var(--bg-secondary);
+            border-color: #6366f1;
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .language-dropdown:hover {
+            background: var(--bg-primary);
+        }
     </style>
 </head>
 <body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select class="language-dropdown" id="languageSelect" onchange="changeLanguage()">
+            <option value="en">🇺🇸 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ar">🇸🇦 العربية</option>
+        </select>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button class="theme-toggle-button" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+            <span id="themeIcon">🌙</span>
+        </button>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>♔ 4×5 Satranç Taş Düzeni ♚</h1>
@@ -437,8 +651,10 @@
                 </div>
 
                 <button class="btn btn-primary" onclick="analyzePosition()">🔍 Pozisyonu Analiz Et</button>
-                <button class="btn btn-secondary" onclick="clearBoard()">🗑️ Tahtayı Temizle</button>
-                <button class="btn btn-success" onclick="savePosition()">💾 Pozisyonu Kaydet</button>
+                <button class="btn btn-success" onclick="playPosition()">🎮 Bu Pozisyonla Oyna</button>
+                <button class="btn btn-secondary" onclick="goBackToGame()">↩️ Ana Oyuna Dön</button>
+                <button class="btn btn-secondary" onclick="clearBoard()">�️ Tahtayı Temizle</button>
+                <button class="btn btn-secondary" onclick="savePosition()">� Pozisyonu Kaydet</button>
                 <button class="btn btn-danger" onclick="resetBoard()">🔄 Sıfırla</button>
             </div>
         </div>
@@ -448,6 +664,745 @@
     <div class="notification" id="notification"></div>
 
     <script>
+        // Translation system
+        let currentLang = 'en'; // Default to English
+
+        const translations = {
+            en: {
+                title: "♔ 4×5 Chess - Piece Setup ♚",
+                subtitle: "Drag and drop pieces to create your custom position",
+                whitePieces: "⚪ White Pieces",
+                blackPieces: "⚫ Black Pieces", 
+                chessBoard: "🏁 Chess Board",
+                controls: "🎮 Controls",
+                whiteKings: "White Kings:",
+                blackKings: "Black Kings:",
+                totalPieces: "Total Pieces:",
+                materialBalance: "Material Balance:",
+                defaultPosition: "🏠 Default Position",
+                endgame: "👑 Endgame",
+                middlegame: "⚔️ Middlegame",
+                puzzle: "🧩 Puzzle",
+                random: "🎲 Random",
+                analyzePosition: "🔍 Analyze Position",
+                playPosition: "🎮 Play This Position",
+                goBackToGame: "↩️ Back to Main Game",
+                clearBoard: "🗑️ Clear Board",
+                savePosition: "💾 Save Position",
+                resetBoard: "🔄 Reset",
+                positionReady: "Piece setup ready! You can drag and drop pieces.",
+                piecePlaced: "piece placed on",
+                positionCleared: "Board cleared",
+                positionReset: "Position reset",
+                positionSaved: "Position saved",
+                positionAnalyzed: "Position analyzed",
+                whiteKingMissing: "Exactly one white king required for play!",
+                blackKingMissing: "Exactly one black king required for play!",
+                minimumPieces: "At least 2 pieces (kings) required for play!",
+                positionPrepared: "✅ Position prepared! You can play against the bot...",
+                whiteKingExcess: "⚠️ White king missing or excess",
+                blackKingExcess: "⚠️ Black king missing or excess",
+                whiteAdvantage: "✅ White has material advantage",
+                blackAdvantage: "✅ Black has material advantage", 
+                materialEqual: "⚖️ Material balanced",
+                endgamePosition: "🏁 Endgame position (few pieces)",
+                openingPosition: "🚀 Opening position (many pieces)",
+                middlegamePosition: "⚔️ Middlegame position",
+                kingsClose: "👑 Kings too close - play carefully!",
+                kingsSafe: "🛡️ Kings at safe distance",
+                whiteCenter: "🎯 White controls center",
+                blackCenter: "🎯 Black controls center",
+                centerBalanced: "🎯 Center control balanced",
+                positionValid: "✅ Position looks valid"
+            },
+            tr: {
+                title: "♔ 4×5 Satranç - Taş Düzeni ♚",
+                subtitle: "Taşları sürükleyip bırakarak kendi pozisyonunuzu oluşturun",
+                whitePieces: "⚪ Beyaz Taşlar",
+                blackPieces: "⚫ Siyah Taşlar",
+                chessBoard: "🏁 Satranç Tahtası", 
+                controls: "🎮 Kontroller",
+                whiteKings: "Beyaz Kral:",
+                blackKings: "Siyah Kral:",
+                totalPieces: "Toplam Taş:",
+                materialBalance: "Materyal Dengesi:",
+                defaultPosition: "🏠 Varsayılan Pozisyon",
+                endgame: "👑 Son Oyun",
+                middlegame: "⚔️ Orta Oyun", 
+                puzzle: "🧩 Puzzle",
+                random: "🎲 Rastgele",
+                analyzePosition: "🔍 Pozisyonu Analiz Et",
+                playPosition: "🎮 Bu Pozisyonla Oyna",
+                goBackToGame: "↩️ Ana Oyuna Dön",
+                clearBoard: "🗑️ Tahtayı Temizle",
+                savePosition: "💾 Pozisyonu Kaydet",
+                resetBoard: "🔄 Sıfırla",
+                positionReady: "Taş düzeni hazır! Taşları sürükleyip bırakabilirsiniz.",
+                piecePlaced: "taşı yerleştirildi",
+                positionCleared: "Tahta temizlendi",
+                positionReset: "Pozisyon sıfırlandı", 
+                positionSaved: "Pozisyon kaydedildi",
+                positionAnalyzed: "Pozisyon analiz edildi",
+                whiteKingMissing: "Oyun için tam olarak bir beyaz kral gerekli!",
+                blackKingMissing: "Oyun için tam olarak bir siyah kral gerekli!",
+                minimumPieces: "Oyun için en az iki taş (krallar) gerekli!",
+                positionPrepared: "✅ Pozisyon hazırlandı! Bot ile oynayabilirsiniz...",
+                whiteKingExcess: "⚠️ Beyaz kral eksik veya fazla",
+                blackKingExcess: "⚠️ Siyah kral eksik veya fazla",
+                whiteAdvantage: "✅ Beyaz materyal avantajında",
+                blackAdvantage: "✅ Siyah materyal avantajında",
+                materialEqual: "⚖️ Materyal dengeli",
+                endgamePosition: "🏁 Son oyun pozisyonu (az taş)",
+                openingPosition: "🚀 Açılış pozisyonu (çok taş)",
+                middlegamePosition: "⚔️ Orta oyun pozisyonu",
+                kingsClose: "👑 Krallar çok yakın - dikkatli oynayın!",
+                kingsSafe: "🛡️ Krallar güvenli mesafede",
+                whiteCenter: "🎯 Beyaz merkezi kontrol ediyor",
+                blackCenter: "🎯 Siyah merkezi kontrol ediyor", 
+                centerBalanced: "🎯 Merkez kontrolü dengeli",
+                positionValid: "✅ Pozisyon geçerli görünüyor"
+            },
+            es: {
+                title: "♔ 4×5 Ajedrez - Configuración de Piezas ♚",
+                subtitle: "Arrastra y suelta piezas para crear tu posición personalizada",
+                whitePieces: "⚪ Piezas Blancas",
+                blackPieces: "⚫ Piezas Negras",
+                chessBoard: "🏁 Tablero de Ajedrez",
+                controls: "🎮 Controles",
+                whiteKings: "Reyes Blancos:",
+                blackKings: "Reyes Negros:",
+                totalPieces: "Total de Piezas:",
+                materialBalance: "Balance Material:",
+                defaultPosition: "🏠 Posición Por Defecto",
+                endgame: "👑 Final",
+                middlegame: "⚔️ Medio Juego",
+                puzzle: "🧩 Puzzle",
+                random: "🎲 Aleatorio",
+                analyzePosition: "🔍 Analizar Posición",
+                playPosition: "🎮 Jugar Esta Posición",
+                goBackToGame: "↩️ Volver al Juego Principal",
+                clearBoard: "🗑️ Limpiar Tablero",
+                savePosition: "💾 Guardar Posición",
+                resetBoard: "🔄 Reiniciar",
+                positionReady: "¡Configuración de piezas lista! Puedes arrastrar y soltar piezas.",
+                piecePlaced: "pieza colocada en",
+                positionCleared: "Tablero limpiado",
+                positionReset: "Posición reiniciada",
+                positionSaved: "Posición guardada",
+                positionAnalyzed: "Posición analizada",
+                whiteKingMissing: "¡Se requiere exactamente un rey blanco para jugar!",
+                blackKingMissing: "¡Se requiere exactamente un rey negro para jugar!",
+                minimumPieces: "¡Se requieren al menos 2 piezas (reyes) para jugar!",
+                positionPrepared: "✅ ¡Posición preparada! Puedes jugar contra el bot...",
+                whiteKingExcess: "⚠️ Rey blanco faltante o exceso",
+                blackKingExcess: "⚠️ Rey negro faltante o exceso",
+                whiteAdvantage: "✅ Las blancas tienen ventaja material",
+                blackAdvantage: "✅ Las negras tienen ventaja material",
+                materialEqual: "⚖️ Material equilibrado",
+                endgamePosition: "🏁 Posición de final (pocas piezas)",
+                openingPosition: "🚀 Posición de apertura (muchas piezas)",
+                middlegamePosition: "⚔️ Posición de medio juego",
+                kingsClose: "👑 Reyes muy cerca - ¡juega con cuidado!",
+                kingsSafe: "🛡️ Reyes a distancia segura",
+                whiteCenter: "🎯 Las blancas controlan el centro",
+                blackCenter: "🎯 Las negras controlan el centro",
+                centerBalanced: "🎯 Control del centro equilibrado",
+                positionValid: "✅ La posición parece válida"
+            },
+            fr: {
+                title: "♔ 4×5 Échecs - Configuration des Pièces ♚",
+                subtitle: "Glissez et déposez les pièces pour créer votre position personnalisée",
+                whitePieces: "⚪ Pièces Blanches",
+                blackPieces: "⚫ Pièces Noires",
+                chessBoard: "🏁 Échiquier",
+                controls: "🎮 Contrôles",
+                whiteKings: "Rois Blancs:",
+                blackKings: "Rois Noirs:",
+                totalPieces: "Total des Pièces:",
+                materialBalance: "Équilibre Matériel:",
+                defaultPosition: "🏠 Position Par Défaut",
+                endgame: "👑 Finale",
+                middlegame: "⚔️ Milieu de Jeu",
+                puzzle: "🧩 Puzzle",
+                random: "🎲 Aléatoire",
+                analyzePosition: "🔍 Analyser la Position",
+                playPosition: "🎮 Jouer Cette Position",
+                goBackToGame: "↩️ Retour au Jeu Principal",
+                clearBoard: "🗑️ Vider l'Échiquier",
+                savePosition: "💾 Sauvegarder la Position",
+                resetBoard: "🔄 Réinitialiser",
+                positionReady: "Configuration des pièces prête! Vous pouvez glisser et déposer les pièces.",
+                piecePlaced: "pièce placée sur",
+                positionCleared: "Échiquier vidé",
+                positionReset: "Position réinitialisée",
+                positionSaved: "Position sauvegardée",
+                positionAnalyzed: "Position analysée",
+                whiteKingMissing: "Exactement un roi blanc requis pour jouer!",
+                blackKingMissing: "Exactement un roi noir requis pour jouer!",
+                minimumPieces: "Au moins 2 pièces (rois) requises pour jouer!",
+                positionPrepared: "✅ Position préparée! Vous pouvez jouer contre le bot...",
+                whiteKingExcess: "⚠️ Roi blanc manquant ou en excès",
+                blackKingExcess: "⚠️ Roi noir manquant ou en excès",
+                whiteAdvantage: "✅ Les blancs ont l'avantage matériel",
+                blackAdvantage: "✅ Les noirs ont l'avantage matériel",
+                materialEqual: "⚖️ Matériel équilibré",
+                endgamePosition: "🏁 Position de finale (peu de pièces)",
+                openingPosition: "🚀 Position d'ouverture (beaucoup de pièces)",
+                middlegamePosition: "⚔️ Position de milieu de jeu",
+                kingsClose: "👑 Rois trop proches - jouez prudemment!",
+                kingsSafe: "🛡️ Rois à distance sûre",
+                whiteCenter: "🎯 Les blancs contrôlent le centre",
+                blackCenter: "🎯 Les noirs contrôlent le centre",
+                centerBalanced: "🎯 Contrôle du centre équilibré",
+                positionValid: "✅ La position semble valide"
+            },
+            de: {
+                title: "♔ 4×5 Schach - Figurenaufstellung ♚",
+                subtitle: "Ziehen und ablegen Sie Figuren, um Ihre benutzerdefinierte Position zu erstellen",
+                whitePieces: "⚪ Weiße Figuren",
+                blackPieces: "⚫ Schwarze Figuren",
+                chessBoard: "🏁 Schachbrett",
+                controls: "🎮 Steuerung",
+                whiteKings: "Weiße Könige:",
+                blackKings: "Schwarze Könige:",
+                totalPieces: "Gesamte Figuren:",
+                materialBalance: "Materialbalance:",
+                defaultPosition: "🏠 Standardposition",
+                endgame: "👑 Endspiel",
+                middlegame: "⚔️ Mittelspiel",
+                puzzle: "🧩 Puzzle",
+                random: "🎲 Zufällig",
+                analyzePosition: "🔍 Position Analysieren",
+                playPosition: "🎮 Diese Position Spielen",
+                goBackToGame: "↩️ Zurück zum Hauptspiel",
+                clearBoard: "🗑️ Brett Leeren",
+                savePosition: "💾 Position Speichern",
+                resetBoard: "🔄 Zurücksetzen",
+                positionReady: "Figurenaufstellung bereit! Sie können Figuren ziehen und ablegen.",
+                piecePlaced: "Figur platziert auf",
+                positionCleared: "Brett geleert",
+                positionReset: "Position zurückgesetzt",
+                positionSaved: "Position gespeichert",
+                positionAnalyzed: "Position analysiert",
+                whiteKingMissing: "Genau ein weißer König für das Spiel erforderlich!",
+                blackKingMissing: "Genau ein schwarzer König für das Spiel erforderlich!",
+                minimumPieces: "Mindestens 2 Figuren (Könige) für das Spiel erforderlich!",
+                positionPrepared: "✅ Position vorbereitet! Sie können gegen den Bot spielen...",
+                whiteKingExcess: "⚠️ Weißer König fehlt oder ist überschüssig",
+                blackKingExcess: "⚠️ Schwarzer König fehlt oder ist überschüssig",
+                whiteAdvantage: "✅ Weiß hat Materialvorteil",
+                blackAdvantage: "✅ Schwarz hat Materialvorteil",
+                materialEqual: "⚖️ Material ausgeglichen",
+                endgamePosition: "🏁 Endspielposition (wenige Figuren)",
+                openingPosition: "🚀 Eröffnungsposition (viele Figuren)",
+                middlegamePosition: "⚔️ Mittelspielposition",
+                kingsClose: "👑 Könige zu nah - vorsichtig spielen!",
+                kingsSafe: "🛡️ Könige in sicherer Entfernung",
+                whiteCenter: "🎯 Weiß kontrolliert das Zentrum",
+                blackCenter: "🎯 Schwarz kontrolliert das Zentrum",
+                centerBalanced: "🎯 Zentrumskontrolle ausgeglichen",
+                positionValid: "✅ Position sieht gültig aus"
+            },
+            it: {
+                title: "♔ 4×5 Scacchi - Configurazione Pezzi ♚",
+                subtitle: "Trascina e rilascia i pezzi per creare la tua posizione personalizzata",
+                whitePieces: "⚪ Pezzi Bianchi",
+                blackPieces: "⚫ Pezzi Neri",
+                chessBoard: "🏁 Scacchiera",
+                controls: "🎮 Controlli",
+                whiteKings: "Re Bianchi:",
+                blackKings: "Re Neri:",
+                totalPieces: "Totale Pezzi:",
+                materialBalance: "Equilibrio Materiale:",
+                defaultPosition: "🏠 Posizione Predefinita",
+                endgame: "👑 Finale",
+                middlegame: "⚔️ Mediogioco",
+                puzzle: "🧩 Puzzle",
+                random: "🎲 Casuale",
+                analyzePosition: "🔍 Analizza Posizione",
+                playPosition: "🎮 Gioca Questa Posizione",
+                goBackToGame: "↩️ Torna al Gioco Principale",
+                clearBoard: "🗑️ Pulisci Scacchiera",
+                savePosition: "💾 Salva Posizione",
+                resetBoard: "🔄 Ripristina",
+                positionReady: "Configurazione pezzi pronta! Puoi trascinare e rilasciare i pezzi.",
+                piecePlaced: "pezzo posizionato su",
+                positionCleared: "Scacchiera pulita",
+                positionReset: "Posizione ripristinata",
+                positionSaved: "Posizione salvata",
+                positionAnalyzed: "Posizione analizzata",
+                whiteKingMissing: "Esattamente un re bianco richiesto per giocare!",
+                blackKingMissing: "Esattamente un re nero richiesto per giocare!",
+                minimumPieces: "Almeno 2 pezzi (re) richiesti per giocare!",
+                positionPrepared: "✅ Posizione preparata! Puoi giocare contro il bot...",
+                whiteKingExcess: "⚠️ Re bianco mancante o in eccesso",
+                blackKingExcess: "⚠️ Re nero mancante o in eccesso",
+                whiteAdvantage: "✅ Il bianco ha vantaggio materiale",
+                blackAdvantage: "✅ Il nero ha vantaggio materiale",
+                materialEqual: "⚖️ Materiale equilibrato",
+                endgamePosition: "🏁 Posizione di finale (pochi pezzi)",
+                openingPosition: "🚀 Posizione di apertura (molti pezzi)",
+                middlegamePosition: "⚔️ Posizione di mediogioco",
+                kingsClose: "👑 Re troppo vicini - gioca con attenzione!",
+                kingsSafe: "🛡️ Re a distanza sicura",
+                whiteCenter: "🎯 Il bianco controlla il centro",
+                blackCenter: "🎯 Il nero controlla il centro",
+                centerBalanced: "🎯 Controllo del centro equilibrato",
+                positionValid: "✅ La posizione sembra valida"
+            },
+            ru: {
+                title: "♔ 4×5 Шахматы - Расстановка Фигур ♚",
+                subtitle: "Перетаскивайте фигуры для создания своей позиции",
+                whitePieces: "⚪ Белые Фигуры",
+                blackPieces: "⚫ Черные Фигуры",
+                chessBoard: "🏁 Шахматная Доска",
+                controls: "🎮 Управление",
+                whiteKings: "Белые Короли:",
+                blackKings: "Черные Короли:",
+                totalPieces: "Всего Фигур:",
+                materialBalance: "Материальный Баланс:",
+                defaultPosition: "🏠 Стандартная Позиция",
+                endgame: "👑 Эндшпиль",
+                middlegame: "⚔️ Миттельшпиль",
+                puzzle: "🧩 Головоломка",
+                random: "🎲 Случайно",
+                analyzePosition: "🔍 Анализировать Позицию",
+                playPosition: "🎮 Играть Эту Позицию",
+                goBackToGame: "↩️ Назад к Основной Игре",
+                clearBoard: "🗑️ Очистить Доску",
+                savePosition: "💾 Сохранить Позицию",
+                resetBoard: "🔄 Сбросить",
+                positionReady: "Расстановка фигур готова! Вы можете перетаскивать фигуры.",
+                piecePlaced: "фигура размещена на",
+                positionCleared: "Доска очищена",
+                positionReset: "Позиция сброшена",
+                positionSaved: "Позиция сохранена",
+                positionAnalyzed: "Позиция проанализирована",
+                whiteKingMissing: "Для игры требуется ровно один белый король!",
+                blackKingMissing: "Для игры требуется ровно один черный король!",
+                minimumPieces: "Для игры требуется минимум 2 фигуры (короли)!",
+                positionPrepared: "✅ Позиция подготовлена! Вы можете играть против бота...",
+                whiteKingExcess: "⚠️ Белый король отсутствует или лишний",
+                blackKingExcess: "⚠️ Черный король отсутствует или лишний",
+                whiteAdvantage: "✅ У белых материальное преимущество",
+                blackAdvantage: "✅ У черных материальное преимущество",
+                materialEqual: "⚖️ Материал сбалансирован",
+                endgamePosition: "🏁 Эндшпильная позиция (мало фигур)",
+                openingPosition: "🚀 Дебютная позиция (много фигур)",
+                middlegamePosition: "⚔️ Позиция миттельшпиля",
+                kingsClose: "👑 Короли слишком близко - играйте осторожно!",
+                kingsSafe: "🛡️ Короли на безопасном расстоянии",
+                whiteCenter: "🎯 Белые контролируют центр",
+                blackCenter: "🎯 Черные контролируют центр",
+                centerBalanced: "🎯 Контроль центра сбалансирован",
+                positionValid: "✅ Позиция выглядит корректной"
+            },
+            zh: {
+                title: "♔ 4×5 国际象棋 - 棋子设置 ♚",
+                subtitle: "拖放棋子来创建您的自定义位置",
+                whitePieces: "⚪ 白棋",
+                blackPieces: "⚫ 黑棋",
+                chessBoard: "🏁 棋盘",
+                controls: "🎮 控制",
+                whiteKings: "白王:",
+                blackKings: "黑王:",
+                totalPieces: "总棋子数:",
+                materialBalance: "材料平衡:",
+                defaultPosition: "🏠 默认位置",
+                endgame: "👑 残局",
+                middlegame: "⚔️ 中局",
+                puzzle: "🧩 谜题",
+                random: "🎲 随机",
+                analyzePosition: "🔍 分析位置",
+                playPosition: "🎮 玩这个位置",
+                goBackToGame: "↩️ 返回主游戏",
+                clearBoard: "🗑️ 清空棋盘",
+                savePosition: "💾 保存位置",
+                resetBoard: "🔄 重置",
+                positionReady: "棋子设置就绪！您可以拖放棋子。",
+                piecePlaced: "棋子放置在",
+                positionCleared: "棋盘已清空",
+                positionReset: "位置已重置",
+                positionSaved: "位置已保存",
+                positionAnalyzed: "位置已分析",
+                whiteKingMissing: "游戏需要恰好一个白王！",
+                blackKingMissing: "游戏需要恰好一个黑王！",
+                minimumPieces: "游戏至少需要2个棋子（王）！",
+                positionPrepared: "✅ 位置已准备好！您可以与机器人对战...",
+                whiteKingExcess: "⚠️ 白王缺失或过多",
+                blackKingExcess: "⚠️ 黑王缺失或过多",
+                whiteAdvantage: "✅ 白方有材料优势",
+                blackAdvantage: "✅ 黑方有材料优势",
+                materialEqual: "⚖️ 材料平衡",
+                endgamePosition: "🏁 残局位置（棋子较少）",
+                openingPosition: "🚀 开局位置（棋子较多）",
+                middlegamePosition: "⚔️ 中局位置",
+                kingsClose: "👑 王太近了 - 小心下棋！",
+                kingsSafe: "🛡️ 王在安全距离",
+                whiteCenter: "🎯 白方控制中心",
+                blackCenter: "🎯 黑方控制中心",
+                centerBalanced: "🎯 中心控制平衡",
+                positionValid: "✅ 位置看起来有效"
+            },
+            ja: {
+                title: "♔ 4×5 チェス - 駒の配置 ♚",
+                subtitle: "駒をドラッグ＆ドロップしてカスタムポジションを作成",
+                whitePieces: "⚪ 白の駒",
+                blackPieces: "⚫ 黒の駒",
+                chessBoard: "🏁 チェス盤",
+                controls: "🎮 コントロール",
+                whiteKings: "白のキング:",
+                blackKings: "黒のキング:",
+                totalPieces: "総駒数:",
+                materialBalance: "マテリアルバランス:",
+                defaultPosition: "🏠 デフォルトポジション",
+                endgame: "👑 エンドゲーム",
+                middlegame: "⚔️ ミドルゲーム",
+                puzzle: "🧩 パズル",
+                random: "🎲 ランダム",
+                analyzePosition: "🔍 ポジション分析",
+                playPosition: "🎮 このポジションで対局",
+                goBackToGame: "↩️ メインゲームに戻る",
+                clearBoard: "🗑️ 盤面をクリア",
+                savePosition: "💾 ポジション保存",
+                resetBoard: "🔄 リセット",
+                positionReady: "駒の配置準備完了！駒をドラッグ＆ドロップできます。",
+                piecePlaced: "駒が配置されました",
+                positionCleared: "盤面がクリアされました",
+                positionReset: "ポジションがリセットされました",
+                positionSaved: "ポジションが保存されました",
+                positionAnalyzed: "ポジションが分析されました",
+                whiteKingMissing: "対局には白のキングが1つ必要です！",
+                blackKingMissing: "対局には黒のキングが1つ必要です！",
+                minimumPieces: "対局には最低2つの駒（キング）が必要です！",
+                positionPrepared: "✅ ポジション準備完了！ボットと対局できます...",
+                whiteKingExcess: "⚠️ 白のキングが不足または過多",
+                blackKingExcess: "⚠️ 黒のキングが不足または過多",
+                whiteAdvantage: "✅ 白にマテリアル優勢",
+                blackAdvantage: "✅ 黒にマテリアル優勢",
+                materialEqual: "⚖️ マテリアル均衡",
+                endgamePosition: "🏁 エンドゲームポジション（駒が少ない）",
+                openingPosition: "🚀 オープニングポジション（駒が多い）",
+                middlegamePosition: "⚔️ ミドルゲームポジション",
+                kingsClose: "👑 キングが近すぎます - 慎重に指してください！",
+                kingsSafe: "🛡️ キングは安全な距離にあります",
+                whiteCenter: "🎯 白が中央をコントロール",
+                blackCenter: "🎯 黒が中央をコントロール",
+                centerBalanced: "🎯 中央のコントロールが均衡",
+                positionValid: "✅ ポジションは有効に見えます"
+            },
+            pt: {
+                title: "♔ 4×5 Xadrez - Configuração de Peças ♚",
+                subtitle: "Arraste e solte peças para criar sua posição personalizada",
+                whitePieces: "⚪ Peças Brancas",
+                blackPieces: "⚫ Peças Pretas",
+                chessBoard: "🏁 Tabuleiro de Xadrez",
+                controls: "🎮 Controles",
+                whiteKings: "Reis Brancos:",
+                blackKings: "Reis Pretos:",
+                totalPieces: "Total de Peças:",
+                materialBalance: "Equilíbrio Material:",
+                defaultPosition: "🏠 Posição Padrão",
+                endgame: "👑 Final",
+                middlegame: "⚔️ Meio-jogo",
+                puzzle: "🧩 Quebra-cabeça",
+                random: "🎲 Aleatório",
+                analyzePosition: "🔍 Analisar Posição",
+                playPosition: "🎮 Jogar Esta Posição",
+                goBackToGame: "↩️ Voltar ao Jogo Principal",
+                clearBoard: "🗑️ Limpar Tabuleiro",
+                savePosition: "💾 Salvar Posição",
+                resetBoard: "🔄 Reiniciar",
+                positionReady: "Configuração de peças pronta! Você pode arrastar e soltar peças.",
+                piecePlaced: "peça colocada em",
+                positionCleared: "Tabuleiro limpo",
+                positionReset: "Posição reiniciada",
+                positionSaved: "Posição salva",
+                positionAnalyzed: "Posição analisada",
+                whiteKingMissing: "Exatamente um rei branco é necessário para jogar!",
+                blackKingMissing: "Exatamente um rei preto é necessário para jogar!",
+                minimumPieces: "Pelo menos 2 peças (reis) são necessárias para jogar!",
+                positionPrepared: "✅ Posição preparada! Você pode jogar contra o bot...",
+                whiteKingExcess: "⚠️ Rei branco ausente ou em excesso",
+                blackKingExcess: "⚠️ Rei preto ausente ou em excesso",
+                whiteAdvantage: "✅ Brancas têm vantagem material",
+                blackAdvantage: "✅ Pretas têm vantagem material",
+                materialEqual: "⚖️ Material equilibrado",
+                endgamePosition: "🏁 Posição de final (poucas peças)",
+                openingPosition: "🚀 Posição de abertura (muitas peças)",
+                middlegamePosition: "⚔️ Posição de meio-jogo",
+                kingsClose: "👑 Reis muito próximos - jogue com cuidado!",
+                kingsSafe: "🛡️ Reis em distância segura",
+                whiteCenter: "🎯 Brancas controlam o centro",
+                blackCenter: "🎯 Pretas controlam o centro",
+                centerBalanced: "🎯 Controle do centro equilibrado",
+                positionValid: "✅ A posição parece válida"
+            },
+            ar: {
+                title: "♔ 4×5 شطرنج - إعداد القطع ♚",
+                subtitle: "اسحب وأفلت القطع لإنشاء موضعك المخصص",
+                whitePieces: "⚪ القطع البيضاء",
+                blackPieces: "⚫ القطع السوداء",
+                chessBoard: "🏁 رقعة الشطرنج",
+                controls: "🎮 التحكم",
+                whiteKings: "الملوك البيض:",
+                blackKings: "الملوك السود:",
+                totalPieces: "إجمالي القطع:",
+                materialBalance: "توازن المواد:",
+                defaultPosition: "🏠 الموضع الافتراضي",
+                endgame: "👑 نهاية اللعبة",
+                middlegame: "⚔️ وسط اللعبة",
+                puzzle: "🧩 لغز",
+                random: "🎲 عشوائي",
+                analyzePosition: "🔍 تحليل الموضع",
+                playPosition: "🎮 العب هذا الموضع",
+                goBackToGame: "↩️ العودة للعبة الرئيسية",
+                clearBoard: "🗑️ مسح الرقعة",
+                savePosition: "💾 حفظ الموضع",
+                resetBoard: "🔄 إعادة تعيين",
+                positionReady: "إعداد القطع جاهز! يمكنك سحب وإفلات القطع.",
+                piecePlaced: "تم وضع القطعة في",
+                positionCleared: "تم مسح الرقعة",
+                positionReset: "تم إعادة تعيين الموضع",
+                positionSaved: "تم حفظ الموضع",
+                positionAnalyzed: "تم تحليل الموضع",
+                whiteKingMissing: "مطلوب ملك أبيض واحد بالضبط للعب!",
+                blackKingMissing: "مطلوب ملك أسود واحد بالضبط للعب!",
+                minimumPieces: "مطلوب على الأقل قطعتان (ملوك) للعب!",
+                positionPrepared: "✅ تم إعداد الموضع! يمكنك اللعب ضد البوت...",
+                whiteKingExcess: "⚠️ الملك الأبيض مفقود أو زائد",
+                blackKingExcess: "⚠️ الملك الأسود مفقود أو زائد",
+                whiteAdvantage: "✅ الأبيض له ميزة مادية",
+                blackAdvantage: "✅ الأسود له ميزة مادية",
+                materialEqual: "⚖️ المواد متوازنة",
+                endgamePosition: "🏁 موضع نهاية اللعبة (قطع قليلة)",
+                openingPosition: "🚀 موضع الافتتاح (قطع كثيرة)",
+                middlegamePosition: "⚔️ موضع وسط اللعبة",
+                kingsClose: "👑 الملوك قريبون جداً - العب بحذر!",
+                kingsSafe: "🛡️ الملوك في مسافة آمنة",
+                whiteCenter: "🎯 الأبيض يسيطر على المركز",
+                blackCenter: "🎯 الأسود يسيطر على المركز",
+                centerBalanced: "🎯 السيطرة على المركز متوازنة",
+                positionValid: "✅ الموضع يبدو صحيحاً"
+            }
+        };
+
+        // Translation function
+        function t(key) {
+            return translations[currentLang][key] || translations['en'][key] || key;
+        }
+
+        // Change language function - synchronized with main game
+        function changeLanguage() {
+            const select = document.getElementById('languageSelect');
+            currentLang = select.value;
+            
+            // Save language preference using same key as main game
+            localStorage.setItem('4x5_lang', currentLang);
+            
+            // Handle RTL for Arabic
+            if (currentLang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.body.style.direction = 'rtl';
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.body.style.direction = 'ltr';
+            }
+            
+            // Update UI text
+            updateUIText();
+            
+            // Language change notifications
+            const notifications = {
+                'en': 'Language changed to English',
+                'tr': 'Dil Türkçe olarak değiştirildi',
+                'es': 'Idioma cambiado a Español',
+                'fr': 'Langue changée en Français',
+                'de': 'Sprache zu Deutsch geändert',
+                'it': 'Lingua cambiata in Italiano',
+                'ru': 'Язык изменен на русский',
+                'zh': '语言已更改为中文',
+                'ja': '言語が日本語に変更されました',
+                'pt': 'Idioma alterado para Português',
+                'ar': 'تم تغيير اللغة إلى العربية'
+            };
+            
+            showNotification(notifications[currentLang] || notifications['en'], 'info');
+        }
+
+        // ===== THEME MANAGEMENT FUNCTIONS =====
+
+        // Global theme state
+        let currentTheme = 'light';
+
+        // Initialize theme system
+        function initThemeSystem() {
+            // Load saved theme from main game or use system preference
+            const savedTheme = localStorage.getItem('4x5-chess-theme') || localStorage.getItem('pieceSetupTheme');
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            
+            // Apply theme
+            applyTheme(currentTheme);
+            
+            // Update button
+            updateThemeButton();
+            
+            // Listen for system theme changes
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (!localStorage.getItem('4x5-chess-theme')) {
+                        currentTheme = e.matches ? 'dark' : 'light';
+                        applyTheme(currentTheme);
+                        updateThemeButton();
+                    }
+                });
+            }
+        }
+
+        // Toggle theme function
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(currentTheme);
+            saveTheme(currentTheme);
+            updateThemeButton();
+            
+            // Show notification
+            const notifications = {
+                'en': currentTheme === 'dark' ? 'Switched to dark theme' : 'Switched to light theme',
+                'tr': currentTheme === 'dark' ? 'Koyu temaya geçildi' : 'Açık temaya geçildi',
+                'es': currentTheme === 'dark' ? 'Cambiado a tema oscuro' : 'Cambiado a tema claro',
+                'fr': currentTheme === 'dark' ? 'Passé au thème sombre' : 'Passé au thème clair',
+                'de': currentTheme === 'dark' ? 'Zu dunklem Thema gewechselt' : 'Zu hellem Thema gewechselt',
+                'it': currentTheme === 'dark' ? 'Passato al tema scuro' : 'Passato al tema chiaro',
+                'ru': currentTheme === 'dark' ? 'Переключено на темную тему' : 'Переключено на светлую тему',
+                'zh': currentTheme === 'dark' ? '切换到深色主题' : '切换到浅色主题',
+                'ja': currentTheme === 'dark' ? 'ダークテーマに切り替えました' : 'ライトテーマに切り替えました',
+                'pt': currentTheme === 'dark' ? 'Mudou para tema escuro' : 'Mudou para tema claro',
+                'ar': currentTheme === 'dark' ? 'تم التبديل إلى المظهر الداكن' : 'تم التبديل إلى المظهر الفاتح'
+            };
+            
+            showNotification(notifications[currentLang] || notifications['en'], 'info');
+        }
+
+        // Apply theme to document
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.className = document.body.className.replace(/theme-\w+/g, '') + ` theme-${theme}`;
+            
+            // Update meta theme-color for mobile browsers
+            const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+            if (themeColorMeta) {
+                themeColorMeta.content = theme === 'dark' ? '#0f172a' : '#ffffff';
+            }
+        }
+
+        // Save theme to localStorage
+        function saveTheme(theme) {
+            try {
+                localStorage.setItem('4x5-chess-theme', theme);
+                localStorage.setItem('pieceSetupTheme', theme);
+            } catch (error) {
+                console.warn('Failed to save theme preference:', error);
+            }
+        }
+
+        // Update theme button
+        function updateThemeButton() {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeToggle = document.getElementById('themeToggle');
+            
+            if (themeIcon && themeToggle) {
+                if (currentTheme === 'dark') {
+                    themeIcon.textContent = '☀️';
+                    themeToggle.title = 'Switch to light theme';
+                } else {
+                    themeIcon.textContent = '🌙';
+                    themeToggle.title = 'Switch to dark theme';
+                }
+            }
+        }
+
+        // Listen for theme changes from main game
+        window.addEventListener('storage', function(e) {
+            if (e.key === '4x5-chess-theme' && e.newValue !== currentTheme) {
+                currentTheme = e.newValue;
+                applyTheme(currentTheme);
+                updateThemeButton();
+            }
+        });
+
+        // Initialize theme system when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initThemeSystem();
+        });
+
+        // Update UI text based on current language
+        function updateUIText() {
+            // Update title and subtitle
+            document.querySelector('.header h1').textContent = t('title');
+            document.querySelector('.header p').textContent = t('subtitle');
+            
+            // Update palette sections
+            const whitePiecesTitle = document.querySelector('.palette-section h3');
+            if (whitePiecesTitle) whitePiecesTitle.textContent = t('whitePieces');
+            
+            const blackPiecesTitle = document.querySelectorAll('.palette-section h3')[1];
+            if (blackPiecesTitle) blackPiecesTitle.textContent = t('blackPieces');
+            
+            // Update board container
+            document.querySelector('.board-container h2').textContent = t('chessBoard');
+            
+            // Update controls
+            document.querySelector('.controls h3').textContent = t('controls');
+            
+            // Update stats labels
+            document.querySelector('.stat-label').textContent = t('whiteKings');
+            document.querySelectorAll('.stat-label')[1].textContent = t('blackKings');
+            document.querySelectorAll('.stat-label')[2].textContent = t('totalPieces');
+            document.querySelectorAll('.stat-label')[3].textContent = t('materialBalance');
+            
+            // Update buttons
+            const buttons = document.querySelectorAll('.preset-btn, .btn');
+            buttons.forEach(btn => {
+                const onclick = btn.getAttribute('onclick');
+                if (onclick) {
+                    if (onclick.includes("loadPreset('default')")) btn.textContent = t('defaultPosition');
+                    else if (onclick.includes("loadPreset('endgame')")) btn.textContent = t('endgame');
+                    else if (onclick.includes("loadPreset('middlegame')")) btn.textContent = t('middlegame');
+                    else if (onclick.includes("loadPreset('puzzle')")) btn.textContent = t('puzzle');
+                    else if (onclick.includes("loadPreset('random')")) btn.textContent = t('random');
+                    else if (onclick.includes('analyzePosition')) btn.textContent = t('analyzePosition');
+                    else if (onclick.includes('playPosition')) btn.textContent = t('playPosition');
+                    else if (onclick.includes('goBackToGame')) btn.textContent = t('goBackToGame');
+                    else if (onclick.includes('clearBoard')) btn.textContent = t('clearBoard');
+                    else if (onclick.includes('savePosition')) btn.textContent = t('savePosition');
+                    else if (onclick.includes('resetBoard')) btn.textContent = t('resetBoard');
+                }
+            });
+        }
+
+        // Load saved language preference - synchronized with main game
+        function loadLanguagePreference() {
+            const savedLang = localStorage.getItem('4x5_lang'); // Use same key as main game
+            if (savedLang && translations[savedLang]) {
+                currentLang = savedLang;
+                document.getElementById('languageSelect').value = currentLang;
+                
+                // Handle RTL for Arabic
+                if (currentLang === 'ar') {
+                    document.documentElement.setAttribute('dir', 'rtl');
+                    document.body.style.direction = 'rtl';
+                } else {
+                    document.documentElement.setAttribute('dir', 'ltr');
+                    document.body.style.direction = 'ltr';
+                }
+                
+                updateUIText();
+            }
+        }
+
         // Taş sembolleri
         const PIECES = {
             K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
@@ -467,10 +1422,30 @@
 
         // Sayfa yüklendiğinde başlat
         document.addEventListener('DOMContentLoaded', function() {
+            loadLanguagePreference(); // Load language first
             initializeBoard();
             initializeDragAndDrop();
             loadPreset('default');
-            showNotification('Taş düzeni hazır! Taşları sürükleyip bırakabilirsiniz.', 'success');
+            showNotification(t('positionReady'), 'success');
+        });
+
+        // Listen for language changes from main game
+        window.addEventListener('storage', function(e) {
+            if (e.key === '4x5_lang' && e.newValue && translations[e.newValue]) {
+                currentLang = e.newValue;
+                document.getElementById('languageSelect').value = currentLang;
+                
+                // Handle RTL for Arabic
+                if (currentLang === 'ar') {
+                    document.documentElement.setAttribute('dir', 'rtl');
+                    document.body.style.direction = 'rtl';
+                } else {
+                    document.documentElement.setAttribute('dir', 'ltr');
+                    document.body.style.direction = 'ltr';
+                }
+                
+                updateUIText();
+            }
         });
 
         // Tahtayı başlat
@@ -571,7 +1546,7 @@
                 updateBoard();
                 updateStats();
                 
-                showNotification(`${PIECES[draggedPiece]} taşı ${String.fromCharCode(97 + col)}${5 - row} karesine yerleştirildi`, 'success');
+                showNotification(`${PIECES[draggedPiece]} ${t('piecePlaced')} ${String.fromCharCode(97 + col)}${5 - row}`, 'success');
             }
 
             // Temizle
@@ -692,7 +1667,25 @@
 
             updateBoard();
             updateStats();
-            showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} pozisyonu yüklendi`, 'info');
+            
+            const presetName = type.charAt(0).toUpperCase() + type.slice(1);
+            
+            // Multi-language preset notifications
+            const presetNotifications = {
+                'en': `${presetName} preset loaded`,
+                'tr': `${presetName} pozisyonu yüklendi`,
+                'es': `Posición ${presetName} cargada`,
+                'fr': `Position ${presetName} chargée`,
+                'de': `${presetName} Position geladen`,
+                'it': `Posizione ${presetName} caricata`,
+                'ru': `Позиция ${presetName} загружена`,
+                'zh': `${presetName} 位置已加载`,
+                'ja': `${presetName} ポジションが読み込まれました`,
+                'pt': `Posição ${presetName} carregada`,
+                'ar': `تم تحميل موضع ${presetName}`
+            };
+            
+            showNotification(presetNotifications[currentLang] || presetNotifications['en'], 'info');
         }
 
         // Tahtayı temizle
@@ -700,7 +1693,7 @@
             board = Array(5).fill().map(() => Array(4).fill(null));
             updateBoard();
             updateStats();
-            showNotification('Tahta temizlendi', 'info');
+            showNotification(t('positionCleared'), 'info');
         }
 
         // Tahtayı sıfırla
@@ -714,32 +1707,151 @@
             
             // Kral kontrolü
             let whiteKings = 0, blackKings = 0;
+            let whiteKingPos = null, blackKingPos = null;
+            
             for (let row = 0; row < 5; row++) {
                 for (let col = 0; col < 4; col++) {
-                    if (board[row][col] === 'K') whiteKings++;
-                    if (board[row][col] === 'k') blackKings++;
+                    if (board[row][col] === 'K') {
+                        whiteKings++;
+                        whiteKingPos = {row, col};
+                    }
+                    if (board[row][col] === 'k') {
+                        blackKings++;
+                        blackKingPos = {row, col};
+                    }
                 }
             }
             
-            if (whiteKings !== 1) analysis.push('⚠️ Beyaz kral eksik veya fazla');
-            if (blackKings !== 1) analysis.push('⚠️ Siyah kral eksik veya fazla');
+            if (whiteKings !== 1) analysis.push(t('whiteKingExcess'));
+            if (blackKings !== 1) analysis.push(t('blackKingExcess'));
             
             // Materyal analizi
             const balance = parseInt(document.getElementById('materialBalance').textContent);
-            if (balance > 3) analysis.push('✅ Beyaz materyal avantajında');
-            else if (balance < -3) analysis.push('✅ Siyah materyal avantajında');
-            else analysis.push('⚖️ Materyal dengeli');
+            if (balance > 3) analysis.push(t('whiteAdvantage') + ' (+' + balance + ')');
+            else if (balance < -3) analysis.push(t('blackAdvantage') + ' (' + balance + ')');
+            else analysis.push(t('materialEqual') + ' (' + balance + ')');
             
-            if (analysis.length === 0) analysis.push('✅ Pozisyon geçerli görünüyor');
+            // Pozisyon tipi analizi
+            const totalPieces = parseInt(document.getElementById('totalPieces').textContent);
+            if (totalPieces <= 6) {
+                analysis.push(t('endgamePosition'));
+            } else if (totalPieces >= 12) {
+                analysis.push(t('openingPosition'));
+            } else {
+                analysis.push(t('middlegamePosition'));
+            }
             
-            showNotification(analysis.join(' | '), 'info');
+            // Kral güvenliği
+            if (whiteKingPos && blackKingPos) {
+                const distance = Math.abs(whiteKingPos.row - blackKingPos.row) + 
+                               Math.abs(whiteKingPos.col - blackKingPos.col);
+                if (distance <= 2) {
+                    analysis.push(t('kingsClose'));
+                } else if (distance >= 5) {
+                    analysis.push(t('kingsSafe'));
+                }
+            }
+            
+            // Merkez kontrolü
+            let centerControl = 0;
+            const centerSquares = [[1,1], [1,2], [2,1], [2,2], [3,1], [3,2]];
+            for (const [row, col] of centerSquares) {
+                const piece = board[row][col];
+                if (piece) {
+                    if (piece === piece.toUpperCase()) centerControl++;
+                    else centerControl--;
+                }
+            }
+            
+            if (centerControl > 0) {
+                analysis.push(t('whiteCenter'));
+            } else if (centerControl < 0) {
+                analysis.push(t('blackCenter'));
+            } else {
+                analysis.push(t('centerBalanced'));
+            }
+            
+            if (analysis.length === 0) analysis.push(t('positionValid'));
+            
+            // Analizi göster
+            const analysisText = analysis.join(' | ');
+            showNotification(analysisText, 'info');
+            
+            // Konsola detaylı analiz yazdır
+            console.log('📊 Position Analysis:', {
+                whiteKings, blackKings, 
+                materialBalance: balance,
+                totalPieces,
+                centerControl,
+                whiteKingPos, blackKingPos
+            });
+        }
+
+        // Ana oyuna dön
+        function goBackToGame() {
+            window.location.href = 'index.html';
+        }
+
+        // Bu pozisyonla oyna
+        function playPosition() {
+            // Pozisyon geçerliliğini kontrol et
+            let whiteKings = 0, blackKings = 0, totalPieces = 0;
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const piece = board[row][col];
+                    if (piece) {
+                        totalPieces++;
+                        if (piece === 'K') whiteKings++;
+                        if (piece === 'k') blackKings++;
+                    }
+                }
+            }
+            
+            // Temel geçerlilik kontrolleri
+            if (whiteKings !== 1) {
+                showNotification(t('whiteKingMissing'), 'error');
+                return;
+            }
+            
+            if (blackKings !== 1) {
+                showNotification(t('blackKingMissing'), 'error');
+                return;
+            }
+            
+            if (totalPieces < 2) {
+                showNotification(t('minimumPieces'), 'error');
+                return;
+            }
+            
+            // Pozisyonu kaydet ve ana oyuna geç
+            const positionString = JSON.stringify(board);
+            localStorage.setItem('customChessPosition', positionString);
+            localStorage.setItem('useCustomPosition', 'true');
+            
+            // Pozisyon bilgilerini kaydet
+            const positionInfo = {
+                name: currentLang === 'en' ? 'Custom Position' : 
+                      currentLang === 'tr' ? 'Özel Pozisyon' : 'Posición Personalizada',
+                pieces: totalPieces,
+                created: new Date().toLocaleString(currentLang === 'tr' ? 'tr-TR' : 
+                                                  currentLang === 'es' ? 'es-ES' : 'en-US'),
+                materialBalance: document.getElementById('materialBalance').textContent
+            };
+            localStorage.setItem('customPositionInfo', JSON.stringify(positionInfo));
+            
+            showNotification(t('positionPrepared'), 'success');
+            
+            // Ana oyun sayfasına git
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
         }
 
         // Pozisyonu kaydet
         function savePosition() {
             const positionString = JSON.stringify(board);
             localStorage.setItem('savedChessPosition', positionString);
-            showNotification('Pozisyon kaydedildi', 'success');
+            showNotification(t('positionSaved'), 'success');
         }
 
         // Bildirim göster
@@ -769,6 +1881,10 @@
                     case 'r':
                         e.preventDefault();
                         resetBoard();
+                        break;
+                    case 't':
+                        e.preventDefault();
+                        toggleTheme();
                         break;
                 }
             }

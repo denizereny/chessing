@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Selector Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .language-test {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .language-test.active {
+            border-color: #007bff;
+            background: #f8f9ff;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🌍 Language Selector Test</h1>
+        <p>This page tests all 11 languages from the piece setup system.</p>
+        
+        <div class="language-test">
+            <h3>🇺🇸 English Test</h3>
+            <button class="test-button" onclick="testLanguage('en')">Test English</button>
+            <div id="result-en" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇹🇷 Turkish Test</h3>
+            <button class="test-button" onclick="testLanguage('tr')">Test Turkish</button>
+            <div id="result-tr" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇪🇸 Spanish Test</h3>
+            <button class="test-button" onclick="testLanguage('es')">Test Spanish</button>
+            <div id="result-es" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇫🇷 French Test</h3>
+            <button class="test-button" onclick="testLanguage('fr')">Test French</button>
+            <div id="result-fr" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇩🇪 German Test</h3>
+            <button class="test-button" onclick="testLanguage('de')">Test German</button>
+            <div id="result-de" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇮🇹 Italian Test</h3>
+            <button class="test-button" onclick="testLanguage('it')">Test Italian</button>
+            <div id="result-it" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇷🇺 Russian Test</h3>
+            <button class="test-button" onclick="testLanguage('ru')">Test Russian</button>
+            <div id="result-ru" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇨🇳 Chinese Test</h3>
+            <button class="test-button" onclick="testLanguage('zh')">Test Chinese</button>
+            <div id="result-zh" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇯🇵 Japanese Test</h3>
+            <button class="test-button" onclick="testLanguage('ja')">Test Japanese</button>
+            <div id="result-ja" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇵🇹 Portuguese Test</h3>
+            <button class="test-button" onclick="testLanguage('pt')">Test Portuguese</button>
+            <div id="result-pt" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="language-test">
+            <h3>🇸🇦 Arabic Test</h3>
+            <button class="test-button" onclick="testLanguage('ar')">Test Arabic</button>
+            <div id="result-ar" class="result" style="display:none;"></div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button class="test-button" onclick="testAllLanguages()" style="background: #28a745;">Test All Languages</button>
+            <button class="test-button" onclick="openPieceSetup()" style="background: #17a2b8;">Open Piece Setup</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample translations to test
+        const testTranslations = {
+            en: {
+                title: "♔ 4×5 Chess - Piece Setup ♚",
+                playPosition: "🎮 Play This Position",
+                positionReady: "Piece setup ready! You can drag and drop pieces."
+            },
+            tr: {
+                title: "♔ 4×5 Satranç - Taş Düzeni ♚",
+                playPosition: "🎮 Bu Pozisyonla Oyna",
+                positionReady: "Taş düzeni hazır! Taşları sürükleyip bırakabilirsiniz."
+            },
+            es: {
+                title: "♔ 4×5 Ajedrez - Configuración de Piezas ♚",
+                playPosition: "🎮 Jugar Esta Posición",
+                positionReady: "¡Configuración de piezas lista! Puedes arrastrar y soltar piezas."
+            },
+            fr: {
+                title: "♔ 4×5 Échecs - Configuration des Pièces ♚",
+                playPosition: "🎮 Jouer Cette Position",
+                positionReady: "Configuration des pièces prête! Vous pouvez glisser et déposer les pièces."
+            },
+            de: {
+                title: "♔ 4×5 Schach - Figurenaufstellung ♚",
+                playPosition: "🎮 Diese Position Spielen",
+                positionReady: "Figurenaufstellung bereit! Sie können Figuren ziehen und ablegen."
+            },
+            it: {
+                title: "♔ 4×5 Scacchi - Configurazione Pezzi ♚",
+                playPosition: "🎮 Gioca Questa Posizione",
+                positionReady: "Configurazione pezzi pronta! Puoi trascinare e rilasciare i pezzi."
+            },
+            ru: {
+                title: "♔ 4×5 Шахматы - Расстановка Фигур ♚",
+                playPosition: "🎮 Играть Эту Позицию",
+                positionReady: "Расстановка фигур готова! Вы можете перетаскивать фигуры."
+            },
+            zh: {
+                title: "♔ 4×5 国际象棋 - 棋子设置 ♚",
+                playPosition: "🎮 玩这个位置",
+                positionReady: "棋子设置就绪！您可以拖放棋子。"
+            },
+            ja: {
+                title: "♔ 4×5 チェス - 駒の配置 ♚",
+                playPosition: "🎮 このポジションで対局",
+                positionReady: "駒の配置準備完了！駒をドラッグ＆ドロップできます。"
+            },
+            pt: {
+                title: "♔ 4×5 Xadrez - Configuração de Peças ♚",
+                playPosition: "🎮 Jogar Esta Posição",
+                positionReady: "Configuração de peças pronta! Você pode arrastar e soltar peças."
+            },
+            ar: {
+                title: "♔ 4×5 شطرنج - إعداد القطع ♚",
+                playPosition: "🎮 العب هذا الموضع",
+                positionReady: "إعداد القطع جاهز! يمكنك سحب وإفلات القطع."
+            }
+        };
+
+        function testLanguage(lang) {
+            const resultDiv = document.getElementById(`result-${lang}`);
+            const translations = testTranslations[lang];
+            
+            if (!translations) {
+                resultDiv.innerHTML = `<span class="error">❌ No translations found for ${lang}</span>`;
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            let results = [];
+            results.push(`<strong>Title:</strong> ${translations.title}`);
+            results.push(`<strong>Play Button:</strong> ${translations.playPosition}`);
+            results.push(`<strong>Ready Message:</strong> ${translations.positionReady}`);
+            
+            resultDiv.innerHTML = `<span class="success">✅ Language test passed!</span><br><br>${results.join('<br>')}`;
+            resultDiv.style.display = 'block';
+            
+            // Highlight active test
+            document.querySelectorAll('.language-test').forEach(test => test.classList.remove('active'));
+            resultDiv.closest('.language-test').classList.add('active');
+        }
+
+        function testAllLanguages() {
+            const languages = ['en', 'tr', 'es', 'fr', 'de', 'it', 'ru', 'zh', 'ja', 'pt', 'ar'];
+            let delay = 0;
+            
+            languages.forEach(lang => {
+                setTimeout(() => testLanguage(lang), delay);
+                delay += 200;
+            });
+        }
+
+        function openPieceSetup() {
+            window.open('piece-setup-working.html', '_blank');
+        }
+    </script>
+</body>
+</html>

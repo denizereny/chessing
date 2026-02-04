@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Play Position Feature</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .btn {
+            padding: 12px 24px;
+            margin: 5px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎮 Play Position Feature Test</h1>
+        <p>Bu sayfa, taş düzeni sayfasından oyun başlatma özelliğini test etmek için hazırlanmıştır.</p>
+        
+        <div class="test-section">
+            <h3>📋 Test Adımları</h3>
+            <ol>
+                <li><strong>Taş Düzeni Sayfasını Aç:</strong> Aşağıdaki butona tıklayarak taş düzeni sayfasını açın</li>
+                <li><strong>Pozisyon Oluştur:</strong> İstediğiniz pozisyonu oluşturun (en az iki kral gerekli)</li>
+                <li><strong>Oyunu Başlat:</strong> "🎮 Bu Pozisyonla Oyna" butonuna tıklayın</li>
+                <li><strong>Ana Oyunu Kontrol Et:</strong> Ana oyun sayfasında özel pozisyonunuzun yüklendiğini kontrol edin</li>
+                <li><strong>Bot ile Oyna:</strong> Bot ile oyununuzu oynayın</li>
+            </ol>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔗 Test Linkleri</h3>
+            <a href="piece-setup-working.html" class="btn btn-primary">📝 Taş Düzeni Sayfası</a>
+            <a href="index.html" class="btn btn-success">🎮 Ana Oyun Sayfası</a>
+            <button class="btn btn-secondary" onclick="clearTestData()">🗑️ Test Verilerini Temizle</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 LocalStorage Durumu</h3>
+            <div id="storageStatus">Yükleniyor...</div>
+            <button class="btn btn-secondary" onclick="checkStorage()">🔄 Durumu Yenile</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ Beklenen Davranışlar</h3>
+            <ul>
+                <li><strong>Geçerli Pozisyon:</strong> İki kral varsa oyun başlamalı</li>
+                <li><strong>Geçersiz Pozisyon:</strong> Kral eksikse hata mesajı göstermeli</li>
+                <li><strong>Pozisyon Transferi:</strong> Ana oyunda özel pozisyon yüklenmeli</li>
+                <li><strong>Bot Analizi:</strong> Bot pozisyonu analiz edip hamle yapmalı</li>
+                <li><strong>Geri Dönüş:</strong> "Ana Oyuna Dön" butonu çalışmalı</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function clearTestData() {
+            localStorage.removeItem('customChessPosition');
+            localStorage.removeItem('useCustomPosition');
+            localStorage.removeItem('customPositionInfo');
+            localStorage.removeItem('savedChessPosition');
+            
+            document.getElementById('storageStatus').innerHTML = 
+                '<div class="status success">✅ Test verileri temizlendi!</div>';
+            
+            setTimeout(checkStorage, 1000);
+        }
+        
+        function checkStorage() {
+            const customPosition = localStorage.getItem('customChessPosition');
+            const useCustom = localStorage.getItem('useCustomPosition');
+            const positionInfo = localStorage.getItem('customPositionInfo');
+            const savedPosition = localStorage.getItem('savedChessPosition');
+            
+            let html = '<h4>LocalStorage İçeriği:</h4>';
+            
+            if (customPosition) {
+                html += '<div class="status info">📋 customChessPosition: Mevcut (' + customPosition.length + ' karakter)</div>';
+            } else {
+                html += '<div class="status">📋 customChessPosition: Yok</div>';
+            }
+            
+            if (useCustom) {
+                html += '<div class="status info">🎮 useCustomPosition: ' + useCustom + '</div>';
+            } else {
+                html += '<div class="status">🎮 useCustomPosition: Yok</div>';
+            }
+            
+            if (positionInfo) {
+                try {
+                    const info = JSON.parse(positionInfo);
+                    html += '<div class="status info">ℹ️ customPositionInfo: ' + info.name + ' (' + info.pieces + ' taş)</div>';
+                } catch (e) {
+                    html += '<div class="status error">⚠️ customPositionInfo: Geçersiz JSON</div>';
+                }
+            } else {
+                html += '<div class="status">ℹ️ customPositionInfo: Yok</div>';
+            }
+            
+            if (savedPosition) {
+                html += '<div class="status info">💾 savedChessPosition: Mevcut</div>';
+            } else {
+                html += '<div class="status">💾 savedChessPosition: Yok</div>';
+            }
+            
+            document.getElementById('storageStatus').innerHTML = html;
+        }
+        
+        // Sayfa yüklendiğinde durumu kontrol et
+        document.addEventListener('DOMContentLoaded', checkStorage);
+        
+        // Her 5 saniyede bir durumu güncelle
+        setInterval(checkStorage, 5000);
+    </script>
+</body>
+</html>

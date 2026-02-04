@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Sync Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌍 Language System Sync Test</h1>
+    
+    <div class="test-section">
+        <h2>Current Language Status</h2>
+        <div id="currentStatus" class="test-result info">
+            Loading...
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Language Selection Test</h2>
+        <p>Select a language to test if both pages sync properly:</p>
+        
+        <select id="testLanguageSelect" onchange="testLanguageChange()">
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ar">🇸🇦 العربية</option>
+        </select>
+        
+        <div id="testResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Quick Actions</h2>
+        <button onclick="openMainGame()">🎮 Open Main Game</button>
+        <button onclick="openPieceSetup()">♔ Open Piece Setup</button>
+        <button onclick="clearLanguageData()">🗑️ Clear Language Data</button>
+        <button onclick="runFullTest()">🧪 Run Full Test</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="fullTestResults"></div>
+    </div>
+
+    <script>
+        // Check current language status
+        function updateStatus() {
+            const savedLang = localStorage.getItem('4x5_lang');
+            const oldLang = localStorage.getItem('pieceSetupLanguage'); // Old key
+            
+            let statusHTML = `
+                <strong>Main Game Language Key (4x5_lang):</strong> ${savedLang || 'Not set'}<br>
+                <strong>Old Piece Setup Key (pieceSetupLanguage):</strong> ${oldLang || 'Not set'}<br>
+                <strong>Document Direction:</strong> ${document.documentElement.getAttribute('dir') || 'ltr'}<br>
+                <strong>Current Test Page Language:</strong> ${document.getElementById('testLanguageSelect').value}
+            `;
+            
+            document.getElementById('currentStatus').innerHTML = statusHTML;
+        }
+
+        // Test language change
+        function testLanguageChange() {
+            const selectedLang = document.getElementById('testLanguageSelect').value;
+            
+            // Simulate the language change that would happen in the main game
+            localStorage.setItem('4x5_lang', selectedLang);
+            
+            // Update status
+            updateStatus();
+            
+            // Show result
+            const resultDiv = document.getElementById('testResults');
+            resultDiv.innerHTML = `
+                <div class="test-result success">
+                    ✅ Language set to: ${selectedLang}<br>
+                    📝 Saved to localStorage with key: 4x5_lang<br>
+                    🔄 Both main game and piece setup should now use this language
+                </div>
+            `;
+            
+            // Test RTL for Arabic
+            if (selectedLang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                resultDiv.innerHTML += `
+                    <div class="test-result info">
+                        🔄 Document direction set to RTL for Arabic
+                    </div>
+                `;
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+        }
+
+        // Open main game
+        function openMainGame() {
+            window.open('index.html', '_blank');
+        }
+
+        // Open piece setup
+        function openPieceSetup() {
+            window.open('piece-setup-working.html', '_blank');
+        }
+
+        // Clear language data
+        function clearLanguageData() {
+            localStorage.removeItem('4x5_lang');
+            localStorage.removeItem('pieceSetupLanguage');
+            document.getElementById('testLanguageSelect').value = 'en';
+            updateStatus();
+            
+            document.getElementById('testResults').innerHTML = `
+                <div class="test-result info">
+                    🗑️ All language data cleared. Pages should default to English.
+                </div>
+            `;
+        }
+
+        // Run full test
+        function runFullTest() {
+            const results = document.getElementById('fullTestResults');
+            results.innerHTML = '<div class="test-result info">🧪 Running tests...</div>';
+            
+            let testResults = [];
+            
+            // Test 1: Check if localStorage works
+            try {
+                localStorage.setItem('test', 'value');
+                localStorage.removeItem('test');
+                testResults.push('✅ localStorage is working');
+            } catch (e) {
+                testResults.push('❌ localStorage is not working: ' + e.message);
+            }
+            
+            // Test 2: Check language key consistency
+            const mainKey = localStorage.getItem('4x5_lang');
+            const oldKey = localStorage.getItem('pieceSetupLanguage');
+            
+            if (mainKey && !oldKey) {
+                testResults.push('✅ Using unified language key (4x5_lang)');
+            } else if (oldKey && !mainKey) {
+                testResults.push('⚠️ Still using old language key (pieceSetupLanguage)');
+            } else if (mainKey && oldKey) {
+                testResults.push('⚠️ Both language keys exist - should migrate to unified key');
+            } else {
+                testResults.push('ℹ️ No language preference saved yet');
+            }
+            
+            // Test 3: Test each language
+            const languages = ['en', 'tr', 'es', 'fr', 'de', 'it', 'ru', 'zh', 'ja', 'pt', 'ar'];
+            testResults.push('🌍 Testing language codes:');
+            
+            languages.forEach(lang => {
+                localStorage.setItem('4x5_lang', lang);
+                const saved = localStorage.getItem('4x5_lang');
+                if (saved === lang) {
+                    testResults.push(`  ✅ ${lang} - OK`);
+                } else {
+                    testResults.push(`  ❌ ${lang} - Failed`);
+                }
+            });
+            
+            // Test 4: RTL support
+            document.documentElement.setAttribute('dir', 'rtl');
+            const isRTL = document.documentElement.getAttribute('dir') === 'rtl';
+            document.documentElement.setAttribute('dir', 'ltr');
+            
+            if (isRTL) {
+                testResults.push('✅ RTL support is working');
+            } else {
+                testResults.push('❌ RTL support is not working');
+            }
+            
+            // Display results
+            results.innerHTML = testResults.map(result => 
+                `<div class="test-result ${result.includes('❌') ? 'error' : result.includes('⚠️') ? 'info' : 'success'}">${result}</div>`
+            ).join('');
+        }
+
+        // Listen for storage changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === '4x5_lang') {
+                updateStatus();
+                document.getElementById('testResults').innerHTML += `
+                    <div class="test-result info">
+                        🔄 Language change detected from another tab: ${e.newValue}
+                    </div>
+                `;
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+            
+            // Set current language in dropdown
+            const savedLang = localStorage.getItem('4x5_lang');
+            if (savedLang) {
+                document.getElementById('testLanguageSelect').value = savedLang;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] body {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] .test-container {
+            background: #1e293b;
+            color: #f8fafc;
+        }
+        
+        .theme-test {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] .theme-test {
+            border-color: #334155;
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] .result {
+            background: #334155;
+        }
+        
+        .success { 
+            background: #d4edda; 
+            color: #155724; 
+        }
+        
+        [data-theme="dark"] .success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .theme-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        [data-theme="dark"] .theme-toggle-btn {
+            background: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    
+    <div class="test-container">
+        <h1>🌙☀️ Theme System Test</h1>
+        <p>Bu sayfa tema sisteminin çalışıp çalışmadığını test eder.</p>
+        
+        <div class="theme-test">
+            <h3>🎯 Ana Oyun Sayfası Testi</h3>
+            <button class="test-button" onclick="testMainGame()">Ana Oyun Sayfasını Aç</button>
+            <div id="result-main" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="theme-test">
+            <h3>♔ Taş Düzeni Sayfası Testi</h3>
+            <button class="test-button" onclick="testPieceSetup()">Taş Düzeni Sayfasını Aç</button>
+            <div id="result-piece" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="theme-test">
+            <h3>🔄 Tema Senkronizasyon Testi</h3>
+            <button class="test-button" onclick="testSync()">Senkronizasyonu Test Et</button>
+            <div id="result-sync" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="theme-test">
+            <h3>💾 LocalStorage Testi</h3>
+            <button class="test-button" onclick="testStorage()">Storage'ı Test Et</button>
+            <div id="result-storage" class="result" style="display:none;"></div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <h3>📋 Test Sonuçları:</h3>
+            <ul id="testResults"></ul>
+        </div>
+    </div>
+
+    <script>
+        let currentTheme = 'light';
+        
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('4x5-chess-theme');
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            applyTheme(currentTheme);
+            updateThemeButton();
+        }
+        
+        // Toggle theme
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(currentTheme);
+            saveTheme(currentTheme);
+            updateThemeButton();
+            
+            addTestResult(`Tema değiştirildi: ${currentTheme}`, 'success');
+        }
+        
+        // Apply theme
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        // Save theme
+        function saveTheme(theme) {
+            localStorage.setItem('4x5-chess-theme', theme);
+            localStorage.setItem('pieceSetupTheme', theme);
+        }
+        
+        // Update theme button
+        function updateThemeButton() {
+            const btn = document.getElementById('themeBtn');
+            btn.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        // Test functions
+        function testMainGame() {
+            window.open('index.html', '_blank');
+            document.getElementById('result-main').innerHTML = '<span class="success">✅ Ana oyun sayfası açıldı</span>';
+            document.getElementById('result-main').style.display = 'block';
+            addTestResult('Ana oyun sayfası testi başarılı', 'success');
+        }
+        
+        function testPieceSetup() {
+            window.open('piece-setup-working.html', '_blank');
+            document.getElementById('result-piece').innerHTML = '<span class="success">✅ Taş düzeni sayfası açıldı</span>';
+            document.getElementById('result-piece').style.display = 'block';
+            addTestResult('Taş düzeni sayfası testi başarılı', 'success');
+        }
+        
+        function testSync() {
+            const mainTheme = localStorage.getItem('4x5-chess-theme');
+            const pieceTheme = localStorage.getItem('pieceSetupTheme');
+            
+            const result = document.getElementById('result-sync');
+            if (mainTheme === pieceTheme && mainTheme === currentTheme) {
+                result.innerHTML = '<span class="success">✅ Tema senkronizasyonu çalışıyor</span>';
+                addTestResult('Tema senkronizasyon testi başarılı', 'success');
+            } else {
+                result.innerHTML = '<span style="color: red;">❌ Tema senkronizasyonu çalışmıyor</span>';
+                addTestResult('Tema senkronizasyon testi başarısız', 'error');
+            }
+            result.style.display = 'block';
+        }
+        
+        function testStorage() {
+            const stored = localStorage.getItem('4x5-chess-theme');
+            const result = document.getElementById('result-storage');
+            
+            if (stored === currentTheme) {
+                result.innerHTML = '<span class="success">✅ LocalStorage çalışıyor: ' + stored + '</span>';
+                addTestResult('LocalStorage testi başarılı', 'success');
+            } else {
+                result.innerHTML = '<span style="color: red;">❌ LocalStorage çalışmıyor</span>';
+                addTestResult('LocalStorage testi başarısız', 'error');
+            }
+            result.style.display = 'block';
+        }
+        
+        function addTestResult(message, type) {
+            const results = document.getElementById('testResults');
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="${type}">${type === 'success' ? '✅' : '❌'} ${message}</span>`;
+            results.appendChild(li);
+        }
+        
+        // Listen for storage changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === '4x5-chess-theme' && e.newValue !== currentTheme) {
+                currentTheme = e.newValue;
+                applyTheme(currentTheme);
+                updateThemeButton();
+                addTestResult('Tema değişikliği algılandı: ' + currentTheme, 'success');
+            }
+        });
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initTheme);
+    </script>
+</body>
+</html>

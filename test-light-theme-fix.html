@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Theme Visibility Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 10px 20px;
+            background: var(--accent-gold);
+            color: var(--bg-card);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .test-section h3 {
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+        }
+        
+        .test-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(5, 60px);
+            border: 4px solid var(--border-color);
+            border-radius: 4px;
+            margin: 20px 0;
+            width: fit-content;
+        }
+        
+        .test-square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        
+        .test-square.light {
+            background-color: var(--board-light);
+        }
+        
+        .test-square.dark {
+            background-color: var(--board-dark);
+        }
+        
+        .test-piece.white-piece {
+            color: var(--white-piece-color);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+        
+        .test-piece.black-piece {
+            color: var(--black-piece-color);
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    
+    <div class="test-container">
+        <h1 style="color: var(--text-primary); text-align: center;">Light Theme Visibility Test</h1>
+        
+        <div class="test-section">
+            <h3>🎯 Side Panel Test</h3>
+            <div class="side-panel" style="width: 300px; margin: 0;">
+                <div class="collapsible-header">
+                    <h3><span class="icon">🎯</span> Settings</h3>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="language-selector">
+                        <select>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="tr">🇹🇷 Türkçe</option>
+                        </select>
+                    </div>
+                    <div class="controls">
+                        <button id="btnNewGame">🔄 New Game</button>
+                        <button class="btn-secondary">🔀 Switch Sides</button>
+                    </div>
+                    <div class="extra-controls">
+                        <button class="extra-btn">🌙 Dark Mode</button>
+                        <button class="extra-btn">🎨 Colors</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>♔ Chess Board Test</h3>
+            <p style="color: var(--text-secondary);">Testing board square visibility and piece contrast in both themes:</p>
+            <div class="test-board">
+                <div class="test-square light"><span class="test-piece black-piece">♜</span></div>
+                <div class="test-square dark"><span class="test-piece black-piece">♞</span></div>
+                <div class="test-square light"><span class="test-piece black-piece">♝</span></div>
+                <div class="test-square dark"><span class="test-piece black-piece">♛</span></div>
+                
+                <div class="test-square dark"><span class="test-piece black-piece">♟</span></div>
+                <div class="test-square light"><span class="test-piece black-piece">♟</span></div>
+                <div class="test-square dark"><span class="test-piece black-piece">♟</span></div>
+                <div class="test-square light"><span class="test-piece black-piece">♟</span></div>
+                
+                <div class="test-square light"></div>
+                <div class="test-square dark"></div>
+                <div class="test-square light"></div>
+                <div class="test-square dark"></div>
+                
+                <div class="test-square dark"><span class="test-piece white-piece">♙</span></div>
+                <div class="test-square light"><span class="test-piece white-piece">♙</span></div>
+                <div class="test-square dark"><span class="test-piece white-piece">♙</span></div>
+                <div class="test-square light"><span class="test-piece white-piece">♙</span></div>
+                
+                <div class="test-square light"><span class="test-piece white-piece">♖</span></div>
+                <div class="test-square dark"><span class="test-piece white-piece">♘</span></div>
+                <div class="test-square light"><span class="test-piece white-piece">♗</span></div>
+                <div class="test-square dark"><span class="test-piece white-piece">♕</span></div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 UI Elements Test</h3>
+            <div class="info-bar">
+                <div class="status-indicator">
+                    <div class="pulse" style="background: var(--accent-gold);"></div>
+                    <span>Game Status Test</span>
+                </div>
+                <span style="color: var(--accent-gold);">⏱️ 05:30</span>
+            </div>
+            
+            <div class="stats" style="margin-top: 20px;">
+                <div class="stat-box">
+                    <span class="stat-value">15</span>
+                    <span class="stat-label">Moves</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value">3</span>
+                    <span class="stat-label">Captured</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎨 Color Panel Test</h3>
+            <div style="background: var(--bg-panel); padding: 15px; border-radius: 8px;">
+                <div class="color-preview-board">
+                    <div class="preview-square light-preview"></div>
+                    <div class="preview-square dark-preview"></div>
+                    <div class="preview-square dark-preview"></div>
+                    <div class="preview-square light-preview"></div>
+                </div>
+                <div class="preset-buttons">
+                    <button>Classic</button>
+                    <button>Wood</button>
+                    <button>Marble</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTheme = 'light';
+        
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            const button = document.querySelector('.theme-toggle');
+            button.textContent = currentTheme === 'light' ? 'Switch to Dark' : 'Switch to Light';
+        }
+        
+        // Initialize
+        document.documentElement.setAttribute('data-theme', 'light');
+    </script>
+</body>
+</html>

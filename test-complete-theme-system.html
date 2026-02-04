@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Theme System Test</title>
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --board-light: #f0d9b5;
+            --board-dark: #b58863;
+            --white-piece-color: #ffffff;
+            --black-piece-color: #2c2c2c;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-panel: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent-gold: #d4af37;
+            --accent-blue: #5c85d6;
+            --accent-red: #d65c5c;
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --border-color: #e2e8f0;
+        }
+
+        /* Dark Theme Variables */
+        [data-theme="dark"] {
+            --board-light: #9ca3af;
+            --board-dark: #4b5563;
+            --white-piece-color: #ffffff;
+            --black-piece-color: #2c2c2c;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-panel: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent-gold: #fbbf24;
+            --accent-blue: #60a5fa;
+            --accent-red: #f87171;
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --border-color: #475569;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .theme-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        button {
+            background: var(--accent-gold);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .status-item {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-gold);
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .board-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 50px);
+            grid-template-rows: repeat(5, 50px);
+            border: 4px solid #333;
+            border-radius: 4px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .light {
+            background-color: var(--board-light);
+        }
+
+        .dark {
+            background-color: var(--board-dark);
+        }
+
+        .white-piece {
+            color: var(--white-piece-color);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .black-piece {
+            color: var(--black-piece-color);
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .test-results {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+        .info { color: var(--accent-blue); }
+
+        .sync-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .sync-item {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .sync-item iframe {
+            width: 100%;
+            height: 200px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Complete Theme System Test</h1>
+        
+        <div class="card">
+            <h2>Theme Controls</h2>
+            <div class="theme-controls">
+                <button onclick="toggleTheme()">🌙 Toggle Theme</button>
+                <button onclick="setLightTheme()">☀️ Light Mode</button>
+                <button onclick="setDarkTheme()">🌙 Dark Mode</button>
+                <button onclick="resetToSystem()">🔄 System Default</button>
+                <button onclick="clearStorage()">🗑️ Clear Storage</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Current Status</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">Current Theme</div>
+                    <div class="status-value" id="currentTheme">loading...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">System Preference</div>
+                    <div class="status-value" id="systemTheme">loading...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Saved Theme</div>
+                    <div class="status-value" id="savedTheme">loading...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Piece Setup Theme</div>
+                    <div class="status-value" id="pieceSetupTheme">loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Visual Theme Test</h2>
+            <p>This content should change appearance based on the current theme:</p>
+            
+            <div class="board-preview">
+                <div class="square light"><span class="white-piece">♖</span></div>
+                <div class="square dark"><span class="white-piece">♘</span></div>
+                <div class="square light"><span class="white-piece">♗</span></div>
+                <div class="square dark"><span class="white-piece">♕</span></div>
+                <div class="square dark"><span class="white-piece">♙</span></div>
+                <div class="square light"><span class="white-piece">♙</span></div>
+                <div class="square dark"><span class="white-piece">♙</span></div>
+                <div class="square light"><span class="white-piece">♙</span></div>
+                <div class="square light"></div>
+                <div class="square dark"></div>
+                <div class="square light"></div>
+                <div class="square dark"></div>
+                <div class="square dark"><span class="black-piece">♟</span></div>
+                <div class="square light"><span class="black-piece">♟</span></div>
+                <div class="square dark"><span class="black-piece">♟</span></div>
+                <div class="square light"><span class="black-piece">♟</span></div>
+                <div class="square light"><span class="black-piece">♜</span></div>
+                <div class="square dark"><span class="black-piece">♞</span></div>
+                <div class="square light"><span class="black-piece">♝</span></div>
+                <div class="square dark"><span class="black-piece">♛</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Cross-Page Synchronization Test</h2>
+            <div class="sync-test">
+                <div class="sync-item">
+                    <h3>Main Game</h3>
+                    <button onclick="openMainGame()">🎮 Open Main Game</button>
+                    <p>Theme should sync automatically</p>
+                </div>
+                <div class="sync-item">
+                    <h3>Piece Setup</h3>
+                    <button onclick="openPieceSetup()">♔ Open Piece Setup</button>
+                    <p>Theme should sync automatically</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Test Results</h2>
+            <div class="test-results" id="testResults">
+                <div class="info">Running theme system tests...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global theme state
+        let currentTheme = 'light';
+
+        // Initialize theme system
+        function initThemeSystem() {
+            const savedTheme = localStorage.getItem('4x5-chess-theme');
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            
+            applyTheme(currentTheme);
+            updateDisplay();
+            runTests();
+            
+            console.log('Theme system initialized:', currentTheme);
+        }
+
+        // Apply theme to document
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            currentTheme = theme;
+            
+            // Update meta theme-color for mobile browsers
+            let themeColorMeta = document.querySelector('meta[name="theme-color"]');
+            if (!themeColorMeta) {
+                themeColorMeta = document.createElement('meta');
+                themeColorMeta.name = 'theme-color';
+                document.head.appendChild(themeColorMeta);
+            }
+            themeColorMeta.content = theme === 'dark' ? '#0f172a' : '#ffffff';
+        }
+
+        // Toggle theme function
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(currentTheme);
+            saveTheme(currentTheme);
+            updateDisplay();
+            runTests();
+            
+            console.log('Theme toggled to:', currentTheme);
+        }
+
+        // Set light theme
+        function setLightTheme() {
+            currentTheme = 'light';
+            applyTheme(currentTheme);
+            saveTheme(currentTheme);
+            updateDisplay();
+            runTests();
+        }
+
+        // Set dark theme
+        function setDarkTheme() {
+            currentTheme = 'dark';
+            applyTheme(currentTheme);
+            saveTheme(currentTheme);
+            updateDisplay();
+            runTests();
+        }
+
+        // Reset to system theme
+        function resetToSystem() {
+            localStorage.removeItem('4x5-chess-theme');
+            localStorage.removeItem('pieceSetupTheme');
+            
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            currentTheme = systemPrefersDark ? 'dark' : 'light';
+            
+            applyTheme(currentTheme);
+            updateDisplay();
+            runTests();
+            
+            console.log('Theme reset to system:', currentTheme);
+        }
+
+        // Clear storage
+        function clearStorage() {
+            localStorage.removeItem('4x5-chess-theme');
+            localStorage.removeItem('pieceSetupTheme');
+            updateDisplay();
+            runTests();
+        }
+
+        // Save theme to localStorage
+        function saveTheme(theme) {
+            try {
+                localStorage.setItem('4x5-chess-theme', theme);
+                localStorage.setItem('pieceSetupTheme', theme);
+                console.log('Theme saved:', theme);
+            } catch (error) {
+                console.warn('Failed to save theme preference:', error);
+            }
+        }
+
+        // Update display
+        function updateDisplay() {
+            document.getElementById('currentTheme').textContent = currentTheme;
+            
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.getElementById('systemTheme').textContent = systemPrefersDark ? 'dark' : 'light';
+            
+            document.getElementById('savedTheme').textContent = localStorage.getItem('4x5-chess-theme') || 'none';
+            document.getElementById('pieceSetupTheme').textContent = localStorage.getItem('pieceSetupTheme') || 'none';
+        }
+
+        // Run tests
+        function runTests() {
+            const results = document.getElementById('testResults');
+            let output = '';
+            
+            // Test 1: Theme attribute
+            const themeAttr = document.documentElement.getAttribute('data-theme');
+            if (themeAttr === currentTheme) {
+                output += '<div class="success">✅ Theme attribute correctly set to: ' + themeAttr + '</div>';
+            } else {
+                output += '<div class="error">❌ Theme attribute mismatch. Expected: ' + currentTheme + ', Got: ' + themeAttr + '</div>';
+            }
+            
+            // Test 2: CSS variables
+            const computedStyle = getComputedStyle(document.documentElement);
+            const bgMain = computedStyle.getPropertyValue('--bg-main').trim();
+            const expectedBg = currentTheme === 'dark' ? '#0f172a' : '#f8fafc';
+            if (bgMain === expectedBg) {
+                output += '<div class="success">✅ CSS variables correctly applied</div>';
+            } else {
+                output += '<div class="warning">⚠️ CSS variables may not be fully applied. Expected: ' + expectedBg + ', Got: ' + bgMain + '</div>';
+            }
+            
+            // Test 3: Storage sync
+            const savedTheme = localStorage.getItem('4x5-chess-theme');
+            const pieceSetupTheme = localStorage.getItem('pieceSetupTheme');
+            if (savedTheme === pieceSetupTheme) {
+                output += '<div class="success">✅ Storage themes are synchronized</div>';
+            } else {
+                output += '<div class="warning">⚠️ Storage themes not synchronized. Main: ' + savedTheme + ', Piece Setup: ' + pieceSetupTheme + '</div>';
+            }
+            
+            // Test 4: Meta theme color
+            const metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (metaTheme) {
+                const expectedColor = currentTheme === 'dark' ? '#0f172a' : '#ffffff';
+                if (metaTheme.content === expectedColor) {
+                    output += '<div class="success">✅ Meta theme color correctly set</div>';
+                } else {
+                    output += '<div class="warning">⚠️ Meta theme color mismatch. Expected: ' + expectedColor + ', Got: ' + metaTheme.content + '</div>';
+                }
+            } else {
+                output += '<div class="warning">⚠️ Meta theme color not found</div>';
+            }
+            
+            // Test 5: System preference detection
+            if (window.matchMedia) {
+                output += '<div class="success">✅ System preference detection available</div>';
+            } else {
+                output += '<div class="warning">⚠️ System preference detection not available</div>';
+            }
+            
+            results.innerHTML = output;
+        }
+
+        // Open main game
+        function openMainGame() {
+            window.open('index.html', '_blank');
+        }
+
+        // Open piece setup
+        function openPieceSetup() {
+            window.open('piece-setup-working.html', '_blank');
+        }
+
+        // Listen for storage changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === '4x5-chess-theme') {
+                currentTheme = e.newValue || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                applyTheme(currentTheme);
+                updateDisplay();
+                runTests();
+                console.log('Theme synced from storage:', currentTheme);
+            }
+        });
+
+        // Listen for system theme changes
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('4x5-chess-theme')) {
+                    currentTheme = e.matches ? 'dark' : 'light';
+                    applyTheme(currentTheme);
+                    updateDisplay();
+                    runTests();
+                    console.log('Theme changed with system preference:', currentTheme);
+                }
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initThemeSystem);
+
+        // Auto-update display every 3 seconds
+        setInterval(updateDisplay, 3000);
+    </script>
+</body>
+</html>
