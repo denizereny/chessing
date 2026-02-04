@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .language-selector {
+            margin: 10px 0;
+        }
+        .translation-test {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 5px;
+            background: #f5f5f5;
+        }
+        .key {
+            font-weight: bold;
+            color: #333;
+        }
+        .value {
+            color: #666;
+        }
+        .rtl-test {
+            direction: rtl;
+            text-align: right;
+            background: #fff3cd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌍 Translation System Test</h1>
+    
+    <div class="test-section">
+        <h2>Language Selection</h2>
+        <div class="language-selector">
+            <label for="languageSelect">Select Language:</label>
+            <select id="languageSelect" onchange="testLanguageChange()">
+                <option value="en">English</option>
+                <option value="tr">Türkçe</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="it">Italiano</option>
+                <option value="ru">Русский</option>
+                <option value="zh">中文</option>
+                <option value="ja">日本語</option>
+                <option value="pt">Português</option>
+                <option value="ar">العربية</option>
+            </select>
+        </div>
+        <div id="currentLanguageInfo"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Basic Translations Test</h2>
+        <div id="basicTranslationsTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Enhanced Features Translations Test</h2>
+        <div id="enhancedTranslationsTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>RTL Support Test</h2>
+        <div id="rtlTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Error Messages Test</h2>
+        <div id="errorMessagesTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Performance & Loading Test</h2>
+        <div id="performanceTest"></div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        // Test keys for different categories
+        const testKeys = {
+            basic: [
+                'settings', 'newGame', 'switchSides', 'undo', 'moves', 'captured',
+                'gameTitle', 'gameSubtitle', 'startGame', 'playAgain'
+            ],
+            enhanced: [
+                'themeToggle', 'sharePosition', 'positionAnalysis', 'presetCategories',
+                'generateShareCode', 'positionHistoryTitle', 'materialAnalysis',
+                'pieceActivityAnalysis', 'kingSafetyAnalysis', 'centerControlAnalysis'
+            ],
+            errors: [
+                'errorOccurred', 'invalidOperation', 'operationTimeout', 'networkError',
+                'storageError', 'validationError', 'unexpectedError'
+            ],
+            performance: [
+                'loading', 'processing', 'analyzing', 'generating', 'validating',
+                'saving', 'operationCancelled', 'operationCompleted', 'operationFailed'
+            ]
+        };
+
+        function testLanguageChange() {
+            const selectedLang = document.getElementById('languageSelect').value;
+            setLanguage(selectedLang);
+            updateAllTests();
+        }
+
+        function updateAllTests() {
+            updateCurrentLanguageInfo();
+            updateBasicTranslationsTest();
+            updateEnhancedTranslationsTest();
+            updateRTLTest();
+            updateErrorMessagesTest();
+            updatePerformanceTest();
+        }
+
+        function updateCurrentLanguageInfo() {
+            const info = document.getElementById('currentLanguageInfo');
+            const direction = getTextDirection();
+            const alignStart = getAlignStart();
+            const alignEnd = getAlignEnd();
+            const isRTLLang = isRTL();
+            
+            info.innerHTML = `
+                <div class="translation-test">
+                    <div class="key">Current Language:</div>
+                    <div class="value">${currentLang}</div>
+                </div>
+                <div class="translation-test">
+                    <div class="key">Text Direction:</div>
+                    <div class="value">${direction}</div>
+                </div>
+                <div class="translation-test">
+                    <div class="key">Align Start:</div>
+                    <div class="value">${alignStart}</div>
+                </div>
+                <div class="translation-test">
+                    <div class="key">Align End:</div>
+                    <div class="value">${alignEnd}</div>
+                </div>
+                <div class="translation-test">
+                    <div class="key">Is RTL:</div>
+                    <div class="value ${isRTLLang ? 'success' : ''}">${isRTLLang}</div>
+                </div>
+            `;
+        }
+
+        function updateBasicTranslationsTest() {
+            const container = document.getElementById('basicTranslationsTest');
+            let html = '';
+            
+            testKeys.basic.forEach(key => {
+                const translation = t(key);
+                const hasTranslation = translation !== key;
+                html += `
+                    <div class="translation-test">
+                        <div class="key">${key}:</div>
+                        <div class="value ${hasTranslation ? 'success' : 'error'}">${translation}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function updateEnhancedTranslationsTest() {
+            const container = document.getElementById('enhancedTranslationsTest');
+            let html = '';
+            
+            testKeys.enhanced.forEach(key => {
+                const translation = t(key);
+                const hasTranslation = translation !== key;
+                html += `
+                    <div class="translation-test">
+                        <div class="key">${key}:</div>
+                        <div class="value ${hasTranslation ? 'success' : 'error'}">${translation}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function updateRTLTest() {
+            const container = document.getElementById('rtlTest');
+            const isRTLLang = isRTL();
+            const direction = getTextDirection();
+            
+            container.innerHTML = `
+                <div class="rtl-test" style="direction: ${direction};">
+                    <h3>${t('positionAnalysis')}</h3>
+                    <p>${t('materialAnalysis')}: ${t('materialEqual')}</p>
+                    <p>${t('kingSafetyAnalysis')}: ${t('positionValid')}</p>
+                    <p>${t('sharePosition')}: ${t('generateShareCode')}</p>
+                    <button style="margin: 5px;">${t('analyzeText')}</button>
+                    <button style="margin: 5px;">${t('sharePosition')}</button>
+                    <button style="margin: 5px;">${t('cancel')}</button>
+                </div>
+                <div class="translation-test">
+                    <div class="key">RTL Test Status:</div>
+                    <div class="value ${isRTLLang ? 'success' : ''}">${isRTLLang ? 'RTL Layout Applied' : 'LTR Layout Applied'}</div>
+                </div>
+            `;
+        }
+
+        function updateErrorMessagesTest() {
+            const container = document.getElementById('errorMessagesTest');
+            let html = '';
+            
+            testKeys.errors.forEach(key => {
+                const translation = t(key);
+                const hasTranslation = translation !== key;
+                html += `
+                    <div class="translation-test">
+                        <div class="key">${key}:</div>
+                        <div class="value ${hasTranslation ? 'success' : 'error'}">${translation}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function updatePerformanceTest() {
+            const container = document.getElementById('performanceTest');
+            let html = '';
+            
+            testKeys.performance.forEach(key => {
+                const translation = t(key);
+                const hasTranslation = translation !== key;
+                html += `
+                    <div class="translation-test">
+                        <div class="key">${key}:</div>
+                        <div class="value ${hasTranslation ? 'success' : 'error'}">${translation}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Test translation completeness
+        function testTranslationCompleteness() {
+            const allKeys = [...testKeys.basic, ...testKeys.enhanced, ...testKeys.errors, ...testKeys.performance];
+            const languages = ['en', 'tr', 'es', 'fr', 'de', 'it', 'ru', 'zh', 'ja', 'pt', 'ar'];
+            
+            console.log('🧪 Testing translation completeness...');
+            
+            languages.forEach(lang => {
+                const missing = [];
+                allKeys.forEach(key => {
+                    if (!translations[lang] || !translations[lang][key]) {
+                        missing.push(key);
+                    }
+                });
+                
+                if (missing.length > 0) {
+                    console.warn(`❌ ${lang}: Missing ${missing.length} translations:`, missing);
+                } else {
+                    console.log(`✅ ${lang}: All translations complete`);
+                }
+            });
+        }
+
+        // Initialize tests
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAllTests();
+            testTranslationCompleteness();
+        });
+    </script>
+</body>
+</html>

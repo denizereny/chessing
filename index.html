@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>4x5 Chess Pro</title>
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/enhanced-drag-drop.css" />
+    <link rel="stylesheet" href="css/responsive-layout.css" />
+    <link rel="stylesheet" href="css/piece-setup-integration.css" />
+    <!-- Enhanced CSS System -->
+    <link rel="stylesheet" href="css/enhanced-piece-setup-complete.css" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light dark" />
   </head>
-  <body>
+  <body class="enhanced-piece-setup enhanced-piece-setup-complete">
     <!-- Start Screen Overlay -->
     <div id="startScreen" class="start-screen">
       <div class="start-content">
@@ -32,14 +39,6 @@
           </div>
 
           <div class="control-group">
-            <label for="gameMode">Game Mode / Oyun Modu</label>
-            <select id="gameMode">
-              <option value="4x5" selected>♔ 4×5 Chess Pro</option>
-              <option value="classic">♛ Classic 8×8 Chess</option>
-            </select>
-          </div>
-
-          <div class="control-group">
             <label for="startDifficulty">Difficulty / Zorluk</label>
             <select id="startDifficulty">
               <option value="1">🟢 Easy / Kolay</option>
@@ -53,7 +52,7 @@
         </div>
 
         <div class="footer-credits">
-          <p>© 2025 pro DenizEren</p>
+          <p>© 2025 VizyonEkibi</p>
         </div>
       </div>
     </div>
@@ -72,44 +71,17 @@
       </div>
     </div>
 
-    <!-- Mobile Menu Button -->
-    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleMobileSettings()">
-      <span class="icon">⚙️</span>
-    </button>
-
     <div class="container" id="mainGameContainer" style="filter: blur(5px); opacity: 0.5; pointer-events: none">
-      <!-- 3 Dots Menu Button -->
-      <button id="gameMenuBtn" class="game-menu-btn" onclick="toggleGameMenu()">
-        <span class="dots">⋮</span>
-      </button>
-      
-      <!-- Game Menu Dropdown -->
-      <div id="gameMenuDropdown" class="game-menu-dropdown hidden">
-        <div class="menu-item" onclick="openSettings()">
-          <span class="menu-icon">⚙️</span>
-          <span>Settings</span>
-        </div>
-        <div class="menu-item" onclick="openProfile()">
-          <span class="menu-icon">👤</span>
-          <span>Profile</span>
-        </div>
-        <div class="menu-item" onclick="pauseGame()">
-          <span class="menu-icon">⏸️</span>
-          <span>Pause Game</span>
-        </div>
-        <div class="menu-item" onclick="showMainMenu()">
-          <span class="menu-icon">🏠</span>
-          <span>Main Menu</span>
-        </div>
-      </div>
+      <!-- Settings Panel -->
       <div id="settingsPanel" class="side-panel card">
-        <button id="closeSettingsBtn" class="close-settings-btn" onclick="toggleMobileSettings()">✖</button>
         <div class="collapsible-header" onclick="togglePanel('settings')">
-          <h3 id="settingsTitle" style="margin-bottom: 0; display: flex; align-items: center; gap: 8px"><span class="icon">🎯</span> Settings</h3>
+          <h3 id="settingsTitle" style="margin-bottom: 0; display: flex; align-items: center; gap: 8px">
+            <span class="icon">🎯</span> <span>Settings</span>
+          </h3>
           <span class="chevron">▾</span>
         </div>
         <div id="settingsContent" class="collapsible-content">
-          <!-- Language selector removed from here as it is in start screen, but kept for consistency if needed, or I can sync them -->
+          <!-- Language selector -->
           <div class="language-selector">
             <select id="languageSelect" onchange="setLanguage(this.value)">
               <option value="en">🇬🇧 English</option>
@@ -129,8 +101,8 @@
           <div class="controls">
             <button id="btnNewGame" onclick="yeniOyun()">🔄 New Game</button>
             <button id="btnSwitchSides" class="btn-secondary" onclick="tarafDegistir()">🔀 Switch Sides</button>
-            <button id="btnUndo" class="btn-danger" onclick="geriAl()">↩️ Undo</button>
           </div>
+          
           <div class="difficulty">
             <label id="lblAiDifficulty">⚙️ AI Difficulty:</label>
             <select id="aiLevel" onchange="aiSeviyesiDegisti()">
@@ -141,97 +113,101 @@
             </select>
           </div>
 
-          <!-- Color Customization Section -->
-          <div class="color-customization">
-            <div class="collapsible-header" onclick="toggleColorSettings()">
-              <h4 id="lblColorSettings">🎨 Color Settings</h4>
-              <span class="chevron" id="colorChevron">▾</span>
+          <!-- Color Section -->
+          <div class="extra-controls">
+            <button onclick="toggleColorPanel()" class="extra-btn" id="btnColors">🎨 <span id="btnColorsText">Colors</span></button>
+            <button onclick="openPieceSetup()" class="extra-btn" id="btnPieceSetup">♔ <span id="btnPieceSetupText">Piece Setup</span></button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Color Settings Panel -->
+      <div id="colorPanel" class="color-panel hidden">
+        <div class="color-panel-content">
+          <div class="panel-header">
+            <h3 id="colorPanelTitle">🎨 Color Settings</h3>
+            <button onclick="toggleColorPanel()" class="close-panel">✖</button>
+          </div>
+          
+          <div class="color-sections">
+            <!-- Board Colors -->
+            <div class="color-section">
+              <h4 id="lblBoardColors">📋 Board Colors</h4>
+              <div class="color-preview-board">
+                <div class="preview-square light-preview" id="lightPreview"></div>
+                <div class="preview-square dark-preview" id="darkPreview"></div>
+                <div class="preview-square dark-preview" id="darkPreview2"></div>
+                <div class="preview-square light-preview" id="lightPreview2"></div>
+              </div>
+              <div class="color-controls">
+                <div class="color-control">
+                  <label id="lblLightSquares">Light Squares</label>
+                  <div class="color-input-group">
+                    <input type="color" id="lightSquareColor" value="#f0d9b5" onchange="updateBoardColors()">
+                    <input type="text" id="lightSquareHex" value="#f0d9b5" onchange="updateBoardColorsFromHex('light')" placeholder="#RRGGBB">
+                  </div>
+                </div>
+                <div class="color-control">
+                  <label id="lblDarkSquares">Dark Squares</label>
+                  <div class="color-input-group">
+                    <input type="color" id="darkSquareColor" value="#b58863" onchange="updateBoardColorsFromHex('dark')" placeholder="#RRGGBB">
+                    <input type="text" id="darkSquareHex" value="#b58863" onchange="updateBoardColorsFromHex('dark')" placeholder="#RRGGBB">
+                  </div>
+                </div>
+              </div>
             </div>
             
-            <div id="colorSettingsContent" class="color-settings-content collapsed">
-              <!-- Board Colors Section -->
-              <div class="color-group">
-                <label id="lblBoardColors">📋 Board Colors</label>
-                <div class="color-preview-section">
-                  <div class="board-preview">
-                    <div class="preview-square light-preview" id="lightPreview"></div>
-                    <div class="preview-square dark-preview" id="darkPreview"></div>
-                    <div class="preview-square dark-preview" id="darkPreview2"></div>
-                    <div class="preview-square light-preview" id="lightPreview2"></div>
+            <!-- Piece Colors -->
+            <div class="color-section">
+              <h4 id="lblPieceColors">♔ Piece Colors</h4>
+              <div class="color-preview-pieces">
+                <div class="piece-preview">
+                  <div class="preview-square light-preview">
+                    <span class="preview-piece white-preview" id="whitePreview">♙</span>
                   </div>
-                  <div class="color-controls">
-                    <div class="color-option">
-                      <label id="lblLightSquares">Light Squares</label>
-                      <div class="color-input-group">
-                        <input type="color" id="lightSquareColor" value="#9ca3af" onchange="updateBoardColors()">
-                        <input type="text" id="lightSquareHex" value="#9ca3af" onchange="updateBoardColorsFromHex('light')" placeholder="#RRGGBB">
-                      </div>
-                    </div>
-                    <div class="color-option">
-                      <label id="lblDarkSquares">Dark Squares</label>
-                      <div class="color-input-group">
-                        <input type="color" id="darkSquareColor" value="#4b5563" onchange="updateBoardColors()">
-                        <input type="text" id="darkSquareHex" value="#4b5563" onchange="updateBoardColorsFromHex('dark')" placeholder="#RRGGBB">
-                      </div>
-                    </div>
+                  <span class="piece-label" id="lblWhitePiecesPreview">White</span>
+                </div>
+                <div class="piece-preview">
+                  <div class="preview-square dark-preview">
+                    <span class="preview-piece black-preview" id="blackPreview">♟</span>
+                  </div>
+                  <span class="piece-label" id="lblBlackPiecesPreview">Black</span>
+                </div>
+              </div>
+              <div class="color-controls">
+                <div class="color-control">
+                  <label id="lblWhitePieces">White Pieces</label>
+                  <div class="color-input-group">
+                    <input type="color" id="whitePieceColor" value="#ffffff" onchange="updatePieceColors()">
+                    <input type="text" id="whitePieceHex" value="#ffffff" onchange="updatePieceColorsFromHex('white')" placeholder="#RRGGBB">
+                  </div>
+                </div>
+                <div class="color-control">
+                  <label id="lblBlackPieces">Black Pieces</label>
+                  <div class="color-input-group">
+                    <input type="color" id="blackPieceColor" value="#2c2c2c" onchange="updatePieceColors()">
+                    <input type="text" id="blackPieceHex" value="#2c2c2c" onchange="updatePieceColorsFromHex('black')" placeholder="#RRGGBB">
                   </div>
                 </div>
               </div>
-
-              <!-- Piece Colors Section -->
-              <div class="color-group">
-                <label id="lblPieceColors">♔ Piece Colors</label>
-                <div class="color-preview-section">
-                  <div class="pieces-preview">
-                    <div class="piece-preview-container">
-                      <div class="preview-square light-preview">
-                        <span class="preview-piece white-preview" id="whitePreview">♙</span>
-                      </div>
-                      <span class="piece-label" id="lblWhitePiecesPreview">White</span>
-                    </div>
-                    <div class="piece-preview-container">
-                      <div class="preview-square dark-preview">
-                        <span class="preview-piece black-preview" id="blackPreview">♟</span>
-                      </div>
-                      <span class="piece-label" id="lblBlackPiecesPreview">Black</span>
-                    </div>
-                  </div>
-                  <div class="color-controls">
-                    <div class="color-option">
-                      <label id="lblWhitePieces">White Pieces</label>
-                      <div class="color-input-group">
-                        <input type="color" id="whitePieceColor" value="#ffffff" onchange="updatePieceColors()">
-                        <input type="text" id="whitePieceHex" value="#ffffff" onchange="updatePieceColorsFromHex('white')" placeholder="#RRGGBB">
-                      </div>
-                    </div>
-                    <div class="color-option">
-                      <label id="lblBlackPieces">Black Pieces</label>
-                      <div class="color-input-group">
-                        <input type="color" id="blackPieceColor" value="#2c2c2c" onchange="updatePieceColors()">
-                        <input type="text" id="blackPieceHex" value="#2c2c2c" onchange="updatePieceColorsFromHex('black')" placeholder="#RRGGBB">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Color Presets -->
-              <div class="color-presets">
-                <label id="lblColorPresets">🎯 Color Presets</label>
-                <div class="preset-buttons">
-                  <button onclick="applyColorPreset('classic')" id="btnClassicColors">Classic</button>
-                  <button onclick="applyColorPreset('wood')" id="btnWoodColors">Wood</button>
-                  <button onclick="applyColorPreset('marble')" id="btnMarbleColors">Marble</button>
-                  <button onclick="applyColorPreset('neon')" id="btnNeonColors">Neon</button>
-                  <button onclick="applyColorPreset('ocean')" id="btnOceanColors">Ocean</button>
-                  <button onclick="resetColors()" id="btnResetColors">Reset</button>
-                </div>
+            </div>
+            
+            <!-- Color Presets -->
+            <div class="color-section">
+              <h4 id="lblColorPresets">🎯 Color Presets</h4>
+              <div class="preset-buttons">
+                <button onclick="applyColorPreset('classic')" id="btnClassicColors">Classic</button>
+                <button onclick="applyColorPreset('wood')" id="btnWoodColors">Wood</button>
+                <button onclick="applyColorPreset('marble')" id="btnMarbleColors">Marble</button>
+                <button onclick="applyColorPreset('neon')" id="btnNeonColors">Neon</button>
+                <button onclick="applyColorPreset('ocean')" id="btnOceanColors">Ocean</button>
+                <button onclick="resetColors()" id="btnResetColors">Reset</button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
+      
       <div class="card board-card">
         <!-- H1 Removed for cleaner look -->
         <div class="info-bar">
@@ -279,7 +255,7 @@
 
     <footer class="copyright-footer">
       <div class="footer-content-copy">
-        <p>© 2025 <span class="highlight">pro DenizEren25</span></p>
+        <p>© 2025 <span class="highlight">VizyonEkibi</span></p>
         <div class="footer-icons">
           <span>♔</span>
           <span>♕</span>
@@ -289,7 +265,210 @@
     </footer>
 
     <script src="js/translations.js"></script>
+    <script src="js/enhanced-theme-manager.js"></script>
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/enhanced-drag-drop.js"></script>
+    <script src="js/extended-preset-manager.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/position-evaluation-report.js"></script>
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/position-history-manager.js"></script>
+    <script src="js/position-history-interface.js"></script>
+    <script src="js/mobile-optimization-manager.js"></script>
+    <script src="js/responsive-layout-manager.js"></script>
+    <script src="js/performance-monitor.js"></script>
+    
+    <!-- Integration System - Must load before game.js -->
+    <script src="js/piece-setup-integration.js"></script>
+    
+    <!-- Main Game Script -->
     <script src="js/game.js"></script>
-    <script src="js/classic-chess.js"></script>
+
+    <!-- Piece Setup Modal -->
+    <div id="pieceSetupModal" class="piece-setup-modal hidden">
+      <div class="piece-setup-content">
+        <div class="modal-header">
+          <h2 id="pieceSetupTitle">♔ Piece Setup</h2>
+          <button class="close-modal" onclick="closePieceSetup()">✖</button>
+        </div>
+        
+        <div class="piece-setup-body">
+          <div class="setup-instructions">
+            <p id="setupInstructions">Drag pieces from the palette to the board, or click to select and place. Create your custom position!</p>
+          </div>
+          
+          <div class="setup-container">
+            <!-- Piece Palette -->
+            <div class="piece-palette">
+              <h3 id="piecePaletteTitle">Piece Palette</h3>
+              
+              <div class="palette-section">
+                <h4 id="whitePiecesTitle">White Pieces</h4>
+                <div class="palette-pieces white-palette">
+                  <div class="palette-piece" data-piece="K" draggable="true">♔</div>
+                  <div class="palette-piece" data-piece="Q" draggable="true">♕</div>
+                  <div class="palette-piece" data-piece="R" draggable="true">♖</div>
+                  <div class="palette-piece" data-piece="B" draggable="true">♗</div>
+                  <div class="palette-piece" data-piece="N" draggable="true">♘</div>
+                  <div class="palette-piece" data-piece="P" draggable="true">♙</div>
+                </div>
+              </div>
+              
+              <div class="palette-section">
+                <h4 id="blackPiecesTitle">Black Pieces</h4>
+                <div class="palette-pieces black-palette">
+                  <div class="palette-piece" data-piece="k" draggable="true">♚</div>
+                  <div class="palette-piece" data-piece="q" draggable="true">♛</div>
+                  <div class="palette-piece" data-piece="r" draggable="true">♜</div>
+                  <div class="palette-piece" data-piece="b" draggable="true">♝</div>
+                  <div class="palette-piece" data-piece="n" draggable="true">♞</div>
+                  <div class="palette-piece" data-piece="p" draggable="true">♟</div>
+                </div>
+              </div>
+              
+              <div class="palette-tools">
+                <button id="btnClearBoard" onclick="clearSetupBoard()">🗑️ <span id="clearBoardText">Clear Board</span></button>
+                <button id="btnResetToDefault" onclick="resetToDefaultPosition()">🔄 <span id="resetDefaultText">Default Position</span></button>
+                <button id="btnRandomSetup" onclick="randomSetup()">🎲 <span id="randomSetupText">Random Setup</span></button>
+                <button id="btnSaveSetup" onclick="saveSetup()">💾 <span id="saveSetupText">Save Setup</span></button>
+                <button id="btnLoadSetup" onclick="loadSetup()">📂 <span id="loadSetupText">Load Setup</span></button>
+                
+                <div class="setup-presets">
+                  <h5 id="presetsTitle">Quick Setups:</h5>
+                  <div class="preset-buttons">
+                    <button onclick="loadPreset('endgame')" id="btnEndgame">👑 <span id="endgameText">Endgame</span></button>
+                    <button onclick="loadPreset('middlegame')" id="btnMiddlegame">⚔️ <span id="middlegameText">Middlegame</span></button>
+                    <button onclick="loadPreset('puzzle')" id="btnPuzzle">🧩 <span id="puzzleText">Puzzle</span></button>
+                  </div>
+                </div>
+                
+                <!-- User Preset Management -->
+                <div class="user-preset-management">
+                  <h5 id="userPresetsTitle">My Presets:</h5>
+                  
+                  <!-- Preset Browser -->
+                  <div class="preset-browser">
+                    <select id="presetCategorySelect" onchange="updatePresetList()">
+                      <option value="">All Categories</option>
+                      <option value="opening">Opening</option>
+                      <option value="middlegame">Middlegame</option>
+                      <option value="endgame">Endgame</option>
+                      <option value="puzzle">Puzzle</option>
+                      <option value="tactical">Tactical</option>
+                      <option value="educational">Educational</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                    
+                    <select id="presetSelect" onchange="previewSelectedPreset()">
+                      <option value="">Select a preset...</option>
+                    </select>
+                    
+                    <button onclick="loadSelectedPreset()" id="btnLoadPreset">📂 <span id="loadPresetText">Load</span></button>
+                  </div>
+                  
+                  <!-- Create Custom Preset -->
+                  <div class="create-preset">
+                    <input type="text" id="customPresetName" placeholder="Preset name..." maxlength="50">
+                    <input type="text" id="customPresetDescription" placeholder="Description..." maxlength="100">
+                    <select id="customPresetCategory">
+                      <option value="custom">Custom</option>
+                      <option value="opening">Opening</option>
+                      <option value="middlegame">Middlegame</option>
+                      <option value="endgame">Endgame</option>
+                      <option value="puzzle">Puzzle</option>
+                      <option value="tactical">Tactical</option>
+                    </select>
+                    <button onclick="saveCurrentAsPreset()" id="btnSaveAsPreset">💾 <span id="saveAsPresetText">Save Current</span></button>
+                  </div>
+                  
+                  <!-- Preset Management Actions -->
+                  <div class="preset-actions">
+                    <button onclick="deleteSelectedPreset()" id="btnDeletePreset" class="btn-danger">🗑️ <span id="deletePresetText">Delete</span></button>
+                    <button onclick="exportUserPresets()" id="btnExportPresets">📤 <span id="exportPresetsText">Export</span></button>
+                    <button onclick="importUserPresets()" id="btnImportPresets">📥 <span id="importPresetsText">Import</span></button>
+                  </div>
+                  
+                  <!-- Hidden file input for import -->
+                  <input type="file" id="presetImportFile" accept=".json" style="display: none;" onchange="handlePresetImport(event)">
+                </div>
+                
+                <div class="trash-zone" id="trashZone">
+                  <span id="trashText">🗑️ Drop here to delete</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Setup Board -->
+            <div class="setup-board-container">
+              <h3 id="setupBoardTitle">Board Setup</h3>
+              <div id="setupBoard" class="setup-board"></div>
+              
+              <div class="setup-controls">
+                <div class="setup-info">
+                  <div class="position-stats">
+                    <div class="stat-item">
+                      <span id="whiteKingsLabel">White Kings:</span>
+                      <span id="whiteKingsCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                      <span id="blackKingsLabel">Black Kings:</span>
+                      <span id="blackKingsCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                      <span id="totalPiecesLabel">Total Pieces:</span>
+                      <span id="totalPiecesCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                      <span id="materialBalanceLabel">Material Balance:</span>
+                      <span id="materialBalance">0</span>
+                    </div>
+                  </div>
+                  
+                  <div class="validation-status" id="validationStatus">
+                    <div class="status-indicator" id="statusIndicator">
+                      <span class="status-icon">⚠️</span>
+                      <span id="statusText">Both kings required</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="game-settings">
+                  <div class="turn-selector">
+                    <label id="lblFirstMove">First Move:</label>
+                    <select id="firstMoveSelect">
+                      <option value="white" id="whiteFirstOption">White</option>
+                      <option value="black" id="blackFirstOption">Black</option>
+                    </select>
+                  </div>
+                  
+                  <div class="ai-settings">
+                    <label id="lblAiDifficulty">AI Difficulty:</label>
+                    <select id="setupAiLevel">
+                      <option value="1" id="easyOption">🟢 Easy</option>
+                      <option value="2" id="mediumOption">🟡 Medium</option>
+                      <option value="3" id="hardOption">🔴 Hard</option>
+                      <option value="4" id="expertOption">💀 Expert</option>
+                    </select>
+                  </div>
+                  
+                  <div class="position-analysis" id="positionAnalysis">
+                    <h5 id="analysisTitle">Position Analysis:</h5>
+                    <div class="analysis-text" id="analysisText">
+                      Set up pieces to see analysis
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="setup-actions">
+                  <button id="btnStartCustomGame" onclick="startCustomGame()" class="btn-start">▶ <span id="startGameText">Start Game</span></button>
+                  <button id="btnAnalyzePosition" onclick="analyzePosition()" class="btn-analyze">🔍 <span id="analyzeText">Analyze</span></button>
+                  <button id="btnCancelSetup" onclick="closePieceSetup()" class="btn-secondary"><span id="cancelText">Cancel</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

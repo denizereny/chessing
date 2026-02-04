@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extended Preset Manager Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #4CAF50;
+            color: white;
+        }
+        .error {
+            background: #f44336;
+            color: white;
+        }
+        .info {
+            background: #2196F3;
+            color: white;
+        }
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .preset-card {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #555;
+        }
+        .preset-title {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        .preset-category {
+            background: #555;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .preset-description {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .preset-tags {
+            font-size: 12px;
+            color: #888;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .stat-label {
+            color: #ccc;
+            font-size: 14px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        input, select {
+            background: #3a3a3a;
+            color: white;
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Extended Preset Manager Test</h1>
+    
+    <div class="test-section">
+        <h2>📊 Initialization Test</h2>
+        <div id="initResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📈 Statistics</h2>
+        <div id="statsContainer"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Preset Categories</h2>
+        <div>
+            <select id="categorySelect" onchange="showCategoryPresets()">
+                <option value="">Select a category...</option>
+            </select>
+        </div>
+        <div id="categoryPresets"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔍 Search Presets</h2>
+        <div>
+            <input type="text" id="searchInput" placeholder="Search presets..." onkeyup="searchPresets()">
+        </div>
+        <div id="searchResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>➕ Create Custom Preset</h2>
+        <div>
+            <input type="text" id="presetName" placeholder="Preset name">
+            <input type="text" id="presetDescription" placeholder="Description">
+            <select id="presetCategory">
+                <option value="custom">Custom</option>
+                <option value="opening">Opening</option>
+                <option value="middlegame">Middlegame</option>
+                <option value="endgame">Endgame</option>
+                <option value="puzzle">Puzzle</option>
+                <option value="tactical">Tactical</option>
+            </select>
+            <button onclick="createTestPreset()">Create Test Preset</button>
+        </div>
+        <div id="customPresetResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>✅ Validation Tests</h2>
+        <div>
+            <button onclick="testValidation()">Run Validation Tests</button>
+        </div>
+        <div id="validationResults"></div>
+    </div>
+
+    <script src="js/extended-preset-manager.js"></script>
+    <script>
+        let presetManager;
+        
+        function showResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+        }
+        
+        function initializeTest() {
+            try {
+                presetManager = new ExtendedPresetManager();
+                showResult('initResults', '✅ Extended Preset Manager initialized successfully', 'success');
+                
+                const stats = presetManager.getPresetStatistics();
+                showResult('initResults', `📊 Total presets loaded: ${stats.total}`, 'info');
+                
+                if (stats.total >= 20) {
+                    showResult('initResults', '✅ Minimum 20 presets requirement met', 'success');
+                } else {
+                    showResult('initResults', '❌ Less than 20 presets found', 'error');
+                }
+                
+                // Populate category select
+                const categories = presetManager.getCategories();
+                const select = document.getElementById('categorySelect');
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                    select.appendChild(option);
+                });
+                
+                showStatistics();
+                
+            } catch (error) {
+                showResult('initResults', `❌ Initialization failed: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        function showStatistics() {
+            const stats = presetManager.getPresetStatistics();
+            const container = document.getElementById('statsContainer');
+            
+            let html = '<div class="stats-grid">';
+            html += `<div class="stat-card"><div class="stat-number">${stats.total}</div><div class="stat-label">Total Presets</div></div>`;
+            html += `<div class="stat-card"><div class="stat-number">${stats.custom}</div><div class="stat-label">Custom Presets</div></div>`;
+            
+            Object.entries(stats.byCategory).forEach(([category, count]) => {
+                html += `<div class="stat-card"><div class="stat-number">${count}</div><div class="stat-label">${category.charAt(0).toUpperCase() + category.slice(1)}</div></div>`;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function showCategoryPresets() {
+            const category = document.getElementById('categorySelect').value;
+            if (!category) return;
+            
+            const presets = presetManager.getPresetsByCategory(category);
+            const container = document.getElementById('categoryPresets');
+            
+            if (presets.length === 0) {
+                container.innerHTML = '<div class="test-result info">No presets found in this category</div>';
+                return;
+            }
+            
+            let html = '<div class="preset-grid">';
+            presets.forEach(preset => {
+                html += `
+                    <div class="preset-card">
+                        <div class="preset-title">${preset.name}</div>
+                        <div class="preset-category">${preset.category}</div>
+                        <div class="preset-description">${preset.description}</div>
+                        <div class="preset-tags">Tags: ${preset.tags.join(', ')}</div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #888;">
+                            Difficulty: ${preset.difficulty || 'N/A'} | ID: ${preset.id}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function searchPresets() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) {
+                document.getElementById('searchResults').innerHTML = '';
+                return;
+            }
+            
+            const results = presetManager.searchPresets(query);
+            const container = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div class="test-result info">No presets found matching your search</div>';
+                return;
+            }
+            
+            let html = `<div class="test-result success">Found ${results.length} matching presets</div>`;
+            html += '<div class="preset-grid">';
+            results.forEach(preset => {
+                html += `
+                    <div class="preset-card">
+                        <div class="preset-title">${preset.name}</div>
+                        <div class="preset-category">${preset.category}</div>
+                        <div class="preset-description">${preset.description}</div>
+                        <div class="preset-tags">Tags: ${preset.tags.join(', ')}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function createTestPreset() {
+            const name = document.getElementById('presetName').value;
+            const description = document.getElementById('presetDescription').value;
+            const category = document.getElementById('presetCategory').value;
+            
+            if (!name) {
+                showResult('customPresetResults', '❌ Please enter a preset name', 'error');
+                return;
+            }
+            
+            // Create a test position (standard opening)
+            const testPosition = [
+                ["r", "q", "k", "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "R"]
+            ];
+            
+            try {
+                const preset = presetManager.createCustomPreset(
+                    name,
+                    description || 'Custom test preset',
+                    testPosition,
+                    category,
+                    ['custom', 'test']
+                );
+                
+                showResult('customPresetResults', `✅ Custom preset "${preset.name}" created successfully!`, 'success');
+                showResult('customPresetResults', `📝 Preset ID: ${preset.id}`, 'info');
+                
+                // Clear inputs
+                document.getElementById('presetName').value = '';
+                document.getElementById('presetDescription').value = '';
+                
+                // Update statistics
+                showStatistics();
+                
+            } catch (error) {
+                showResult('customPresetResults', `❌ Failed to create preset: ${error.message}`, 'error');
+            }
+        }
+        
+        function testValidation() {
+            const container = document.getElementById('validationResults');
+            container.innerHTML = '';
+            
+            // Test valid position
+            const validPosition = [
+                ["r", "q", "k", "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "R"]
+            ];
+            
+            const validResult = presetManager.validatePresetPosition(validPosition);
+            if (validResult.valid) {
+                showResult('validationResults', '✅ Valid position test passed', 'success');
+            } else {
+                showResult('validationResults', `❌ Valid position test failed: ${validResult.errors.join(', ')}`, 'error');
+            }
+            
+            // Test invalid position (no kings)
+            const invalidPosition = [
+                ["r", "q", null, "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", null, "R"]
+            ];
+            
+            const invalidResult = presetManager.validatePresetPosition(invalidPosition);
+            if (!invalidResult.valid) {
+                showResult('validationResults', '✅ Invalid position test passed (correctly rejected)', 'success');
+            } else {
+                showResult('validationResults', '❌ Invalid position test failed (should have been rejected)', 'error');
+            }
+            
+            // Test wrong dimensions
+            const wrongDimensions = [
+                ["r", "q", "k"],  // Wrong column count
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "R"]
+            ];
+            
+            const dimensionResult = presetManager.validatePresetPosition(wrongDimensions);
+            if (!dimensionResult.valid) {
+                showResult('validationResults', '✅ Wrong dimensions test passed (correctly rejected)', 'success');
+            } else {
+                showResult('validationResults', '❌ Wrong dimensions test failed (should have been rejected)', 'error');
+            }
+        }
+        
+        // Initialize when page loads
+        window.onload = initializeTest;
+    </script>
+</body>
+</html>

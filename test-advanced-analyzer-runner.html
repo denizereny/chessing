@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Position Analyzer Test Runner</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+        .container {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .test-output {
+            background: #000000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #3d3d3d;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #555;
+        }
+        .stat-card.success {
+            border-color: #4caf50;
+            background: #1b5e20;
+        }
+        .stat-card.warning {
+            border-color: #ff9800;
+            background: #e65100;
+        }
+        .stat-card.error {
+            border-color: #f44336;
+            background: #b71c1c;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+        button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .title {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #4caf50;
+        }
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .requirement-section {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4caf50;
+        }
+        .requirement-title {
+            font-weight: bold;
+            color: #4caf50;
+            margin-bottom: 8px;
+        }
+        .requirement-desc {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">🧠 Advanced Position Analyzer</div>
+            <div class="subtitle">Comprehensive Test Suite for 4x5 Chess Analysis</div>
+        </div>
+        
+        <div class="requirement-section">
+            <div class="requirement-title">Requirements Being Tested:</div>
+            <div class="requirement-desc">
+                • 3.1: Material balance calculation (P=1, N=3, B=3, R=5, Q=9)<br>
+                • 3.2: Piece activity evaluation (mobile piece count)<br>
+                • 3.3: King safety analysis (check status, escape squares)<br>
+                • 3.4: Center control calculation (center squares: d2, d3, e2, e3)
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <button id="runTestsBtn" onclick="runTests()">🚀 Run All Tests</button>
+            <button id="clearBtn" onclick="clearOutput()">🗑️ Clear Output</button>
+            <button id="exportBtn" onclick="exportResults()" disabled>📄 Export Results</button>
+        </div>
+        
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        
+        <div class="stats" id="statsContainer" style="display: none;">
+            <div class="stat-card" id="totalTestsStat">
+                <div class="stat-value" id="totalTestsValue">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-card" id="passedTestsStat">
+                <div class="stat-value" id="passedTestsValue">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card" id="successRateStat">
+                <div class="stat-value" id="successRateValue">0%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-card" id="performanceStat">
+                <div class="stat-value" id="performanceValue">-</div>
+                <div class="stat-label">Avg Analysis Time</div>
+            </div>
+        </div>
+        
+        <div class="test-output" id="testOutput">
+Ready to run tests. Click "Run All Tests" to begin...
+        </div>
+    </div>
+
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="test/advanced-position-analyzer.test.js"></script>
+    <script>
+        let testResults = null;
+        let testOutput = '';
+        
+        // Override console.log to capture output
+        const originalConsoleLog = console.log;
+        console.log = function(...args) {
+            const message = args.join(' ');
+            testOutput += message + '\n';
+            document.getElementById('testOutput').textContent = testOutput;
+            originalConsoleLog.apply(console, args);
+            
+            // Auto-scroll to bottom
+            const outputEl = document.getElementById('testOutput');
+            outputEl.scrollTop = outputEl.scrollHeight;
+        };
+        
+        async function runTests() {
+            const runBtn = document.getElementById('runTestsBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const progressFill = document.getElementById('progressFill');
+            const statsContainer = document.getElementById('statsContainer');
+            
+            // Disable button and reset
+            runBtn.disabled = true;
+            runBtn.textContent = '🔄 Running Tests...';
+            exportBtn.disabled = true;
+            testOutput = '';
+            progressFill.style.width = '0%';
+            statsContainer.style.display = 'none';
+            
+            try {
+                // Simulate progress
+                progressFill.style.width = '10%';
+                
+                // Create and run test suite
+                const testSuite = new AdvancedPositionAnalyzerTests();
+                
+                progressFill.style.width = '50%';
+                
+                // Run tests
+                testResults = testSuite.runAllTests();
+                
+                progressFill.style.width = '100%';
+                
+                // Update stats
+                updateStats(testResults);
+                
+                // Show stats
+                statsContainer.style.display = 'grid';
+                
+                // Re-enable buttons
+                runBtn.disabled = false;
+                runBtn.textContent = '🚀 Run All Tests';
+                exportBtn.disabled = false;
+                
+            } catch (error) {
+                console.log('❌ Test execution failed: ' + error.message);
+                console.error(error);
+                
+                runBtn.disabled = false;
+                runBtn.textContent = '🚀 Run All Tests';
+                progressFill.style.width = '0%';
+            }
+        }
+        
+        function updateStats(results) {
+            const totalEl = document.getElementById('totalTestsValue');
+            const passedEl = document.getElementById('passedTestsValue');
+            const successRateEl = document.getElementById('successRateValue');
+            const performanceEl = document.getElementById('performanceValue');
+            
+            const totalStat = document.getElementById('totalTestsStat');
+            const passedStat = document.getElementById('passedTestsStat');
+            const successRateStat = document.getElementById('successRateStat');
+            
+            totalEl.textContent = results.total;
+            passedEl.textContent = results.passed;
+            successRateEl.textContent = results.successRate.toFixed(1) + '%';
+            
+            // Update card colors based on results
+            if (results.allPassed) {
+                totalStat.className = 'stat-card success';
+                passedStat.className = 'stat-card success';
+                successRateStat.className = 'stat-card success';
+            } else if (results.successRate >= 80) {
+                successRateStat.className = 'stat-card warning';
+            } else {
+                successRateStat.className = 'stat-card error';
+            }
+            
+            // Test performance
+            const analyzer = new AdvancedPositionAnalyzer();
+            const testPosition = [
+                ["r", "q", "k", "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "R"]
+            ];
+            
+            const startTime = performance.now();
+            analyzer.analyzePosition(testPosition);
+            const endTime = performance.now();
+            const analysisTime = endTime - startTime;
+            
+            performanceEl.textContent = analysisTime.toFixed(2) + 'ms';
+            
+            const performanceStat = document.getElementById('performanceStat');
+            if (analysisTime < 500) {
+                performanceStat.className = 'stat-card success';
+            } else {
+                performanceStat.className = 'stat-card error';
+            }
+        }
+        
+        function clearOutput() {
+            testOutput = '';
+            document.getElementById('testOutput').textContent = 'Output cleared. Ready to run tests...';
+            document.getElementById('statsContainer').style.display = 'none';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+        
+        function exportResults() {
+            if (!testResults) {
+                alert('No test results to export. Run tests first.');
+                return;
+            }
+            
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                testSuite: 'Advanced Position Analyzer',
+                requirements: ['3.1', '3.2', '3.3', '3.4'],
+                results: testResults,
+                output: testOutput
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `advanced-position-analyzer-test-results-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧠 Advanced Position Analyzer Test Runner initialized');
+            console.log('Ready to test all requirements: 3.1, 3.2, 3.3, 3.4');
+        });
+    </script>
+</body>
+</html>

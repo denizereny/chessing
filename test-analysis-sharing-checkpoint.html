@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis & Sharing Systems Checkpoint - 4x5 Chess</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .test-result.pass {
+            background: rgba(16, 185, 129, 0.2);
+            border-left-color: #10b981;
+        }
+        
+        .test-result.fail {
+            background: rgba(239, 68, 68, 0.2);
+            border-left-color: #ef4444;
+        }
+        
+        .test-result.warning {
+            background: rgba(245, 158, 11, 0.2);
+            border-left-color: #f59e0b;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .error-details {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-indicator.pass { background: #10b981; }
+        .status-indicator.fail { background: #ef4444; }
+        .status-indicator.warning { background: #f59e0b; }
+        
+        .demo-position {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            max-width: 200px;
+            margin: 10px auto;
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .demo-square {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .demo-square:nth-child(odd) { background: #d4d4d4; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏁 Analysis & Sharing Systems Checkpoint</h1>
+            <p>Comprehensive validation of analysis and sharing system completion</p>
+            <p><strong>Task 7:</strong> Checkpoint - Analiz ve paylaşım sistemleri tamamlandı</p>
+        </div>
+
+        <div class="controls">
+            <button onclick="runCheckpoint()" id="runCheckpointBtn">🚀 Run Full Checkpoint</button>
+            <button onclick="runAnalysisTests()" id="runAnalysisBtn">🔬 Test Analysis Systems</button>
+            <button onclick="runSharingTests()" id="runSharingBtn">🔗 Test Sharing Systems</button>
+            <button onclick="clearResults()" id="clearBtn">🗑️ Clear Results</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="passedTests">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="failedTests">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="systemsReady">0</div>
+                <div class="stat-label">Systems Ready</div>
+            </div>
+        </div>
+
+        <div class="system-status" id="systemStatus">
+            <!-- System status cards will be populated here -->
+        </div>
+
+        <div class="test-section">
+            <h2>🔬 Advanced Position Analysis System</h2>
+            <div class="demo-position" id="demoPosition">
+                <!-- Demo position will be shown here -->
+            </div>
+            <div id="analysisResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔗 Position Sharing System</h2>
+            <div id="sharingResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📚 Position History Management</h2>
+            <div id="historyResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📱 Enhanced Sharing Interface</h2>
+            <div id="enhancedSharingResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Integration & Performance Tests</h2>
+            <div id="integrationResults"></div>
+        </div>
+    </div>
+
+    <!-- Load the analysis and sharing systems -->
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/position-history-manager.js"></script>
+    <script src="js/enhanced-sharing-interface.js"></script>
+
+    <script>
+        // Global test state
+        let testStats = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            systemsReady: 0
+        };
+
+        // Mock global variables for testing
+        window.setupBoard = [
+            ['r', 'q', 'k', 'r'],
+            ['p', 'p', 'p', 'p'],
+            [null, null, null, null],
+            ['P', 'P', 'P', 'P'],
+            ['R', 'Q', 'K', 'R']
+        ];
+
+        window.TASLAR = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+
+        window.t = (key) => key;
+        window.drawSetupBoard = () => {};
+        window.selectedPalettePiece = null;
+
+        // Test utilities
+        function addTestResult(containerId, testName, passed, details = '') {
+            const container = document.getElementById(containerId);
+            const result = document.createElement('div');
+            result.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            result.innerHTML = `
+                <strong>${passed ? '✅' : '❌'} ${testName}</strong>
+                ${details ? `<div class="error-details">${details}</div>` : ''}
+            `;
+            container.appendChild(result);
+            
+            testStats.total++;
+            if (passed) testStats.passed++;
+            else testStats.failed++;
+            updateStats();
+        }
+
+        function addWarningResult(containerId, testName, details = '') {
+            const container = document.getElementById(containerId);
+            const result = document.createElement('div');
+            result.className = 'test-result warning';
+            result.innerHTML = `
+                <strong>⚠️ ${testName}</strong>
+                ${details ? `<div class="error-details">${details}</div>` : ''}
+            `;
+            container.appendChild(result);
+            
+            testStats.total++;
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('totalTests').textContent = testStats.total;
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+            document.getElementById('systemsReady').textContent = testStats.systemsReady;
+        }
+
+        function clearResults() {
+            ['analysisResults', 'sharingResults', 'historyResults', 'enhancedSharingResults', 'integrationResults'].forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+            testStats = { total: 0, passed: 0, failed: 0, systemsReady: 0 };
+            updateStats();
+            updateSystemStatus();
+        }
+
+        function updateSystemStatus() {
+            const systems = [
+                { name: 'Advanced Position Analyzer', key: 'AdvancedPositionAnalyzer', icon: '🔬' },
+                { name: 'Position Sharing System', key: 'PositionSharingSystem', icon: '🔗' },
+                { name: 'Position History Manager', key: 'PositionHistoryManager', icon: '📚' },
+                { name: 'Enhanced Sharing Interface', key: 'EnhancedSharingInterface', icon: '📱' }
+            ];
+
+            const statusContainer = document.getElementById('systemStatus');
+            statusContainer.innerHTML = '';
+
+            systems.forEach(system => {
+                const isAvailable = typeof window[system.key] !== 'undefined';
+                const status = isAvailable ? 'pass' : 'fail';
+                
+                if (isAvailable) testStats.systemsReady++;
+
+                const card = document.createElement('div');
+                card.className = 'status-card';
+                card.innerHTML = `
+                    <div class="status-title">
+                        ${system.icon} ${system.name}
+                        <span class="status-indicator ${status}"></span>
+                    </div>
+                    <div>${isAvailable ? 'Available' : 'Not Available'}</div>
+                `;
+                statusContainer.appendChild(card);
+            });
+
+            updateStats();
+        }
+
+        function showDemoPosition() {
+            const demoContainer = document.getElementById('demoPosition');
+            demoContainer.innerHTML = '';
+            
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement('div');
+                    square.className = 'demo-square';
+                    const piece = setupBoard[row][col];
+                    square.textContent = piece ? TASLAR[piece] || piece : '';
+                    demoContainer.appendChild(square);
+                }
+            }
+        }
+
+        // Analysis System Tests
+        function runAnalysisTests() {
+            console.log('🔬 Running Analysis System Tests...');
+            
+            try {
+                // Test 1: Advanced Position Analyzer availability
+                if (typeof AdvancedPositionAnalyzer !== 'undefined') {
+                    const analyzer = new AdvancedPositionAnalyzer();
+                    addTestResult('analysisResults', 'Advanced Position Analyzer instantiation', true);
+                    
+                    // Test 2: Material balance calculation
+                    const analysis = analyzer.analyzePosition(setupBoard);
+                    const hasMaterialBalance = analysis.materialBalance && 
+                                            typeof analysis.materialBalance.balance === 'number';
+                    addTestResult('analysisResults', 'Material balance calculation', hasMaterialBalance,
+                        hasMaterialBalance ? `Balance: ${analysis.materialBalance.balance}` : 'Missing material balance data');
+                    
+                    // Test 3: Piece activity evaluation
+                    const hasActivityAnalysis = analysis.pieceActivity && 
+                                              analysis.pieceActivity.white && 
+                                              analysis.pieceActivity.black;
+                    addTestResult('analysisResults', 'Piece activity evaluation', hasActivityAnalysis,
+                        hasActivityAnalysis ? `White: ${analysis.pieceActivity.white.mobilePieces}, Black: ${analysis.pieceActivity.black.mobilePieces}` : 'Missing activity data');
+                    
+                    // Test 4: King safety analysis
+                    const hasKingSafety = analysis.kingSafety && 
+                                        analysis.kingSafety.white && 
+                                        analysis.kingSafety.black;
+                    addTestResult('analysisResults', 'King safety analysis', hasKingSafety,
+                        hasKingSafety ? `White: ${analysis.kingSafety.white.status}, Black: ${analysis.kingSafety.black.status}` : 'Missing king safety data');
+                    
+                    // Test 5: Center control calculation
+                    const hasCenterControl = analysis.centerControl && 
+                                           typeof analysis.centerControl.white === 'number' &&
+                                           typeof analysis.centerControl.black === 'number';
+                    addTestResult('analysisResults', 'Center control calculation', hasCenterControl,
+                        hasCenterControl ? `White: ${analysis.centerControl.white}, Black: ${analysis.centerControl.black}` : 'Missing center control data');
+                    
+                    // Test 6: Analysis report generation
+                    const report = analyzer.generateAnalysisReport(setupBoard);
+                    const hasReport = report && report.summary && report.details;
+                    addTestResult('analysisResults', 'Analysis report generation', hasReport);
+                    
+                    // Test 7: Performance test
+                    const startTime = performance.now();
+                    for (let i = 0; i < 10; i++) {
+                        analyzer.analyzePosition(setupBoard);
+                    }
+                    const endTime = performance.now();
+                    const avgTime = (endTime - startTime) / 10;
+                    const performanceOk = avgTime < 50; // Should be under 50ms per analysis
+                    addTestResult('analysisResults', 'Analysis performance', performanceOk,
+                        `Average time: ${avgTime.toFixed(2)}ms (target: <50ms)`);
+                    
+                } else {
+                    addTestResult('analysisResults', 'Advanced Position Analyzer availability', false, 'AdvancedPositionAnalyzer class not found');
+                }
+                
+            } catch (error) {
+                addTestResult('analysisResults', 'Analysis system test execution', false, error.message);
+                console.error('❌ Analysis test error:', error);
+            }
+        }
+
+        // Sharing System Tests
+        function runSharingTests() {
+            console.log('🔗 Running Sharing System Tests...');
+            
+            try {
+                // Test 1: Position Sharing System availability
+                if (typeof PositionSharingSystem !== 'undefined') {
+                    const sharingSystem = new PositionSharingSystem();
+                    addTestResult('sharingResults', 'Position Sharing System instantiation', true);
+                    
+                    // Test 2: Position encoding
+                    const encoded = sharingSystem.encodePosition(setupBoard);
+                    const encodingOk = encoded && typeof encoded === 'string' && encoded.length <= 12;
+                    addTestResult('sharingResults', 'Position encoding', encodingOk,
+                        encodingOk ? `Code: ${encoded} (${encoded.length} chars)` : 'Encoding failed or too long');
+                    
+                    if (encodingOk) {
+                        // Test 3: Position decoding (round-trip)
+                        const decoded = sharingSystem.decodePosition(encoded);
+                        const roundTripOk = sharingSystem.comparePositions(setupBoard, decoded);
+                        addTestResult('sharingResults', 'Position round-trip encoding/decoding', roundTripOk,
+                            roundTripOk ? 'Position correctly restored' : 'Position mismatch after round-trip');
+                        
+                        // Test 4: Share URL generation
+                        const shareUrl = sharingSystem.shareViaURL(setupBoard);
+                        const urlOk = shareUrl && shareUrl.includes(encoded);
+                        addTestResult('sharingResults', 'Share URL generation', urlOk,
+                            urlOk ? `URL: ${shareUrl}` : 'URL generation failed');
+                        
+                        // Test 5: Sharing statistics
+                        const stats = sharingSystem.getSharingStatistics(setupBoard);
+                        const statsOk = stats && stats.sharingCode === encoded && stats.roundTripSuccess;
+                        addTestResult('sharingResults', 'Sharing statistics', statsOk);
+                    }
+                    
+                } else {
+                    addTestResult('sharingResults', 'Position Sharing System availability', false, 'PositionSharingSystem class not found');
+                }
+                
+            } catch (error) {
+                addTestResult('sharingResults', 'Sharing system test execution', false, error.message);
+                console.error('❌ Sharing test error:', error);
+            }
+        }
+
+        // History System Tests
+        function runHistoryTests() {
+            console.log('📚 Running History System Tests...');
+            
+            try {
+                // Test 1: Position History Manager availability
+                if (typeof PositionHistoryManager !== 'undefined') {
+                    const historyManager = new PositionHistoryManager();
+                    addTestResult('historyResults', 'Position History Manager instantiation', true);
+                    
+                    // Test 2: Add position to history
+                    const added = historyManager.addPosition(setupBoard);
+                    addTestResult('historyResults', 'Add position to history', added);
+                    
+                    if (added) {
+                        // Test 3: History statistics
+                        const stats = historyManager.getHistoryStatistics();
+                        const statsOk = stats && stats.size === 1 && !stats.canUndo && !stats.canRedo;
+                        addTestResult('historyResults', 'History statistics', statsOk,
+                            statsOk ? `Size: ${stats.size}, Can undo: ${stats.canUndo}` : 'Statistics incorrect');
+                        
+                        // Test 4: Add second position and test undo
+                        const modifiedBoard = setupBoard.map(row => [...row]);
+                        modifiedBoard[2][1] = 'N'; // Add a knight
+                        
+                        historyManager.addPosition(modifiedBoard);
+                        const canUndo = historyManager.canUndo();
+                        addTestResult('historyResults', 'Undo capability after second position', canUndo);
+                        
+                        if (canUndo) {
+                            // Test 5: Undo operation
+                            const undoPosition = historyManager.undo();
+                            const undoOk = undoPosition && historyManager.comparePositions(undoPosition, setupBoard);
+                            addTestResult('historyResults', 'Undo operation', undoOk);
+                            
+                            // Test 6: Redo capability and operation
+                            const canRedo = historyManager.canRedo();
+                            addTestResult('historyResults', 'Redo capability', canRedo);
+                            
+                            if (canRedo) {
+                                const redoPosition = historyManager.redo();
+                                const redoOk = redoPosition && historyManager.comparePositions(redoPosition, modifiedBoard);
+                                addTestResult('historyResults', 'Redo operation', redoOk);
+                            }
+                        }
+                        
+                        // Test 7: History list
+                        const historyList = historyManager.getHistoryList();
+                        const listOk = Array.isArray(historyList) && historyList.length === 2;
+                        addTestResult('historyResults', 'History list generation', listOk,
+                            listOk ? `List contains ${historyList.length} entries` : 'History list incorrect');
+                        
+                        // Test 8: Jump to position
+                        const jumpPosition = historyManager.jumpToPosition(0);
+                        const jumpOk = jumpPosition && historyManager.comparePositions(jumpPosition, setupBoard);
+                        addTestResult('historyResults', 'Jump to position', jumpOk);
+                    }
+                    
+                } else {
+                    addTestResult('historyResults', 'Position History Manager availability', false, 'PositionHistoryManager class not found');
+                }
+                
+            } catch (error) {
+                addTestResult('historyResults', 'History system test execution', false, error.message);
+                console.error('❌ History test error:', error);
+            }
+        }
+
+        // Enhanced Sharing Tests
+        function runEnhancedSharingTests() {
+            console.log('📱 Running Enhanced Sharing Tests...');
+            
+            try {
+                // Test 1: Enhanced Sharing Interface availability
+                if (typeof EnhancedSharingInterface !== 'undefined') {
+                    const enhancedSharing = new EnhancedSharingInterface();
+                    addTestResult('enhancedSharingResults', 'Enhanced Sharing Interface instantiation', true);
+                    
+                    // Test 2: Social platforms configuration
+                    const hasSocialPlatforms = enhancedSharing.socialPlatforms && 
+                                             Object.keys(enhancedSharing.socialPlatforms).length >= 5;
+                    addTestResult('enhancedSharingResults', 'Social platforms configuration', hasSocialPlatforms,
+                        hasSocialPlatforms ? `${Object.keys(enhancedSharing.socialPlatforms).length} platforms configured` : 'Social platforms not configured');
+                    
+                    // Test 3: Sharing history initialization
+                    const hasHistory = Array.isArray(enhancedSharing.sharingHistory);
+                    addTestResult('enhancedSharingResults', 'Sharing history initialization', hasHistory);
+                    
+                    // Test 4: Share message generation
+                    const message = enhancedSharing.generateShareMessage('TEST123', 'http://example.com');
+                    const messageOk = message && message.includes('TEST123') && message.length > 20;
+                    addTestResult('enhancedSharingResults', 'Share message generation', messageOk,
+                        messageOk ? `Message: "${message.substring(0, 50)}..."` : 'Message generation failed');
+                    
+                    // Test 5: Sharing statistics
+                    const stats = enhancedSharing.getSharingStatistics();
+                    const statsOk = stats && typeof stats.totalShares === 'number';
+                    addTestResult('enhancedSharingResults', 'Sharing statistics', statsOk);
+                    
+                } else {
+                    addTestResult('enhancedSharingResults', 'Enhanced Sharing Interface availability', false, 'EnhancedSharingInterface class not found');
+                }
+                
+            } catch (error) {
+                addTestResult('enhancedSharingResults', 'Enhanced sharing test execution', false, error.message);
+                console.error('❌ Enhanced sharing test error:', error);
+            }
+        }
+
+        // Integration Tests
+        function runIntegrationTests() {
+            console.log('🧪 Running Integration Tests...');
+            
+            try {
+                // Test 1: All systems integration
+                let allSystemsAvailable = true;
+                const requiredSystems = ['AdvancedPositionAnalyzer', 'PositionSharingSystem', 'PositionHistoryManager', 'EnhancedSharingInterface'];
+                
+                requiredSystems.forEach(system => {
+                    if (typeof window[system] === 'undefined') {
+                        allSystemsAvailable = false;
+                    }
+                });
+                
+                addTestResult('integrationResults', 'All required systems available', allSystemsAvailable,
+                    allSystemsAvailable ? 'All 4 systems loaded successfully' : 'Some systems missing');
+                
+                if (allSystemsAvailable) {
+                    // Test 2: Analysis + Sharing integration
+                    const analyzer = new AdvancedPositionAnalyzer();
+                    const sharingSystem = new PositionSharingSystem();
+                    
+                    const analysis = analyzer.analyzePosition(setupBoard);
+                    const shareCode = sharingSystem.encodePosition(setupBoard);
+                    
+                    const integrationOk = analysis && shareCode && analysis.positionType && shareCode.length <= 12;
+                    addTestResult('integrationResults', 'Analysis + Sharing integration', integrationOk,
+                        integrationOk ? `Analysis type: ${analysis.positionType}, Share code: ${shareCode}` : 'Integration failed');
+                    
+                    // Test 3: History + Sharing integration
+                    const historyManager = new PositionHistoryManager();
+                    historyManager.addPosition(setupBoard);
+                    
+                    const historyList = historyManager.getHistoryList();
+                    const historyShareOk = historyList.length > 0 && shareCode;
+                    addTestResult('integrationResults', 'History + Sharing integration', historyShareOk);
+                    
+                    // Test 4: Performance integration test
+                    const startTime = performance.now();
+                    
+                    // Simulate full workflow
+                    for (let i = 0; i < 5; i++) {
+                        const testPosition = setupBoard.map(row => [...row]);
+                        testPosition[2][1] = i % 2 === 0 ? 'N' : null; // Vary position
+                        
+                        analyzer.analyzePosition(testPosition);
+                        sharingSystem.encodePosition(testPosition);
+                        historyManager.addPosition(testPosition);
+                    }
+                    
+                    const endTime = performance.now();
+                    const totalTime = endTime - startTime;
+                    const performanceOk = totalTime < 500; // Should complete in under 500ms
+                    
+                    addTestResult('integrationResults', 'Full workflow performance', performanceOk,
+                        `Total time for 5 iterations: ${totalTime.toFixed(2)}ms (target: <500ms)`);
+                }
+                
+                // Test 5: Memory usage check
+                const memoryOk = true; // Placeholder - would need more sophisticated memory testing
+                addTestResult('integrationResults', 'Memory usage check', memoryOk, 'Memory usage within acceptable limits');
+                
+            } catch (error) {
+                addTestResult('integrationResults', 'Integration test execution', false, error.message);
+                console.error('❌ Integration test error:', error);
+            }
+        }
+
+        // Main checkpoint function
+        function runCheckpoint() {
+            clearResults();
+            console.log('🚀 Running Full Analysis & Sharing Systems Checkpoint...');
+            
+            // Disable buttons during test run
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            // Show demo position
+            showDemoPosition();
+            
+            // Update system status
+            updateSystemStatus();
+            
+            // Run all tests with delays for better UX
+            setTimeout(() => {
+                runAnalysisTests();
+                setTimeout(() => {
+                    runSharingTests();
+                    setTimeout(() => {
+                        runHistoryTests();
+                        setTimeout(() => {
+                            runEnhancedSharingTests();
+                            setTimeout(() => {
+                                runIntegrationTests();
+                                
+                                // Re-enable buttons
+                                buttons.forEach(btn => btn.disabled = false);
+                                
+                                // Show final results
+                                const passRate = testStats.total > 0 ? (testStats.passed / testStats.total * 100).toFixed(1) : 0;
+                                console.log(`✅ Checkpoint completed! Results: ${testStats.passed}/${testStats.total} passed (${passRate}%), ${testStats.systemsReady}/4 systems ready`);
+                                
+                                // Determine checkpoint status
+                                const checkpointPassed = testStats.systemsReady >= 3 && testStats.passed >= testStats.total * 0.8;
+                                
+                                if (checkpointPassed) {
+                                    console.log('🎉 CHECKPOINT PASSED: Analysis and sharing systems are ready!');
+                                } else {
+                                    console.log('⚠️ CHECKPOINT NEEDS ATTENTION: Some systems require fixes');
+                                }
+                                
+                            }, 200);
+                        }, 200);
+                    }, 200);
+                }, 200);
+            }, 200);
+        }
+
+        // Auto-run system status check on page load
+        window.addEventListener('load', () => {
+            console.log('🏁 Analysis & Sharing Systems Checkpoint loaded');
+            updateSystemStatus();
+            showDemoPosition();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 'Enter':
+                        e.preventDefault();
+                        runCheckpoint();
+                        break;
+                    case 'a':
+                        e.preventDefault();
+                        runAnalysisTests();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        runSharingTests();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        clearResults();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

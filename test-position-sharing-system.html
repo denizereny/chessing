@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Position Sharing System Tests</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        .test-section h2 {
+            color: #555;
+            margin-top: 0;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .results.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .results.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .results.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .demo-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .position-display {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            line-height: 1.2;
+            text-align: center;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+        
+        .sharing-info {
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            border: 2px solid #b8daff;
+        }
+        
+        .sharing-info h3 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+        
+        .code-display {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d63384;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            word-break: break-all;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Position Sharing System Tests</h1>
+        
+        <div class="controls">
+            <button onclick="runAllTests()">🧪 Run All Tests</button>
+            <button onclick="runBasicDemo()">🎯 Basic Demo</button>
+            <button onclick="runPerformanceTest()">⚡ Performance Test</button>
+            <button onclick="clearResults()">🗑️ Clear Results</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Test Results</h2>
+            <div id="testResults" class="results info">
+                Click "Run All Tests" to start testing the Position Sharing System...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎮 Interactive Demo</h2>
+            <div class="demo-section">
+                <div>
+                    <h3>Position</h3>
+                    <div id="positionDisplay" class="position-display">
+                        Click "Basic Demo" to see a position
+                    </div>
+                </div>
+                <div>
+                    <h3>Sharing Information</h3>
+                    <div id="sharingInfo" class="sharing-info">
+                        <div class="loading">No position loaded</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📈 Performance Metrics</h2>
+            <div id="performanceStats" class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="encodingTime">-</div>
+                    <div class="stat-label">Avg Encoding (ms)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="decodingTime">-</div>
+                    <div class="stat-label">Avg Decoding (ms)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="codeLength">-</div>
+                    <div class="stat-label">Code Length</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="compressionRatio">-</div>
+                    <div class="stat-label">Compression Ratio</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🖥️ Console Output</h2>
+            <div id="consoleOutput" class="console-output">
+                Console output will appear here...
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the Position Sharing System -->
+    <script src="js/position-sharing-system.js"></script>
+    <script src="test/position-sharing-system.test.js"></script>
+    
+    <script>
+        // Global variables
+        let sharingSystem;
+        let testSuite;
+        let consoleOutput = [];
+        
+        // Override console.log to capture output
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            consoleOutput.push(`[LOG] ${args.join(' ')}`);
+            updateConsoleDisplay();
+        };
+        
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            consoleOutput.push(`[ERROR] ${args.join(' ')}`);
+            updateConsoleDisplay();
+        };
+        
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            try {
+                sharingSystem = new PositionSharingSystem();
+                testSuite = new PositionSharingSystemTests();
+                console.log('🔗 Position Sharing System Test Page initialized');
+            } catch (error) {
+                console.error('Failed to initialize:', error);
+                showResults('Failed to initialize Position Sharing System: ' + error.message, 'error');
+            }
+        });
+        
+        /**
+         * Run all tests
+         */
+        function runAllTests() {
+            if (!testSuite) {
+                showResults('Test suite not initialized', 'error');
+                return;
+            }
+            
+            showResults('Running tests...', 'info');
+            consoleOutput = [];
+            
+            try {
+                const results = testSuite.runAllTests();
+                
+                let output = `Position Sharing System Test Results\n`;
+                output += `=====================================\n\n`;
+                output += `Total Tests: ${results.total}\n`;
+                output += `Passed: ${results.passed}\n`;
+                output += `Failed: ${results.failed}\n`;
+                output += `Success Rate: ${((results.passed / results.total) * 100).toFixed(1)}%\n\n`;
+                
+                if (results.failed > 0) {
+                    output += `Failed Tests:\n`;
+                    results.results.filter(r => r.status === 'fail').forEach(result => {
+                        output += `❌ ${result.test}: ${result.message}\n`;
+                    });
+                } else {
+                    output += `🎉 All tests passed!\n`;
+                }
+                
+                showResults(output, results.success ? 'success' : 'error');
+                
+            } catch (error) {
+                console.error('Test execution failed:', error);
+                showResults('Test execution failed: ' + error.message, 'error');
+            }
+        }
+        
+        /**
+         * Run basic demo
+         */
+        function runBasicDemo() {
+            if (!sharingSystem) {
+                showResults('Sharing system not initialized', 'error');
+                return;
+            }
+            
+            try {
+                // Use starting position for demo
+                const position = [
+                    ["r", "q", "k", "r"],
+                    ["p", "p", "p", "p"],
+                    [null, null, null, null],
+                    ["P", "P", "P", "P"],
+                    ["R", "Q", "K", "R"]
+                ];
+                
+                // Display position
+                displayPosition(position);
+                
+                // Get sharing statistics
+                const stats = sharingSystem.getSharingStatistics(position);
+                displaySharingInfo(stats);
+                
+                console.log('🎮 Basic demo completed');
+                showResults('Basic demo completed successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Demo failed:', error);
+                showResults('Demo failed: ' + error.message, 'error');
+            }
+        }
+        
+        /**
+         * Run performance test
+         */
+        function runPerformanceTest() {
+            if (!sharingSystem) {
+                showResults('Sharing system not initialized', 'error');
+                return;
+            }
+            
+            try {
+                const position = [
+                    ["r", "q", "k", "r"],
+                    ["p", "p", "p", "p"],
+                    [null, null, null, null],
+                    ["P", "P", "P", "P"],
+                    ["R", "Q", "K", "R"]
+                ];
+                
+                const iterations = 1000;
+                
+                // Test encoding performance
+                const encodeStart = performance.now();
+                let code;
+                for (let i = 0; i < iterations; i++) {
+                    code = sharingSystem.encodePosition(position);
+                }
+                const encodeEnd = performance.now();
+                const avgEncodeTime = (encodeEnd - encodeStart) / iterations;
+                
+                // Test decoding performance
+                const decodeStart = performance.now();
+                for (let i = 0; i < iterations; i++) {
+                    sharingSystem.decodePosition(code);
+                }
+                const decodeEnd = performance.now();
+                const avgDecodeTime = (decodeEnd - decodeStart) / iterations;
+                
+                // Calculate compression ratio
+                const originalBits = 20 * 4; // 20 squares * 4 bits each
+                const compressedBits = code.length * 6; // Each character represents 6 bits
+                const compressionRatio = originalBits / compressedBits;
+                
+                // Update performance display
+                document.getElementById('encodingTime').textContent = avgEncodeTime.toFixed(3);
+                document.getElementById('decodingTime').textContent = avgDecodeTime.toFixed(3);
+                document.getElementById('codeLength').textContent = code.length;
+                document.getElementById('compressionRatio').textContent = compressionRatio.toFixed(2);
+                
+                let output = `Performance Test Results (${iterations} iterations)\n`;
+                output += `===============================================\n\n`;
+                output += `Average Encoding Time: ${avgEncodeTime.toFixed(3)}ms\n`;
+                output += `Average Decoding Time: ${avgDecodeTime.toFixed(3)}ms\n`;
+                output += `Code Length: ${code.length} characters\n`;
+                output += `Compression Ratio: ${compressionRatio.toFixed(2)}:1\n`;
+                output += `Sample Code: ${code}\n\n`;
+                
+                // Check performance requirements
+                const encodingOK = avgEncodeTime < 10;
+                const decodingOK = avgDecodeTime < 10;
+                const lengthOK = code.length <= 12;
+                
+                output += `Performance Requirements:\n`;
+                output += `${encodingOK ? '✅' : '❌'} Encoding < 10ms: ${avgEncodeTime.toFixed(3)}ms\n`;
+                output += `${decodingOK ? '✅' : '❌'} Decoding < 10ms: ${avgDecodeTime.toFixed(3)}ms\n`;
+                output += `${lengthOK ? '✅' : '❌'} Code length ≤ 12: ${code.length} chars\n`;
+                
+                const allOK = encodingOK && decodingOK && lengthOK;
+                showResults(output, allOK ? 'success' : 'error');
+                
+                console.log('⚡ Performance test completed');
+                
+            } catch (error) {
+                console.error('Performance test failed:', error);
+                showResults('Performance test failed: ' + error.message, 'error');
+            }
+        }
+        
+        /**
+         * Display position visually
+         */
+        function displayPosition(position) {
+            const pieceSymbols = {
+                'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+                'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+            };
+            
+            let display = '';
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const piece = position[row][col];
+                    display += piece ? pieceSymbols[piece] : '·';
+                    display += ' ';
+                }
+                display += '\n';
+            }
+            
+            document.getElementById('positionDisplay').textContent = display;
+        }
+        
+        /**
+         * Display sharing information
+         */
+        function displaySharingInfo(stats) {
+            const infoDiv = document.getElementById('sharingInfo');
+            
+            if (stats.error) {
+                infoDiv.innerHTML = `<div style="color: red;">Error: ${stats.error}</div>`;
+                return;
+            }
+            
+            infoDiv.innerHTML = `
+                <h3>Sharing Code</h3>
+                <div class="code-display">${stats.sharingCode}</div>
+                
+                <div class="stats" style="margin-top: 15px;">
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.codeLength}</div>
+                        <div class="stat-label">Length</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.compressionRatio.toFixed(2)}</div>
+                        <div class="stat-label">Compression</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.roundTripSuccess ? '✅' : '❌'}</div>
+                        <div class="stat-label">Round-trip</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.urlSafe ? '✅' : '❌'}</div>
+                        <div class="stat-label">URL Safe</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        /**
+         * Show test results
+         */
+        function showResults(text, type = 'info') {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.textContent = text;
+            resultsDiv.className = `results ${type}`;
+        }
+        
+        /**
+         * Update console display
+         */
+        function updateConsoleDisplay() {
+            const consoleDiv = document.getElementById('consoleOutput');
+            consoleDiv.textContent = consoleOutput.slice(-50).join('\n'); // Show last 50 lines
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        /**
+         * Clear all results
+         */
+        function clearResults() {
+            showResults('Results cleared. Click "Run All Tests" to start testing...', 'info');
+            consoleOutput = [];
+            updateConsoleDisplay();
+            
+            // Clear performance stats
+            document.getElementById('encodingTime').textContent = '-';
+            document.getElementById('decodingTime').textContent = '-';
+            document.getElementById('codeLength').textContent = '-';
+            document.getElementById('compressionRatio').textContent = '-';
+            
+            // Clear demo displays
+            document.getElementById('positionDisplay').textContent = 'Click "Basic Demo" to see a position';
+            document.getElementById('sharingInfo').innerHTML = '<div class="loading">No position loaded</div>';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Position Validation Test Runner</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .console-output {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 2px solid #333;
+            margin: 20px 0;
+        }
+        
+        .test-results {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .test-results.failed {
+            border-left-color: #f44336;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-indicator.success {
+            background: #4CAF50;
+        }
+        
+        .status-indicator.error {
+            background: #f44336;
+        }
+        
+        .status-indicator.warning {
+            background: #ff9800;
+        }
+        
+        .status-indicator.info {
+            background: #2196F3;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Enhanced Position Validation System</h1>
+        <h2>Test Runner & Verification Suite</h2>
+        <p>Comprehensive testing for advanced chess position validation with check/mate detection</p>
+    </div>
+
+    <div class="test-container">
+        <h3>🎯 System Features</h3>
+        <ul class="feature-list">
+            <li>Advanced king control validation (exactly one king per side)</li>
+            <li>Pawn position validation (not on first/last ranks)</li>
+            <li>Check and mate detection algorithms</li>
+            <li>Kings adjacency validation</li>
+            <li>Piece count validation</li>
+            <li>Visual error messaging system</li>
+            <li>Real-time position analysis</li>
+            <li>Comprehensive error categorization</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h3>🚀 Test Controls</h3>
+        <button onclick="runTests()">Run All Tests</button>
+        <button onclick="clearConsole()">Clear Console</button>
+        <button onclick="runSpecificTest('basic')">Test Basic Validation</button>
+        <button onclick="runSpecificTest('kings')">Test King Control</button>
+        <button onclick="runSpecificTest('pawns')">Test Pawn Validation</button>
+        <button onclick="runSpecificTest('check')">Test Check Detection</button>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <div id="progressText">Ready to run tests...</div>
+    </div>
+
+    <div class="test-container">
+        <h3>📊 Test Results</h3>
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="passedTests">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="failedTests">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="testDuration">0ms</div>
+                <div class="stat-label">Duration</div>
+            </div>
+        </div>
+        <div class="test-results" id="testResults">
+            <p>No tests run yet. Click "Run All Tests" to begin.</p>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h3>🖥️ Console Output</h3>
+        <div class="console-output" id="consoleOutput">
+            Enhanced Position Validation Test Runner initialized.
+            Ready to run tests...
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/enhanced-position-validator.js"></script>
+    <script src="js/position-validation-ui.js"></script>
+    <script src="test/enhanced-position-validation.test.js"></script>
+
+    <script>
+        let testRunner = null;
+        let originalConsoleLog = console.log;
+        let originalConsoleError = console.error;
+        let consoleBuffer = [];
+
+        // Override console methods to capture output
+        function captureConsole() {
+            console.log = function(...args) {
+                const message = args.join(' ');
+                consoleBuffer.push(message);
+                updateConsoleOutput();
+                originalConsoleLog.apply(console, args);
+            };
+
+            console.error = function(...args) {
+                const message = '❌ ERROR: ' + args.join(' ');
+                consoleBuffer.push(message);
+                updateConsoleOutput();
+                originalConsoleError.apply(console, args);
+            };
+        }
+
+        // Restore original console methods
+        function restoreConsole() {
+            console.log = originalConsoleLog;
+            console.error = originalConsoleError;
+        }
+
+        // Update console output display
+        function updateConsoleOutput() {
+            const consoleEl = document.getElementById('consoleOutput');
+            consoleEl.textContent = consoleBuffer.join('\n');
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        // Clear console output
+        function clearConsole() {
+            consoleBuffer = [];
+            updateConsoleOutput();
+        }
+
+        // Update progress bar
+        function updateProgress(percentage, text) {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = text;
+        }
+
+        // Update test statistics
+        function updateStats(results) {
+            document.getElementById('totalTests').textContent = results.total;
+            document.getElementById('passedTests').textContent = results.passed;
+            document.getElementById('failedTests').textContent = results.failed;
+            document.getElementById('testDuration').textContent = results.duration + 'ms';
+
+            const resultsEl = document.getElementById('testResults');
+            resultsEl.className = 'test-results ' + (results.success ? 'success' : 'failed');
+            
+            let html = `<h4>Test Execution Summary</h4>`;
+            html += `<p><span class="status-indicator ${results.success ? 'success' : 'error'}"></span>`;
+            html += `${results.success ? 'All tests passed!' : 'Some tests failed'}</p>`;
+            html += `<p>Success Rate: ${((results.passed / results.total) * 100).toFixed(1)}%</p>`;
+            
+            if (results.success) {
+                html += `<p>🎉 Enhanced Position Validation System is working correctly!</p>`;
+                html += `<p>✅ All validation features are functioning as expected.</p>`;
+            } else {
+                html += `<p>⚠️ Please review the console output for detailed error information.</p>`;
+            }
+            
+            resultsEl.innerHTML = html;
+        }
+
+        // Run all tests
+        async function runTests() {
+            if (!testRunner) {
+                if (typeof EnhancedPositionValidationTests === 'undefined') {
+                    alert('❌ Test suite not available. Please check if all scripts are loaded.');
+                    return;
+                }
+                testRunner = new EnhancedPositionValidationTests();
+            }
+
+            clearConsole();
+            captureConsole();
+            
+            updateProgress(0, 'Initializing tests...');
+            
+            try {
+                updateProgress(25, 'Running validation tests...');
+                
+                // Add some delay to show progress
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                updateProgress(50, 'Testing advanced features...');
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                updateProgress(75, 'Finalizing test results...');
+                
+                const results = testRunner.runAllTests();
+                
+                updateProgress(100, 'Tests completed!');
+                updateStats(results);
+                
+            } catch (error) {
+                console.error('Test execution failed:', error);
+                updateProgress(100, 'Tests failed with error');
+                updateStats({
+                    total: 1,
+                    passed: 0,
+                    failed: 1,
+                    duration: 0,
+                    success: false
+                });
+            } finally {
+                restoreConsole();
+            }
+        }
+
+        // Run specific test category
+        async function runSpecificTest(category) {
+            if (!testRunner) {
+                testRunner = new EnhancedPositionValidationTests();
+            }
+
+            clearConsole();
+            captureConsole();
+
+            try {
+                switch (category) {
+                    case 'basic':
+                        testRunner.testBasicValidation();
+                        break;
+                    case 'kings':
+                        testRunner.testKingControlValidation();
+                        break;
+                    case 'pawns':
+                        testRunner.testPawnPositionValidation();
+                        break;
+                    case 'check':
+                        testRunner.testCheckDetection();
+                        break;
+                    default:
+                        console.log('Unknown test category:', category);
+                }
+            } catch (error) {
+                console.error('Specific test failed:', error);
+            } finally {
+                restoreConsole();
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Enhanced Position Validation Test Runner loaded');
+            
+            // Check if required classes are available
+            const requiredClasses = [
+                'EnhancedPositionValidator',
+                'PositionValidationUI', 
+                'EnhancedPositionValidationTests'
+            ];
+            
+            const missingClasses = requiredClasses.filter(className => 
+                typeof window[className] === 'undefined'
+            );
+            
+            if (missingClasses.length > 0) {
+                console.error('❌ Missing required classes:', missingClasses.join(', '));
+                document.getElementById('testResults').innerHTML = 
+                    `<p class="error">❌ Missing required classes: ${missingClasses.join(', ')}</p>
+                     <p>Please ensure all script files are loaded correctly.</p>`;
+            } else {
+                console.log('✅ All required classes are available');
+                document.getElementById('testResults').innerHTML = 
+                    '<p>✅ Test environment ready. All required classes loaded successfully.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Preset Management Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #4CAF50;
+            color: white;
+        }
+        .error {
+            background: #f44336;
+            color: white;
+        }
+        .info {
+            background: #2196F3;
+            color: white;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        input, select {
+            background: #3a3a3a;
+            color: white;
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px;
+            width: 200px;
+        }
+        .user-preset-management {
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .preset-browser, .create-preset, .preset-actions {
+            margin: 15px 0;
+            padding: 15px;
+            background: #444;
+            border-radius: 6px;
+        }
+        .preset-browser select, .create-preset input, .create-preset select {
+            display: block;
+            margin: 5px 0;
+            width: 100%;
+        }
+        .preset-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-danger {
+            background: #f44336 !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 User Preset Management Test</h1>
+    
+    <div class="test-section">
+        <h2>📊 Initialization Test</h2>
+        <div id="initResults"></div>
+        <button onclick="initializeTest()">Initialize Test</button>
+    </div>
+    
+    <!-- User Preset Management UI -->
+    <div class="user-preset-management">
+        <h5 id="userPresetsTitle">My Presets:</h5>
+        
+        <!-- Preset Browser -->
+        <div class="preset-browser">
+            <h6>Browse Presets</h6>
+            <select id="presetCategorySelect" onchange="updatePresetList()">
+                <option value="">All Categories</option>
+                <option value="opening">Opening</option>
+                <option value="middlegame">Middlegame</option>
+                <option value="endgame">Endgame</option>
+                <option value="puzzle">Puzzle</option>
+                <option value="tactical">Tactical</option>
+                <option value="educational">Educational</option>
+                <option value="custom">Custom</option>
+            </select>
+            
+            <select id="presetSelect" onchange="previewSelectedPreset()">
+                <option value="">Select a preset...</option>
+            </select>
+            
+            <button onclick="loadSelectedPreset()" id="btnLoadPreset">📂 <span id="loadPresetText">Load</span></button>
+        </div>
+        
+        <!-- Create Custom Preset -->
+        <div class="create-preset">
+            <h6>Create New Preset</h6>
+            <input type="text" id="customPresetName" placeholder="Preset name..." maxlength="50">
+            <input type="text" id="customPresetDescription" placeholder="Description..." maxlength="100">
+            <select id="customPresetCategory">
+                <option value="custom">Custom</option>
+                <option value="opening">Opening</option>
+                <option value="middlegame">Middlegame</option>
+                <option value="endgame">Endgame</option>
+                <option value="puzzle">Puzzle</option>
+                <option value="tactical">Tactical</option>
+            </select>
+            <button onclick="saveCurrentAsPreset()" id="btnSaveAsPreset">💾 <span id="saveAsPresetText">Save Current</span></button>
+        </div>
+        
+        <!-- Preset Management Actions -->
+        <div class="preset-actions">
+            <button onclick="deleteSelectedPreset()" id="btnDeletePreset" class="btn-danger">🗑️ <span id="deletePresetText">Delete</span></button>
+            <button onclick="exportUserPresets()" id="btnExportPresets">📤 <span id="exportPresetsText">Export</span></button>
+            <button onclick="importUserPresets()" id="btnImportPresets">📥 <span id="importPresetsText">Import</span></button>
+        </div>
+        
+        <!-- Hidden file input for import -->
+        <input type="file" id="presetImportFile" accept=".json" style="display: none;" onchange="handlePresetImport(event)">
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test Results</h2>
+        <div id="testResults"></div>
+        <button onclick="runAllTests()">Run All Tests</button>
+    </div>
+
+    <script src="js/extended-preset-manager.js"></script>
+    <script>
+        let extendedPresetManager;
+        let setupBoard = [
+            ["r", "q", "k", "r"],
+            ["p", "p", "p", "p"],
+            [null, null, null, null],
+            ["P", "P", "P", "P"],
+            ["R", "Q", "K", "R"]
+        ];
+        
+        // Mock enhanced UI for testing
+        const enhancedUI = {
+            showEnhancedNotification: function(message, type, duration) {
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                showResult('testResults', `${type.toUpperCase()}: ${message}`, type === 'error' ? 'error' : type === 'success' ? 'success' : 'info');
+            }
+        };
+        
+        function showResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+        }
+        
+        function initializeTest() {
+            try {
+                extendedPresetManager = new ExtendedPresetManager();
+                showResult('initResults', '✅ Extended Preset Manager initialized successfully', 'success');
+                
+                const stats = extendedPresetManager.getPresetStatistics();
+                showResult('initResults', `📊 Total presets loaded: ${stats.total}`, 'info');
+                
+                // Initialize preset management
+                initializePresetManagement();
+                showResult('initResults', '✅ Preset management UI initialized', 'success');
+                
+            } catch (error) {
+                showResult('initResults', `❌ Initialization failed: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        // User Preset Management Functions (copied from game.js)
+        function initializePresetManagement() {
+            if (!extendedPresetManager) {
+                console.warn("Extended Preset Manager not available");
+                return;
+            }
+            
+            updatePresetList();
+            
+            const categorySelect = document.getElementById('presetCategorySelect');
+            const presetSelect = document.getElementById('presetSelect');
+            
+            if (categorySelect) {
+                categorySelect.addEventListener('change', updatePresetList);
+            }
+            
+            if (presetSelect) {
+                presetSelect.addEventListener('change', previewSelectedPreset);
+            }
+        }
+        
+        function updatePresetList() {
+            if (!extendedPresetManager) return;
+            
+            const categorySelect = document.getElementById('presetCategorySelect');
+            const presetSelect = document.getElementById('presetSelect');
+            
+            if (!categorySelect || !presetSelect) return;
+            
+            const selectedCategory = categorySelect.value;
+            presetSelect.innerHTML = '<option value="">Select a preset...</option>';
+            
+            let presets;
+            if (selectedCategory) {
+                presets = extendedPresetManager.getPresetsByCategory(selectedCategory);
+            } else {
+                presets = extendedPresetManager.getAllPresets();
+            }
+            
+            presets.sort((a, b) => a.name.localeCompare(b.name));
+            
+            presets.forEach(preset => {
+                const option = document.createElement('option');
+                option.value = preset.id;
+                option.textContent = `${preset.name} (${preset.category})`;
+                if (preset.custom) {
+                    option.textContent += ' ⭐';
+                }
+                presetSelect.appendChild(option);
+            });
+        }
+        
+        function previewSelectedPreset() {
+            if (!extendedPresetManager) return;
+            
+            const presetSelect = document.getElementById('presetSelect');
+            if (!presetSelect) return;
+            
+            const presetId = presetSelect.value;
+            if (!presetId) return;
+            
+            const preset = extendedPresetManager.getPresetById(presetId);
+            if (!preset) return;
+            
+            enhancedUI.showEnhancedNotification(
+                `${preset.name}: ${preset.description}`,
+                'info'
+            );
+        }
+        
+        function loadSelectedPreset() {
+            if (!extendedPresetManager) return;
+            
+            const presetSelect = document.getElementById('presetSelect');
+            if (!presetSelect) return;
+            
+            const presetId = presetSelect.value;
+            if (!presetId) {
+                enhancedUI.showEnhancedNotification('Please select a preset first', 'warning');
+                return;
+            }
+            
+            const preset = extendedPresetManager.getPresetById(presetId);
+            if (preset) {
+                setupBoard = preset.position.map(row => [...row]);
+                enhancedUI.showEnhancedNotification(`${preset.name} loaded successfully!`, 'success');
+            }
+        }
+        
+        function saveCurrentAsPreset() {
+            if (!extendedPresetManager) {
+                enhancedUI.showEnhancedNotification('Preset manager not available', 'error');
+                return;
+            }
+            
+            const nameInput = document.getElementById('customPresetName');
+            const descriptionInput = document.getElementById('customPresetDescription');
+            const categorySelect = document.getElementById('customPresetCategory');
+            
+            if (!nameInput || !descriptionInput || !categorySelect) {
+                console.error("Preset creation inputs not found");
+                return;
+            }
+            
+            const name = nameInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const category = categorySelect.value;
+            
+            if (!name) {
+                enhancedUI.showEnhancedNotification('Please enter a preset name', 'warning');
+                nameInput.focus();
+                return;
+            }
+            
+            const validation = extendedPresetManager.validatePresetPosition(setupBoard);
+            if (!validation.valid) {
+                enhancedUI.showEnhancedNotification(
+                    `Invalid position: ${validation.errors.join(', ')}`,
+                    'error'
+                );
+                return;
+            }
+            
+            try {
+                const preset = extendedPresetManager.createCustomPreset(
+                    name,
+                    description || 'Custom position',
+                    setupBoard,
+                    category,
+                    ['custom', 'user-created']
+                );
+                
+                nameInput.value = '';
+                descriptionInput.value = '';
+                categorySelect.value = 'custom';
+                
+                updatePresetList();
+                
+                const presetSelect = document.getElementById('presetSelect');
+                if (presetSelect) {
+                    presetSelect.value = preset.id;
+                }
+                
+                enhancedUI.showEnhancedNotification(
+                    `Preset "${preset.name}" saved successfully!`,
+                    'success'
+                );
+                
+            } catch (error) {
+                console.error('Failed to save preset:', error);
+                enhancedUI.showEnhancedNotification(
+                    `Failed to save preset: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+        
+        function deleteSelectedPreset() {
+            if (!extendedPresetManager) return;
+            
+            const presetSelect = document.getElementById('presetSelect');
+            if (!presetSelect) return;
+            
+            const presetId = presetSelect.value;
+            if (!presetId) {
+                enhancedUI.showEnhancedNotification('Please select a preset to delete', 'warning');
+                return;
+            }
+            
+            const preset = extendedPresetManager.getPresetById(presetId);
+            if (!preset) return;
+            
+            if (!preset.custom) {
+                enhancedUI.showEnhancedNotification('Cannot delete built-in presets', 'warning');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to delete the preset "${preset.name}"?`)) {
+                return;
+            }
+            
+            try {
+                const deleted = extendedPresetManager.deleteCustomPreset(presetId);
+                if (deleted) {
+                    updatePresetList();
+                    enhancedUI.showEnhancedNotification(
+                        `Preset "${preset.name}" deleted successfully`,
+                        'success'
+                    );
+                } else {
+                    enhancedUI.showEnhancedNotification('Failed to delete preset', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to delete preset:', error);
+                enhancedUI.showEnhancedNotification(
+                    `Failed to delete preset: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+        
+        function exportUserPresets() {
+            if (!extendedPresetManager) return;
+            
+            try {
+                const jsonData = extendedPresetManager.exportPresets(true);
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `chess-presets-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                enhancedUI.showEnhancedNotification('Presets exported successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Failed to export presets:', error);
+                enhancedUI.showEnhancedNotification(
+                    `Failed to export presets: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+        
+        function importUserPresets() {
+            const fileInput = document.getElementById('presetImportFile');
+            if (fileInput) {
+                fileInput.click();
+            }
+        }
+        
+        function handlePresetImport(event) {
+            if (!extendedPresetManager) return;
+            
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const result = extendedPresetManager.importPresets(e.target.result);
+                    
+                    if (result.success) {
+                        updatePresetList();
+                        enhancedUI.showEnhancedNotification(result.message, 'success');
+                    } else {
+                        enhancedUI.showEnhancedNotification(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Failed to import presets:', error);
+                    enhancedUI.showEnhancedNotification(
+                        `Failed to import presets: ${error.message}`,
+                        'error'
+                    );
+                }
+            };
+            
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        function runAllTests() {
+            const container = document.getElementById('testResults');
+            container.innerHTML = '';
+            
+            showResult('testResults', '🧪 Running User Preset Management Tests...', 'info');
+            
+            // Test 1: Create custom preset
+            try {
+                const testPreset = extendedPresetManager.createCustomPreset(
+                    'Test Preset',
+                    'A test preset for validation',
+                    setupBoard,
+                    'custom',
+                    ['test']
+                );
+                showResult('testResults', '✅ Custom preset creation test passed', 'success');
+                
+                // Test 2: Load preset
+                const loadedPreset = extendedPresetManager.getPresetById(testPreset.id);
+                if (loadedPreset && loadedPreset.name === 'Test Preset') {
+                    showResult('testResults', '✅ Preset loading test passed', 'success');
+                } else {
+                    showResult('testResults', '❌ Preset loading test failed', 'error');
+                }
+                
+                // Test 3: Delete preset
+                const deleted = extendedPresetManager.deleteCustomPreset(testPreset.id);
+                if (deleted) {
+                    showResult('testResults', '✅ Preset deletion test passed', 'success');
+                } else {
+                    showResult('testResults', '❌ Preset deletion test failed', 'error');
+                }
+                
+            } catch (error) {
+                showResult('testResults', `❌ Custom preset test failed: ${error.message}`, 'error');
+            }
+            
+            // Test 4: Export/Import
+            try {
+                const exportData = extendedPresetManager.exportPresets(true);
+                if (exportData && exportData.length > 0) {
+                    showResult('testResults', '✅ Export test passed', 'success');
+                    
+                    // Test import
+                    const importResult = extendedPresetManager.importPresets(exportData);
+                    if (importResult.success !== undefined) {
+                        showResult('testResults', '✅ Import test passed', 'success');
+                    } else {
+                        showResult('testResults', '❌ Import test failed', 'error');
+                    }
+                } else {
+                    showResult('testResults', '❌ Export test failed', 'error');
+                }
+            } catch (error) {
+                showResult('testResults', `❌ Export/Import test failed: ${error.message}`, 'error');
+            }
+            
+            showResult('testResults', '🏁 All tests completed!', 'info');
+        }
+        
+        // Initialize when page loads
+        window.onload = function() {
+            initializeTest();
+        };
+    </script>
+</body>
+</html>

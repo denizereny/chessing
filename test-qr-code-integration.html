@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .qr-display {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        #testQRCanvas {
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        
+        .test-results {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .position-display {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body>
+    <h1>📱 QR Code Integration Test</h1>
+    <p>Test the QR code generation and integration functionality for position sharing.</p>
+
+    <!-- QR Code Generation Test -->
+    <div class="test-section">
+        <h2>🔧 QR Code Generation Test</h2>
+        <p>Test basic QR code generation functionality.</p>
+        
+        <div class="test-controls">
+            <input type="text" id="testText" placeholder="Enter text to encode..." value="https://example.com/position=ABC123">
+            <button class="btn-primary" onclick="testQRGeneration()">Generate QR</button>
+            <button class="btn-secondary" onclick="clearQRDisplay()">Clear</button>
+        </div>
+        
+        <div class="qr-display" id="qrDisplay" style="display: none;">
+            <canvas id="testQRCanvas" width="250" height="250"></canvas>
+            <div id="qrStats"></div>
+        </div>
+        
+        <div id="qrResults" class="test-results" style="display: none;"></div>
+    </div>
+
+    <!-- Position Sharing Integration Test -->
+    <div class="test-section">
+        <h2>🔗 Position Sharing Integration Test</h2>
+        <p>Test QR code integration with position sharing system.</p>
+        
+        <div class="test-controls">
+            <button class="btn-primary" onclick="createTestPosition()">Create Test Position</button>
+            <button class="btn-secondary" onclick="generatePositionQR()" id="btnGenQR" disabled>Generate Position QR</button>
+            <button class="btn-success" onclick="testRoundTrip()" id="btnRoundTrip" disabled>Test Round-trip</button>
+        </div>
+        
+        <div class="position-display" id="positionDisplay" style="display: none;"></div>
+        
+        <div class="qr-display" id="positionQRDisplay" style="display: none;">
+            <canvas id="positionQRCanvas" width="300" height="300"></canvas>
+            <div id="positionQRStats"></div>
+        </div>
+        
+        <div id="integrationResults" class="test-results" style="display: none;"></div>
+    </div>
+
+    <!-- Mobile Optimization Test -->
+    <div class="test-section">
+        <h2>📱 Mobile Optimization Test</h2>
+        <p>Test mobile-specific QR code features.</p>
+        
+        <div class="test-controls">
+            <button class="btn-primary" onclick="testMobileQR()">Generate Mobile QR</button>
+            <button class="btn-secondary" onclick="testCameraAccess()" id="btnCamera">Test Camera</button>
+            <button class="btn-danger" onclick="stopCameraTest()" id="btnStopCamera" disabled style="display: none;">Stop Camera</button>
+        </div>
+        
+        <div class="qr-display" id="mobileQRDisplay" style="display: none;">
+            <canvas id="mobileQRCanvas" width="250" height="250"></canvas>
+            <div id="mobileQRInfo"></div>
+        </div>
+        
+        <div id="cameraDisplay" style="display: none; text-align: center; margin: 20px 0;">
+            <video id="testVideo" width="300" height="200" autoplay muted style="border: 2px solid #007bff; border-radius: 5px;"></video>
+            <div id="cameraStatus" style="margin-top: 10px; font-size: 14px; color: #6c757d;"></div>
+        </div>
+        
+        <div id="mobileResults" class="test-results" style="display: none;"></div>
+    </div>
+
+    <!-- Load required scripts -->
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/qr-code-generator.js"></script>
+
+    <script>
+        // Global test variables
+        let qrGenerator = null;
+        let sharingSystem = null;
+        let testPosition = null;
+        let currentShareCode = null;
+
+        // Initialize test environment
+        function initializeTests() {
+            try {
+                qrGenerator = new QRCodeGenerator();
+                sharingSystem = new PositionSharingSystem();
+                console.log('✅ Test environment initialized');
+                
+                // Create a default test position
+                createTestPosition();
+            } catch (error) {
+                console.error('❌ Failed to initialize tests:', error);
+                showResults('qrResults', `Initialization failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test basic QR code generation
+        async function testQRGeneration() {
+            const text = document.getElementById('testText').value;
+            const canvas = document.getElementById('testQRCanvas');
+            const display = document.getElementById('qrDisplay');
+            const results = document.getElementById('qrResults');
+            
+            if (!text.trim()) {
+                showResults('qrResults', 'Please enter text to encode', 'error');
+                return;
+            }
+            
+            try {
+                const success = await qrGenerator.generateQRCode(text, canvas);
+                const stats = qrGenerator.getQRStatistics(text, canvas);
+                
+                display.style.display = 'block';
+                
+                const statsDiv = document.getElementById('qrStats');
+                statsDiv.innerHTML = `
+                    <strong>QR Code Statistics:</strong><br>
+                    Size: ${stats.qrSize}x${stats.qrSize}<br>
+                    Canvas: ${stats.canvasSize}<br>
+                    Scan Distance: ${stats.estimatedScanDistance}<br>
+                    Mobile Optimized: ${stats.mobileOptimized ? 'Yes' : 'No'}
+                `;
+                
+                const resultText = `QR Generation Test: ${success ? 'PASSED' : 'FAILED'}
+Input: ${text}
+Length: ${text.length} characters
+QR Size: ${stats.qrSize}x${stats.qrSize}
+Canvas Size: ${stats.canvasSize}
+Estimated Scan Distance: ${stats.estimatedScanDistance}
+Mobile Optimized: ${stats.mobileOptimized}`;
+                
+                showResults('qrResults', resultText, success ? 'success' : 'error');
+                
+            } catch (error) {
+                console.error('QR generation test failed:', error);
+                showResults('qrResults', `QR generation failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Clear QR display
+        function clearQRDisplay() {
+            document.getElementById('qrDisplay').style.display = 'none';
+            document.getElementById('qrResults').style.display = 'none';
+        }
+
+        // Create test position
+        function createTestPosition() {
+            // Create a simple 4x5 chess position for testing
+            testPosition = [
+                ['r', 'n', 'b', 'q'],  // Row 0 (Black back rank)
+                ['p', 'p', 'p', 'p'],  // Row 1 (Black pawns)
+                [null, null, null, null],  // Row 2 (Empty)
+                ['P', 'P', 'P', 'P'],  // Row 3 (White pawns)
+                ['R', 'N', 'B', 'K']   // Row 4 (White back rank)
+            ];
+            
+            // Display the position
+            const display = document.getElementById('positionDisplay');
+            display.style.display = 'block';
+            display.textContent = formatPosition(testPosition);
+            
+            // Enable buttons
+            document.getElementById('btnGenQR').disabled = false;
+            document.getElementById('btnRoundTrip').disabled = false;
+            
+            console.log('✅ Test position created');
+        }
+
+        // Generate QR code for position
+        async function generatePositionQR() {
+            if (!testPosition) {
+                showResults('integrationResults', 'No test position available', 'error');
+                return;
+            }
+            
+            try {
+                // Encode position
+                currentShareCode = sharingSystem.encodePosition(testPosition);
+                const shareUrl = sharingSystem.shareViaURL(testPosition);
+                
+                // Generate QR code
+                const canvas = document.getElementById('positionQRCanvas');
+                const success = await qrGenerator.generatePositionQR(shareUrl, canvas);
+                
+                if (success) {
+                    const display = document.getElementById('positionQRDisplay');
+                    display.style.display = 'block';
+                    
+                    const stats = qrGenerator.getQRStatistics(shareUrl, canvas);
+                    const statsDiv = document.getElementById('positionQRStats');
+                    statsDiv.innerHTML = `
+                        <strong>Position QR Statistics:</strong><br>
+                        Share Code: ${currentShareCode}<br>
+                        URL Length: ${shareUrl.length} chars<br>
+                        QR Size: ${stats.qrSize}x${stats.qrSize}<br>
+                        Scan Distance: ${stats.estimatedScanDistance}
+                    `;
+                    
+                    const resultText = `Position QR Generation: PASSED
+Share Code: ${currentShareCode}
+Code Length: ${currentShareCode.length} characters
+Share URL: ${shareUrl}
+URL Length: ${shareUrl.length} characters
+QR Size: ${stats.qrSize}x${stats.qrSize}`;
+                    
+                    showResults('integrationResults', resultText, 'success');
+                } else {
+                    showResults('integrationResults', 'Position QR generation failed', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Position QR generation failed:', error);
+                showResults('integrationResults', `Position QR failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test round-trip functionality
+        async function testRoundTrip() {
+            if (!testPosition || !currentShareCode) {
+                showResults('integrationResults', 'Generate position QR first', 'error');
+                return;
+            }
+            
+            try {
+                // Test sharing system round-trip
+                const decodedPosition = sharingSystem.decodePosition(currentShareCode);
+                const positionsMatch = sharingSystem.comparePositions(testPosition, decodedPosition);
+                
+                // Test QR code URL extraction
+                const shareUrl = sharingSystem.shareViaURL(testPosition);
+                const extractedCode = qrGenerator.extractPositionCode(shareUrl);
+                const codeMatches = extractedCode === currentShareCode;
+                
+                // Test QR data validation
+                const urlValid = qrGenerator.validateQRData(shareUrl);
+                const codeValid = qrGenerator.validateQRData(currentShareCode);
+                
+                const allTestsPassed = positionsMatch && codeMatches && urlValid && codeValid;
+                
+                const resultText = `Round-trip Test: ${allTestsPassed ? 'PASSED' : 'FAILED'}
+
+Position Encoding/Decoding: ${positionsMatch ? 'PASSED' : 'FAILED'}
+  Original: ${formatPositionOneLine(testPosition)}
+  Decoded:  ${formatPositionOneLine(decodedPosition)}
+
+URL Code Extraction: ${codeMatches ? 'PASSED' : 'FAILED'}
+  Expected: ${currentShareCode}
+  Extracted: ${extractedCode}
+
+QR Data Validation: ${urlValid && codeValid ? 'PASSED' : 'FAILED'}
+  URL Valid: ${urlValid}
+  Code Valid: ${codeValid}
+
+Overall Result: ${allTestsPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`;
+                
+                showResults('integrationResults', resultText, allTestsPassed ? 'success' : 'error');
+                
+            } catch (error) {
+                console.error('Round-trip test failed:', error);
+                showResults('integrationResults', `Round-trip test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test mobile QR generation
+        async function testMobileQR() {
+            if (!testPosition) {
+                createTestPosition();
+            }
+            
+            try {
+                const shareUrl = sharingSystem.shareViaURL(testPosition);
+                const canvas = document.getElementById('mobileQRCanvas');
+                const success = await qrGenerator.generateMobileQR(shareUrl, canvas);
+                
+                if (success) {
+                    const display = document.getElementById('mobileQRDisplay');
+                    display.style.display = 'block';
+                    
+                    const stats = qrGenerator.getQRStatistics(shareUrl, canvas);
+                    const infoDiv = document.getElementById('mobileQRInfo');
+                    infoDiv.innerHTML = `
+                        <strong>Mobile QR Code:</strong><br>
+                        High error correction for mobile scanning<br>
+                        Size: ${stats.qrSize}x${stats.qrSize}<br>
+                        Optimal Distance: ${stats.estimatedScanDistance}<br>
+                        Mobile Optimized: ${stats.mobileOptimized ? 'Yes' : 'No'}
+                    `;
+                    
+                    showResults('mobileResults', `Mobile QR Generation: PASSED
+Canvas Size: ${stats.canvasSize}
+QR Size: ${stats.qrSize}x${stats.qrSize}
+Mobile Optimized: ${stats.mobileOptimized}
+Scan Distance: ${stats.estimatedScanDistance}`, 'success');
+                } else {
+                    showResults('mobileResults', 'Mobile QR generation failed', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Mobile QR test failed:', error);
+                showResults('mobileResults', `Mobile QR test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test camera access
+        async function testCameraAccess() {
+            const video = document.getElementById('testVideo');
+            const display = document.getElementById('cameraDisplay');
+            const status = document.getElementById('cameraStatus');
+            const btnCamera = document.getElementById('btnCamera');
+            const btnStop = document.getElementById('btnStopCamera');
+            
+            try {
+                display.style.display = 'block';
+                status.textContent = 'Requesting camera access...';
+                btnCamera.disabled = true;
+                btnStop.disabled = false;
+                btnStop.style.display = 'inline-block';
+                
+                await qrGenerator.readQRFromCamera(video);
+                
+                status.textContent = 'Camera access granted! (QR reading requires additional library)';
+                
+                showResults('mobileResults', `Camera Access Test: PASSED
+Camera stream started successfully
+Video dimensions: ${video.videoWidth}x${video.videoHeight}
+Note: Actual QR reading requires jsQR or similar library`, 'success');
+                
+            } catch (error) {
+                console.error('Camera test failed:', error);
+                status.textContent = 'Camera access failed: ' + error.message;
+                showResults('mobileResults', `Camera Access Test: FAILED
+Error: ${error.message}
+This is expected if camera permission is denied or not available`, 'error');
+                stopCameraTest();
+            }
+        }
+
+        // Stop camera test
+        function stopCameraTest() {
+            const video = document.getElementById('testVideo');
+            const display = document.getElementById('cameraDisplay');
+            const btnCamera = document.getElementById('btnCamera');
+            const btnStop = document.getElementById('btnStopCamera');
+            
+            qrGenerator.stopCamera(video);
+            display.style.display = 'none';
+            btnCamera.disabled = false;
+            btnStop.disabled = true;
+            btnStop.style.display = 'none';
+        }
+
+        // Helper functions
+        function showResults(elementId, text, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = text;
+            element.className = `test-results ${type}`;
+            element.style.display = 'block';
+        }
+
+        function formatPosition(position) {
+            let result = 'Position (5x4 board):\n';
+            for (let row = 0; row < 5; row++) {
+                result += `Row ${row}: `;
+                for (let col = 0; col < 4; col++) {
+                    const piece = position[row][col];
+                    result += (piece || '.').padEnd(2);
+                }
+                result += '\n';
+            }
+            return result;
+        }
+
+        function formatPositionOneLine(position) {
+            return position.map(row => 
+                row.map(piece => piece || '.').join('')
+            ).join('/');
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', initializeTests);
+    </script>
+</body>
+</html>

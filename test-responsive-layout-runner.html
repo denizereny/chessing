@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Layout Tests</title>
+    
+    <!-- Jasmine CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.6.0/jasmine.css">
+    
+    <!-- Application CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/enhanced-drag-drop.css">
+    <link rel="stylesheet" href="css/responsive-layout.css">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-main, #121212);
+            color: var(--text-primary, #e0e0e0);
+        }
+        
+        .test-header {
+            background: var(--bg-card, #1e1e1e);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--accent-gold, #d4af37);
+            text-align: center;
+        }
+        
+        .test-header h1 {
+            color: var(--accent-gold, #d4af37);
+            margin: 0 0 10px 0;
+        }
+        
+        .test-info {
+            background: var(--bg-panel, #252525);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            background: var(--accent-blue, #5c85d6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .test-btn:hover {
+            background: #4a70c0;
+            transform: translateY(-1px);
+        }
+        
+        .test-btn.secondary {
+            background: var(--bg-panel, #252525);
+            border: 2px solid var(--border-color, #333);
+        }
+        
+        .test-btn.secondary:hover {
+            border-color: var(--accent-gold, #d4af37);
+        }
+        
+        /* Override Jasmine styles for dark theme */
+        .jasmine_html-reporter {
+            background: var(--bg-main, #121212) !important;
+            color: var(--text-primary, #e0e0e0) !important;
+        }
+        
+        .jasmine_html-reporter .jasmine-banner {
+            background: var(--bg-card, #1e1e1e) !important;
+            border-bottom: 2px solid var(--accent-gold, #d4af37) !important;
+        }
+        
+        .jasmine_html-reporter .jasmine-banner .jasmine-title {
+            color: var(--accent-gold, #d4af37) !important;
+        }
+        
+        .jasmine_html-reporter .jasmine-summary {
+            background: var(--bg-panel, #252525) !important;
+            color: var(--text-primary, #e0e0e0) !important;
+        }
+        
+        .jasmine_html-reporter .jasmine-results .jasmine-passed {
+            background: rgba(76, 175, 80, 0.1) !important;
+            color: #4caf50 !important;
+        }
+        
+        .jasmine_html-reporter .jasmine-results .jasmine-failed {
+            background: rgba(244, 67, 54, 0.1) !important;
+            color: #f44336 !important;
+        }
+        
+        .jasmine_html-reporter .jasmine-spec-detail {
+            background: var(--bg-card, #1e1e1e) !important;
+            color: var(--text-primary, #e0e0e0) !important;
+            border: 1px solid var(--border-color, #333) !important;
+        }
+        
+        .responsive-test-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-gold, #d4af37);
+            color: var(--bg-card, #1e1e1e);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 9999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="responsive-test-indicator" id="testIndicator">Test Mode</div>
+    
+    <div class="test-header">
+        <h1>🎯 Responsive Layout System Tests</h1>
+        <p>Comprehensive testing for the Enhanced Piece Setup responsive layout system</p>
+    </div>
+    
+    <div class="test-info">
+        <h3>📋 Test Coverage</h3>
+        <ul>
+            <li><strong>Breakpoint Detection:</strong> Mobile, Tablet, Desktop, Large Desktop</li>
+            <li><strong>Dynamic Sizing:</strong> Piece and square size calculations</li>
+            <li><strong>Collapsible Palette:</strong> Mobile palette functionality</li>
+            <li><strong>Grid System:</strong> Responsive grid layouts</li>
+            <li><strong>Orientation Handling:</strong> Portrait and landscape modes</li>
+            <li><strong>Event System:</strong> Layout change events</li>
+            <li><strong>Property-Based Tests:</strong> Universal responsive properties</li>
+        </ul>
+    </div>
+    
+    <div class="test-controls">
+        <button class="test-btn" onclick="runAllTests()">🚀 Run All Tests</button>
+        <button class="test-btn" onclick="runUnitTests()">🔧 Unit Tests Only</button>
+        <button class="test-btn" onclick="runPropertyTests()">🎯 Property Tests Only</button>
+        <button class="test-btn secondary" onclick="clearResults()">🗑️ Clear Results</button>
+        <button class="test-btn secondary" onclick="showTestInfo()">ℹ️ Test Info</button>
+    </div>
+    
+    <!-- Jasmine Test Results will appear here -->
+    
+    <!-- Jasmine JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.6.0/jasmine.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.6.0/jasmine-html.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.6.0/boot0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.6.0/boot1.js"></script>
+    
+    <!-- Application JavaScript -->
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/mobile-optimization-manager.js"></script>
+    <script src="js/responsive-layout-manager.js"></script>
+    
+    <!-- Test Files -->
+    <script src="test/responsive-layout.test.js"></script>
+    
+    <script>
+        // Test configuration
+        let testConfig = {
+            runOnLoad: true,
+            showPassedTests: true,
+            randomizeTests: false,
+            stopOnFailure: false
+        };
+        
+        // Initialize test environment
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Initializing Responsive Layout Test Environment...');
+            
+            // Configure Jasmine
+            jasmine.getEnv().configure({
+                random: testConfig.randomizeTests,
+                stopOnSpecFailure: testConfig.stopOnFailure
+            });
+            
+            // Update test indicator
+            updateTestIndicator();
+            
+            // Run tests if configured
+            if (testConfig.runOnLoad) {
+                setTimeout(runAllTests, 1000);
+            }
+            
+            console.log('✅ Test environment initialized');
+        });
+        
+        function updateTestIndicator() {
+            const indicator = document.getElementById('testIndicator');
+            const viewport = `${window.innerWidth}x${window.innerHeight}`;
+            const breakpoint = detectCurrentBreakpoint();
+            indicator.textContent = `${breakpoint} (${viewport})`;
+        }
+        
+        function detectCurrentBreakpoint() {
+            const width = window.innerWidth;
+            if (width >= 1200) return 'Large';
+            if (width >= 1024) return 'Desktop';
+            if (width >= 768) return 'Tablet';
+            return 'Mobile';
+        }
+        
+        function runAllTests() {
+            console.log('🚀 Running all responsive layout tests...');
+            
+            // Clear previous results
+            clearResults();
+            
+            // Run Jasmine tests
+            jasmine.getEnv().execute();
+            
+            // Update indicator
+            updateTestIndicator();
+        }
+        
+        function runUnitTests() {
+            console.log('🔧 Running unit tests only...');
+            
+            clearResults();
+            
+            // Filter to run only unit tests (not property tests)
+            jasmine.getEnv().configure({
+                specFilter: function(spec) {
+                    return !spec.getFullName().includes('Properties');
+                }
+            });
+            
+            jasmine.getEnv().execute();
+        }
+        
+        function runPropertyTests() {
+            console.log('🎯 Running property tests only...');
+            
+            clearResults();
+            
+            // Filter to run only property tests
+            jasmine.getEnv().configure({
+                specFilter: function(spec) {
+                    return spec.getFullName().includes('Properties');
+                }
+            });
+            
+            jasmine.getEnv().execute();
+        }
+        
+        function clearResults() {
+            // Clear Jasmine results
+            const results = document.querySelector('.jasmine_html-reporter');
+            if (results) {
+                results.innerHTML = '';
+            }
+            
+            // Reset spec filter
+            jasmine.getEnv().configure({
+                specFilter: function(spec) {
+                    return true;
+                }
+            });
+        }
+        
+        function showTestInfo() {
+            const info = `
+🎯 Responsive Layout System Tests
+
+📋 Test Categories:
+• Unit Tests: Test individual components and functions
+• Property Tests: Test universal properties across all inputs
+
+🔧 Unit Test Coverage:
+• Initialization and setup
+• Breakpoint detection (Mobile, Tablet, Desktop, Large)
+• Layout application and CSS updates
+• Collapsible palette functionality
+• Dynamic sizing calculations
+• Orientation handling
+• Grid system updates
+• Event dispatching
+• State management
+• Cleanup procedures
+
+🎯 Property Test Coverage:
+• Property 21: Mobile Screen Adaptation
+• Property 2: Responsive Interface Adaptation
+• Breakpoint Consistency
+• Size Calculation Bounds
+
+⌨️ Keyboard Shortcuts:
+• Ctrl/Cmd + R: Run All Tests
+• Ctrl/Cmd + U: Unit Tests Only
+• Ctrl/Cmd + P: Property Tests Only
+• Ctrl/Cmd + C: Clear Results
+
+📱 Responsive Testing:
+Resize your browser window to test different breakpoints:
+• Mobile: < 768px
+• Tablet: 768px - 1023px
+• Desktop: 1024px - 1199px
+• Large: ≥ 1200px
+            `;
+            
+            alert(info);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'r':
+                        e.preventDefault();
+                        runAllTests();
+                        break;
+                    case 'u':
+                        e.preventDefault();
+                        runUnitTests();
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        runPropertyTests();
+                        break;
+                    case 'c':
+                        e.preventDefault();
+                        clearResults();
+                        break;
+                }
+            }
+        });
+        
+        // Update indicator on resize
+        window.addEventListener('resize', function() {
+            setTimeout(updateTestIndicator, 100);
+        });
+        
+        // Test result monitoring
+        jasmine.getEnv().addReporter({
+            jasmineDone: function(result) {
+                console.log('📊 Test Results Summary:');
+                console.log(`Total: ${result.totalCount}`);
+                console.log(`Passed: ${result.totalCount - result.failedCount}`);
+                console.log(`Failed: ${result.failedCount}`);
+                
+                if (result.failedCount === 0) {
+                    console.log('✅ All tests passed!');
+                } else {
+                    console.log('❌ Some tests failed');
+                }
+                
+                // Update page title with results
+                document.title = `Responsive Layout Tests - ${result.failedCount === 0 ? 'PASSED' : 'FAILED'} (${result.totalCount - result.failedCount}/${result.totalCount})`;
+            },
+            
+            specDone: function(result) {
+                if (result.status === 'failed') {
+                    console.error(`❌ ${result.fullName}:`, result.failedExpectations);
+                } else if (result.status === 'passed') {
+                    console.log(`✅ ${result.fullName}`);
+                }
+            }
+        });
+        
+        // Performance monitoring
+        let testStartTime;
+        jasmine.getEnv().addReporter({
+            jasmineStarted: function() {
+                testStartTime = performance.now();
+                console.log('⏱️ Tests started');
+            },
+            
+            jasmineDone: function() {
+                const duration = performance.now() - testStartTime;
+                console.log(`⏱️ Tests completed in ${duration.toFixed(2)}ms`);
+            }
+        });
+        
+        console.log(`
+🎯 Responsive Layout Test Runner Loaded
+
+Commands:
+• runAllTests() - Run all tests
+• runUnitTests() - Run unit tests only  
+• runPropertyTests() - Run property tests only
+• clearResults() - Clear test results
+• showTestInfo() - Show test information
+
+Keyboard Shortcuts:
+• Ctrl/Cmd + R: Run All Tests
+• Ctrl/Cmd + U: Unit Tests Only
+• Ctrl/Cmd + P: Property Tests Only
+• Ctrl/Cmd + C: Clear Results
+        `);
+    </script>
+</body>
+</html>

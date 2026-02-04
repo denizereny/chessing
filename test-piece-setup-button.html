@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piece Setup Button Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-button { 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        .test-button:hover { background: #0056b3; }
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 1000; 
+        }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            max-width: 500px; 
+            width: 90%; 
+        }
+        .close-btn { 
+            float: right; 
+            font-size: 24px; 
+            cursor: pointer; 
+            color: #999; 
+        }
+        .close-btn:hover { color: #000; }
+        .log { 
+            background: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            font-family: monospace; 
+            white-space: pre-wrap; 
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Piece Setup Button Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Direct Function Call</h2>
+        <button class="test-button" onclick="testDirectCall()">Test openPieceSetup()</button>
+        <div id="directCallLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Modal Visibility</h2>
+        <button class="test-button" onclick="testModalVisibility()">Test Modal Show/Hide</button>
+        <div id="modalLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Integration Manager</h2>
+        <button class="test-button" onclick="testIntegrationManager()">Test Integration Manager</button>
+        <div id="integrationLog" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Original Button</h2>
+        <button class="test-button" onclick="openPieceSetup()">♔ Original Piece Setup Button</button>
+        <div id="originalLog" class="log"></div>
+    </div>
+
+    <!-- Test Modal -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeTestModal()">&times;</span>
+            <h3>Test Modal</h3>
+            <p>This is a test modal to verify modal functionality works.</p>
+            <button onclick="closeTestModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Include all the game scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/enhanced-theme-manager.js"></script>
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/enhanced-drag-drop.js"></script>
+    <script src="js/extended-preset-manager.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/position-evaluation-report.js"></script>
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/position-history-manager.js"></script>
+    <script src="js/position-history-interface.js"></script>
+    <script src="js/mobile-optimization-manager.js"></script>
+    <script src="js/responsive-layout-manager.js"></script>
+    <script src="js/performance-monitor.js"></script>
+    <script src="js/piece-setup-integration.js"></script>
+    <script src="js/game.js"></script>
+
+    <script>
+        function log(elementId, message) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            element.textContent += `[${timestamp}] ${message}\n`;
+        }
+
+        function testDirectCall() {
+            log('directCallLog', 'Testing direct openPieceSetup() call...');
+            
+            try {
+                if (typeof openPieceSetup === 'function') {
+                    log('directCallLog', '✅ openPieceSetup function exists');
+                    openPieceSetup();
+                    log('directCallLog', '✅ openPieceSetup() called successfully');
+                } else {
+                    log('directCallLog', '❌ openPieceSetup function not found');
+                }
+            } catch (error) {
+                log('directCallLog', `❌ Error calling openPieceSetup(): ${error.message}`);
+            }
+        }
+
+        function testModalVisibility() {
+            log('modalLog', 'Testing modal visibility...');
+            
+            const modal = document.getElementById('pieceSetupModal');
+            if (modal) {
+                log('modalLog', '✅ pieceSetupModal element found');
+                log('modalLog', `Current classes: ${modal.className}`);
+                log('modalLog', `Current display: ${getComputedStyle(modal).display}`);
+                
+                // Try to show modal
+                modal.classList.remove('hidden');
+                log('modalLog', '✅ Removed hidden class');
+                log('modalLog', `New display: ${getComputedStyle(modal).display}`);
+            } else {
+                log('modalLog', '❌ pieceSetupModal element not found');
+                log('modalLog', 'Available elements with "modal" in id:');
+                const allElements = document.querySelectorAll('[id*="modal"]');
+                allElements.forEach(el => {
+                    log('modalLog', `  - ${el.id}: ${el.tagName}`);
+                });
+            }
+        }
+
+        function testIntegrationManager() {
+            log('integrationLog', 'Testing integration manager...');
+            
+            if (typeof initializePieceSetupIntegration === 'function') {
+                log('integrationLog', '✅ initializePieceSetupIntegration function exists');
+                
+                initializePieceSetupIntegration().then(() => {
+                    log('integrationLog', '✅ Integration manager initialized successfully');
+                }).catch(error => {
+                    log('integrationLog', `❌ Integration manager error: ${error.message}`);
+                });
+            } else {
+                log('integrationLog', '❌ initializePieceSetupIntegration function not found');
+            }
+            
+            if (typeof PieceSetupIntegrationManager !== 'undefined') {
+                log('integrationLog', '✅ PieceSetupIntegrationManager class exists');
+            } else {
+                log('integrationLog', '❌ PieceSetupIntegrationManager class not found');
+            }
+        }
+
+        function closeTestModal() {
+            document.getElementById('testModal').classList.remove('show');
+        }
+
+        // Override console.log to capture logs
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            log('originalLog', `LOG: ${args.join(' ')}`);
+        };
+        
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            log('originalLog', `ERROR: ${args.join(' ')}`);
+        };
+
+        // Test on page load
+        window.addEventListener('load', () => {
+            log('originalLog', 'Page loaded, running initial tests...');
+            
+            // Check if modal exists
+            const modal = document.getElementById('pieceSetupModal');
+            log('originalLog', `pieceSetupModal exists: ${!!modal}`);
+            
+            // Check if functions exist
+            log('originalLog', `openPieceSetup exists: ${typeof openPieceSetup === 'function'}`);
+            log('originalLog', `initializePieceSetup exists: ${typeof initializePieceSetup === 'function'}`);
+            log('originalLog', `initializePieceSetupIntegration exists: ${typeof initializePieceSetupIntegration === 'function'}`);
+        });
+    </script>
+
+    <!-- Copy the piece setup modal from index.html -->
+    <div id="pieceSetupModal" class="piece-setup-modal hidden">
+        <div class="piece-setup-content">
+            <div class="modal-header">
+                <h2 id="pieceSetupTitle">♔ Piece Setup</h2>
+                <button class="close-modal" onclick="closePieceSetup()">✖</button>
+            </div>
+            
+            <div class="piece-setup-body">
+                <div class="setup-instructions">
+                    <p id="setupInstructions">Drag pieces from the palette to the board, or click to select and place. Create your custom position!</p>
+                </div>
+                
+                <div class="setup-container">
+                    <div class="piece-palette">
+                        <h3>Test Palette</h3>
+                        <p>This is a test version of the piece setup modal.</p>
+                    </div>
+                    
+                    <div class="setup-board-container">
+                        <h3>Test Board</h3>
+                        <div id="setupBoard" style="width: 200px; height: 200px; background: #f0f0f0; border: 1px solid #ccc;">
+                            Test Board Area
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .piece-setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .piece-setup-modal.hidden {
+            display: none;
+        }
+        
+        .piece-setup-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close-modal:hover {
+            color: #000;
+        }
+        
+        .setup-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .piece-palette, .setup-board-container {
+            flex: 1;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Button Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f0f0f0; 
+        }
+        .test-button { 
+            padding: 20px 40px; 
+            font-size: 18px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .test-button:hover { 
+            background: #0056b3; 
+            transform: translateY(-2px);
+        }
+        .test-button.success { background: #28a745; }
+        .test-button.danger { background: #dc3545; }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            color: #999;
+            padding: 10px;
+            border-radius: 50%;
+        }
+        
+        .close-btn:hover {
+            color: #000;
+            background: #f0f0f0;
+        }
+        
+        .board {
+            width: 320px;
+            height: 400px;
+            border: 4px solid #333;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 1px solid #999;
+        }
+        
+        .square.light {
+            background: #f0d9b5;
+        }
+        
+        .square.dark {
+            background: #b58863;
+        }
+        
+        .piece {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Direct Button Test</h1>
+    <p>Bu test sayfası piece setup butonunun neden çalışmadığını bulmak için yapıldı.</p>
+    
+    <div>
+        <button class="test-button" onclick="testDirectFunction()">🧪 Test Direct Function</button>
+        <button class="test-button" onclick="testModalShow()">🚪 Test Modal Show</button>
+        <button class="test-button success" onclick="showTestModal()">✅ Show Working Modal</button>
+        <button class="test-button danger" onclick="clearLog()">🧹 Clear Log</button>
+    </div>
+    
+    <div id="log" class="log">Test başlıyor...\n</div>
+
+    <!-- Test Modal -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎯 Test Piece Setup</h2>
+                <button class="close-btn" onclick="closeTestModal()">&times;</button>
+            </div>
+            
+            <div>
+                <p>Bu modal çalışıyor! Piece setup modal'ı da böyle açılmalı.</p>
+                
+                <div class="board" id="testBoard">
+                    <!-- Board will be created by JavaScript -->
+                </div>
+                
+                <button class="test-button" onclick="closeTestModal()">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load game.js to test the actual function -->
+    <script src="js/game.js"></script>
+
+    <script>
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = 'Log temizlendi...\n';
+        }
+
+        function testDirectFunction() {
+            log('🧪 Testing openPieceSetup function directly...');
+            
+            // Check if function exists
+            if (typeof openPieceSetup === 'function') {
+                log('✅ openPieceSetup function found');
+                
+                try {
+                    // Call the function directly
+                    openPieceSetup();
+                    log('✅ openPieceSetup() called successfully');
+                    
+                    // Check if modal is visible after 1 second
+                    setTimeout(() => {
+                        const modal = document.getElementById('pieceSetupModal');
+                        if (modal) {
+                            const isVisible = !modal.classList.contains('hidden') && 
+                                            modal.style.display !== 'none';
+                            log(`Modal visibility: ${isVisible}`);
+                            log(`Modal classes: ${modal.className}`);
+                            log(`Modal display: ${modal.style.display}`);
+                        } else {
+                            log('❌ pieceSetupModal element not found');
+                        }
+                    }, 1000);
+                    
+                } catch (error) {
+                    log(`❌ Error calling openPieceSetup: ${error.message}`);
+                    console.error('Full error:', error);
+                }
+            } else {
+                log('❌ openPieceSetup function not found');
+                log(`Available functions: ${Object.getOwnPropertyNames(window).filter(name => typeof window[name] === 'function').slice(0, 10).join(', ')}...`);
+            }
+        }
+
+        function testModalShow() {
+            log('🧪 Testing modal show manually...');
+            
+            const modal = document.getElementById('pieceSetupModal');
+            if (modal) {
+                log('✅ Modal element found');
+                
+                // Force show modal
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+                modal.style.opacity = '1';
+                modal.style.visibility = 'visible';
+                modal.style.zIndex = '1000';
+                
+                log('✅ Modal forced to show');
+                log(`Modal classes after: ${modal.className}`);
+                log(`Modal display after: ${modal.style.display}`);
+                
+                // Check content
+                const content = modal.querySelector('.piece-setup-content');
+                if (content) {
+                    log('✅ Modal content found');
+                } else {
+                    log('❌ Modal content not found');
+                }
+                
+            } else {
+                log('❌ pieceSetupModal element not found in DOM');
+                
+                // List all elements with 'modal' in their id
+                const allElements = document.querySelectorAll('[id*="modal"], [class*="modal"]');
+                log(`Found ${allElements.length} modal-related elements:`);
+                allElements.forEach((el, i) => {
+                    log(`  ${i+1}. ${el.tagName}#${el.id} .${el.className}`);
+                });
+            }
+        }
+
+        function showTestModal() {
+            log('🎯 Showing working test modal...');
+            
+            // Create test board
+            const board = document.getElementById('testBoard');
+            board.innerHTML = '';
+            
+            const pieces = ['♜', '♛', '♚', '♜', '♟', '♟', '♟', '♟', '', '', '', '', '♙', '♙', '♙', '♙', '♖', '♕', '♔', '♖'];
+            
+            for (let i = 0; i < 20; i++) {
+                const square = document.createElement('div');
+                square.className = 'square';
+                square.className += Math.floor(i/4) % 2 === i % 2 ? ' light' : ' dark';
+                
+                if (pieces[i]) {
+                    const piece = document.createElement('span');
+                    piece.className = 'piece';
+                    piece.textContent = pieces[i];
+                    square.appendChild(piece);
+                }
+                
+                board.appendChild(square);
+            }
+            
+            document.getElementById('testModal').classList.add('show');
+            log('✅ Test modal shown successfully');
+        }
+
+        function closeTestModal() {
+            document.getElementById('testModal').classList.remove('show');
+            log('✅ Test modal closed');
+        }
+
+        // Override console functions to capture all logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log(`CONSOLE: ${args.join(' ')}`);
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            log(`ERROR: ${args.join(' ')}`);
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            log(`WARN: ${args.join(' ')}`);
+        };
+
+        // Test on page load
+        window.addEventListener('load', () => {
+            log('🚀 Page loaded');
+            log(`openPieceSetup function exists: ${typeof openPieceSetup === 'function'}`);
+            log(`pieceSetupModal element exists: ${!!document.getElementById('pieceSetupModal')}`);
+            
+            // Try to find the piece setup button in the original page
+            const buttons = document.querySelectorAll('button');
+            let pieceSetupButton = null;
+            
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('Piece Setup') || btn.onclick?.toString().includes('openPieceSetup')) {
+                    pieceSetupButton = btn;
+                }
+            });
+            
+            if (pieceSetupButton) {
+                log('✅ Piece setup button found in DOM');
+                log(`Button text: "${pieceSetupButton.textContent.trim()}"`);
+                log(`Button onclick: ${pieceSetupButton.onclick}`);
+            } else {
+                log('❌ Piece setup button not found in DOM');
+            }
+        });
+    </script>
+
+    <!-- Copy the piece setup modal from index.html -->
+    <div id="pieceSetupModal" class="piece-setup-modal hidden">
+        <div class="piece-setup-content">
+            <div class="modal-header">
+                <h2 id="pieceSetupTitle">♔ Piece Setup</h2>
+                <button class="close-modal" onclick="closePieceSetup()">✖</button>
+            </div>
+            
+            <div class="piece-setup-body">
+                <div class="setup-instructions">
+                    <p>Test piece setup modal - Bu modal açılmalı!</p>
+                </div>
+                
+                <div class="setup-container">
+                    <div class="piece-palette">
+                        <h3>Piece Palette</h3>
+                        <p>Taş paleti burada olacak</p>
+                    </div>
+                    
+                    <div class="setup-board-container">
+                        <h3>Board Setup</h3>
+                        <div id="setupBoard" style="width: 200px; height: 250px; background: #f0f0f0; border: 2px solid #ccc; margin: 10px auto;">
+                            Setup Board
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .piece-setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .piece-setup-modal.hidden {
+            display: none !important;
+        }
+        
+        .piece-setup-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .setup-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .piece-palette, .setup-board-container {
+            flex: 1;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+    </style>
+</body>
+</html>

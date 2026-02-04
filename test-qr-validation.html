@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Integration Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .validation-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .test-name {
+            font-weight: bold;
+            flex: 1;
+        }
+        
+        .test-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .summary {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .summary-pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .summary-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .test-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 12px 24px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .details {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .console-output {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="validation-header">
+        <h1>📱 QR Code Integration Validation</h1>
+        <p>Comprehensive validation of QR code functionality and integration</p>
+    </div>
+
+    <div class="test-controls">
+        <button class="btn-primary" onclick="runValidation()">🔍 Run Validation</button>
+        <button class="btn-success" onclick="runFunctionalTests()">🧪 Run Functional Tests</button>
+        <button class="btn-secondary" onclick="clearResults()">🗑️ Clear Results</button>
+    </div>
+
+    <div id="validationResults" style="display: none;">
+        <!-- File Existence Tests -->
+        <div class="test-section">
+            <h2>📁 File Existence Tests</h2>
+            <div id="fileTests"></div>
+        </div>
+
+        <!-- Class and Method Tests -->
+        <div class="test-section">
+            <h2>🔧 Class and Method Tests</h2>
+            <div id="classTests"></div>
+        </div>
+
+        <!-- Integration Tests -->
+        <div class="test-section">
+            <h2>🔗 Integration Tests</h2>
+            <div id="integrationTests"></div>
+        </div>
+
+        <!-- Functional Tests -->
+        <div class="test-section">
+            <h2>⚡ Functional Tests</h2>
+            <div id="functionalTests"></div>
+        </div>
+
+        <!-- Console Output -->
+        <div class="test-section">
+            <h2>📋 Console Output</h2>
+            <div id="consoleOutput" class="console-output"></div>
+        </div>
+
+        <!-- Summary -->
+        <div id="validationSummary" class="summary"></div>
+    </div>
+
+    <!-- Load required scripts for testing -->
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/qr-code-generator.js"></script>
+    <script src="js/position-sharing-integration.js"></script>
+
+    <script>
+        let consoleLog = [];
+        let originalConsoleLog = console.log;
+        let originalConsoleError = console.error;
+
+        // Capture console output
+        console.log = function(...args) {
+            consoleLog.push(`[LOG] ${args.join(' ')}`);
+            originalConsoleLog.apply(console, args);
+            updateConsoleOutput();
+        };
+
+        console.error = function(...args) {
+            consoleLog.push(`[ERROR] ${args.join(' ')}`);
+            originalConsoleError.apply(console, args);
+            updateConsoleOutput();
+        };
+
+        function updateConsoleOutput() {
+            const output = document.getElementById('consoleOutput');
+            if (output) {
+                output.textContent = consoleLog.slice(-20).join('\n');
+                output.scrollTop = output.scrollHeight;
+            }
+        }
+
+        function addTestResult(containerId, testName, passed, details = '') {
+            const container = document.getElementById(containerId);
+            const testItem = document.createElement('div');
+            testItem.className = 'test-item';
+            
+            testItem.innerHTML = `
+                <div class="test-name">${testName}</div>
+                <div class="test-status ${passed ? 'status-pass' : 'status-fail'}">
+                    ${passed ? '✅ PASS' : '❌ FAIL'}
+                </div>
+            `;
+            
+            if (details) {
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'details';
+                detailsDiv.textContent = details;
+                testItem.appendChild(detailsDiv);
+            }
+            
+            container.appendChild(testItem);
+        }
+
+        function runValidation() {
+            document.getElementById('validationResults').style.display = 'block';
+            clearResults();
+            
+            let totalTests = 0;
+            let passedTests = 0;
+
+            // File Existence Tests
+            console.log('🔍 Starting file existence tests...');
+            
+            // Test if QRCodeGenerator class exists
+            totalTests++;
+            const qrGeneratorExists = typeof QRCodeGenerator !== 'undefined';
+            if (qrGeneratorExists) passedTests++;
+            addTestResult('fileTests', 'QRCodeGenerator class loaded', qrGeneratorExists, 
+                qrGeneratorExists ? 'Class is available in global scope' : 'Class not found - check script loading');
+
+            // Test if PositionSharingSystem exists
+            totalTests++;
+            const sharingSystemExists = typeof PositionSharingSystem !== 'undefined';
+            if (sharingSystemExists) passedTests++;
+            addTestResult('fileTests', 'PositionSharingSystem class loaded', sharingSystemExists,
+                sharingSystemExists ? 'Class is available in global scope' : 'Class not found - check script loading');
+
+            // Test if integration functions exist
+            totalTests++;
+            const integrationExists = typeof generateQRCode !== 'undefined';
+            if (integrationExists) passedTests++;
+            addTestResult('fileTests', 'QR integration functions loaded', integrationExists,
+                integrationExists ? 'Integration functions are available' : 'Integration functions not found');
+
+            // Class and Method Tests
+            console.log('🔧 Starting class and method tests...');
+            
+            if (qrGeneratorExists) {
+                const qrGenerator = new QRCodeGenerator();
+                
+                const methods = [
+                    'generateQRCode',
+                    'generatePositionQR', 
+                    'generateMobileQR',
+                    'readQRFromCamera',
+                    'validateQRData',
+                    'extractPositionCode',
+                    'getQRStatistics'
+                ];
+                
+                methods.forEach(method => {
+                    totalTests++;
+                    const methodExists = typeof qrGenerator[method] === 'function';
+                    if (methodExists) passedTests++;
+                    addTestResult('classTests', `QRCodeGenerator.${method}()`, methodExists,
+                        methodExists ? 'Method is available' : 'Method not found in class');
+                });
+            }
+
+            // Integration Tests
+            console.log('🔗 Starting integration tests...');
+            
+            const integrationFunctions = [
+                'generateQRCode',
+                'startQRReader',
+                'stopQRReader',
+                'processDetectedQR',
+                'testQRCodeSharing'
+            ];
+            
+            integrationFunctions.forEach(func => {
+                totalTests++;
+                const funcExists = typeof window[func] === 'function';
+                if (funcExists) passedTests++;
+                addTestResult('integrationTests', `${func}() function`, funcExists,
+                    funcExists ? 'Function is available globally' : 'Function not found in global scope');
+            });
+
+            // UI Element Tests
+            const uiElements = [
+                'positionSharingPanel',
+                'btnQRCode',
+                'btnQRReader',
+                'qrCodeDisplay',
+                'qrCanvas'
+            ];
+            
+            uiElements.forEach(elementId => {
+                totalTests++;
+                const elementExists = document.getElementById(elementId) !== null;
+                if (elementExists) passedTests++;
+                addTestResult('integrationTests', `UI Element: ${elementId}`, elementExists,
+                    elementExists ? 'Element found in DOM' : 'Element not found - may be created dynamically');
+            });
+
+            // Update summary
+            const passRate = (passedTests / totalTests * 100).toFixed(1);
+            const summaryDiv = document.getElementById('validationSummary');
+            const allPassed = passedTests === totalTests;
+            
+            summaryDiv.className = `summary ${allPassed ? 'summary-pass' : 'summary-fail'}`;
+            summaryDiv.innerHTML = `
+                <div>Validation Complete: ${passedTests}/${totalTests} tests passed (${passRate}%)</div>
+                <div style="margin-top: 10px; font-size: 14px;">
+                    ${allPassed ? '🎉 All tests passed! QR integration is ready.' : '⚠️ Some tests failed. Check the details above.'}
+                </div>
+            `;
+
+            console.log(`✅ Validation complete: ${passedTests}/${totalTests} tests passed`);
+        }
+
+        async function runFunctionalTests() {
+            console.log('🧪 Starting functional tests...');
+            
+            if (typeof QRCodeGenerator === 'undefined' || typeof PositionSharingSystem === 'undefined') {
+                addTestResult('functionalTests', 'Prerequisites', false, 'Required classes not loaded');
+                return;
+            }
+
+            let functionalPassed = 0;
+            let functionalTotal = 0;
+
+            try {
+                const qrGenerator = new QRCodeGenerator();
+                const sharingSystem = new PositionSharingSystem();
+
+                // Test 1: QR Code Generation
+                functionalTotal++;
+                const canvas = document.createElement('canvas');
+                const testText = 'https://example.com/position=ABC123';
+                const qrSuccess = await qrGenerator.generateQRCode(testText, canvas);
+                if (qrSuccess) functionalPassed++;
+                addTestResult('functionalTests', 'QR Code Generation', qrSuccess,
+                    qrSuccess ? 'Successfully generated QR code' : 'QR generation failed');
+
+                // Test 2: Data Validation
+                functionalTotal++;
+                const validUrl = qrGenerator.validateQRData('https://example.com/position=ABC123');
+                const validCode = qrGenerator.validateQRData('ABC123');
+                const invalidData = !qrGenerator.validateQRData('invalid@data!');
+                const validationPassed = validUrl && validCode && invalidData;
+                if (validationPassed) functionalPassed++;
+                addTestResult('functionalTests', 'Data Validation', validationPassed,
+                    `URL: ${validUrl}, Code: ${validCode}, Invalid rejected: ${invalidData}`);
+
+                // Test 3: Code Extraction
+                functionalTotal++;
+                const extractedCode = qrGenerator.extractPositionCode('https://example.com/position=ABC123');
+                const extractionPassed = extractedCode === 'ABC123';
+                if (extractionPassed) functionalPassed++;
+                addTestResult('functionalTests', 'Code Extraction', extractionPassed,
+                    `Expected: ABC123, Got: ${extractedCode}`);
+
+                // Test 4: Position Round-trip
+                functionalTotal++;
+                const testPosition = [
+                    ['r', 'n', 'b', 'q'],
+                    ['p', 'p', 'p', 'p'],
+                    [null, null, null, null],
+                    ['P', 'P', 'P', 'P'],
+                    ['R', 'N', 'B', 'K']
+                ];
+                
+                const shareCode = sharingSystem.encodePosition(testPosition);
+                const shareUrl = `https://example.com/position=${shareCode}`;
+                const positionQRSuccess = await qrGenerator.generatePositionQR(shareUrl, canvas);
+                const roundTripCode = qrGenerator.extractPositionCode(shareUrl);
+                const decodedPosition = sharingSystem.decodePosition(roundTripCode);
+                const positionsMatch = sharingSystem.comparePositions(testPosition, decodedPosition);
+                const roundTripPassed = positionQRSuccess && positionsMatch;
+                
+                if (roundTripPassed) functionalPassed++;
+                addTestResult('functionalTests', 'Position Round-trip', roundTripPassed,
+                    `QR: ${positionQRSuccess}, Match: ${positionsMatch}, Code: ${shareCode}`);
+
+                // Test 5: Statistics
+                functionalTotal++;
+                const stats = qrGenerator.getQRStatistics(testText, canvas);
+                const statsValid = stats && stats.inputText && stats.qrSize && stats.estimatedScanDistance;
+                if (statsValid) functionalPassed++;
+                addTestResult('functionalTests', 'QR Statistics', statsValid,
+                    statsValid ? `Size: ${stats.qrSize}x${stats.qrSize}, Distance: ${stats.estimatedScanDistance}` : 'Statistics invalid');
+
+                // Update functional test summary
+                const functionalRate = (functionalPassed / functionalTotal * 100).toFixed(1);
+                console.log(`🧪 Functional tests complete: ${functionalPassed}/${functionalTotal} passed (${functionalRate}%)`);
+
+            } catch (error) {
+                console.error('🧪 Functional test error:', error);
+                addTestResult('functionalTests', 'Test Execution', false, `Error: ${error.message}`);
+            }
+        }
+
+        function clearResults() {
+            const containers = ['fileTests', 'classTests', 'integrationTests', 'functionalTests'];
+            containers.forEach(id => {
+                const container = document.getElementById(id);
+                if (container) container.innerHTML = '';
+            });
+            
+            const summary = document.getElementById('validationSummary');
+            if (summary) summary.innerHTML = '';
+            
+            consoleLog = [];
+            updateConsoleOutput();
+        }
+
+        // Auto-run validation when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🚀 QR Code Integration Validation Tool loaded');
+                console.log('Click "Run Validation" to test the integration');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

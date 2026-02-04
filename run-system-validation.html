@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Piece Setup System Validation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4f46e5, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .validation-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-excellent { border-left: 5px solid #10b981; }
+        .status-good { border-left: 5px solid #06b6d4; }
+        .status-warning { border-left: 5px solid #f59e0b; }
+        .status-error { border-left: 5px solid #ef4444; }
+        .status-critical { border-left: 5px solid #dc2626; }
+        
+        .btn {
+            background: linear-gradient(45deg, #4f46e5, #06b6d4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #06b6d4);
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #4f46e5;
+        }
+        
+        .card.working { border-left-color: #10b981; }
+        .card.error { border-left-color: #ef4444; }
+        .card.warning { border-left-color: #f59e0b; }
+        .card.missing { border-left-color: #6b7280; }
+        
+        .issues-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .issue {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        .recommendations {
+            background: rgba(79, 70, 229, 0.1);
+            border: 1px solid rgba(79, 70, 229, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .recommendations ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .recommendations li {
+            margin: 8px 0;
+        }
+        
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏁 System Validation</h1>
+            <p>Enhanced Piece Setup System - Final Checkpoint</p>
+            <button class="btn" onclick="runValidation()">🔍 Run Validation</button>
+            <button class="btn" onclick="openPieceSetup()">♔ Open Piece Setup</button>
+        </div>
+        
+        <div id="results" class="results">
+            <div class="validation-card" id="overallStatus">
+                <h2>📊 Overall System Status</h2>
+                <div id="statusDisplay"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p id="successRate">Success Rate: Calculating...</p>
+            </div>
+            
+            <div class="grid">
+                <div class="validation-card">
+                    <h3>🔧 Components</h3>
+                    <div id="componentResults"></div>
+                </div>
+                
+                <div class="validation-card">
+                    <h3>⚙️ Features</h3>
+                    <div id="featureResults"></div>
+                </div>
+                
+                <div class="validation-card">
+                    <h3>🔗 Integration</h3>
+                    <div id="integrationResults"></div>
+                </div>
+            </div>
+            
+            <div class="validation-card" id="issuesCard">
+                <h3>🚨 Issues Found</h3>
+                <div id="issuesCount"></div>
+                <div class="issues-list" id="issuesList"></div>
+            </div>
+            
+            <div class="recommendations" id="recommendationsCard">
+                <h3>💡 Recommendations</h3>
+                <div id="recommendationsList"></div>
+            </div>
+            
+            <div class="validation-card">
+                <h3>📄 Full Report</h3>
+                <button class="btn" onclick="downloadReport()">💾 Download JSON</button>
+                <button class="btn" onclick="showFullReport()">👁️ View Details</button>
+                <pre id="fullReport" style="display: none;"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the piece setup modal structure -->
+    <div id="pieceSetupModal" class="piece-setup-modal hidden">
+        <div class="piece-setup-content">
+            <div class="modal-header">
+                <h2>♔ Piece Setup</h2>
+                <button class="close-modal" onclick="closePieceSetup()">✖</button>
+            </div>
+            <div class="piece-setup-body">
+                <div class="piece-palette">
+                    <div class="palette-pieces">
+                        <div class="palette-piece" data-piece="K">♔</div>
+                        <div class="palette-piece" data-piece="Q">♕</div>
+                        <div class="palette-piece" data-piece="R">♖</div>
+                        <div class="palette-piece" data-piece="B">♗</div>
+                        <div class="palette-piece" data-piece="N">♘</div>
+                        <div class="palette-piece" data-piece="P">♙</div>
+                    </div>
+                </div>
+                <div class="setup-board-container">
+                    <div id="setupBoard" class="setup-board"></div>
+                </div>
+                <div class="setup-actions">
+                    <button onclick="closePieceSetup()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include all required scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/enhanced-drag-drop.js"></script>
+    <script src="js/extended-preset-manager.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/position-evaluation-report.js"></script>
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/position-history-manager.js"></script>
+    <script src="js/position-history-interface.js"></script>
+    <script src="js/mobile-optimization-manager.js"></script>
+    <script src="js/responsive-layout-manager.js"></script>
+    <script src="js/performance-monitor.js"></script>
+    <script src="js/loading-indicator-system.js"></script>
+    <script src="js/piece-setup-integration.js"></script>
+    
+    <!-- Validation script -->
+    <script src="validate-system-status.js"></script>
+    
+    <script>
+        let validationResults = null;
+        
+        function runValidation() {
+            console.log('🚀 Starting system validation...');
+            
+            try {
+                validationResults = validateSystemStatus();
+                displayResults(validationResults);
+                document.getElementById('results').classList.add('show');
+            } catch (error) {
+                console.error('Validation failed:', error);
+                alert('Validation failed: ' + error.message);
+            }
+        }
+        
+        function displayResults(results) {
+            // Overall status
+            const overallCard = document.getElementById('overallStatus');
+            const statusDisplay = document.getElementById('statusDisplay');
+            const progressFill = document.getElementById('progressFill');
+            const successRate = document.getElementById('successRate');
+            
+            const statusClass = getStatusClass(results.overallStatus);
+            overallCard.className = `validation-card ${statusClass}`;
+            
+            statusDisplay.innerHTML = `
+                <h3>${getStatusIcon(results.overallStatus)} ${results.overallStatus.replace(/_/g, ' ')}</h3>
+                <p>Validation completed: ${results.testResults.passed}/${results.testResults.total} tests passed</p>
+            `;
+            
+            const successPercentage = parseFloat(results.successRate);
+            progressFill.style.width = `${successPercentage}%`;
+            successRate.textContent = `Success Rate: ${results.successRate}`;
+            
+            // Components
+            displayComponents(results.components);
+            displayFeatures(results.features);
+            displayIntegration(results.integration);
+            
+            // Issues
+            displayIssues(results.issues);
+            
+            // Recommendations
+            displayRecommendations(results.recommendations);
+        }
+        
+        function displayComponents(components) {
+            const container = document.getElementById('componentResults');
+            let html = '';
+            
+            for (const [name, status] of Object.entries(components)) {
+                const cardClass = status.working ? 'working' : status.status === 'missing' ? 'missing' : 'error';
+                const icon = status.working ? '✅' : status.status === 'missing' ? '❌' : '⚠️';
+                
+                html += `
+                    <div class="card ${cardClass}">
+                        <strong>${icon} ${name}</strong><br>
+                        <small>Status: ${status.status}</small>
+                        ${status.error ? `<br><small style="color: #ef4444;">Error: ${status.error}</small>` : ''}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function displayFeatures(features) {
+            const container = document.getElementById('featureResults');
+            let html = '';
+            
+            for (const [name, status] of Object.entries(features)) {
+                const cardClass = status.status === 'working' ? 'working' : 
+                                 status.status === 'missing' ? 'missing' : 'error';
+                const icon = status.status === 'working' ? '✅' : 
+                           status.status === 'missing' ? '❌' : '⚠️';
+                
+                html += `
+                    <div class="card ${cardClass}">
+                        <strong>${icon} ${name.replace(/([A-Z])/g, ' $1').trim()}</strong><br>
+                        <small>Status: ${status.status}</small>
+                        ${status.presets ? `<br><small>Presets: ${status.presets}</small>` : ''}
+                        ${status.deviceType ? `<br><small>Device: ${status.deviceType}</small>` : ''}
+                        ${status.error ? `<br><small style="color: #ef4444;">Error: ${status.error}</small>` : ''}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function displayIntegration(integration) {
+            const container = document.getElementById('integrationResults');
+            let html = '';
+            
+            for (const [name, status] of Object.entries(integration)) {
+                const cardClass = status.status === 'complete' || status.status === 'good' ? 'working' : 
+                                 status.status === 'missing' ? 'missing' : 'warning';
+                const icon = status.status === 'complete' || status.status === 'good' ? '✅' : 
+                           status.status === 'missing' ? '❌' : '⚠️';
+                
+                html += `
+                    <div class="card ${cardClass}">
+                        <strong>${icon} ${name.charAt(0).toUpperCase() + name.slice(1)}</strong><br>
+                        <small>Status: ${status.status}</small>
+                        ${status.files ? `<br><small>Files: ${status.files}</small>` : ''}
+                        ${status.elements ? `<br><small>Elements: ${status.elements}</small>` : ''}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function displayIssues(issues) {
+            const issuesCount = document.getElementById('issuesCount');
+            const issuesList = document.getElementById('issuesList');
+            
+            issuesCount.innerHTML = `<p><strong>Total Issues:</strong> ${issues.length}</p>`;
+            
+            if (issues.length === 0) {
+                issuesList.innerHTML = '<p style="color: #10b981;">🎉 No issues found! System is working well.</p>';
+            } else {
+                let html = '';
+                issues.forEach((issue, index) => {
+                    html += `<div class="issue">${index + 1}. ${issue}</div>`;
+                });
+                issuesList.innerHTML = html;
+            }
+        }
+        
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('recommendationsList');
+            
+            if (recommendations.length === 0) {
+                container.innerHTML = '<p>No specific recommendations at this time.</p>';
+                return;
+            }
+            
+            let html = '<ul>';
+            recommendations.forEach(rec => {
+                html += `<li>${rec}</li>`;
+            });
+            html += '</ul>';
+            
+            container.innerHTML = html;
+        }
+        
+        function getStatusClass(status) {
+            switch (status) {
+                case 'EXCELLENT': return 'status-excellent';
+                case 'GOOD': return 'status-good';
+                case 'NEEDS_WORK': return 'status-warning';
+                case 'MAJOR_ISSUES': return 'status-error';
+                case 'CRITICAL_ISSUES': return 'status-critical';
+                default: return 'status-warning';
+            }
+        }
+        
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'EXCELLENT': return '🏆';
+                case 'GOOD': return '✅';
+                case 'NEEDS_WORK': return '⚠️';
+                case 'MAJOR_ISSUES': return '❌';
+                case 'CRITICAL_ISSUES': return '🔴';
+                default: return '❓';
+            }
+        }
+        
+        function downloadReport() {
+            if (!validationResults) {
+                alert('No validation results available');
+                return;
+            }
+            
+            const reportText = JSON.stringify(validationResults, null, 2);
+            const blob = new Blob([reportText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `enhanced-piece-setup-validation-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function showFullReport() {
+            const reportElement = document.getElementById('fullReport');
+            if (reportElement.style.display === 'none') {
+                reportElement.style.display = 'block';
+                reportElement.textContent = JSON.stringify(validationResults, null, 2);
+            } else {
+                reportElement.style.display = 'none';
+            }
+        }
+        
+        function openPieceSetup() {
+            const modal = document.getElementById('pieceSetupModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+        }
+        
+        function closePieceSetup() {
+            const modal = document.getElementById('pieceSetupModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Auto-run validation on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🔄 Auto-running validation...');
+                runValidation();
+            }, 1000);
+        });
+    </script>
+    
+    <style>
+        .piece-setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .piece-setup-modal.hidden {
+            display: none !important;
+        }
+        
+        .piece-setup-content {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #4f46e5;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .piece-palette {
+            margin-bottom: 20px;
+        }
+        
+        .palette-pieces {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .palette-piece {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .palette-piece:hover {
+            background: rgba(79, 70, 229, 0.3);
+            border-color: #4f46e5;
+            transform: scale(1.05);
+        }
+        
+        .setup-board {
+            width: 300px;
+            height: 375px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 2px;
+            margin: 20px auto;
+            border: 2px solid #4f46e5;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .setup-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</body>
+</html>

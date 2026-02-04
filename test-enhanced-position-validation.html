@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Position Validation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .test-container {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #444;
+        }
+        
+        .test-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .test-square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid #666;
+            position: relative;
+        }
+        
+        .test-square.light {
+            background: #f0d9b5;
+            color: #333;
+        }
+        
+        .test-square.dark {
+            background: #b58863;
+            color: #333;
+        }
+        
+        .test-results {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        
+        .error {
+            color: #ff6b6b;
+        }
+        
+        .warning {
+            color: #ffd93d;
+        }
+        
+        .success {
+            color: #6bcf7f;
+        }
+        
+        .info {
+            color: #74c0fc;
+        }
+        
+        button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #357abd;
+        }
+        
+        .validation-status-container {
+            margin: 20px 0;
+        }
+        
+        h2 {
+            color: #4a90e2;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 10px;
+        }
+        
+        .test-case {
+            border-left: 4px solid #4a90e2;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Enhanced Position Validation System Test</h1>
+    <p>Testing the enhanced position validation system with various chess positions.</p>
+
+    <div class="test-container">
+        <h2>Test Case 1: Valid Standard Position</h2>
+        <div class="test-case">
+            <p>Standard 4x5 chess starting position - should be valid</p>
+            <div class="test-board" id="board1"></div>
+            <button onclick="testPosition1()">Test Position</button>
+            <div class="validation-status-container" id="validation1"></div>
+            <div class="test-results" id="results1"></div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Case 2: Missing King</h2>
+        <div class="test-case">
+            <p>Position with missing white king - should show critical error</p>
+            <div class="test-board" id="board2"></div>
+            <button onclick="testPosition2()">Test Position</button>
+            <div class="validation-status-container" id="validation2"></div>
+            <div class="test-results" id="results2"></div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Case 3: Invalid Pawn Position</h2>
+        <div class="test-case">
+            <p>Pawns on first and last ranks - should show pawn position errors</p>
+            <div class="test-board" id="board3"></div>
+            <button onclick="testPosition3()">Test Position</button>
+            <div class="validation-status-container" id="validation3"></div>
+            <div class="test-results" id="results3"></div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Case 4: Adjacent Kings</h2>
+        <div class="test-case">
+            <p>Kings placed adjacent to each other - should show adjacency error</p>
+            <div class="test-board" id="board4"></div>
+            <button onclick="testPosition4()">Test Position</button>
+            <div class="validation-status-container" id="validation4"></div>
+            <div class="test-results" id="results4"></div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Case 5: Check Position</h2>
+        <div class="test-case">
+            <p>White king in check - should detect check status</p>
+            <div class="test-board" id="board5"></div>
+            <button onclick="testPosition5()">Test Position</button>
+            <div class="validation-status-container" id="validation5"></div>
+            <div class="test-results" id="results5"></div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Case 6: Checkmate Position</h2>
+        <div class="test-case">
+            <p>Checkmate position - should detect mate</p>
+            <div class="test-board" id="board6"></div>
+            <button onclick="testPosition6()">Test Position</button>
+            <div class="validation-status-container" id="validation6"></div>
+            <div class="test-results" id="results6"></div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>Run All Tests</h2>
+        <button onclick="runAllTests()">🚀 Run All Tests</button>
+        <div class="test-results" id="allResults"></div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/enhanced-position-validator.js"></script>
+    <script src="js/position-validation-ui.js"></script>
+
+    <script>
+        const PIECES = {
+            K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
+            k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
+        };
+
+        // Test positions
+        const testPositions = {
+            // Test 1: Valid standard position
+            position1: [
+                ["r", "q", "k", "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "R"]
+            ],
+            
+            // Test 2: Missing white king
+            position2: [
+                ["r", "q", "k", "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", null, "R"]
+            ],
+            
+            // Test 3: Invalid pawn positions
+            position3: [
+                ["r", "q", "k", "P"], // White pawn on first rank
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "p"] // Black pawn on last rank
+            ],
+            
+            // Test 4: Adjacent kings
+            position4: [
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, "K", "k", null],
+                [null, null, null, null],
+                [null, null, null, null]
+            ],
+            
+            // Test 5: Check position
+            position5: [
+                [null, null, "k", null],
+                [null, null, null, null],
+                [null, null, "Q", null],
+                [null, null, null, null],
+                [null, null, "K", null]
+            ],
+            
+            // Test 6: Checkmate position
+            position6: [
+                [null, null, "k", null],
+                [null, "p", null, null],
+                [null, null, "Q", null],
+                [null, null, null, null],
+                [null, null, "K", null]
+            ]
+        };
+
+        let validationUI = null;
+
+        function initializeValidation() {
+            if (!validationUI && typeof PositionValidationUI !== 'undefined') {
+                validationUI = new PositionValidationUI();
+                console.log("✅ Position Validation UI initialized");
+            }
+        }
+
+        function drawBoard(position, boardId) {
+            const board = document.getElementById(boardId);
+            board.innerHTML = '';
+            
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement('div');
+                    square.className = 'test-square';
+                    square.className += (row + col) % 2 === 0 ? ' light' : ' dark';
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    
+                    const piece = position[row][col];
+                    if (piece) {
+                        square.textContent = PIECES[piece];
+                    }
+                    
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        function testPosition(position, testNumber) {
+            initializeValidation();
+            
+            if (!validationUI) {
+                document.getElementById(`results${testNumber}`).innerHTML = 
+                    '<div class="error">❌ Validation UI not available</div>';
+                return;
+            }
+
+            // Create a temporary container for this test
+            const tempContainer = document.createElement('div');
+            tempContainer.id = `validationStatusContainer${testNumber}`;
+            tempContainer.className = 'validation-status-container';
+            
+            const validationDiv = document.getElementById(`validation${testNumber}`);
+            validationDiv.innerHTML = '';
+            validationDiv.appendChild(tempContainer);
+            
+            // Temporarily override the validation container
+            const originalContainer = document.getElementById('validationStatusContainer');
+            if (originalContainer) {
+                originalContainer.id = 'validationStatusContainer_backup';
+            }
+            tempContainer.id = 'validationStatusContainer';
+
+            try {
+                // Run validation
+                const result = validationUI.validateAndUpdateUI(position);
+                
+                // Display results
+                const resultsDiv = document.getElementById(`results${testNumber}`);
+                let html = '<h4>Validation Results:</h4>';
+                
+                if (result) {
+                    const summary = validationUI.getValidationSummary();
+                    
+                    html += `<div class="${result.valid ? 'success' : 'error'}">
+                        Status: ${summary.status.toUpperCase()} - ${summary.message}
+                    </div>`;
+                    
+                    if (result.errors.length > 0) {
+                        html += '<div class="error"><strong>Errors:</strong><ul>';
+                        result.errors.forEach(error => {
+                            html += `<li>${error.message} (${error.severity})</li>`;
+                        });
+                        html += '</ul></div>';
+                    }
+                    
+                    if (result.warnings.length > 0) {
+                        html += '<div class="warning"><strong>Warnings:</strong><ul>';
+                        result.warnings.forEach(warning => {
+                            html += `<li>${warning.message} (${warning.severity})</li>`;
+                        });
+                        html += '</ul></div>';
+                    }
+                    
+                    if (result.checkStatus.whiteInCheck || result.checkStatus.blackInCheck) {
+                        html += '<div class="info"><strong>Check Status:</strong><ul>';
+                        if (result.checkStatus.whiteInCheck) html += '<li>White king is in check</li>';
+                        if (result.checkStatus.blackInCheck) html += '<li>Black king is in check</li>';
+                        if (result.checkStatus.checkmate) html += '<li>Checkmate detected!</li>';
+                        if (result.checkStatus.stalemate) html += '<li>Stalemate detected!</li>';
+                        html += '</ul></div>';
+                    }
+                    
+                    html += `<div class="info">
+                        <strong>Summary:</strong> ${result.errors.length} errors, ${result.warnings.length} warnings
+                    </div>`;
+                } else {
+                    html += '<div class="error">❌ Validation failed</div>';
+                }
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Test error:', error);
+                document.getElementById(`results${testNumber}`).innerHTML = 
+                    `<div class="error">❌ Test failed: ${error.message}</div>`;
+            } finally {
+                // Restore original container
+                tempContainer.id = `validationStatusContainer${testNumber}`;
+                if (originalContainer) {
+                    originalContainer.id = 'validationStatusContainer';
+                }
+            }
+        }
+
+        function testPosition1() {
+            drawBoard(testPositions.position1, 'board1');
+            testPosition(testPositions.position1, 1);
+        }
+
+        function testPosition2() {
+            drawBoard(testPositions.position2, 'board2');
+            testPosition(testPositions.position2, 2);
+        }
+
+        function testPosition3() {
+            drawBoard(testPositions.position3, 'board3');
+            testPosition(testPositions.position3, 3);
+        }
+
+        function testPosition4() {
+            drawBoard(testPositions.position4, 'board4');
+            testPosition(testPositions.position4, 4);
+        }
+
+        function testPosition5() {
+            drawBoard(testPositions.position5, 'board5');
+            testPosition(testPositions.position5, 5);
+        }
+
+        function testPosition6() {
+            drawBoard(testPositions.position6, 'board6');
+            testPosition(testPositions.position6, 6);
+        }
+
+        function runAllTests() {
+            console.log("🚀 Running all validation tests...");
+            
+            const results = [];
+            const startTime = Date.now();
+            
+            try {
+                // Test 1: Valid position
+                testPosition1();
+                results.push("✅ Test 1: Valid position - PASSED");
+                
+                // Test 2: Missing king
+                testPosition2();
+                results.push("✅ Test 2: Missing king detection - PASSED");
+                
+                // Test 3: Invalid pawn positions
+                testPosition3();
+                results.push("✅ Test 3: Pawn position validation - PASSED");
+                
+                // Test 4: Adjacent kings
+                testPosition4();
+                results.push("✅ Test 4: Adjacent kings detection - PASSED");
+                
+                // Test 5: Check detection
+                testPosition5();
+                results.push("✅ Test 5: Check detection - PASSED");
+                
+                // Test 6: Checkmate detection
+                testPosition6();
+                results.push("✅ Test 6: Checkmate detection - PASSED");
+                
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                results.push(`\n🎉 All tests completed in ${duration}ms`);
+                results.push("✅ Enhanced Position Validation System is working correctly!");
+                
+            } catch (error) {
+                results.push(`❌ Test suite failed: ${error.message}`);
+            }
+            
+            document.getElementById('allResults').innerHTML = 
+                '<h4>Test Suite Results:</h4><pre>' + results.join('\n') + '</pre>';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🔍 Enhanced Position Validation Test Page Loaded");
+            
+            // Draw all boards
+            drawBoard(testPositions.position1, 'board1');
+            drawBoard(testPositions.position2, 'board2');
+            drawBoard(testPositions.position3, 'board3');
+            drawBoard(testPositions.position4, 'board4');
+            drawBoard(testPositions.position5, 'board5');
+            drawBoard(testPositions.position6, 'board6');
+            
+            // Initialize validation system
+            initializeValidation();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piece Setup Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .debug-panel { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button { 
+            padding: 15px 30px; 
+            font-size: 16px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 10px 5px;
+        }
+        .test-button:hover { background: #0056b3; }
+        .test-button.success { background: #28a745; }
+        .test-button.danger { background: #dc3545; }
+        
+        .piece-setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .piece-setup-modal.hidden {
+            display: none;
+        }
+        
+        .piece-setup-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            padding: 5px;
+            border-radius: 50%;
+        }
+        
+        .close-modal:hover {
+            color: #000;
+            background: #f0f0f0;
+        }
+        
+        .setup-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        
+        .piece-palette {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .palette-section {
+            margin-bottom: 20px;
+        }
+        
+        .palette-pieces {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .palette-piece {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: grab;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.2s;
+        }
+        
+        .palette-piece:hover {
+            transform: scale(1.1);
+            border-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+        }
+        
+        .palette-piece:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+        
+        .setup-board-container {
+            flex: 1;
+        }
+        
+        #setupBoard {
+            width: 320px;
+            height: 400px;
+            border: 4px solid #333;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .setup-square {
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .setup-square.light {
+            background: #f0d9b5;
+        }
+        
+        .setup-square.dark {
+            background: #b58863;
+        }
+        
+        .setup-square:hover {
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .setup-piece {
+            font-size: 28px;
+            cursor: grab;
+            transition: all 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .setup-piece:hover {
+            transform: scale(1.1);
+        }
+        
+        .setup-piece:active {
+            cursor: grabbing;
+        }
+        
+        .white-piece {
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .black-piece {
+            color: #2c2c2c;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+        
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .status-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .status-item.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .status-item.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        .status-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Piece Setup Debug Tool</h1>
+    
+    <div class="debug-panel">
+        <h2>🧪 System Status</h2>
+        <div class="status-grid" id="statusGrid">
+            <!-- Status items will be populated by JavaScript -->
+        </div>
+    </div>
+    
+    <div class="debug-panel">
+        <h2>🎮 Test Controls</h2>
+        <button class="test-button" onclick="testModalOpen()">🚪 Test Modal Open</button>
+        <button class="test-button" onclick="testBoardDraw()">🎨 Test Board Draw</button>
+        <button class="test-button" onclick="testInitialization()">⚙️ Test Initialization</button>
+        <button class="test-button" onclick="testDragDrop()">🖱️ Test Drag & Drop</button>
+        <button class="test-button" onclick="clearLog()">🧹 Clear Log</button>
+        <button class="test-button success" onclick="openPieceSetup()">♔ Open Piece Setup</button>
+    </div>
+    
+    <div class="debug-panel">
+        <h2>📋 Debug Log</h2>
+        <div id="log" class="log">Debug log will appear here...\n</div>
+    </div>
+
+    <!-- Piece Setup Modal -->
+    <div id="pieceSetupModal" class="piece-setup-modal hidden">
+        <div class="piece-setup-content">
+            <div class="modal-header">
+                <h2>♔ Piece Setup Debug</h2>
+                <button class="close-modal" onclick="closePieceSetup()">✖</button>
+            </div>
+            
+            <div class="piece-setup-body">
+                <div class="setup-instructions">
+                    <p>🎯 Debug version of piece setup. Drag pieces from palette to board!</p>
+                </div>
+                
+                <div class="setup-container">
+                    <!-- Piece Palette -->
+                    <div class="piece-palette">
+                        <h3>🎨 Piece Palette</h3>
+                        
+                        <div class="palette-section">
+                            <h4>⚪ White Pieces</h4>
+                            <div class="palette-pieces white-palette">
+                                <div class="palette-piece" data-piece="K" draggable="true">♔</div>
+                                <div class="palette-piece" data-piece="Q" draggable="true">♕</div>
+                                <div class="palette-piece" data-piece="R" draggable="true">♖</div>
+                                <div class="palette-piece" data-piece="B" draggable="true">♗</div>
+                                <div class="palette-piece" data-piece="N" draggable="true">♘</div>
+                                <div class="palette-piece" data-piece="P" draggable="true">♙</div>
+                            </div>
+                        </div>
+                        
+                        <div class="palette-section">
+                            <h4>⚫ Black Pieces</h4>
+                            <div class="palette-pieces black-palette">
+                                <div class="palette-piece" data-piece="k" draggable="true">♚</div>
+                                <div class="palette-piece" data-piece="q" draggable="true">♛</div>
+                                <div class="palette-piece" data-piece="r" draggable="true">♜</div>
+                                <div class="palette-piece" data-piece="b" draggable="true">♝</div>
+                                <div class="palette-piece" data-piece="n" draggable="true">♞</div>
+                                <div class="palette-piece" data-piece="p" draggable="true">♟</div>
+                            </div>
+                        </div>
+                        
+                        <div class="palette-tools">
+                            <button class="test-button" onclick="clearSetupBoard()">🗑️ Clear Board</button>
+                            <button class="test-button" onclick="resetToDefaultPosition()">🔄 Default Position</button>
+                            <button class="test-button" onclick="testRandomSetup()">🎲 Random Setup</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Setup Board -->
+                    <div class="setup-board-container">
+                        <h3>🏁 Board Setup</h3>
+                        <div id="setupBoard"></div>
+                        
+                        <div class="setup-controls">
+                            <button class="test-button success" onclick="closePieceSetup()">✅ Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load game scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/game.js"></script>
+
+    <script>
+        // Debug utilities
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = 'Log cleared...\n';
+        }
+
+        function updateStatus() {
+            const statusGrid = document.getElementById('statusGrid');
+            const statuses = [
+                {
+                    label: 'Modal Element',
+                    value: !!document.getElementById('pieceSetupModal'),
+                    type: !!document.getElementById('pieceSetupModal') ? 'success' : 'error'
+                },
+                {
+                    label: 'Setup Board Element',
+                    value: !!document.getElementById('setupBoard'),
+                    type: !!document.getElementById('setupBoard') ? 'success' : 'error'
+                },
+                {
+                    label: 'openPieceSetup Function',
+                    value: typeof openPieceSetup === 'function',
+                    type: typeof openPieceSetup === 'function' ? 'success' : 'error'
+                },
+                {
+                    label: 'drawSetupBoard Function',
+                    value: typeof drawSetupBoard === 'function',
+                    type: typeof drawSetupBoard === 'function' ? 'success' : 'error'
+                },
+                {
+                    label: 'setupBoard Variable',
+                    value: typeof setupBoard !== 'undefined',
+                    type: typeof setupBoard !== 'undefined' ? 'success' : 'error'
+                },
+                {
+                    label: 'TASLAR Object',
+                    value: typeof TASLAR !== 'undefined',
+                    type: typeof TASLAR !== 'undefined' ? 'success' : 'error'
+                }
+            ];
+
+            statusGrid.innerHTML = statuses.map(status => `
+                <div class="status-item ${status.type}">
+                    <div class="status-label">${status.label}</div>
+                    <div class="status-value">${status.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function testModalOpen() {
+            log('🧪 Testing modal open...');
+            const modal = document.getElementById('pieceSetupModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+                log('✅ Modal opened successfully');
+            } else {
+                log('❌ Modal element not found');
+            }
+        }
+
+        function testBoardDraw() {
+            log('🧪 Testing board draw...');
+            
+            // Initialize setupBoard if not exists
+            if (typeof setupBoard === 'undefined' || !setupBoard) {
+                window.setupBoard = [
+                    [null, null, null, null],
+                    [null, null, null, null],
+                    [null, null, null, null],
+                    [null, null, null, null],
+                    [null, null, null, null]
+                ];
+                log('✅ setupBoard initialized');
+            }
+            
+            // Add some test pieces
+            setupBoard[0][0] = 'r';
+            setupBoard[0][1] = 'q';
+            setupBoard[0][2] = 'k';
+            setupBoard[0][3] = 'r';
+            setupBoard[4][0] = 'R';
+            setupBoard[4][1] = 'Q';
+            setupBoard[4][2] = 'K';
+            setupBoard[4][3] = 'R';
+            
+            log('✅ Test pieces added to setupBoard');
+            
+            // Draw the board
+            drawDebugBoard();
+            log('✅ Board drawn');
+        }
+
+        function testInitialization() {
+            log('🧪 Testing initialization...');
+            
+            try {
+                if (typeof initializePieceSetup === 'function') {
+                    initializePieceSetup();
+                    log('✅ initializePieceSetup called');
+                } else {
+                    log('❌ initializePieceSetup function not found');
+                }
+            } catch (error) {
+                log(`❌ Initialization error: ${error.message}`);
+            }
+        }
+
+        function testDragDrop() {
+            log('🧪 Testing drag & drop setup...');
+            
+            try {
+                if (typeof initializeSetupDragDrop === 'function') {
+                    initializeSetupDragDrop();
+                    log('✅ Drag & drop initialized');
+                } else {
+                    log('❌ initializeSetupDragDrop function not found');
+                }
+            } catch (error) {
+                log(`❌ Drag & drop error: ${error.message}`);
+            }
+        }
+
+        function drawDebugBoard() {
+            const boardEl = document.getElementById("setupBoard");
+            if (!boardEl) {
+                log("❌ Setup board element not found!");
+                return;
+            }
+            
+            log("🎨 Drawing debug board...");
+            boardEl.innerHTML = "";
+            
+            // Ensure setupBoard exists
+            if (!window.setupBoard) {
+                window.setupBoard = Array(5).fill().map(() => Array(4).fill(null));
+            }
+            
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement("div");
+                    square.className = "setup-square";
+                    square.className += (row + col) % 2 === 0 ? " light" : " dark";
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    
+                    const piece = setupBoard[row][col];
+                    if (piece && typeof TASLAR !== 'undefined') {
+                        const pieceEl = document.createElement("div");
+                        pieceEl.className = "setup-piece";
+                        
+                        // Add color class
+                        if (piece === piece.toUpperCase()) {
+                            pieceEl.classList.add("white-piece");
+                        } else {
+                            pieceEl.classList.add("black-piece");
+                        }
+                        
+                        pieceEl.textContent = TASLAR[piece] || piece;
+                        pieceEl.draggable = true;
+                        pieceEl.dataset.piece = piece;
+                        square.appendChild(pieceEl);
+                    }
+                    
+                    boardEl.appendChild(square);
+                }
+            }
+            
+            log(`✅ Board drawn with ${boardEl.children.length} squares`);
+        }
+
+        function clearSetupBoard() {
+            log('🧹 Clearing setup board...');
+            if (window.setupBoard) {
+                for (let i = 0; i < 5; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        setupBoard[i][j] = null;
+                    }
+                }
+                drawDebugBoard();
+                log('✅ Board cleared');
+            }
+        }
+
+        function resetToDefaultPosition() {
+            log('🔄 Resetting to default position...');
+            window.setupBoard = [
+                ["r", "q", "k", "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "R"]
+            ];
+            drawDebugBoard();
+            log('✅ Default position set');
+        }
+
+        function testRandomSetup() {
+            log('🎲 Creating random setup...');
+            const pieces = ['K', 'Q', 'R', 'B', 'N', 'P', 'k', 'q', 'r', 'b', 'n', 'p'];
+            
+            // Clear board first
+            clearSetupBoard();
+            
+            // Add some random pieces
+            for (let i = 0; i < 8; i++) {
+                const row = Math.floor(Math.random() * 5);
+                const col = Math.floor(Math.random() * 4);
+                const piece = pieces[Math.floor(Math.random() * pieces.length)];
+                
+                if (!setupBoard[row][col]) {
+                    setupBoard[row][col] = piece;
+                }
+            }
+            
+            drawDebugBoard();
+            log('✅ Random setup created');
+        }
+
+        // Override console functions to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log(`LOG: ${args.join(' ')}`);
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            log(`ERROR: ${args.join(' ')}`);
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            log(`WARN: ${args.join(' ')}`);
+        };
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('🚀 Debug page loaded');
+            updateStatus();
+            
+            // Initialize setupBoard if needed
+            if (typeof setupBoard === 'undefined') {
+                window.setupBoard = Array(5).fill().map(() => Array(4).fill(null));
+                log('✅ setupBoard initialized');
+            }
+        });
+
+        // Update status every 2 seconds
+        setInterval(updateStatus, 2000);
+    </script>
+</body>
+</html>

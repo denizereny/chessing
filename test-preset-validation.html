@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preset Property Tests Validation</title>
+    <style>
+        body {
+            font-family: 'Consolas', 'Monaco', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .test-output {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #444;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .info { color: #2196F3; }
+        .warning { color: #ff9800; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .status-card {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .status-label {
+            color: #ccc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Preset Property Tests Validation</h1>
+        <p>Task 2.3: Preset sistem testlerini yaz</p>
+        <p><strong>Properties:</strong> 3 (Kategori Organizasyonu), 4 (Yükleme ve Analiz), 5 (Kullanıcı Yönetimi)</p>
+        <p><strong>Validates:</strong> Requirements 2.2, 2.3, 2.4, 2.5</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Test Controls</h2>
+        <button onclick="runValidation()" id="validateBtn">Validate Test Setup</button>
+        <button onclick="runSamplePropertyTests()" id="sampleBtn">Run Sample Property Tests</button>
+        <button onclick="runFullPropertyTests()" id="fullBtn">Run Full Property Tests (100+ iterations)</button>
+        <button onclick="clearOutput()">Clear Output</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Status</h2>
+        <div class="status-grid" id="statusGrid">
+            <div class="status-card">
+                <div class="status-value" id="totalPresets">-</div>
+                <div class="status-label">Total Presets</div>
+            </div>
+            <div class="status-card">
+                <div class="status-value" id="categoriesCount">-</div>
+                <div class="status-label">Categories</div>
+            </div>
+            <div class="status-card">
+                <div class="status-value" id="customPresets">-</div>
+                <div class="status-label">Custom Presets</div>
+            </div>
+            <div class="status-card">
+                <div class="status-value" id="testStatus">Ready</div>
+                <div class="status-label">Test Status</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Test Output</h2>
+        <div class="test-output" id="testOutput">Ready to run validation...</div>
+    </div>
+
+    <script src="js/extended-preset-manager.js"></script>
+    <script src="test/extended-preset-manager-property-tests.js"></script>
+    <script src="run-preset-property-tests.js"></script>
+    <script>
+        let testOutput = document.getElementById('testOutput');
+        let isRunning = false;
+
+        // Override console.log to capture output
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            testOutput.textContent += message + '\n';
+            testOutput.scrollTop = testOutput.scrollHeight;
+        };
+
+        function clearOutput() {
+            testOutput.textContent = 'Output cleared...\n';
+        }
+
+        function setButtonsDisabled(disabled) {
+            const buttons = ['validateBtn', 'sampleBtn', 'fullBtn'];
+            buttons.forEach(id => {
+                document.getElementById(id).disabled = disabled;
+            });
+            isRunning = disabled;
+        }
+
+        function updateStatus() {
+            try {
+                const presetManager = new ExtendedPresetManager();
+                const stats = presetManager.getPresetStatistics();
+                
+                document.getElementById('totalPresets').textContent = stats.total;
+                document.getElementById('categoriesCount').textContent = Object.keys(stats.byCategory).length;
+                document.getElementById('customPresets').textContent = stats.custom;
+                
+                // Update status colors
+                const totalElement = document.getElementById('totalPresets');
+                totalElement.style.color = stats.total >= 20 ? '#4CAF50' : '#f44336';
+                
+            } catch (error) {
+                console.log('Error updating status:', error.message);
+            }
+        }
+
+        async function runValidation() {
+            if (isRunning) return;
+            
+            setButtonsDisabled(true);
+            clearOutput();
+            document.getElementById('testStatus').textContent = 'Validating...';
+            
+            console.log('🚀 Starting Preset Tests Validation');
+            console.log('=' .repeat(60));
+            
+            try {
+                const success = runPresetPropertyTestsValidation();
+                document.getElementById('testStatus').textContent = success ? 'Valid' : 'Invalid';
+                document.getElementById('testStatus').style.color = success ? '#4CAF50' : '#f44336';
+                
+                updateStatus();
+                
+            } catch (error) {
+                console.log('❌ Validation failed:', error.message);
+                document.getElementById('testStatus').textContent = 'Error';
+                document.getElementById('testStatus').style.color = '#f44336';
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        async function runSamplePropertyTests() {
+            if (isRunning) return;
+            
+            setButtonsDisabled(true);
+            clearOutput();
+            document.getElementById('testStatus').textContent = 'Testing...';
+            
+            console.log('🧪 Running Sample Property Tests');
+            console.log('=' .repeat(60));
+            
+            try {
+                // Run a smaller sample of each property test
+                console.log('\n📁 Property 3: Preset Kategori Organizasyonu (Sample)');
+                const prop3Results = testPresetCategoryOrganization();
+                const prop3Passed = prop3Results.filter(r => r.success).length;
+                console.log(`✅ Property 3: ${prop3Passed}/${prop3Results.length} tests passed`);
+                
+                console.log('\n⚡ Property 4: Preset Yükleme ve Analiz (Sample)');
+                const prop4Results = testPresetLoadingAndAnalysis();
+                const prop4Passed = prop4Results.filter(r => r.success).length;
+                console.log(`✅ Property 4: ${prop4Passed}/${prop4Results.length} tests passed`);
+                
+                console.log('\n👤 Property 5: Kullanıcı Preset Yönetimi (Sample)');
+                const prop5Results = testUserPresetManagement();
+                const prop5Passed = prop5Results.filter(r => r.success).length;
+                console.log(`✅ Property 5: ${prop5Passed}/${prop5Results.length} tests passed`);
+                
+                const totalPassed = prop3Passed + prop4Passed + prop5Passed;
+                const totalTests = prop3Results.length + prop4Results.length + prop5Results.length;
+                
+                console.log(`\n🎯 Sample Tests Summary: ${totalPassed}/${totalTests} passed`);
+                document.getElementById('testStatus').textContent = `${totalPassed}/${totalTests}`;
+                document.getElementById('testStatus').style.color = totalPassed === totalTests ? '#4CAF50' : '#ff9800';
+                
+            } catch (error) {
+                console.log('❌ Sample tests failed:', error.message);
+                document.getElementById('testStatus').textContent = 'Error';
+                document.getElementById('testStatus').style.color = '#f44336';
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        async function runFullPropertyTests() {
+            if (isRunning) return;
+            
+            setButtonsDisabled(true);
+            clearOutput();
+            document.getElementById('testStatus').textContent = 'Running...';
+            
+            console.log('🚀 Running Full Property-Based Tests');
+            console.log('=' .repeat(60));
+            console.log('⚠️  This may take a moment - running 100+ iterations per property...');
+            
+            try {
+                // Add small delay to show status
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const summary = runAllPresetPropertyTests();
+                
+                document.getElementById('testStatus').textContent = `${summary.passed}/${summary.total}`;
+                document.getElementById('testStatus').style.color = summary.failed === 0 ? '#4CAF50' : '#f44336';
+                
+                console.log('\n🎯 Full Property Tests Completed!');
+                
+            } catch (error) {
+                console.log('❌ Full property tests failed:', error.message);
+                document.getElementById('testStatus').textContent = 'Error';
+                document.getElementById('testStatus').style.color = '#f44336';
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            console.log('🎯 Preset Property Tests Validation Ready');
+            console.log('Click "Validate Test Setup" to start...\n');
+            updateStatus();
+        };
+    </script>
+</body>
+</html>

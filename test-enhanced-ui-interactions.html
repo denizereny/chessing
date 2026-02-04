@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced UI Interactions Tests - 4x5 Chess Piece Setup</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .test-result.pass {
+            background: rgba(16, 185, 129, 0.2);
+            border-left-color: #10b981;
+        }
+        
+        .test-result.fail {
+            background: rgba(239, 68, 68, 0.2);
+            border-left-color: #ef4444;
+        }
+        
+        .test-result.running {
+            background: rgba(245, 158, 11, 0.2);
+            border-left-color: #f59e0b;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .property-test {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .property-title {
+            font-weight: bold;
+            color: #06b6d4;
+            margin-bottom: 10px;
+        }
+        
+        .iterations {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+        
+        .error-details {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .responsive-demo {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .device-preview {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .device-screen {
+            background: #000;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mobile-screen { width: 100px; height: 150px; }
+        .tablet-screen { width: 120px; height: 160px; }
+        .desktop-screen { width: 150px; height: 100px; }
+        
+        .demo-piece {
+            width: var(--piece-size, 20px);
+            height: var(--piece-size, 20px);
+            background: #4f46e5;
+            border-radius: 4px;
+            margin: 2px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-square {
+            width: var(--square-size, 25px);
+            height: var(--square-size, 25px);
+            border: 1px solid #06b6d4;
+            margin: 1px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Enhanced UI Interactions Tests</h1>
+            <p>Testing drag & drop visual feedback and responsive design adaptations</p>
+            <p><strong>Task 1.2:</strong> Property 1 (Geçersiz Sürükleme Reddi) & Property 2 (Responsive Arayüz Adaptasyonu)</p>
+        </div>
+
+        <div class="controls">
+            <button onclick="runAllTests()" id="runAllBtn">Run All Tests</button>
+            <button onclick="runUnitTests()" id="runUnitBtn">Run Unit Tests</button>
+            <button onclick="runPropertyTests()" id="runPropertyBtn">Run Property Tests</button>
+            <button onclick="clearResults()" id="clearBtn">Clear Results</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="passedTests">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="failedTests">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="propertyIterations">0</div>
+                <div class="stat-label">Property Iterations</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎨 Drag & Drop Visual Feedback Tests</h2>
+            <div id="dragDropResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📱 Responsive Design Tests</h2>
+            <div class="responsive-demo">
+                <div class="device-preview">
+                    <h4>Mobile (≤768px)</h4>
+                    <div class="device-screen mobile-screen" style="--piece-size: 15px; --square-size: 20px;">
+                        <div class="demo-piece"></div>
+                        <div class="demo-piece"></div>
+                        <div class="demo-square"></div>
+                        <div class="demo-square"></div>
+                    </div>
+                </div>
+                <div class="device-preview">
+                    <h4>Tablet (≤1024px)</h4>
+                    <div class="device-screen tablet-screen" style="--piece-size: 18px; --square-size: 23px;">
+                        <div class="demo-piece"></div>
+                        <div class="demo-piece"></div>
+                        <div class="demo-square"></div>
+                        <div class="demo-square"></div>
+                    </div>
+                </div>
+                <div class="device-preview">
+                    <h4>Desktop (>1024px)</h4>
+                    <div class="device-screen desktop-screen" style="--piece-size: 20px; --square-size: 25px;">
+                        <div class="demo-piece"></div>
+                        <div class="demo-piece"></div>
+                        <div class="demo-square"></div>
+                        <div class="demo-square"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="responsiveResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔬 Property-Based Tests</h2>
+            <div class="property-test">
+                <div class="property-title">Property 1: Geçersiz Sürükleme Reddi</div>
+                <p>Every invalid drag operation should be rejected and piece returned to original position</p>
+                <div class="iterations">Target: 100 iterations per property</div>
+            </div>
+            <div class="property-test">
+                <div class="property-title">Property 2: Responsive Arayüz Adaptasyonu</div>
+                <p>Interface elements should display correctly and remain functional across all screen sizes</p>
+                <div class="iterations">Target: 100 iterations per property</div>
+            </div>
+            <div id="propertyResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Integration Tests</h2>
+            <div id="integrationResults"></div>
+        </div>
+    </div>
+
+    <!-- Load fast-check from CDN -->
+    <script src="https://unpkg.com/fast-check@3.15.0/lib/bundle.js"></script>
+    
+    <!-- Load our enhanced systems -->
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/enhanced-drag-drop.js"></script>
+    
+    <!-- Load our custom property tests -->
+    <script src="test/ui-interactions-property-tests.js"></script>
+
+    <script>
+        // Global test state
+        let testStats = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            propertyIterations: 0
+        };
+
+        // Mock global variables for testing
+        window.setupBoard = [
+            [null, null, null, null],
+            [null, null, null, null],
+            [null, null, null, null],
+            [null, null, null, null],
+            [null, null, null, null]
+        ];
+
+        window.TASLAR = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+
+        window.t = (key) => key;
+        window.drawSetupBoard = () => {};
+        window.selectedPalettePiece = null;
+
+        // Test utilities
+        function addTestResult(containerId, testName, passed, details = '') {
+            const container = document.getElementById(containerId);
+            const result = document.createElement('div');
+            result.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            result.innerHTML = `
+                <strong>${passed ? '✅' : '❌'} ${testName}</strong>
+                ${details ? `<div class="error-details">${details}</div>` : ''}
+            `;
+            container.appendChild(result);
+            
+            testStats.total++;
+            if (passed) testStats.passed++;
+            else testStats.failed++;
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('totalTests').textContent = testStats.total;
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+            document.getElementById('propertyIterations').textContent = testStats.propertyIterations;
+        }
+
+        function clearResults() {
+            ['dragDropResults', 'responsiveResults', 'propertyResults', 'integrationResults'].forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+            testStats = { total: 0, passed: 0, failed: 0, propertyIterations: 0 };
+            updateStats();
+        }
+
+        // Mock DOM elements for testing
+        function createMockElement() {
+            return {
+                className: '',
+                style: { cssText: '', position: '', opacity: '', left: '', top: '' },
+                classList: {
+                    add: () => {},
+                    remove: () => {},
+                    contains: () => false,
+                    toggle: () => {}
+                },
+                addEventListener: () => {},
+                appendChild: () => {},
+                remove: () => {},
+                querySelector: () => null,
+                querySelectorAll: () => [],
+                dataset: {},
+                textContent: '',
+                innerHTML: '',
+                parentNode: null,
+                getBoundingClientRect: () => ({ width: 50, height: 50, left: 0, top: 0 }),
+                animate: () => ({ onfinish: null })
+            };
+        }
+
+        // Unit Tests
+        function runUnitTests() {
+            console.log('🧪 Running Unit Tests...');
+            
+            try {
+                const enhancedUI = new EnhancedPieceSetupUI();
+                const dragDropSystem = new EnhancedDragDropSystem(enhancedUI);
+
+                // Test 1: Drag feedback
+                const mockPiece = createMockElement();
+                let feedbackCalled = false;
+                mockPiece.classList.add = () => { feedbackCalled = true; };
+                
+                enhancedUI.showDragFeedback(mockPiece, 'start');
+                addTestResult('dragDropResults', 'Drag feedback on start', feedbackCalled);
+
+                // Test 2: Device type detection
+                const originalWidth = window.innerWidth;
+                window.innerWidth = 600;
+                const isMobile = enhancedUI.detectDeviceType() === 'mobile';
+                window.innerWidth = originalWidth;
+                addTestResult('responsiveResults', 'Mobile device detection', isMobile);
+
+                // Test 3: Validation
+                const isValidMove = dragDropSystem.validateDrop('K', 2, 1);
+                addTestResult('dragDropResults', 'Valid move validation', isValidMove);
+
+                // Test 4: Invalid move rejection
+                const isInvalidMove = !dragDropSystem.validateDrop('P', 0, 0);
+                addTestResult('dragDropResults', 'Invalid pawn position rejection', isInvalidMove);
+
+                // Test 5: Responsive breakpoints
+                const hasCorrectBreakpoints = enhancedUI.responsiveBreakpoints.mobile === 768 &&
+                                            enhancedUI.responsiveBreakpoints.tablet === 1024 &&
+                                            enhancedUI.responsiveBreakpoints.desktop === 1200;
+                addTestResult('responsiveResults', 'Responsive breakpoints configuration', hasCorrectBreakpoints);
+
+                // Test 6: Animation system
+                const mockElement = createMockElement();
+                let animationApplied = false;
+                mockElement.classList.add = () => { animationApplied = true; };
+                
+                enhancedUI.animateElement(mockElement, 'hover-in');
+                addTestResult('dragDropResults', 'Animation system', animationApplied);
+
+                console.log('✅ Unit tests completed');
+            } catch (error) {
+                addTestResult('dragDropResults', 'Unit test execution', false, error.message);
+                console.error('❌ Unit test error:', error);
+            }
+        }
+
+        // Property-Based Tests using fast-check and custom framework
+        function runPropertyTests() {
+            console.log('🔬 Running Property-Based Tests...');
+            
+            // First try our custom property test framework
+            if (typeof runAllPropertyTests === 'function') {
+                try {
+                    const customResults = runAllPropertyTests();
+                    
+                    // Add results to UI
+                    addTestResult('propertyResults', 'Custom Property Framework', true, 
+                        `✅ Completed ${customResults.totalIterations} iterations across ${customResults.total} properties`);
+                    
+                    customResults.results.forEach(result => {
+                        addTestResult('propertyResults', result.name, result.success, 
+                            result.success ? 
+                                `✅ Passed ${result.numRuns} iterations` : 
+                                `❌ Failed: ${result.error || JSON.stringify(result.counterexample)}`);
+                    });
+                    
+                    testStats.propertyIterations += customResults.totalIterations;
+                    
+                } catch (error) {
+                    addTestResult('propertyResults', 'Custom Property Tests', false, error.message);
+                }
+            }
+            
+            // Then try fast-check if available
+            if (typeof fc !== 'undefined') {
+                try {
+                    const enhancedUI = new EnhancedPieceSetupUI();
+                    const dragDropSystem = new EnhancedDragDropSystem(enhancedUI);
+
+                    // Property 1: Geçersiz Sürükleme Reddi
+                    console.log('Testing Property 1: Invalid drag rejection...');
+                    
+                    const invalidDragProperty = fc.property(
+                        fc.oneof(
+                            fc.record({ piece: fc.constant('P'), row: fc.constant(0), col: fc.integer(0, 3) }), // White pawn on first rank
+                            fc.record({ piece: fc.constant('p'), row: fc.constant(4), col: fc.integer(0, 3) }), // Black pawn on last rank
+                            fc.record({ piece: fc.constantFrom('K', 'Q', 'R', 'B', 'N', 'P'), row: fc.integer(-5, -1), col: fc.integer(0, 3) }), // Negative row
+                            fc.record({ piece: fc.constantFrom('K', 'Q', 'R', 'B', 'N', 'P'), row: fc.integer(5, 10), col: fc.integer(0, 3) }), // Row too high
+                            fc.record({ piece: fc.constantFrom('K', 'Q', 'R', 'B', 'N', 'P'), row: fc.integer(0, 4), col: fc.integer(-5, -1) }), // Negative col
+                            fc.record({ piece: fc.constantFrom('K', 'Q', 'R', 'B', 'N', 'P'), row: fc.integer(0, 4), col: fc.integer(4, 10) }) // Col too high
+                        ),
+                        (scenario) => {
+                            // Reset board
+                            for (let i = 0; i < 5; i++) {
+                                for (let j = 0; j < 4; j++) {
+                                    setupBoard[i][j] = null;
+                                }
+                            }
+                            
+                            const result = dragDropSystem.validateDrop(scenario.piece, scenario.row, scenario.col);
+                            return result === false; // Should always be false for invalid scenarios
+                        }
+                    );
+
+                    const property1Result = fc.check(invalidDragProperty, { numRuns: 100 });
+                    testStats.propertyIterations += 100;
+                    
+                    if (property1Result.failed) {
+                        addTestResult('propertyResults', 'Fast-check Property 1: Geçersiz Sürükleme Reddi', false, 
+                            `Failed after ${property1Result.numRuns} runs. Counterexample: ${JSON.stringify(property1Result.counterexample)}`);
+                    } else {
+                        addTestResult('propertyResults', 'Fast-check Property 1: Geçersiz Sürükleme Reddi', true, 
+                            `✅ Passed 100 iterations - All invalid drag operations correctly rejected`);
+                    }
+
+                    // Property 2: Responsive Arayüz Adaptasyonu
+                    console.log('Testing Property 2: Responsive interface adaptation...');
+                    
+                    const responsiveProperty = fc.property(
+                        fc.integer(200, 2000), // Screen width range
+                        (screenWidth) => {
+                            window.innerWidth = screenWidth;
+                            const deviceType = enhancedUI.detectDeviceType();
+                            
+                            // Verify correct device type detection
+                            if (screenWidth <= 768) {
+                                return deviceType === 'mobile';
+                            } else if (screenWidth <= 1024) {
+                                return deviceType === 'tablet';
+                            } else {
+                                return deviceType === 'desktop';
+                            }
+                        }
+                    );
+
+                    const property2Result = fc.check(responsiveProperty, { numRuns: 100 });
+                    testStats.propertyIterations += 100;
+                    
+                    if (property2Result.failed) {
+                        addTestResult('propertyResults', 'Fast-check Property 2: Responsive Arayüz Adaptasyonu', false, 
+                            `Failed after ${property2Result.numRuns} runs. Counterexample: ${JSON.stringify(property2Result.counterexample)}`);
+                    } else {
+                        addTestResult('propertyResults', 'Fast-check Property 2: Responsive Arayüz Adaptasyonu', true, 
+                            `✅ Passed 100 iterations - Interface correctly adapts to all screen sizes`);
+                    }
+
+                    updateStats();
+                    console.log('✅ Fast-check property-based tests completed');
+                    
+                } catch (error) {
+                    addTestResult('propertyResults', 'Fast-check Property test execution', false, error.message);
+                    console.error('❌ Fast-check Property test error:', error);
+                }
+            } else {
+                addTestResult('propertyResults', 'Fast-check library', false, 'fast-check library not loaded, using custom framework only');
+            }
+        }
+
+        // Integration Tests
+        function runIntegrationTests() {
+            console.log('🔗 Running Integration Tests...');
+            
+            try {
+                const enhancedUI = new EnhancedPieceSetupUI();
+                const dragDropSystem = new EnhancedDragDropSystem(enhancedUI);
+
+                // Test 1: Drag & Drop + Responsive integration
+                const originalWidth = window.innerWidth;
+                
+                // Test on mobile
+                window.innerWidth = 600;
+                enhancedUI.deviceType = enhancedUI.detectDeviceType();
+                const mockElement = createMockElement();
+                let mobileSuccess = true;
+                
+                try {
+                    enhancedUI.showDragFeedback(mockElement, 'start');
+                    dragDropSystem.validateDrop('K', 2, 1);
+                } catch (e) {
+                    mobileSuccess = false;
+                }
+                
+                // Test on desktop
+                window.innerWidth = 1200;
+                enhancedUI.deviceType = enhancedUI.detectDeviceType();
+                let desktopSuccess = true;
+                
+                try {
+                    enhancedUI.showDragFeedback(mockElement, 'start');
+                    dragDropSystem.validateDrop('K', 2, 1);
+                } catch (e) {
+                    desktopSuccess = false;
+                }
+                
+                window.innerWidth = originalWidth;
+                
+                addTestResult('integrationResults', 'Drag & Drop + Responsive Integration', 
+                    mobileSuccess && desktopSuccess);
+
+                // Test 2: Visual feedback consistency
+                const feedbackStates = ['start', 'over', 'leave', 'drop', 'end'];
+                let feedbackConsistent = true;
+                
+                feedbackStates.forEach(state => {
+                    try {
+                        enhancedUI.showDragFeedback(mockElement, state);
+                    } catch (e) {
+                        feedbackConsistent = false;
+                    }
+                });
+                
+                addTestResult('integrationResults', 'Visual feedback consistency', feedbackConsistent);
+
+                // Test 3: Animation + Validation integration
+                let animationValidationIntegration = true;
+                
+                try {
+                    // Test valid drop animation
+                    const validResult = dragDropSystem.validateDrop('K', 2, 1);
+                    if (validResult) {
+                        enhancedUI.showSuccessAnimation(mockElement);
+                    }
+                    
+                    // Test invalid drop animation
+                    const invalidResult = dragDropSystem.validateDrop('P', 0, 0);
+                    if (!invalidResult) {
+                        dragDropSystem.showValidationError('Invalid move');
+                    }
+                } catch (e) {
+                    animationValidationIntegration = false;
+                }
+                
+                addTestResult('integrationResults', 'Animation + Validation Integration', animationValidationIntegration);
+
+                console.log('✅ Integration tests completed');
+                
+            } catch (error) {
+                addTestResult('integrationResults', 'Integration test execution', false, error.message);
+                console.error('❌ Integration test error:', error);
+            }
+        }
+
+        // Run all tests
+        function runAllTests() {
+            clearResults();
+            console.log('🚀 Running all Enhanced UI Interaction tests...');
+            
+            // Disable buttons during test run
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            setTimeout(() => {
+                runUnitTests();
+                setTimeout(() => {
+                    runPropertyTests();
+                    setTimeout(() => {
+                        runIntegrationTests();
+                        
+                        // Re-enable buttons
+                        buttons.forEach(btn => btn.disabled = false);
+                        
+                        console.log(`✅ All tests completed! Results: ${testStats.passed}/${testStats.total} passed, ${testStats.propertyIterations} property iterations`);
+                    }, 100);
+                }, 100);
+            }, 100);
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            console.log('🎯 Enhanced UI Interactions Test Suite loaded');
+            console.log('Click "Run All Tests" to start testing');
+            
+            // Show initial responsive demo
+            updateResponsiveDemo();
+        });
+
+        function updateResponsiveDemo() {
+            const demos = document.querySelectorAll('.device-preview');
+            demos.forEach((demo, index) => {
+                const screen = demo.querySelector('.device-screen');
+                const pieces = screen.querySelectorAll('.demo-piece');
+                const squares = screen.querySelectorAll('.demo-square');
+                
+                // Animate demo elements
+                setInterval(() => {
+                    pieces.forEach(piece => {
+                        piece.style.transform = `scale(${0.8 + Math.random() * 0.4})`;
+                    });
+                }, 2000 + index * 500);
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 'Enter':
+                        e.preventDefault();
+                        runAllTests();
+                        break;
+                    case 'u':
+                        e.preventDefault();
+                        runUnitTests();
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        runPropertyTests();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        clearResults();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

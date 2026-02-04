@@ -1,0 +1,662 @@
+/**
+ * Enhanced Piece Setup - Complete CSS System
+ * 
+ * This is the main CSS file that imports and orchestrates all enhanced styling components
+ * for the 4x5 Chess Enhanced Piece Setup system.
+ * 
+ * Features:
+ * - Enhanced theme system with dark/light mode support
+ * - WCAG 2.1 AA accessibility compliance
+ * - Cross-browser compatibility (Chrome 70+, Firefox 65+, Safari 12+, Edge 79+)
+ * - Responsive design with mobile optimization
+ * - Modern CSS features with graceful fallbacks
+ * - Performance optimizations
+ * - Print-friendly styles
+ * 
+ * Requirements: 1.1, 1.2, 1.5
+ * Task: 10.2 CSS styling sistemi tamamla
+ */
+
+/* ===== IMPORT ENHANCED STYLES ===== */
+
+/* Core enhanced theme system */
+@import url('./enhanced-theme-system.css');
+
+/* Accessibility enhancements */
+@import url('./accessibility-enhancements.css');
+
+/* Cross-browser compatibility */
+@import url('./cross-browser-compatibility.css');
+
+/* Theme toggle system */
+@import url('./theme-toggle-system.css');
+
+/* Existing enhanced styles */
+@import url('./piece-setup-integration.css');
+@import url('./enhanced-drag-drop.css');
+@import url('./responsive-layout.css');
+@import url('./virtual-history-list.css');
+@import url('./position-evaluation-report.css');
+
+/* ===== ENHANCED PIECE SETUP INITIALIZATION ===== */
+
+/* Initialize enhanced theme system */
+.enhanced-piece-setup {
+  /* Apply enhanced theme class */
+  @extend .enhanced-theme;
+  
+  /* Enable theme transitions */
+  @extend .theme-transition;
+  
+  /* Initialize CSS custom properties */
+  color-scheme: light dark;
+  
+  /* Performance optimizations */
+  contain: layout style paint;
+  will-change: background-color, color, border-color;
+  
+  /* Font optimization */
+  font-display: swap;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== ENHANCED MODAL INTEGRATION ===== */
+
+/* Enhanced piece setup modal */
+.piece-setup-modal.enhanced {
+  /* Apply enhanced theme */
+  @extend .enhanced-theme;
+  
+  /* Enhanced modal styling */
+  background: var(--enhanced-bg-modal);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  /* Smooth entrance animation */
+  animation: enhanced-modal-entrance 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes enhanced-modal-entrance {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Enhanced modal content */
+.piece-setup-modal.enhanced .piece-setup-content {
+  background: var(--enhanced-bg-card);
+  border: 2px solid var(--enhanced-border-primary);
+  border-radius: var(--enhanced-radius-2xl);
+  box-shadow: var(--enhanced-shadow-2xl);
+  color: var(--enhanced-text-primary);
+  
+  /* Enhanced entrance animation */
+  animation: enhanced-content-entrance 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes enhanced-content-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ===== ENHANCED COMPONENT INTEGRATION ===== */
+
+/* Enhanced palette integration */
+.piece-setup-modal.enhanced .piece-palette {
+  background: var(--enhanced-bg-secondary);
+  border: 1px solid var(--enhanced-border-primary);
+  border-radius: var(--enhanced-radius-xl);
+  box-shadow: var(--enhanced-shadow-md);
+  
+  /* Enhanced gradient border */
+  position: relative;
+  overflow: hidden;
+}
+
+.piece-setup-modal.enhanced .piece-palette::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    var(--enhanced-primary) 0%, 
+    var(--enhanced-secondary) 50%, 
+    var(--enhanced-primary) 100%);
+  opacity: 0.6;
+}
+
+/* Enhanced board integration */
+.piece-setup-modal.enhanced .setup-board {
+  border: 4px solid var(--enhanced-board-border);
+  border-radius: var(--enhanced-radius-lg);
+  box-shadow: var(--enhanced-shadow-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.piece-setup-modal.enhanced .setup-board::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    var(--enhanced-primary) 0%, 
+    var(--enhanced-secondary) 25%, 
+    var(--enhanced-primary) 50%, 
+    var(--enhanced-secondary) 75%, 
+    var(--enhanced-primary) 100%);
+  border-radius: var(--enhanced-radius-lg);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--enhanced-transition-normal);
+}
+
+.piece-setup-modal.enhanced .setup-board:hover::after {
+  opacity: 0.2;
+}
+
+/* ===== ENHANCED INTERACTION STATES ===== */
+
+/* Enhanced piece interactions */
+.piece-setup-modal.enhanced .palette-piece,
+.piece-setup-modal.enhanced .setup-piece {
+  transition: all var(--enhanced-transition-fast);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.piece-setup-modal.enhanced .palette-piece:active,
+.piece-setup-modal.enhanced .setup-piece:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+/* Enhanced drag states */
+.piece-setup-modal.enhanced .palette-piece.dragging,
+.piece-setup-modal.enhanced .setup-piece.dragging {
+  opacity: 0.8;
+  transform: scale(1.1) rotate(5deg);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Enhanced drop zones */
+.piece-setup-modal.enhanced .setup-square.drop-zone {
+  background: linear-gradient(45deg, 
+    var(--enhanced-success-light) 0%, 
+    var(--enhanced-success) 100%);
+  border: 2px solid var(--enhanced-success);
+  animation: enhanced-drop-zone-pulse 1.5s infinite;
+}
+
+@keyframes enhanced-drop-zone-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+}
+
+/* Enhanced invalid drop zones */
+.piece-setup-modal.enhanced .setup-square.invalid-drop {
+  background: linear-gradient(45deg, 
+    var(--enhanced-error-light) 0%, 
+    var(--enhanced-error) 100%);
+  border: 2px solid var(--enhanced-error);
+  animation: enhanced-invalid-shake 0.5s ease-in-out;
+}
+
+@keyframes enhanced-invalid-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ===== ENHANCED BUTTON SYSTEM ===== */
+
+/* Enhanced button base styles */
+.piece-setup-modal.enhanced button {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  border-radius: var(--enhanced-radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--enhanced-transition-fast);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.piece-setup-modal.enhanced button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left var(--enhanced-transition-normal);
+}
+
+.piece-setup-modal.enhanced button:hover::before {
+  left: 100%;
+}
+
+/* Enhanced primary buttons */
+.piece-setup-modal.enhanced .btn-start,
+.piece-setup-modal.enhanced .btn-primary {
+  background: linear-gradient(135deg, 
+    var(--enhanced-success) 0%, 
+    var(--enhanced-success-hover) 100%);
+  color: var(--enhanced-text-inverse);
+  box-shadow: var(--enhanced-shadow-md);
+}
+
+.piece-setup-modal.enhanced .btn-start:hover,
+.piece-setup-modal.enhanced .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--enhanced-shadow-lg);
+}
+
+/* Enhanced secondary buttons */
+.piece-setup-modal.enhanced .btn-analyze,
+.piece-setup-modal.enhanced .btn-secondary {
+  background: linear-gradient(135deg, 
+    var(--enhanced-primary) 0%, 
+    var(--enhanced-primary-hover) 100%);
+  color: var(--enhanced-text-inverse);
+  box-shadow: var(--enhanced-shadow-md);
+}
+
+.piece-setup-modal.enhanced .btn-analyze:hover,
+.piece-setup-modal.enhanced .btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--enhanced-shadow-lg);
+}
+
+/* Enhanced tertiary buttons */
+.piece-setup-modal.enhanced .btn-tertiary {
+  background: var(--enhanced-bg-tertiary);
+  color: var(--enhanced-text-primary);
+  border: 2px solid var(--enhanced-border-primary);
+  box-shadow: var(--enhanced-shadow-sm);
+}
+
+.piece-setup-modal.enhanced .btn-tertiary:hover {
+  border-color: var(--enhanced-primary);
+  background: var(--enhanced-primary);
+  color: var(--enhanced-text-inverse);
+  transform: translateY(-2px);
+  box-shadow: var(--enhanced-shadow-md);
+}
+
+/* ===== ENHANCED FORM ELEMENTS ===== */
+
+/* Enhanced select elements */
+.piece-setup-modal.enhanced select {
+  background: var(--enhanced-bg-card);
+  border: 2px solid var(--enhanced-border-primary);
+  border-radius: var(--enhanced-radius-md);
+  color: var(--enhanced-text-primary);
+  padding: var(--enhanced-space-sm) var(--enhanced-space-md);
+  font-size: var(--enhanced-text-sm);
+  cursor: pointer;
+  transition: all var(--enhanced-transition-fast);
+}
+
+.piece-setup-modal.enhanced select:focus {
+  outline: none;
+  border-color: var(--enhanced-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.piece-setup-modal.enhanced select:hover {
+  border-color: var(--enhanced-primary);
+}
+
+/* ===== ENHANCED LOADING STATES ===== */
+
+/* Enhanced loading overlay */
+.piece-setup-modal.enhanced .loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--enhanced-bg-overlay);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  border-radius: inherit;
+}
+
+/* Enhanced loading spinner */
+.piece-setup-modal.enhanced .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--enhanced-border-primary);
+  border-top-color: var(--enhanced-primary);
+  border-radius: 50%;
+  animation: enhanced-spinner-spin 1s linear infinite;
+}
+
+@keyframes enhanced-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Enhanced loading text */
+.piece-setup-modal.enhanced .loading-text {
+  margin-top: var(--enhanced-space-md);
+  color: var(--enhanced-text-primary);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ===== ENHANCED ERROR STATES ===== */
+
+/* Enhanced error messages */
+.piece-setup-modal.enhanced .error-message {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.1) 0%, 
+    rgba(239, 68, 68, 0.05) 100%);
+  border: 1px solid var(--enhanced-error);
+  border-radius: var(--enhanced-radius-lg);
+  color: var(--enhanced-error);
+  padding: var(--enhanced-space-md);
+  margin: var(--enhanced-space-md) 0;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--enhanced-space-sm);
+}
+
+.piece-setup-modal.enhanced .error-message::before {
+  content: '⚠️';
+  font-size: var(--enhanced-text-lg);
+}
+
+/* Enhanced success messages */
+.piece-setup-modal.enhanced .success-message {
+  background: linear-gradient(135deg, 
+    rgba(16, 185, 129, 0.1) 0%, 
+    rgba(16, 185, 129, 0.05) 100%);
+  border: 1px solid var(--enhanced-success);
+  border-radius: var(--enhanced-radius-lg);
+  color: var(--enhanced-success);
+  padding: var(--enhanced-space-md);
+  margin: var(--enhanced-space-md) 0;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--enhanced-space-sm);
+}
+
+.piece-setup-modal.enhanced .success-message::before {
+  content: '✅';
+  font-size: var(--enhanced-text-lg);
+}
+
+/* ===== ENHANCED RESPONSIVE BEHAVIOR ===== */
+
+/* Enhanced mobile optimizations */
+@media (max-width: 768px) {
+  .piece-setup-modal.enhanced .piece-setup-content {
+    width: 95vw;
+    height: 95vh;
+    max-width: none;
+    max-height: none;
+    border-radius: var(--enhanced-radius-lg);
+  }
+  
+  .piece-setup-modal.enhanced .setup-container {
+    flex-direction: column;
+    gap: var(--enhanced-space-lg);
+  }
+  
+  .piece-setup-modal.enhanced .piece-palette {
+    width: 100%;
+    order: 2;
+  }
+  
+  .piece-setup-modal.enhanced .setup-board-container {
+    order: 1;
+  }
+  
+  .piece-setup-modal.enhanced .palette-pieces {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  .piece-setup-modal.enhanced .setup-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .piece-setup-modal.enhanced .setup-actions button {
+    width: 100%;
+  }
+}
+
+/* Enhanced tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .piece-setup-modal.enhanced .piece-setup-content {
+    width: 90vw;
+    height: 90vh;
+  }
+  
+  .piece-setup-modal.enhanced .setup-container {
+    gap: var(--enhanced-space-xl);
+  }
+}
+
+/* ===== ENHANCED PRINT STYLES ===== */
+
+@media print {
+  .piece-setup-modal.enhanced {
+    position: static;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  .piece-setup-modal.enhanced .piece-setup-content {
+    box-shadow: none;
+    border: 2px solid #000;
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: auto;
+    background: #fff;
+    color: #000;
+  }
+  
+  .piece-setup-modal.enhanced .modal-header {
+    background: #f0f0f0 !important;
+    color: #000 !important;
+  }
+  
+  .piece-setup-modal.enhanced .close-modal,
+  .piece-setup-modal.enhanced .theme-toggle-container,
+  .piece-setup-modal.enhanced .loading-overlay {
+    display: none;
+  }
+  
+  .piece-setup-modal.enhanced .setup-container {
+    flex-direction: column;
+  }
+  
+  .piece-setup-modal.enhanced .palette-piece,
+  .piece-setup-modal.enhanced .setup-square {
+    border: 1px solid #000;
+  }
+  
+  .piece-setup-modal.enhanced .setup-square.light {
+    background: #f0f0f0;
+  }
+  
+  .piece-setup-modal.enhanced .setup-square.dark {
+    background: #d0d0d0;
+  }
+}
+
+/* ===== ENHANCED PERFORMANCE OPTIMIZATIONS ===== */
+
+/* GPU acceleration for animations */
+.piece-setup-modal.enhanced .palette-piece,
+.piece-setup-modal.enhanced .setup-square,
+.piece-setup-modal.enhanced button {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Optimize repaints and reflows */
+.piece-setup-modal.enhanced {
+  contain: layout style paint;
+}
+
+.piece-setup-modal.enhanced .setup-board {
+  contain: layout style;
+}
+
+.piece-setup-modal.enhanced .piece-palette {
+  contain: layout style;
+}
+
+/* ===== ENHANCED DEBUGGING SUPPORT ===== */
+
+/* Development mode indicators */
+.piece-setup-modal.enhanced.debug-mode::after {
+  content: 'Enhanced Mode Active';
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: var(--enhanced-success);
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  z-index: 10000;
+  font-weight: bold;
+}
+
+/* Performance monitoring */
+.piece-setup-modal.enhanced.perf-monitor .palette-piece:hover::after,
+.piece-setup-modal.enhanced.perf-monitor .setup-square:hover::after {
+  content: attr(data-perf-time) 'ms';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  font-size: 10px;
+  border-radius: 3px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+/* ===== ENHANCED INITIALIZATION ===== */
+
+/* Auto-initialize enhanced mode */
+.piece-setup-modal[data-enhanced="true"] {
+  @extend .piece-setup-modal.enhanced;
+}
+
+/* Progressive enhancement */
+.piece-setup-modal.enhanced-loading {
+  opacity: 0;
+  transition: opacity var(--enhanced-transition-normal);
+}
+
+.piece-setup-modal.enhanced-ready {
+  opacity: 1;
+}
+
+/* Feature detection classes */
+.enhanced-supports-grid .setup-board {
+  display: grid;
+}
+
+.enhanced-supports-flexbox .setup-actions {
+  display: flex;
+}
+
+.enhanced-supports-backdrop-filter .piece-setup-modal {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ===== ENHANCED COMPLETION MARKER ===== */
+
+/* Mark completion of enhanced CSS system */
+.enhanced-piece-setup-complete {
+  --enhanced-system-version: '1.0.0';
+  --enhanced-system-features: 'theme-system accessibility cross-browser responsive';
+  --enhanced-system-status: 'complete';
+}
+
+/* Success indicator for completed system */
+.enhanced-piece-setup-complete::before {
+  content: '✨ Enhanced CSS System Loaded';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, 
+    var(--enhanced-success) 0%, 
+    var(--enhanced-primary) 100%);
+  color: white;
+  text-align: center;
+  padding: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 10001;
+  animation: enhanced-system-loaded 3s ease-in-out;
+}
+
+@keyframes enhanced-system-loaded {
+  0%, 90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+/* Hide success indicator in production */
+.enhanced-piece-setup-complete:not(.debug-mode)::before {
+  display: none;
+}

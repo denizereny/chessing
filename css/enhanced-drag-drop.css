@@ -1,0 +1,348 @@
+/**
+ * Enhanced Drag & Drop Styles for 4x5 Chess Piece Setup
+ * Provides visual feedback, animations, and modern styling
+ */
+
+/* Drag & Drop Visual States */
+.valid-drop-target {
+  background: linear-gradient(45deg, var(--enhanced-success, #10b981), rgba(16, 185, 129, 0.3)) !important;
+  border: 2px solid var(--enhanced-success, #10b981) !important;
+  transform: scale(1.05);
+  box-shadow: 
+    inset 0 0 0 2px rgba(255, 255, 255, 0.3),
+    0 0 20px rgba(16, 185, 129, 0.4);
+  animation: valid-drop-pulse 1.5s infinite;
+}
+
+.invalid-drop-target {
+  background: linear-gradient(45deg, var(--enhanced-error, #ef4444), rgba(239, 68, 68, 0.3)) !important;
+  border: 2px solid var(--enhanced-error, #ef4444) !important;
+  transform: scale(1.02);
+  box-shadow: 
+    inset 0 0 0 2px rgba(255, 255, 255, 0.3),
+    0 0 20px rgba(239, 68, 68, 0.4);
+  animation: invalid-drop-shake 0.5s ease-in-out;
+}
+
+.drag-hover {
+  transform: scale(1.08) !important;
+  z-index: 10;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Potential Drop Targets */
+.potential-drop-target {
+  border: 2px dashed var(--enhanced-primary, #4f46e5);
+  background: rgba(79, 70, 229, 0.1);
+  animation: potential-target-glow 2s infinite;
+}
+
+.invalid-potential-target {
+  border: 1px dashed var(--enhanced-error, #ef4444);
+  background: rgba(239, 68, 68, 0.05);
+  opacity: 0.6;
+}
+
+/* Placement Hints */
+.placement-hint {
+  position: relative;
+  border: 2px dashed var(--enhanced-secondary, #06b6d4);
+  background: rgba(6, 182, 212, 0.1);
+  animation: placement-hint-pulse 2s infinite;
+}
+
+.placement-hint::after {
+  content: '✓';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  color: var(--enhanced-secondary, #06b6d4);
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
+}
+
+/* Drag Ghost Styles */
+.enhanced-drag-ghost {
+  background: linear-gradient(135deg, var(--enhanced-primary, #4f46e5), var(--enhanced-secondary, #06b6d4));
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: drag-ghost-float 1s ease-in-out infinite alternate;
+}
+
+/* Validation Overlay */
+.enhanced-validation-overlay {
+  font-size: 1rem;
+  text-align: center;
+  animation: validation-error-bounce 0.5s ease-out;
+}
+
+/* Trash Zone Enhanced States */
+.trash-zone.drag-over {
+  background: linear-gradient(135deg, var(--enhanced-error, #ef4444), #dc2626);
+  transform: scale(1.1);
+  animation: trash-ready-pulse 0.8s infinite;
+}
+
+.trash-zone.delete-ready {
+  box-shadow: 
+    0 0 30px rgba(239, 68, 68, 0.6),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+/* Piece Selection States */
+.palette-piece.selected {
+  background: linear-gradient(135deg, var(--enhanced-secondary, #06b6d4), #0891b2);
+  border: 3px solid var(--enhanced-secondary, #06b6d4);
+  transform: scale(1.1);
+  box-shadow: 
+    0 0 25px rgba(6, 182, 212, 0.5),
+    inset 0 0 10px rgba(255, 255, 255, 0.2);
+  animation: selected-piece-glow 2s infinite;
+}
+
+.palette-piece:hover:not(.selected) {
+  background: rgba(79, 70, 229, 0.2);
+  border-color: var(--enhanced-primary, #4f46e5);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Setup Square Hover Effects */
+.setup-square:hover {
+  background: rgba(79, 70, 229, 0.1);
+  border-color: var(--enhanced-primary, #4f46e5);
+  transform: scale(1.02);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Drop Preview */
+.drop-preview {
+  animation: drop-preview-pulse 1s infinite;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* Enhanced Animations */
+@keyframes valid-drop-pulse {
+  0%, 100% { 
+    box-shadow: 
+      inset 0 0 0 2px rgba(255, 255, 255, 0.3),
+      0 0 20px rgba(16, 185, 129, 0.4);
+  }
+  50% { 
+    box-shadow: 
+      inset 0 0 0 2px rgba(255, 255, 255, 0.5),
+      0 0 30px rgba(16, 185, 129, 0.6);
+  }
+}
+
+@keyframes invalid-drop-shake {
+  0%, 100% { transform: scale(1.02) translateX(0); }
+  25% { transform: scale(1.02) translateX(-2px); }
+  75% { transform: scale(1.02) translateX(2px); }
+}
+
+@keyframes potential-target-glow {
+  0%, 100% { 
+    border-color: var(--enhanced-primary, #4f46e5);
+    box-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+  }
+  50% { 
+    border-color: var(--enhanced-secondary, #06b6d4);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+  }
+}
+
+@keyframes placement-hint-pulse {
+  0%, 100% { 
+    border-color: var(--enhanced-secondary, #06b6d4);
+    background: rgba(6, 182, 212, 0.1);
+  }
+  50% { 
+    border-color: var(--enhanced-primary, #4f46e5);
+    background: rgba(79, 70, 229, 0.1);
+  }
+}
+
+@keyframes drag-ghost-float {
+  0% { transform: scale(1.2) rotate(5deg) translateY(0); }
+  100% { transform: scale(1.2) rotate(5deg) translateY(-3px); }
+}
+
+@keyframes validation-error-bounce {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes trash-ready-pulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 30px rgba(239, 68, 68, 0.6),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  50% { 
+    box-shadow: 
+      0 0 40px rgba(239, 68, 68, 0.8),
+      inset 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes selected-piece-glow {
+  0%, 100% { 
+    box-shadow: 
+      0 0 25px rgba(6, 182, 212, 0.5),
+      inset 0 0 10px rgba(255, 255, 255, 0.2);
+  }
+  50% { 
+    box-shadow: 
+      0 0 35px rgba(6, 182, 212, 0.7),
+      inset 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes drop-preview-pulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* Enhanced Piece Animations */
+.enhanced-animate.enhanced-invalid-drop {
+  animation: enhanced-invalid-drop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.enhanced-animate.enhanced-invalid-placement {
+  animation: enhanced-invalid-placement 0.5s ease-out;
+}
+
+.enhanced-animate.enhanced-piece-removed {
+  animation: enhanced-piece-removed 0.3s ease-out;
+}
+
+.enhanced-animate.enhanced-trash-ready {
+  animation: enhanced-trash-ready 0.3s ease-out;
+}
+
+.enhanced-animate.enhanced-delete-success {
+  animation: enhanced-delete-success 0.5s ease-out;
+}
+
+@keyframes enhanced-invalid-drop {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1) rotate(-2deg); background: rgba(239, 68, 68, 0.3); }
+  50% { transform: scale(1.05) rotate(2deg); background: rgba(239, 68, 68, 0.2); }
+  75% { transform: scale(1.02) rotate(-1deg); background: rgba(239, 68, 68, 0.1); }
+  100% { transform: scale(1) rotate(0deg); background: transparent; }
+}
+
+@keyframes enhanced-invalid-placement {
+  0%, 100% { transform: scale(1); border-color: transparent; }
+  20% { transform: scale(1.05); border-color: var(--enhanced-error, #ef4444); }
+  40% { transform: scale(0.98); border-color: var(--enhanced-error, #ef4444); }
+  60% { transform: scale(1.02); border-color: var(--enhanced-error, #ef4444); }
+  80% { transform: scale(0.99); border-color: var(--enhanced-error, #ef4444); }
+}
+
+@keyframes enhanced-piece-removed {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+  100% { opacity: 0.3; transform: scale(0.6); }
+}
+
+@keyframes enhanced-trash-ready {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1.05); }
+}
+
+@keyframes enhanced-delete-success {
+  0% { transform: scale(1.05); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .enhanced-drag-ghost {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  
+  .enhanced-validation-overlay {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+    max-width: 90vw;
+  }
+  
+  .valid-drop-target,
+  .invalid-drop-target {
+    transform: scale(1.03);
+  }
+  
+  .drag-hover {
+    transform: scale(1.05) !important;
+  }
+  
+  .placement-hint::after {
+    font-size: 0.7rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .valid-drop-target {
+    border-width: 3px;
+    background: #10b981 !important;
+  }
+  
+  .invalid-drop-target {
+    border-width: 3px;
+    background: #ef4444 !important;
+  }
+  
+  .potential-drop-target {
+    border-width: 3px;
+  }
+  
+  .placement-hint {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .valid-drop-target,
+  .invalid-drop-target,
+  .potential-drop-target,
+  .placement-hint,
+  .enhanced-drag-ghost,
+  .drop-preview,
+  .palette-piece.selected,
+  .trash-zone.drag-over {
+    animation: none;
+  }
+  
+  .enhanced-animate {
+    animation: none;
+    transition: none;
+  }
+  
+  .palette-piece:hover:not(.selected),
+  .setup-square:hover,
+  .drag-hover {
+    transition: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .enhanced-drag-ghost,
+  .enhanced-validation-overlay,
+  .drop-preview {
+    display: none !important;
+  }
+}

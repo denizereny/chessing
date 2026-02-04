@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick System Test</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            background: #1a1a1a; 
+            color: #00ff00; 
+            padding: 20px; 
+        }
+        .test-result { 
+            margin: 10px 0; 
+            padding: 5px; 
+        }
+        .pass { color: #00ff00; }
+        .fail { color: #ff0000; }
+        .warn { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Enhanced Piece Setup System - Quick Test</h1>
+    <div id="results"></div>
+
+    <!-- Include scripts -->
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/extended-preset-manager.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/position-history-manager.js"></script>
+    <script src="js/mobile-optimization-manager.js"></script>
+    <script src="js/performance-monitor.js"></script>
+
+    <script>
+        function runQuickTest() {
+            const results = document.getElementById('results');
+            let html = '';
+            let passed = 0;
+            let total = 0;
+
+            function test(name, condition, details = '') {
+                total++;
+                const status = condition ? 'PASS' : 'FAIL';
+                const className = condition ? 'pass' : 'fail';
+                if (condition) passed++;
+                
+                html += `<div class="test-result ${className}">
+                    [${status}] ${name} ${details}
+                </div>`;
+            }
+
+            // Test component availability
+            test('Enhanced UI Manager', typeof EnhancedPieceSetupUI !== 'undefined');
+            test('Extended Preset Manager', typeof ExtendedPresetManager !== 'undefined');
+            test('Advanced Position Analyzer', typeof AdvancedPositionAnalyzer !== 'undefined');
+            test('Position Sharing System', typeof PositionSharingSystem !== 'undefined');
+            test('Position History Manager', typeof PositionHistoryManager !== 'undefined');
+            test('Mobile Optimization Manager', typeof MobileOptimizationManager !== 'undefined');
+            test('Performance Monitor', typeof PerformanceMonitor !== 'undefined');
+
+            // Test component instantiation
+            try {
+                const ui = new EnhancedPieceSetupUI();
+                test('Enhanced UI Instantiation', true, '- Device: ' + ui.detectDeviceType());
+            } catch (e) {
+                test('Enhanced UI Instantiation', false, '- Error: ' + e.message);
+            }
+
+            try {
+                const presets = new ExtendedPresetManager();
+                const allPresets = presets.getAllPresets();
+                test('Preset Manager Instantiation', true, `- ${allPresets.length} presets loaded`);
+            } catch (e) {
+                test('Preset Manager Instantiation', false, '- Error: ' + e.message);
+            }
+
+            try {
+                const analyzer = new AdvancedPositionAnalyzer();
+                const testPos = [
+                    ['r', 'q', 'k', 'r'],
+                    ['p', 'p', 'p', 'p'],
+                    [null, null, null, null],
+                    ['P', 'P', 'P', 'P'],
+                    ['R', 'Q', 'K', 'R']
+                ];
+                const analysis = analyzer.analyzePosition(testPos);
+                test('Position Analysis', analysis && typeof analysis.materialBalance === 'number', 
+                     `- Material: ${analysis ? analysis.materialBalance : 'N/A'}`);
+            } catch (e) {
+                test('Position Analysis', false, '- Error: ' + e.message);
+            }
+
+            try {
+                const sharing = new PositionSharingSystem();
+                const testPos = [['K'], [null], [null], [null], ['k']];
+                const encoded = sharing.encodePosition(testPos);
+                const decoded = sharing.decodePosition(encoded);
+                const roundTrip = JSON.stringify(testPos) === JSON.stringify(decoded);
+                test('Position Sharing Round-trip', roundTrip, 
+                     `- Code: ${encoded} (${encoded.length} chars)`);
+            } catch (e) {
+                test('Position Sharing Round-trip', false, '- Error: ' + e.message);
+            }
+
+            try {
+                const history = new PositionHistoryManager();
+                history.addPosition([['K'], [null], [null], [null], ['k']]);
+                history.addPosition([['K'], ['P'], [null], [null], ['k']]);
+                const canUndo = history.canUndo();
+                test('History Management', canUndo, '- Undo/Redo functional');
+            } catch (e) {
+                test('History Management', false, '- Error: ' + e.message);
+            }
+
+            try {
+                const mobile = new MobileOptimizationManager();
+                const hasTouch = mobile.hasTouchSupport();
+                test('Mobile Optimization', true, `- Touch support: ${hasTouch}`);
+            } catch (e) {
+                test('Mobile Optimization', false, '- Error: ' + e.message);
+            }
+
+            try {
+                const perf = new PerformanceMonitor();
+                const result = perf.measureOperation(() => {
+                    for(let i = 0; i < 1000; i++) Math.random();
+                }, 'test');
+                test('Performance Monitoring', result && typeof result.duration === 'number',
+                     `- Test duration: ${result ? result.duration.toFixed(2) : 'N/A'}ms`);
+            } catch (e) {
+                test('Performance Monitoring', false, '- Error: ' + e.message);
+            }
+
+            // Summary
+            const successRate = (passed / total * 100).toFixed(1);
+            const status = passed === total ? 'EXCELLENT' : 
+                          passed >= total * 0.8 ? 'GOOD' : 
+                          passed >= total * 0.6 ? 'NEEDS_WORK' : 'CRITICAL';
+            
+            html += `<div class="test-result ${passed === total ? 'pass' : passed >= total * 0.8 ? 'warn' : 'fail'}">
+                <br>📊 SUMMARY: ${status}
+                <br>✅ Success Rate: ${successRate}% (${passed}/${total})
+                <br>🎯 System Status: ${status === 'EXCELLENT' ? 'Production Ready' : 
+                                      status === 'GOOD' ? 'Ready with Minor Issues' :
+                                      status === 'NEEDS_WORK' ? 'Needs Improvements' : 'Critical Issues'}
+            </div>`;
+
+            results.innerHTML = html;
+        }
+
+        // Run test when page loads
+        window.addEventListener('load', () => {
+            setTimeout(runQuickTest, 500);
+        });
+    </script>
+</body>
+</html>

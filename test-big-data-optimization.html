@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Data Optimization Test</title>
+    <link rel="stylesheet" href="css/virtual-history-list.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2196f3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.15s ease;
+        }
+        
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1976d2;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2196f3;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .virtual-list-container {
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        
+        .log-entry.info {
+            color: #0066cc;
+        }
+        
+        .log-entry.success {
+            color: #28a745;
+        }
+        
+        .log-entry.warning {
+            color: #ffc107;
+        }
+        
+        .log-entry.error {
+            color: #dc3545;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #2196f3;
+            transition: width 0.3s ease;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            min-width: 120px;
+            font-weight: 500;
+        }
+        
+        .input-group input,
+        .input-group select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .input-group label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Big Data Optimization Test</h1>
+            <p>Testing 100+ position history with lazy loading, virtualization, and memory management</p>
+        </div>
+        
+        <div class="content">
+            <!-- Statistics Section -->
+            <div class="test-section">
+                <h3>📊 Performance Statistics</h3>
+                <div class="stats" id="statsContainer">
+                    <div class="stat-card">
+                        <div class="stat-value" id="positionCount">0</div>
+                        <div class="stat-label">Total Positions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="memoryUsage">0 KB</div>
+                        <div class="stat-label">Memory Usage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="cacheHitRate">0%</div>
+                        <div class="stat-label">Cache Hit Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="compressionRatio">0%</div>
+                        <div class="stat-label">Compression Ratio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgOperationTime">0ms</div>
+                        <div class="stat-label">Avg Operation Time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="optimizationStatus">Disabled</div>
+                        <div class="stat-label">Optimization Status</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controls Section -->
+            <div class="test-section">
+                <h3>🎮 Test Controls</h3>
+                
+                <div class="input-group">
+                    <label for="batchSize">Batch Size:</label>
+                    <input type="number" id="batchSize" value="10" min="1" max="100">
+                    <label for="totalPositions">Total Positions:</label>
+                    <input type="number" id="totalPositions" value="150" min="10" max="1000">
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="generatePositions()">
+                        📝 Generate Test Positions
+                    </button>
+                    <button class="btn btn-success" onclick="enableOptimization()">
+                        🚀 Enable Optimization
+                    </button>
+                    <button class="btn btn-warning" onclick="disableOptimization()">
+                        ⏸️ Disable Optimization
+                    </button>
+                    <button class="btn btn-secondary" onclick="runPerformanceTest()">
+                        ⚡ Performance Test
+                    </button>
+                    <button class="btn btn-secondary" onclick="testVirtualScrolling()">
+                        📱 Test Virtual Scrolling
+                    </button>
+                    <button class="btn btn-secondary" onclick="testCompression()">
+                        🗜️ Test Compression
+                    </button>
+                    <button class="btn btn-secondary" onclick="testSearch()">
+                        🔍 Test Search
+                    </button>
+                    <button class="btn btn-danger" onclick="clearAll()">
+                        🗑️ Clear All
+                    </button>
+                </div>
+                
+                <div class="progress-bar" id="progressContainer" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="progressText" style="display: none; text-align: center; margin-top: 5px;"></div>
+            </div>
+            
+            <!-- Virtual List Section -->
+            <div class="test-section">
+                <h3>📱 Virtual History List</h3>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="scrollToTop()">⬆️ Scroll to Top</button>
+                    <button class="btn btn-primary" onclick="scrollToBottom()">⬇️ Scroll to Bottom</button>
+                    <button class="btn btn-primary" onclick="scrollToCurrent()">🎯 Scroll to Current</button>
+                    <button class="btn btn-secondary" onclick="refreshVirtualList()">🔄 Refresh List</button>
+                </div>
+                <div class="virtual-list-container" id="virtualListContainer">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">
+                        Virtual list will appear here after generating positions
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Log Section -->
+            <div class="test-section">
+                <h3>📋 Test Log</h3>
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="clearLog()">🧹 Clear Log</button>
+                    <button class="btn btn-secondary" onclick="exportLog()">💾 Export Log</button>
+                </div>
+                <div class="log" id="logContainer">
+                    <div class="log-entry info">Big Data Optimization Test initialized</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/position-history-manager.js"></script>
+    <script src="js/performance-monitor.js"></script>
+    <script src="js/big-data-optimization.js"></script>
+    <script src="js/virtual-history-list.js"></script>
+    <script src="js/big-data-integration.js"></script>
+
+    <script>
+        // Test application state
+        let testState = {
+            historyManager: null,
+            performanceMonitor: null,
+            optimizationManager: null,
+            virtualList: null,
+            integration: null,
+            isGenerating: false,
+            generatedPositions: 0,
+            totalToGenerate: 0
+        };
+
+        // Initialize test application
+        async function initializeTest() {
+            try {
+                log('Initializing test application...', 'info');
+                
+                // Create managers
+                testState.historyManager = new PositionHistoryManager();
+                testState.performanceMonitor = new PerformanceMonitor();
+                
+                // Setup event listeners
+                setupEventListeners();
+                
+                // Update initial stats
+                updateStatistics();
+                
+                log('Test application initialized successfully', 'success');
+                
+            } catch (error) {
+                log(`Failed to initialize test application: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // History manager events
+            testState.historyManager.addEventListener('positionAdded', (data) => {
+                updateStatistics();
+                if (testState.isGenerating) {
+                    updateProgress();
+                }
+            });
+            
+            testState.historyManager.addEventListener('positionChanged', (data) => {
+                updateStatistics();
+                log(`Position changed: ${data.direction} to index ${data.currentIndex}`, 'info');
+            });
+            
+            testState.historyManager.addEventListener('historyCleared', () => {
+                updateStatistics();
+                log('History cleared', 'warning');
+            });
+        }
+
+        // Generate test positions
+        async function generatePositions() {
+            if (testState.isGenerating) {
+                log('Position generation already in progress', 'warning');
+                return;
+            }
+            
+            const batchSize = parseInt(document.getElementById('batchSize').value);
+            const totalPositions = parseInt(document.getElementById('totalPositions').value);
+            
+            testState.isGenerating = true;
+            testState.generatedPositions = 0;
+            testState.totalToGenerate = totalPositions;
+            
+            showProgress();
+            log(`Starting generation of ${totalPositions} positions in batches of ${batchSize}`, 'info');
+            
+            try {
+                for (let i = 0; i < totalPositions; i += batchSize) {
+                    const currentBatchSize = Math.min(batchSize, totalPositions - i);
+                    
+                    // Generate batch
+                    for (let j = 0; j < currentBatchSize; j++) {
+                        const position = generateRandomPosition();
+                        const metadata = {
+                            name: `Test Position ${i + j + 1}`,
+                            description: `Generated test position with ${countPieces(position)} pieces`,
+                            tags: ['test', 'generated', getPositionType(position)]
+                        };
+                        
+                        testState.historyManager.addPosition(position, metadata);
+                        testState.generatedPositions++;
+                    }
+                    
+                    // Yield control to prevent blocking
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                    
+                    log(`Generated batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(totalPositions / batchSize)} (${testState.generatedPositions}/${totalPositions} positions)`, 'info');
+                }
+                
+                log(`Successfully generated ${totalPositions} test positions`, 'success');
+                
+                // Auto-enable optimization if threshold reached
+                if (totalPositions >= 50 && !testState.optimizationManager) {
+                    log('Auto-enabling optimization due to position count', 'info');
+                    await enableOptimization();
+                }
+                
+            } catch (error) {
+                log(`Error generating positions: ${error.message}`, 'error');
+                console.error(error);
+            } finally {
+                testState.isGenerating = false;
+                hideProgress();
+                updateStatistics();
+            }
+        }
+
+        // Generate random chess position
+        function generateRandomPosition() {
+            const pieces = ['K', 'Q', 'R', 'B', 'N', 'P', 'k', 'q', 'r', 'b', 'n', 'p'];
+            const position = Array(5).fill().map(() => Array(4).fill(null));
+            
+            // Always place kings
+            position[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 4)] = 'K';
+            position[Math.floor(Math.random() * 5)][Math.floor(Math.random() * 4)] = 'k';
+            
+            // Add random pieces
+            const numPieces = Math.floor(Math.random() * 8) + 4; // 4-12 pieces
+            for (let i = 0; i < numPieces; i++) {
+                let row, col;
+                do {
+                    row = Math.floor(Math.random() * 5);
+                    col = Math.floor(Math.random() * 4);
+                } while (position[row][col] !== null);
+                
+                position[row][col] = pieces[Math.floor(Math.random() * pieces.length)];
+            }
+            
+            return position;
+        }
+
+        // Count pieces in position
+        function countPieces(position) {
+            return position.flat().filter(piece => piece !== null).length;
+        }
+
+        // Get position type
+        function getPositionType(position) {
+            const pieceCount = countPieces(position);
+            if (pieceCount <= 6) return 'endgame';
+            if (pieceCount <= 12) return 'middlegame';
+            return 'opening';
+        }
+
+        // Enable optimization
+        async function enableOptimization() {
+            if (testState.optimizationManager) {
+                log('Optimization already enabled', 'warning');
+                return;
+            }
+            
+            try {
+                log('Enabling big data optimization...', 'info');
+                
+                // Create optimization manager
+                testState.optimizationManager = new BigDataOptimizationManager(
+                    testState.historyManager,
+                    testState.performanceMonitor
+                );
+                
+                // Create virtual list
+                const container = document.getElementById('virtualListContainer');
+                container.innerHTML = ''; // Clear placeholder
+                
+                testState.virtualList = new VirtualHistoryList(
+                    container,
+                    testState.optimizationManager,
+                    {
+                        itemHeight: 60,
+                        containerHeight: 400,
+                        loadingIndicator: true
+                    }
+                );
+                
+                // Setup virtual list events
+                testState.virtualList.addEventListener('itemClick', (event) => {
+                    const { index, positionId } = event.detail;
+                    log(`Virtual list item clicked: Position ${index + 1}`, 'info');
+                    testState.historyManager.jumpToPosition(index);
+                });
+                
+                testState.virtualList.addEventListener('itemDoubleClick', (event) => {
+                    const { index, positionId } = event.detail;
+                    log(`Virtual list item double-clicked: Position ${index + 1}`, 'info');
+                });
+                
+                log('Big data optimization enabled successfully', 'success');
+                updateStatistics();
+                
+            } catch (error) {
+                log(`Failed to enable optimization: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Disable optimization
+        function disableOptimization() {
+            if (!testState.optimizationManager) {
+                log('Optimization already disabled', 'warning');
+                return;
+            }
+            
+            try {
+                log('Disabling optimization...', 'info');
+                
+                // Destroy optimization manager
+                testState.optimizationManager.destroy();
+                testState.optimizationManager = null;
+                
+                // Destroy virtual list
+                if (testState.virtualList) {
+                    testState.virtualList.destroy();
+                    testState.virtualList = null;
+                }
+                
+                // Reset container
+                const container = document.getElementById('virtualListContainer');
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">Virtual list disabled</div>';
+                
+                log('Optimization disabled', 'success');
+                updateStatistics();
+                
+            } catch (error) {
+                log(`Failed to disable optimization: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Run performance test
+        async function runPerformanceTest() {
+            if (!testState.optimizationManager) {
+                log('Optimization must be enabled for performance testing', 'warning');
+                return;
+            }
+            
+            log('Running performance test...', 'info');
+            
+            try {
+                const iterations = 100;
+                const results = {
+                    cacheHits: 0,
+                    cacheMisses: 0,
+                    totalTime: 0,
+                    averageTime: 0
+                };
+                
+                const startTime = performance.now();
+                
+                // Test random position access
+                for (let i = 0; i < iterations; i++) {
+                    const randomIndex = Math.floor(Math.random() * testState.historyManager.getHistoryStatistics().size);
+                    const position = await testState.optimizationManager.loadPositionAtIndex(randomIndex);
+                    
+                    if (position) {
+                        results.cacheHits++;
+                    } else {
+                        results.cacheMisses++;
+                    }
+                    
+                    // Yield control occasionally
+                    if (i % 10 === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                }
+                
+                results.totalTime = performance.now() - startTime;
+                results.averageTime = results.totalTime / iterations;
+                
+                log(`Performance test completed:`, 'success');
+                log(`- Total time: ${results.totalTime.toFixed(2)}ms`, 'info');
+                log(`- Average time per operation: ${results.averageTime.toFixed(2)}ms`, 'info');
+                log(`- Cache hits: ${results.cacheHits}/${iterations} (${(results.cacheHits/iterations*100).toFixed(1)}%)`, 'info');
+                
+            } catch (error) {
+                log(`Performance test failed: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Test virtual scrolling
+        async function testVirtualScrolling() {
+            if (!testState.virtualList) {
+                log('Virtual list must be enabled for scrolling test', 'warning');
+                return;
+            }
+            
+            log('Testing virtual scrolling...', 'info');
+            
+            try {
+                const container = testState.virtualList.container;
+                const totalHeight = testState.virtualList.virtualizer.getTotalHeight();
+                const steps = 10;
+                const stepSize = totalHeight / steps;
+                
+                for (let i = 0; i <= steps; i++) {
+                    const scrollTop = i * stepSize;
+                    container.scrollTop = scrollTop;
+                    
+                    // Wait for scroll handling
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    const visibleRange = testState.virtualList.getVisibleRange();
+                    log(`Scroll step ${i}/${steps}: scrollTop=${scrollTop.toFixed(0)}, visible=${visibleRange.startIndex}-${visibleRange.endIndex}`, 'info');
+                }
+                
+                log('Virtual scrolling test completed', 'success');
+                
+            } catch (error) {
+                log(`Virtual scrolling test failed: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Test compression
+        function testCompression() {
+            if (!testState.optimizationManager) {
+                log('Optimization must be enabled for compression test', 'warning');
+                return;
+            }
+            
+            log('Testing compression...', 'info');
+            
+            try {
+                const testPositions = [];
+                for (let i = 0; i < 10; i++) {
+                    testPositions.push(generateRandomPosition());
+                }
+                
+                let totalOriginalSize = 0;
+                let totalCompressedSize = 0;
+                
+                testPositions.forEach((position, index) => {
+                    const compressed = testState.optimizationManager.compressor.compress(position);
+                    const decompressed = testState.optimizationManager.compressor.decompress(compressed);
+                    
+                    totalOriginalSize += compressed.originalSize;
+                    totalCompressedSize += compressed.compressedSize;
+                    
+                    // Verify round-trip
+                    const isEqual = JSON.stringify(position) === JSON.stringify(decompressed);
+                    log(`Position ${index + 1}: ${compressed.originalSize}→${compressed.compressedSize} bytes (${isEqual ? '✓' : '✗'})`, 'info');
+                });
+                
+                const compressionRatio = totalCompressedSize / totalOriginalSize;
+                log(`Compression test completed: ${(compressionRatio * 100).toFixed(1)}% of original size`, 'success');
+                
+            } catch (error) {
+                log(`Compression test failed: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Test search functionality
+        function testSearch() {
+            if (!testState.optimizationManager || !testState.optimizationManager.indexer) {
+                log('Optimization with indexing must be enabled for search test', 'warning');
+                return;
+            }
+            
+            log('Testing search functionality...', 'info');
+            
+            try {
+                const searchQueries = ['test', 'generated', 'opening', 'endgame', 'middlegame'];
+                
+                searchQueries.forEach(query => {
+                    const results = testState.optimizationManager.indexer.searchPositions(query);
+                    log(`Search "${query}": ${results.length} results found`, 'info');
+                    
+                    if (results.length > 0) {
+                        const topResult = results[0];
+                        log(`  Top result: relevance=${topResult.relevance}, pieces=${Object.keys(topResult.pieceCount).length}`, 'info');
+                    }
+                });
+                
+                log('Search test completed', 'success');
+                
+            } catch (error) {
+                log(`Search test failed: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Virtual list controls
+        function scrollToTop() {
+            if (testState.virtualList) {
+                testState.virtualList.scrollToIndex(0);
+                log('Scrolled to top', 'info');
+            }
+        }
+
+        function scrollToBottom() {
+            if (testState.virtualList) {
+                const totalItems = testState.optimizationManager.getTotalItemCount();
+                testState.virtualList.scrollToIndex(totalItems - 1);
+                log('Scrolled to bottom', 'info');
+            }
+        }
+
+        function scrollToCurrent() {
+            if (testState.virtualList) {
+                testState.virtualList.scrollToCurrent();
+                log('Scrolled to current position', 'info');
+            }
+        }
+
+        function refreshVirtualList() {
+            if (testState.virtualList) {
+                testState.virtualList.refresh();
+                log('Virtual list refreshed', 'info');
+            }
+        }
+
+        // Clear all data
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all test data?')) {
+                try {
+                    // Clear history
+                    testState.historyManager.clearHistory();
+                    
+                    // Clear optimization caches
+                    if (testState.optimizationManager) {
+                        testState.optimizationManager.clearCaches();
+                    }
+                    
+                    // Refresh virtual list
+                    if (testState.virtualList) {
+                        testState.virtualList.refresh();
+                    }
+                    
+                    log('All test data cleared', 'success');
+                    updateStatistics();
+                    
+                } catch (error) {
+                    log(`Failed to clear data: ${error.message}`, 'error');
+                    console.error(error);
+                }
+            }
+        }
+
+        // Update statistics display
+        function updateStatistics() {
+            try {
+                const historyStats = testState.historyManager.getHistoryStatistics();
+                
+                document.getElementById('positionCount').textContent = historyStats.size;
+                document.getElementById('memoryUsage').textContent = formatBytes(historyStats.memoryUsage);
+                
+                if (testState.optimizationManager) {
+                    const optStats = testState.optimizationManager.getOptimizationStatistics();
+                    document.getElementById('cacheHitRate').textContent = `${(optStats.cacheHitRate * 100).toFixed(1)}%`;
+                    document.getElementById('compressionRatio').textContent = `${(optStats.compressionRatio * 100).toFixed(1)}%`;
+                    document.getElementById('optimizationStatus').textContent = 'Enabled';
+                } else {
+                    document.getElementById('cacheHitRate').textContent = 'N/A';
+                    document.getElementById('compressionRatio').textContent = 'N/A';
+                    document.getElementById('optimizationStatus').textContent = 'Disabled';
+                }
+                
+                if (testState.performanceMonitor) {
+                    const perfStats = testState.performanceMonitor.getStatistics();
+                    document.getElementById('avgOperationTime').textContent = `${perfStats.averageAnalysisTime.toFixed(1)}ms`;
+                } else {
+                    document.getElementById('avgOperationTime').textContent = 'N/A';
+                }
+                
+            } catch (error) {
+                console.error('Error updating statistics:', error);
+            }
+        }
+
+        // Show progress bar
+        function showProgress() {
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('progressText').style.display = 'block';
+        }
+
+        // Hide progress bar
+        function hideProgress() {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('progressText').style.display = 'none';
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = (testState.generatedPositions / testState.totalToGenerate) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `${testState.generatedPositions}/${testState.totalToGenerate} positions generated (${progress.toFixed(1)}%)`;
+        }
+
+        // Logging functions
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // Limit log entries
+            const entries = logContainer.querySelectorAll('.log-entry');
+            if (entries.length > 100) {
+                entries[0].remove();
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('logContainer').innerHTML = '';
+            log('Log cleared', 'info');
+        }
+
+        function exportLog() {
+            const logEntries = Array.from(document.querySelectorAll('.log-entry'))
+                .map(entry => entry.textContent)
+                .join('\n');
+            
+            const blob = new Blob([logEntries], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `big-data-test-log-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            log('Log exported', 'success');
+        }
+
+        // Utility functions
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeTest);
+    </script>
+</body>
+</html>

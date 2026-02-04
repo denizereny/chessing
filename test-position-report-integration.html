@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Position Evaluation Report Integration Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/position-evaluation-report.css">
+    <style>
+        body {
+            padding: 20px;
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+        
+        .test-results {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        .test-pass {
+            color: #10b981;
+        }
+        
+        .test-fail {
+            color: #ef4444;
+        }
+        
+        .test-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(244, 241, 232, 0.1);
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .run-test-btn {
+            background: var(--accent-gold);
+            color: #1a0f0a;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        
+        .run-test-btn:hover {
+            background: #b8860b;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Position Evaluation Report Integration Test</h1>
+    <p>This test verifies that the Position Evaluation Report System integrates correctly with the Advanced Position Analyzer.</p>
+    
+    <div>
+        <button class="run-test-btn" onclick="runAllTests()">🚀 Run All Tests</button>
+        <button class="run-test-btn" onclick="runBasicTest()">📋 Basic Test</button>
+        <button class="run-test-btn" onclick="runAdvancedTest()">🔬 Advanced Test</button>
+        <button class="run-test-btn" onclick="runErrorTest()">⚠️ Error Test</button>
+    </div>
+    
+    <div class="test-results" id="testResults">
+        <h3>Test Results</h3>
+        <div id="testOutput">Click "Run All Tests" to start testing...</div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/position-evaluation-report.js"></script>
+
+    <script>
+        // Test framework
+        class TestFramework {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+            }
+            
+            test(name, fn) {
+                this.tests.push({ name, fn });
+            }
+            
+            async runTests() {
+                this.results = [];
+                const output = document.getElementById('testOutput');
+                output.innerHTML = '<div>Running tests...</div>';
+                
+                for (const test of this.tests) {
+                    try {
+                        await test.fn();
+                        this.results.push({ name: test.name, status: 'pass', error: null });
+                    } catch (error) {
+                        this.results.push({ name: test.name, status: 'fail', error: error.message });
+                    }
+                }
+                
+                this.displayResults();
+            }
+            
+            displayResults() {
+                const output = document.getElementById('testOutput');
+                const passed = this.results.filter(r => r.status === 'pass').length;
+                const total = this.results.length;
+                
+                let html = `<div><strong>Results: ${passed}/${total} tests passed</strong></div><br>`;
+                
+                this.results.forEach(result => {
+                    const statusClass = result.status === 'pass' ? 'test-pass' : 'test-fail';
+                    const icon = result.status === 'pass' ? '✅' : '❌';
+                    html += `<div class="test-item ${statusClass}">
+                        ${icon} ${result.name}
+                        ${result.error ? `<br><small>Error: ${result.error}</small>` : ''}
+                    </div>`;
+                });
+                
+                output.innerHTML = html;
+            }
+            
+            expect(actual) {
+                return {
+                    toBe: (expected) => {
+                        if (actual !== expected) {
+                            throw new Error(`Expected ${expected}, got ${actual}`);
+                        }
+                    },
+                    toBeTruthy: () => {
+                        if (!actual) {
+                            throw new Error(`Expected truthy value, got ${actual}`);
+                        }
+                    },
+                    toBeNull: () => {
+                        if (actual !== null) {
+                            throw new Error(`Expected null, got ${actual}`);
+                        }
+                    },
+                    toBeDefined: () => {
+                        if (actual === undefined) {
+                            throw new Error(`Expected value to be defined`);
+                        }
+                    },
+                    toContain: (expected) => {
+                        if (!actual.includes(expected)) {
+                            throw new Error(`Expected ${actual} to contain ${expected}`);
+                        }
+                    },
+                    toMatch: (pattern) => {
+                        if (!actual.match(pattern)) {
+                            throw new Error(`Expected ${actual} to match ${pattern}`);
+                        }
+                    }
+                };
+            }
+        }
+        
+        const testFramework = new TestFramework();
+        
+        // Test positions
+        const testPositions = {
+            starting: [
+                ['r', 'n', 'b', 'q'],
+                ['p', 'p', 'p', 'p'],
+                [null, null, null, null],
+                ['P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q']
+            ],
+            
+            whiteAdvantage: [
+                [null, null, null, 'k'],
+                [null, 'p', null, 'p'],
+                [null, null, null, null],
+                ['P', 'P', 'Q', 'P'],
+                ['R', 'N', 'B', 'K']
+            ],
+            
+            invalid: [
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, null, null, null]
+            ]
+        };
+        
+        // Initialize components
+        let analyzer, reportSystem;
+        
+        function initializeComponents() {
+            analyzer = new AdvancedPositionAnalyzer();
+            reportSystem = new PositionEvaluationReport();
+            window.positionEvaluationReport = reportSystem;
+        }
+        
+        // Define tests
+        testFramework.test('Components initialize correctly', () => {
+            initializeComponents();
+            testFramework.expect(analyzer).toBeDefined();
+            testFramework.expect(reportSystem).toBeDefined();
+            testFramework.expect(reportSystem.reportContainer).toBeDefined();
+        });
+        
+        testFramework.test('Report container is created in DOM', () => {
+            const container = document.getElementById('positionEvaluationReport');
+            testFramework.expect(container).toBeTruthy();
+            testFramework.expect(container.classList.contains('position-evaluation-report')).toBe(true);
+        });
+        
+        testFramework.test('Analysis and report generation works', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            testFramework.expect(analysis).toBeDefined();
+            testFramework.expect(analysis.error).toBe(undefined);
+            
+            reportSystem.generateReport(analysis);
+            testFramework.expect(reportSystem.currentAnalysis).toBe(analysis);
+        });
+        
+        testFramework.test('Position type determination works', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            const positionType = reportSystem.determineEnhancedPositionType(analysis);
+            testFramework.expect(positionType).toBeTruthy();
+            testFramework.expect(typeof positionType).toBe('string');
+        });
+        
+        testFramework.test('Material balance display updates', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            reportSystem.generateReport(analysis);
+            
+            const materialValue = document.getElementById('materialBalanceValue');
+            testFramework.expect(materialValue).toBeTruthy();
+            testFramework.expect(materialValue.textContent).toBeTruthy();
+        });
+        
+        testFramework.test('Piece activity display updates', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            reportSystem.generateReport(analysis);
+            
+            const activityValue = document.getElementById('pieceActivityValue');
+            testFramework.expect(activityValue).toBeTruthy();
+            testFramework.expect(activityValue.textContent).toMatch(/W: \d+, B: \d+/);
+        });
+        
+        testFramework.test('King safety display updates', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            reportSystem.generateReport(analysis);
+            
+            const whiteKingSafetyText = document.getElementById('whiteKingSafetyText');
+            const blackKingSafetyText = document.getElementById('blackKingSafetyText');
+            testFramework.expect(whiteKingSafetyText.textContent).toBeTruthy();
+            testFramework.expect(blackKingSafetyText.textContent).toBeTruthy();
+        });
+        
+        testFramework.test('Center control visualization works', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            reportSystem.generateReport(analysis);
+            
+            const centerSquares = document.querySelectorAll('.center-square');
+            testFramework.expect(centerSquares.length).toBe(4);
+        });
+        
+        testFramework.test('Detailed statistics display correctly', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            reportSystem.generateReport(analysis);
+            
+            const whiteMaterialValue = document.getElementById('whiteMaterialValue');
+            const blackMaterialValue = document.getElementById('blackMaterialValue');
+            testFramework.expect(whiteMaterialValue.textContent).toBeTruthy();
+            testFramework.expect(blackMaterialValue.textContent).toBeTruthy();
+        });
+        
+        testFramework.test('Report visibility controls work', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            reportSystem.generateReport(analysis);
+            testFramework.expect(reportSystem.isVisible).toBe(true);
+            
+            reportSystem.hideReport();
+            testFramework.expect(reportSystem.isVisible).toBe(false);
+        });
+        
+        testFramework.test('Error handling works correctly', () => {
+            const errorAnalysis = { error: true, message: 'Test error' };
+            // Should not throw
+            reportSystem.generateReport(errorAnalysis);
+            testFramework.expect(true).toBe(true); // Test passes if no exception
+        });
+        
+        testFramework.test('White advantage position detected correctly', () => {
+            const analysis = analyzer.analyzePosition(testPositions.whiteAdvantage);
+            const positionType = reportSystem.determineEnhancedPositionType(analysis);
+            testFramework.expect(positionType).toMatch(/white/);
+        });
+        
+        testFramework.test('Export functionality works', () => {
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            reportSystem.generateReport(analysis);
+            
+            // Should not throw
+            reportSystem.exportReport();
+            testFramework.expect(true).toBe(true);
+        });
+        
+        // Test runner functions
+        async function runAllTests() {
+            await testFramework.runTests();
+        }
+        
+        async function runBasicTest() {
+            initializeComponents();
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            reportSystem.generateReport(analysis);
+            
+            document.getElementById('testOutput').innerHTML = `
+                <div class="test-pass">✅ Basic test completed successfully!</div>
+                <div>Position analyzed and report generated.</div>
+                <div>Report is ${reportSystem.isVisible ? 'visible' : 'hidden'}.</div>
+            `;
+        }
+        
+        async function runAdvancedTest() {
+            initializeComponents();
+            const analysis = analyzer.analyzePosition(testPositions.whiteAdvantage);
+            reportSystem.generateReport(analysis);
+            
+            const positionType = reportSystem.determineEnhancedPositionType(analysis);
+            
+            document.getElementById('testOutput').innerHTML = `
+                <div class="test-pass">✅ Advanced test completed successfully!</div>
+                <div>Position type: ${positionType}</div>
+                <div>Material advantage: ${analysis.materialBalance.advantage} (+${analysis.materialBalance.advantageAmount})</div>
+                <div>White activity: ${analysis.pieceActivity.white.mobilePieces} pieces</div>
+                <div>Black activity: ${analysis.pieceActivity.black.mobilePieces} pieces</div>
+            `;
+        }
+        
+        async function runErrorTest() {
+            initializeComponents();
+            const errorAnalysis = { error: true, message: 'Test error case' };
+            
+            try {
+                reportSystem.generateReport(errorAnalysis);
+                document.getElementById('testOutput').innerHTML = `
+                    <div class="test-pass">✅ Error test completed successfully!</div>
+                    <div>Error handling works correctly - no exceptions thrown.</div>
+                `;
+            } catch (error) {
+                document.getElementById('testOutput').innerHTML = `
+                    <div class="test-fail">❌ Error test failed!</div>
+                    <div>Error: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeComponents();
+            console.log('🧪 Position Evaluation Report Integration Test initialized');
+        });
+    </script>
+</body>
+</html>

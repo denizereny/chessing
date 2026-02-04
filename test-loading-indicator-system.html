@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Indicator System Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #4f46e5;
+            margin: 0 0 16px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .test-section {
+            margin: 32px 0;
+            padding: 24px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: #f9fafb;
+        }
+        
+        .test-section h2 {
+            color: #374151;
+            margin: 0 0 20px 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 48px;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+        }
+        
+        .test-button:active {
+            transform: translateY(0);
+        }
+        
+        .test-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .test-button.secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+        
+        .test-button.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .test-button.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .status-display {
+            margin-top: 20px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .status-value {
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .log-display {
+            margin-top: 20px;
+            padding: 16px;
+            background: #1f2937;
+            color: #f9fafb;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-group label {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .control-group input,
+        .control-group select {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Loading Indicator System Test</h1>
+            <p>Test and demonstrate the loading indicator system with various operation types and scenarios</p>
+        </div>
+        
+        <!-- Basic Operations -->
+        <div class="test-section">
+            <h2>⚡ Basic Operations</h2>
+            <div class="test-grid">
+                <button class="test-button" onclick="testBasicLoading()">
+                    🔄 Basic Loading (2s)
+                </button>
+                <button class="test-button" onclick="testQuickOperation()">
+                    ⚡ Quick Operation (0.5s)
+                </button>
+                <button class="test-button" onclick="testLongOperation()">
+                    🐌 Long Operation (5s)
+                </button>
+                <button class="test-button" onclick="testProgressOperation()">
+                    📊 Progress Operation
+                </button>
+            </div>
+        </div>
+        
+        <!-- Operation Types -->
+        <div class="test-section">
+            <h2>🎯 Operation Types</h2>
+            <div class="test-grid">
+                <button class="test-button" onclick="testAnalysisOperation()">
+                    🔍 Analysis Operation
+                </button>
+                <button class="test-button" onclick="testPresetOperation()">
+                    📋 Preset Loading
+                </button>
+                <button class="test-button" onclick="testSharingOperation()">
+                    🔗 Sharing Operation
+                </button>
+                <button class="test-button" onclick="testValidationOperation()">
+                    ✅ Validation Operation
+                </button>
+                <button class="test-button" onclick="testExportOperation()">
+                    💾 Export Operation
+                </button>
+                <button class="test-button" onclick="testImportOperation()">
+                    📥 Import Operation
+                </button>
+            </div>
+        </div>
+        
+        <!-- Error Scenarios -->
+        <div class="test-section">
+            <h2>❌ Error Scenarios</h2>
+            <div class="test-grid">
+                <button class="test-button danger" onclick="testErrorOperation()">
+                    💥 Error Operation
+                </button>
+                <button class="test-button danger" onclick="testCancellableOperation()">
+                    🚫 Cancellable Operation
+                </button>
+                <button class="test-button danger" onclick="testTimeoutOperation()">
+                    ⏰ Timeout Operation
+                </button>
+            </div>
+        </div>
+        
+        <!-- Multiple Operations -->
+        <div class="test-section">
+            <h2>🔀 Multiple Operations</h2>
+            <div class="test-grid">
+                <button class="test-button" onclick="testMultipleOperations()">
+                    🔄 Multiple Operations
+                </button>
+                <button class="test-button" onclick="testBatchOperation()">
+                    📦 Batch Operation
+                </button>
+                <button class="test-button secondary" onclick="clearAllOperations()">
+                    🧹 Clear All Operations
+                </button>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="test-section">
+            <h2>⚙️ Controls</h2>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="debugMode">Debug Mode:</label>
+                    <input type="checkbox" id="debugMode" onchange="toggleDebugMode(this.checked)">
+                </div>
+                <div class="control-group">
+                    <label for="operationDuration">Duration (ms):</label>
+                    <input type="number" id="operationDuration" value="2000" min="100" max="10000" step="100">
+                </div>
+                <div class="control-group">
+                    <label for="operationType">Operation Type:</label>
+                    <select id="operationType">
+                        <option value="general">General</option>
+                        <option value="analysis">Analysis</option>
+                        <option value="preset">Preset</option>
+                        <option value="sharing">Sharing</option>
+                        <option value="validation">Validation</option>
+                        <option value="export">Export</option>
+                        <option value="import">Import</option>
+                    </select>
+                </div>
+                <button class="test-button success" onclick="testCustomOperation()">
+                    🎛️ Custom Operation
+                </button>
+            </div>
+        </div>
+        
+        <!-- Status Display -->
+        <div class="test-section">
+            <h2>📊 System Status</h2>
+            <div class="status-display" id="statusDisplay">
+                <div class="status-item">
+                    <span class="status-label">System Initialized:</span>
+                    <span class="status-value" id="systemInitialized">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Active Operations:</span>
+                    <span class="status-value" id="activeOperations">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Loading Visible:</span>
+                    <span class="status-value" id="loadingVisible">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Performance Monitor:</span>
+                    <span class="status-value" id="performanceMonitor">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Log Display -->
+        <div class="test-section">
+            <h2>📝 Event Log</h2>
+            <div class="controls">
+                <button class="test-button secondary" onclick="clearLog()">
+                    🧹 Clear Log
+                </button>
+                <button class="test-button secondary" onclick="exportLog()">
+                    💾 Export Log
+                </button>
+            </div>
+            <div class="log-display" id="logDisplay">
+                Loading system initializing...
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the loading indicator system -->
+    <script src="js/loading-indicator-system.js"></script>
+    <script src="js/loading-indicator-integration.js"></script>
+    
+    <script>
+        // Global variables
+        let loadingSystem = null;
+        let integration = null;
+        let logEntries = [];
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystem();
+            updateStatus();
+            setInterval(updateStatus, 1000); // Update status every second
+        });
+        
+        /**
+         * Initialize the loading indicator system
+         */
+        function initializeSystem() {
+            try {
+                loadingSystem = new LoadingIndicatorSystem();
+                integration = new LoadingIndicatorIntegration();
+                
+                log('✅ Loading Indicator System initialized successfully');
+                log('🔗 Integration system initialized successfully');
+                
+                // Test system availability
+                if (window.showLoadingIndicator) {
+                    log('🌐 Global functions available');
+                }
+                
+            } catch (error) {
+                log(`❌ Failed to initialize system: ${error.message}`);
+                console.error('Initialization error:', error);
+            }
+        }
+        
+        /**
+         * Update system status display
+         */
+        function updateStatus() {
+            try {
+                const systemInitialized = document.getElementById('systemInitialized');
+                const activeOperations = document.getElementById('activeOperations');
+                const loadingVisible = document.getElementById('loadingVisible');
+                const performanceMonitor = document.getElementById('performanceMonitor');
+                
+                if (loadingSystem) {
+                    systemInitialized.textContent = '✅ Yes';
+                    activeOperations.textContent = loadingSystem.getActiveOperationsCount();
+                    loadingVisible.textContent = loadingSystem.isVisible() ? '✅ Yes' : '❌ No';
+                } else {
+                    systemInitialized.textContent = '❌ No';
+                    activeOperations.textContent = '-';
+                    loadingVisible.textContent = '-';
+                }
+                
+                if (integration) {
+                    const stats = integration.getStatistics();
+                    performanceMonitor.textContent = stats.performanceMonitorAvailable ? '✅ Available' : '❌ Not Available';
+                } else {
+                    performanceMonitor.textContent = '-';
+                }
+                
+            } catch (error) {
+                console.error('Status update error:', error);
+            }
+        }
+        
+        /**
+         * Log a message
+         */
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            logEntries.push(logEntry);
+            
+            const logDisplay = document.getElementById('logDisplay');
+            if (logDisplay) {
+                logDisplay.textContent = logEntries.slice(-50).join('\n');
+                logDisplay.scrollTop = logDisplay.scrollHeight;
+            }
+            
+            console.log(logEntry);
+        }
+        
+        /**
+         * Create a delay promise
+         */
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        /**
+         * Test basic loading operation
+         */
+        async function testBasicLoading() {
+            log('🔄 Starting basic loading test...');
+            
+            const operationId = loadingSystem.startOperation('general', {
+                label: 'Basic loading test...',
+                estimatedDuration: 2000
+            });
+            
+            await delay(2000);
+            loadingSystem.completeOperation(operationId);
+            
+            log('✅ Basic loading test completed');
+        }
+        
+        /**
+         * Test quick operation (should not show indicator)
+         */
+        async function testQuickOperation() {
+            log('⚡ Starting quick operation test...');
+            
+            const operationId = loadingSystem.startOperation('general', {
+                label: 'Quick operation...',
+                estimatedDuration: 500
+            });
+            
+            await delay(500);
+            loadingSystem.completeOperation(operationId);
+            
+            log('✅ Quick operation test completed (should not show indicator)');
+        }
+        
+        /**
+         * Test long operation
+         */
+        async function testLongOperation() {
+            log('🐌 Starting long operation test...');
+            
+            const operationId = loadingSystem.startOperation('general', {
+                label: 'Long operation in progress...',
+                estimatedDuration: 5000,
+                cancellable: true
+            });
+            
+            // Set up cancellation handler
+            loadingSystem.setEventHandler(operationId, 'cancel', () => {
+                log('🚫 Long operation was cancelled');
+            });
+            
+            await delay(5000);
+            
+            if (loadingSystem.getOperationStatus(operationId)?.cancelled) {
+                log('🚫 Long operation was cancelled by user');
+            } else {
+                loadingSystem.completeOperation(operationId);
+                log('✅ Long operation test completed');
+            }
+        }
+        
+        /**
+         * Test progress operation
+         */
+        async function testProgressOperation() {
+            log('📊 Starting progress operation test...');
+            
+            const operationId = loadingSystem.startOperation('general', {
+                label: 'Progress operation...',
+                customProgress: true,
+                cancellable: true
+            });
+            
+            // Simulate progress updates
+            for (let i = 0; i <= 100; i += 10) {
+                if (loadingSystem.getOperationStatus(operationId)?.cancelled) {
+                    log('🚫 Progress operation was cancelled');
+                    return;
+                }
+                
+                loadingSystem.updateProgress(operationId, i, `Processing step ${i/10 + 1}/11...`);
+                await delay(300);
+            }
+            
+            loadingSystem.completeOperation(operationId);
+            log('✅ Progress operation test completed');
+        }
+        
+        /**
+         * Test analysis operation
+         */
+        async function testAnalysisOperation() {
+            log('🔍 Starting analysis operation test...');
+            
+            const operationId = loadingSystem.startOperation('analysis', {
+                metadata: { positionId: 'test-position-123' }
+            });
+            
+            await delay(1500);
+            loadingSystem.completeOperation(operationId, { 
+                materialBalance: 0,
+                kingSafety: 'safe',
+                centerControl: 50
+            });
+            
+            log('✅ Analysis operation test completed');
+        }
+        
+        /**
+         * Test preset operation
+         */
+        async function testPresetOperation() {
+            log('📋 Starting preset operation test...');
+            
+            const operationId = loadingSystem.startOperation('preset', {
+                metadata: { presetId: 'opening-sicilian-defense' }
+            });
+            
+            await delay(800);
+            loadingSystem.completeOperation(operationId, { 
+                presetLoaded: true,
+                positionCount: 20
+            });
+            
+            log('✅ Preset operation test completed');
+        }
+        
+        /**
+         * Test sharing operation
+         */
+        async function testSharingOperation() {
+            log('🔗 Starting sharing operation test...');
+            
+            const operationId = loadingSystem.startOperation('sharing');
+            
+            await delay(1200);
+            loadingSystem.completeOperation(operationId, { 
+                shareCode: 'ABC123XYZ',
+                qrCode: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+            });
+            
+            log('✅ Sharing operation test completed');
+        }
+        
+        /**
+         * Test validation operation
+         */
+        async function testValidationOperation() {
+            log('✅ Starting validation operation test...');
+            
+            const operationId = loadingSystem.startOperation('validation');
+            
+            await delay(600);
+            loadingSystem.completeOperation(operationId, { 
+                isValid: true,
+                warnings: [],
+                errors: []
+            });
+            
+            log('✅ Validation operation test completed');
+        }
+        
+        /**
+         * Test export operation
+         */
+        async function testExportOperation() {
+            log('💾 Starting export operation test...');
+            
+            const operationId = loadingSystem.startOperation('export', {
+                cancellable: true
+            });
+            
+            await delay(2500);
+            
+            if (loadingSystem.getOperationStatus(operationId)?.cancelled) {
+                log('🚫 Export operation was cancelled');
+            } else {
+                loadingSystem.completeOperation(operationId, { 
+                    exportedItems: 150,
+                    fileSize: '2.3 MB'
+                });
+                log('✅ Export operation test completed');
+            }
+        }
+        
+        /**
+         * Test import operation
+         */
+        async function testImportOperation() {
+            log('📥 Starting import operation test...');
+            
+            const operationId = loadingSystem.startOperation('import', {
+                cancellable: true
+            });
+            
+            await delay(2000);
+            
+            if (loadingSystem.getOperationStatus(operationId)?.cancelled) {
+                log('🚫 Import operation was cancelled');
+            } else {
+                loadingSystem.completeOperation(operationId, { 
+                    importedItems: 75,
+                    duplicatesSkipped: 5
+                });
+                log('✅ Import operation test completed');
+            }
+        }
+        
+        /**
+         * Test error operation
+         */
+        async function testErrorOperation() {
+            log('💥 Starting error operation test...');
+            
+            const operationId = loadingSystem.startOperation('general', {
+                label: 'Operation that will fail...'
+            });
+            
+            await delay(1500);
+            loadingSystem.failOperation(operationId, new Error('Simulated operation failure'));
+            
+            log('❌ Error operation test completed (with error)');
+        }
+        
+        /**
+         * Test cancellable operation
+         */
+        async function testCancellableOperation() {
+            log('🚫 Starting cancellable operation test...');
+            log('💡 Click the cancel button or press Escape to cancel');
+            
+            const operationId = loadingSystem.startOperation('general', {
+                label: 'Cancellable operation (click cancel or press Escape)...',
+                cancellable: true,
+                estimatedDuration: 10000
+            });
+            
+            // Set up cancellation handler
+            loadingSystem.setEventHandler(operationId, 'cancel', () => {
+                log('🚫 Cancellable operation was cancelled by user');
+            });
+            
+            // Wait for completion or cancellation
+            const startTime = Date.now();
+            while (Date.now() - startTime < 10000) {
+                const status = loadingSystem.getOperationStatus(operationId);
+                if (!status || status.cancelled || status.completed) {
+                    break;
+                }
+                await delay(100);
+            }
+            
+            const finalStatus = loadingSystem.getOperationStatus(operationId);
+            if (finalStatus && !finalStatus.cancelled && !finalStatus.completed) {
+                loadingSystem.completeOperation(operationId);
+                log('✅ Cancellable operation completed without cancellation');
+            }
+        }
+        
+        /**
+         * Test timeout operation
+         */
+        async function testTimeoutOperation() {
+            log('⏰ Starting timeout operation test...');
+            
+            const operationId = loadingSystem.startOperation('general', {
+                label: 'Operation with timeout...',
+                cancellable: true
+            });
+            
+            // Simulate timeout after 3 seconds
+            setTimeout(() => {
+                const status = loadingSystem.getOperationStatus(operationId);
+                if (status && !status.completed && !status.cancelled) {
+                    loadingSystem.failOperation(operationId, new Error('Operation timed out'));
+                    log('⏰ Operation timed out');
+                }
+            }, 3000);
+            
+            await delay(5000); // Wait longer than timeout
+        }
+        
+        /**
+         * Test multiple operations
+         */
+        async function testMultipleOperations() {
+            log('🔀 Starting multiple operations test...');
+            
+            const operations = [];
+            
+            // Start multiple operations with different types
+            operations.push(loadingSystem.startOperation('analysis', { 
+                label: 'Analysis #1...' 
+            }));
+            
+            await delay(500);
+            
+            operations.push(loadingSystem.startOperation('preset', { 
+                label: 'Preset loading...' 
+            }));
+            
+            await delay(500);
+            
+            operations.push(loadingSystem.startOperation('sharing', { 
+                label: 'Generating share code...' 
+            }));
+            
+            // Complete operations at different times
+            setTimeout(() => {
+                loadingSystem.completeOperation(operations[1]);
+                log('✅ Preset operation completed');
+            }, 1000);
+            
+            setTimeout(() => {
+                loadingSystem.completeOperation(operations[0]);
+                log('✅ Analysis operation completed');
+            }, 2000);
+            
+            setTimeout(() => {
+                loadingSystem.completeOperation(operations[2]);
+                log('✅ Sharing operation completed');
+            }, 3000);
+            
+            log('🔀 Multiple operations started, will complete at different times');
+        }
+        
+        /**
+         * Test batch operation
+         */
+        async function testBatchOperation() {
+            log('📦 Starting batch operation test...');
+            
+            if (!integration) {
+                log('❌ Integration system not available');
+                return;
+            }
+            
+            // Create batch operations
+            const batchOperations = [];
+            for (let i = 0; i < 10; i++) {
+                batchOperations.push(async () => {
+                    await delay(200 + Math.random() * 300);
+                    return { item: i, processed: true };
+                });
+            }
+            
+            try {
+                const results = await integration.batchOperationWithProgress(
+                    batchOperations,
+                    'general',
+                    { label: 'Processing batch items...' }
+                );
+                
+                log(`✅ Batch operation completed: ${results.length} items processed`);
+            } catch (error) {
+                log(`❌ Batch operation failed: ${error.message}`);
+            }
+        }
+        
+        /**
+         * Test custom operation
+         */
+        async function testCustomOperation() {
+            const duration = parseInt(document.getElementById('operationDuration').value);
+            const operationType = document.getElementById('operationType').value;
+            
+            log(`🎛️ Starting custom ${operationType} operation (${duration}ms)...`);
+            
+            const operationId = loadingSystem.startOperation(operationType, {
+                label: `Custom ${operationType} operation...`,
+                estimatedDuration: duration,
+                cancellable: true
+            });
+            
+            await delay(duration);
+            
+            const status = loadingSystem.getOperationStatus(operationId);
+            if (status && !status.cancelled) {
+                loadingSystem.completeOperation(operationId);
+                log('✅ Custom operation completed');
+            } else {
+                log('🚫 Custom operation was cancelled');
+            }
+        }
+        
+        /**
+         * Clear all operations
+         */
+        function clearAllOperations() {
+            if (loadingSystem) {
+                loadingSystem.clearAllOperations();
+                log('🧹 All operations cleared');
+            }
+        }
+        
+        /**
+         * Toggle debug mode
+         */
+        function toggleDebugMode(enabled) {
+            if (integration) {
+                integration.setDebugMode(enabled);
+                log(`🐛 Debug mode ${enabled ? 'enabled' : 'disabled'}`);
+            }
+        }
+        
+        /**
+         * Clear log
+         */
+        function clearLog() {
+            logEntries = [];
+            const logDisplay = document.getElementById('logDisplay');
+            if (logDisplay) {
+                logDisplay.textContent = 'Log cleared.';
+            }
+        }
+        
+        /**
+         * Export log
+         */
+        function exportLog() {
+            const logContent = logEntries.join('\n');
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `loading-indicator-test-log-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            URL.revokeObjectURL(url);
+            log('💾 Log exported to file');
+        }
+    </script>
+</body>
+</html>

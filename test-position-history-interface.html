@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Position History Interface Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .test-header h1 {
+            color: #4f46e5;
+            margin: 0;
+            font-size: 2rem;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #252525;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        
+        .test-section h3 {
+            color: #06b6d4;
+            margin-top: 0;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .test-btn {
+            padding: 8px 16px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .test-btn:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+        
+        .test-btn.secondary {
+            background: #6b7280;
+        }
+        
+        .test-btn.secondary:hover {
+            background: #4b5563;
+        }
+        
+        .test-btn.danger {
+            background: #dc2626;
+        }
+        
+        .test-btn.danger:hover {
+            background: #b91c1c;
+        }
+        
+        .mock-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .mock-square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mock-square.light {
+            background: #f0d9b5;
+            color: #333;
+        }
+        
+        .mock-square.dark {
+            background: #b58863;
+            color: #fff;
+        }
+        
+        .mock-square:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+        }
+        
+        .status-display {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border: 1px solid #333;
+        }
+        
+        .piece-setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .piece-setup-modal.hidden {
+            display: none;
+        }
+        
+        .piece-setup-content {
+            background: #1e1e1e;
+            border: 2px solid #4f46e5;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .modal-header h2 {
+            color: #4f46e5;
+            margin: 0;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .close-modal:hover {
+            color: #dc2626;
+        }
+        
+        .setup-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .setup-board-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .log-output {
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🕰️ Position History Interface Test</h1>
+            <p>Testing the position history interface with undo/redo functionality, history list, and keyboard shortcuts.</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 Mock Chess Board</h3>
+            <p>Click squares to place/remove pieces and test history functionality:</p>
+            <div class="mock-board" id="mockBoard">
+                <!-- Board squares will be generated by JavaScript -->
+            </div>
+            
+            <div class="test-controls">
+                <button class="test-btn" onclick="addRandomPiece()">🎲 Add Random Piece</button>
+                <button class="test-btn" onclick="clearBoard()">🗑️ Clear Board</button>
+                <button class="test-btn" onclick="setDefaultPosition()">🔄 Default Position</button>
+                <button class="test-btn secondary" onclick="showHistoryInterface()">🕰️ Show History Interface</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>⌨️ Keyboard Shortcuts Test</h3>
+            <p>Test keyboard shortcuts (make sure the modal is open):</p>
+            <div class="test-controls">
+                <button class="test-btn" onclick="testUndoShortcut()">Test Ctrl+Z (Undo)</button>
+                <button class="test-btn" onclick="testRedoShortcut()">Test Ctrl+Y (Redo)</button>
+                <button class="test-btn" onclick="testShiftUndoShortcut()">Test Ctrl+Shift+Z (Redo)</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 History Status</h3>
+            <div class="status-display" id="historyStatus">
+                History Manager: Not initialized<br>
+                History Interface: Not initialized<br>
+                Current Position: 0/0<br>
+                Can Undo: false<br>
+                Can Redo: false
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🧪 Test Results</h3>
+            <div class="log-output" id="testLog">
+                Test log will appear here...
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mock Piece Setup Modal -->
+    <div id="pieceSetupModal" class="piece-setup-modal hidden">
+        <div class="piece-setup-content">
+            <div class="modal-header">
+                <h2>♔ Position History Test</h2>
+                <button class="close-modal" onclick="closeModal()">✖</button>
+            </div>
+            <div class="setup-container">
+                <div class="setup-board-container">
+                    <h3>Board Setup</h3>
+                    <div class="mock-board" id="setupBoard">
+                        <!-- Setup board squares will be generated -->
+                    </div>
+                </div>
+                <!-- History interface will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include required scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/position-history-manager.js"></script>
+    <script src="js/position-history-interface.js"></script>
+    
+    <script>
+        // Test variables
+        let setupBoard = [];
+        let positionHistoryManager = null;
+        let positionHistoryInterface = null;
+        let testLog = [];
+        
+        // Chess pieces
+        const pieces = ['♔', '♕', '♖', '♗', '♘', '♙', '♚', '♛', '♜', '♝', '♞', '♟'];
+        const pieceMap = {
+            '♔': 'K', '♕': 'Q', '♖': 'R', '♗': 'B', '♘': 'N', '♙': 'P',
+            '♚': 'k', '♛': 'q', '♜': 'r', '♝': 'b', '♞': 'n', '♟': 'p'
+        };
+        
+        // Initialize test
+        function initializeTest() {
+            log('🚀 Initializing Position History Interface Test...');
+            
+            // Initialize empty board
+            setupBoard = [];
+            for (let i = 0; i < 5; i++) {
+                setupBoard[i] = [];
+                for (let j = 0; j < 4; j++) {
+                    setupBoard[i][j] = null;
+                }
+            }
+            
+            // Create board displays
+            createMockBoard('mockBoard');
+            createMockBoard('setupBoard');
+            
+            // Initialize history manager
+            try {
+                positionHistoryManager = new PositionHistoryManager();
+                log('✅ Position History Manager initialized');
+                
+                // Initialize history interface
+                positionHistoryInterface = new PositionHistoryInterface(positionHistoryManager);
+                log('✅ Position History Interface initialized');
+                
+                // Add initial position
+                addPositionToHistory('Initial Position', 'Empty board starting state');
+                
+                updateStatus();
+                
+            } catch (error) {
+                log('❌ Error initializing: ' + error.message);
+                console.error(error);
+            }
+        }
+        
+        // Create mock board
+        function createMockBoard(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement('div');
+                    square.className = 'mock-square';
+                    square.className += (row + col) % 2 === 0 ? ' light' : ' dark';
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    
+                    if (containerId === 'mockBoard') {
+                        square.addEventListener('click', () => togglePiece(row, col));
+                    }
+                    
+                    container.appendChild(square);
+                }
+            }
+            
+            updateBoardDisplay();
+        }
+        
+        // Toggle piece on square
+        function togglePiece(row, col) {
+            if (setupBoard[row][col]) {
+                setupBoard[row][col] = null;
+                log(`🗑️ Removed piece from ${row},${col}`);
+            } else {
+                const randomPiece = Object.keys(pieceMap)[Math.floor(Math.random() * Object.keys(pieceMap).length)];
+                setupBoard[row][col] = pieceMap[randomPiece];
+                log(`♔ Added ${randomPiece} to ${row},${col}`);
+            }
+            
+            updateBoardDisplay();
+            addPositionToHistory(`Manual Edit ${Date.now()}`, `Modified position at ${row},${col}`);
+            updateStatus();
+        }
+        
+        // Add random piece
+        function addRandomPiece() {
+            const emptySquares = [];
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (!setupBoard[row][col]) {
+                        emptySquares.push({row, col});
+                    }
+                }
+            }
+            
+            if (emptySquares.length === 0) {
+                log('⚠️ No empty squares available');
+                return;
+            }
+            
+            const randomSquare = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+            const randomPiece = Object.keys(pieceMap)[Math.floor(Math.random() * Object.keys(pieceMap).length)];
+            
+            setupBoard[randomSquare.row][randomSquare.col] = pieceMap[randomPiece];
+            
+            updateBoardDisplay();
+            addPositionToHistory(`Random Piece ${Date.now()}`, `Added ${randomPiece} randomly`);
+            updateStatus();
+            
+            log(`🎲 Added random ${randomPiece} to ${randomSquare.row},${randomSquare.col}`);
+        }
+        
+        // Clear board
+        function clearBoard() {
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 4; j++) {
+                    setupBoard[i][j] = null;
+                }
+            }
+            
+            updateBoardDisplay();
+            addPositionToHistory('Empty Board', 'All pieces cleared');
+            updateStatus();
+            
+            log('🗑️ Board cleared');
+        }
+        
+        // Set default position
+        function setDefaultPosition() {
+            setupBoard = [
+                ['r', 'q', 'k', 'r'],
+                ['p', 'p', 'p', 'p'],
+                [null, null, null, null],
+                ['P', 'P', 'P', 'P'],
+                ['R', 'Q', 'K', 'R']
+            ];
+            
+            updateBoardDisplay();
+            addPositionToHistory('Default Position', 'Standard 4x5 chess starting position');
+            updateStatus();
+            
+            log('🔄 Default position set');
+        }
+        
+        // Update board display
+        function updateBoardDisplay() {
+            ['mockBoard', 'setupBoard'].forEach(boardId => {
+                const board = document.getElementById(boardId);
+                const squares = board.querySelectorAll('.mock-square');
+                
+                squares.forEach(square => {
+                    const row = parseInt(square.dataset.row);
+                    const col = parseInt(square.dataset.col);
+                    const piece = setupBoard[row][col];
+                    
+                    if (piece) {
+                        // Convert piece code to symbol
+                        const symbol = Object.keys(pieceMap).find(key => pieceMap[key] === piece);
+                        square.textContent = symbol || piece;
+                    } else {
+                        square.textContent = '';
+                    }
+                });
+            });
+        }
+        
+        // Add position to history
+        function addPositionToHistory(name, description) {
+            if (!positionHistoryManager) return;
+            
+            const position = setupBoard.map(row => [...row]);
+            const metadata = {
+                name: name,
+                description: description,
+                timestamp: Date.now(),
+                tags: ['test']
+            };
+            
+            positionHistoryManager.addPosition(position, metadata);
+        }
+        
+        // Update status display
+        function updateStatus() {
+            if (!positionHistoryManager) return;
+            
+            const stats = positionHistoryManager.getHistoryStatistics();
+            const statusEl = document.getElementById('historyStatus');
+            
+            statusEl.innerHTML = `
+                History Manager: ✅ Initialized<br>
+                History Interface: ✅ Initialized<br>
+                Current Position: ${stats.currentIndex + 1}/${stats.size}<br>
+                Can Undo: ${stats.canUndo}<br>
+                Can Redo: ${stats.canRedo}<br>
+                Total Operations: ${stats.operationCount}<br>
+                Last Operation Time: ${stats.lastOperationTime.toFixed(2)}ms<br>
+                Memory Usage: ${stats.memoryUsage} bytes
+            `;
+        }
+        
+        // Show history interface
+        function showHistoryInterface() {
+            const modal = document.getElementById('pieceSetupModal');
+            modal.classList.remove('hidden');
+            log('📋 History interface modal opened');
+        }
+        
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('pieceSetupModal');
+            modal.classList.add('hidden');
+            log('❌ History interface modal closed');
+        }
+        
+        // Test keyboard shortcuts
+        function testUndoShortcut() {
+            simulateKeyPress('z', true);
+            log('⌨️ Simulated Ctrl+Z');
+        }
+        
+        function testRedoShortcut() {
+            simulateKeyPress('y', true);
+            log('⌨️ Simulated Ctrl+Y');
+        }
+        
+        function testShiftUndoShortcut() {
+            simulateKeyPress('z', true, true);
+            log('⌨️ Simulated Ctrl+Shift+Z');
+        }
+        
+        // Simulate key press
+        function simulateKeyPress(key, ctrl = false, shift = false) {
+            const event = new KeyboardEvent('keydown', {
+                key: key,
+                ctrlKey: ctrl,
+                shiftKey: shift,
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+        }
+        
+        // Mock functions for history interface
+        window.updateSetupBoardFromPosition = function(position) {
+            if (!position) return;
+            
+            setupBoard = position.map(row => [...row]);
+            updateBoardDisplay();
+            log('📋 Board updated from history position');
+        };
+        
+        window.t = function(key, ...args) {
+            // Simple translation function for testing
+            const translations = {
+                positionHistory: 'Position History',
+                undo: 'Undo',
+                redo: 'Redo',
+                clearHistory: 'Clear History',
+                export: 'Export',
+                import: 'Import',
+                positions: 'positions',
+                noHistoryYet: 'No history yet. Start making moves!',
+                jumpToPosition: 'Jump to Position',
+                previewPosition: 'Preview Position',
+                cancel: 'Cancel',
+                created: 'Created',
+                noDescription: 'No description'
+            };
+            
+            let text = translations[key] || key;
+            args.forEach((arg, index) => {
+                text = text.replace(`{${index}}`, arg);
+            });
+            return text;
+        };
+        
+        // Logging function
+        function log(message) {
+            testLog.push(`[${new Date().toLocaleTimeString()}] ${message}`);
+            const logEl = document.getElementById('testLog');
+            logEl.innerHTML = testLog.slice(-20).join('<br>'); // Show last 20 messages
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(message);
+        }
+        
+        // Initialize test when page loads
+        document.addEventListener('DOMContentLoaded', initializeTest);
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('pieceSetupModal');
+            const modalContent = modal.querySelector('.piece-setup-content');
+            
+            if (e.target === modal && !modalContent.contains(e.target)) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Sharing Interface Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .test-header {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .mock-setup-board {
+            display: grid;
+            grid-template-columns: repeat(4, 50px);
+            grid-template-rows: repeat(5, 50px);
+            gap: 2px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .mock-square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid #333;
+        }
+        
+        .mock-square.light {
+            background: #f0d9b5;
+        }
+        
+        .mock-square.dark {
+            background: #b58863;
+        }
+        
+        #mockPieceSetupModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="test-header">🔗 Enhanced Sharing Interface Test</h1>
+        
+        <div class="test-section">
+            <h3>📋 Setup Test Environment</h3>
+            <p>This test simulates the enhanced sharing interface functionality.</p>
+            <button class="test-button" onclick="setupTestEnvironment()">Initialize Test Environment</button>
+            <button class="test-button" onclick="showMockModal()">Show Mock Piece Setup Modal</button>
+            <div id="setupResult" class="test-result hidden"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎯 Test Social Media Sharing</h3>
+            <p>Test social media sharing buttons and functionality.</p>
+            <button class="test-button" onclick="testSocialSharing()">Test Social Media Buttons</button>
+            <button class="test-button" onclick="testShareMessage()">Test Share Message Generation</button>
+            <div id="socialResult" class="test-result hidden"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📚 Test Sharing History</h3>
+            <p>Test sharing history management functionality.</p>
+            <button class="test-button" onclick="testSharingHistory()">Test History Management</button>
+            <button class="test-button" onclick="testHistoryOperations()">Test History Operations</button>
+            <div id="historyResult" class="test-result hidden"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔄 Test Integration</h3>
+            <p>Test integration with existing sharing system.</p>
+            <button class="test-button" onclick="testIntegration()">Test System Integration</button>
+            <button class="test-button" onclick="testEventHandling()">Test Event Handling</button>
+            <div id="integrationResult" class="test-result hidden"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Test Results Summary</h3>
+            <button class="test-button" onclick="runAllTests()">Run All Tests</button>
+            <button class="test-button" onclick="showTestSummary()">Show Test Summary</button>
+            <div id="summaryResult" class="test-result hidden"></div>
+        </div>
+    </div>
+    
+    <!-- Mock Piece Setup Modal -->
+    <div id="modalBackdrop" class="modal-backdrop hidden" onclick="hideMockModal()"></div>
+    <div id="mockPieceSetupModal" class="hidden">
+        <div class="modal-header">
+            <h2>♔ Mock Piece Setup</h2>
+            <button onclick="hideMockModal()" style="float: right;">✖</button>
+        </div>
+        
+        <div class="mock-setup-board" id="mockBoard">
+            <!-- Board squares will be generated by JavaScript -->
+        </div>
+        
+        <div class="setup-controls">
+            <button class="test-button" onclick="generateMockSharingCode()">Generate Sharing Code</button>
+            <button class="test-button" onclick="hideMockModal()">Close</button>
+        </div>
+        
+        <!-- Enhanced sharing interface will be injected here -->
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/qr-code-generator.js"></script>
+    <script src="js/position-sharing-integration.js"></script>
+    <script src="js/enhanced-sharing-interface.js"></script>
+    
+    <script>
+        // Test variables
+        let testResults = [];
+        let mockSetupBoard = [
+            ['r', 'n', 'b', 'q'],
+            ['p', 'p', 'p', 'p'],
+            [null, null, null, null],
+            ['P', 'P', 'P', 'P'],
+            ['R', 'N', 'B', 'K']
+        ];
+        
+        // Mock global variables for testing
+        window.setupBoard = mockSetupBoard;
+        window.positionSharingSystem = null;
+        window.enhancedSharing = null;
+        
+        function logResult(testName, success, message) {
+            testResults.push({
+                test: testName,
+                success: success,
+                message: message,
+                timestamp: Date.now()
+            });
+            
+            console.log(`${success ? '✅' : '❌'} ${testName}: ${message}`);
+        }
+        
+        function showResult(elementId, success, message) {
+            const element = document.getElementById(elementId);
+            element.className = `test-result ${success ? 'success' : 'error'}`;
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+        
+        function setupTestEnvironment() {
+            try {
+                // Initialize position sharing system
+                if (!window.positionSharingSystem) {
+                    window.positionSharingSystem = new PositionSharingSystem();
+                }
+                
+                // Initialize enhanced sharing
+                if (!window.enhancedSharing) {
+                    window.enhancedSharing = new EnhancedSharingInterface();
+                }
+                
+                // Create mock DOM elements
+                if (!document.getElementById('pieceSetupModal')) {
+                    const modal = document.createElement('div');
+                    modal.id = 'pieceSetupModal';
+                    modal.style.display = 'none';
+                    document.body.appendChild(modal);
+                }
+                
+                logResult('Environment Setup', true, 'Test environment initialized successfully');
+                showResult('setupResult', true, 'Test environment ready! Position sharing system and enhanced sharing interface initialized.');
+                
+            } catch (error) {
+                logResult('Environment Setup', false, error.message);
+                showResult('setupResult', false, 'Failed to setup test environment: ' + error.message);
+            }
+        }
+        
+        function showMockModal() {
+            // Generate mock board
+            const board = document.getElementById('mockBoard');
+            board.innerHTML = '';
+            
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement('div');
+                    square.className = `mock-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    
+                    const piece = mockSetupBoard[row][col];
+                    if (piece) {
+                        const pieceSymbols = {
+                            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+                            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+                        };
+                        square.textContent = pieceSymbols[piece] || piece;
+                    }
+                    
+                    board.appendChild(square);
+                }
+            }
+            
+            document.getElementById('modalBackdrop').classList.remove('hidden');
+            document.getElementById('mockPieceSetupModal').classList.remove('hidden');
+        }
+        
+        function hideMockModal() {
+            document.getElementById('modalBackdrop').classList.add('hidden');
+            document.getElementById('mockPieceSetupModal').classList.add('hidden');
+        }
+        
+        function generateMockSharingCode() {
+            try {
+                if (!window.positionSharingSystem) {
+                    throw new Error('Position sharing system not initialized');
+                }
+                
+                const code = window.positionSharingSystem.encodePosition(mockSetupBoard);
+                window.currentSharingCode = code;
+                
+                // Trigger enhanced sharing initialization
+                if (window.enhancedSharing) {
+                    window.enhancedSharing.enableSocialSharing(code, 'http://example.com?position=' + code);
+                }
+                
+                alert(`Mock sharing code generated: ${code}`);
+                
+            } catch (error) {
+                alert('Failed to generate sharing code: ' + error.message);
+            }
+        }
+        
+        function testSocialSharing() {
+            try {
+                if (!window.enhancedSharing) {
+                    throw new Error('Enhanced sharing not initialized');
+                }
+                
+                // Test social platform configuration
+                const platforms = Object.keys(window.enhancedSharing.socialPlatforms);
+                const expectedPlatforms = ['twitter', 'facebook', 'whatsapp', 'telegram', 'reddit', 'email'];
+                
+                const missingPlatforms = expectedPlatforms.filter(p => !platforms.includes(p));
+                if (missingPlatforms.length > 0) {
+                    throw new Error(`Missing social platforms: ${missingPlatforms.join(', ')}`);
+                }
+                
+                // Test share message generation
+                const testCode = 'ABC123';
+                const testUrl = 'http://example.com?position=ABC123';
+                const message = window.enhancedSharing.generateShareMessage(testCode, testUrl);
+                
+                if (!message || !message.includes(testCode)) {
+                    throw new Error('Share message generation failed');
+                }
+                
+                logResult('Social Sharing', true, `All ${platforms.length} social platforms configured correctly`);
+                showResult('socialResult', true, `✅ Social sharing test passed!\n- ${platforms.length} platforms available\n- Message generation working\n- Sample message: "${message}"`);
+                
+            } catch (error) {
+                logResult('Social Sharing', false, error.message);
+                showResult('socialResult', false, 'Social sharing test failed: ' + error.message);
+            }
+        }
+        
+        function testShareMessage() {
+            try {
+                if (!window.enhancedSharing) {
+                    throw new Error('Enhanced sharing not initialized');
+                }
+                
+                const testCode = 'TEST123';
+                const testUrl = 'http://example.com?position=TEST123';
+                
+                // Generate multiple messages to test variety
+                const messages = [];
+                for (let i = 0; i < 5; i++) {
+                    const message = window.enhancedSharing.generateShareMessage(testCode, testUrl);
+                    messages.push(message);
+                }
+                
+                // Check that messages contain the code
+                const allContainCode = messages.every(msg => msg.includes(testCode));
+                if (!allContainCode) {
+                    throw new Error('Not all messages contain the sharing code');
+                }
+                
+                // Check for variety (at least 2 different messages)
+                const uniqueMessages = new Set(messages);
+                if (uniqueMessages.size < 2) {
+                    throw new Error('Messages lack variety');
+                }
+                
+                logResult('Share Message', true, `Generated ${uniqueMessages.size} unique message templates`);
+                showResult('socialResult', true, `✅ Share message test passed!\n- Generated ${messages.length} messages\n- ${uniqueMessages.size} unique templates\n- All contain sharing code\n\nSample messages:\n${Array.from(uniqueMessages).slice(0, 3).join('\n')}`);
+                
+            } catch (error) {
+                logResult('Share Message', false, error.message);
+                showResult('socialResult', false, 'Share message test failed: ' + error.message);
+            }
+        }
+        
+        function testSharingHistory() {
+            try {
+                if (!window.enhancedSharing) {
+                    throw new Error('Enhanced sharing not initialized');
+                }
+                
+                // Clear existing history
+                window.enhancedSharing.sharingHistory = [];
+                
+                // Test adding entries
+                const testEntries = [
+                    { code: 'ABC123', url: 'http://example.com/1', platform: 'twitter' },
+                    { code: 'DEF456', url: 'http://example.com/2', platform: 'facebook' },
+                    { code: 'GHI789', url: 'http://example.com/3', platform: 'whatsapp' }
+                ];
+                
+                testEntries.forEach(entry => {
+                    window.enhancedSharing.addToSharingHistory(entry);
+                });
+                
+                // Verify history length
+                if (window.enhancedSharing.sharingHistory.length !== testEntries.length) {
+                    throw new Error(`Expected ${testEntries.length} history entries, got ${window.enhancedSharing.sharingHistory.length}`);
+                }
+                
+                // Test history limit
+                const maxSize = window.enhancedSharing.maxHistorySize;
+                for (let i = 0; i < maxSize + 5; i++) {
+                    window.enhancedSharing.addToSharingHistory({
+                        code: `TEST${i}`,
+                        url: `http://example.com/${i}`,
+                        platform: 'direct'
+                    });
+                }
+                
+                if (window.enhancedSharing.sharingHistory.length > maxSize) {
+                    throw new Error(`History exceeded maximum size: ${window.enhancedSharing.sharingHistory.length} > ${maxSize}`);
+                }
+                
+                logResult('Sharing History', true, `History management working correctly (${window.enhancedSharing.sharingHistory.length}/${maxSize} entries)`);
+                showResult('historyResult', true, `✅ Sharing history test passed!\n- Added multiple entries successfully\n- History limit enforced (${maxSize} max)\n- Current entries: ${window.enhancedSharing.sharingHistory.length}`);
+                
+            } catch (error) {
+                logResult('Sharing History', false, error.message);
+                showResult('historyResult', false, 'Sharing history test failed: ' + error.message);
+            }
+        }
+        
+        function testHistoryOperations() {
+            try {
+                if (!window.enhancedSharing) {
+                    throw new Error('Enhanced sharing not initialized');
+                }
+                
+                // Add test entry
+                const testEntry = {
+                    code: 'HIST123',
+                    url: 'http://example.com/hist',
+                    platform: 'twitter',
+                    position: mockSetupBoard
+                };
+                
+                window.enhancedSharing.addToSharingHistory(testEntry);
+                
+                const entryId = window.enhancedSharing.sharingHistory[0].id;
+                
+                // Test statistics
+                const stats = window.enhancedSharing.getSharingStatistics();
+                if (!stats || typeof stats.totalShares !== 'number') {
+                    throw new Error('Statistics generation failed');
+                }
+                
+                // Test export functionality (without actually downloading)
+                const exportData = {
+                    version: '1.0',
+                    exported: Date.now(),
+                    history: window.enhancedSharing.sharingHistory
+                };
+                
+                const exportString = JSON.stringify(exportData);
+                if (!exportString || exportString.length < 50) {
+                    throw new Error('Export data generation failed');
+                }
+                
+                logResult('History Operations', true, `All history operations working (${stats.totalShares} total shares)`);
+                showResult('historyResult', true, `✅ History operations test passed!\n- Statistics generation: ✅\n- Export data generation: ✅\n- Total shares: ${stats.totalShares}\n- Unique codes: ${stats.uniqueCodes}\n- Export size: ${exportString.length} characters`);
+                
+            } catch (error) {
+                logResult('History Operations', false, error.message);
+                showResult('historyResult', false, 'History operations test failed: ' + error.message);
+            }
+        }
+        
+        function testIntegration() {
+            try {
+                // Test class instantiation
+                if (!window.EnhancedSharingInterface) {
+                    throw new Error('EnhancedSharingInterface class not available');
+                }
+                
+                // Test global instance
+                if (!window.enhancedSharing) {
+                    throw new Error('Global enhancedSharing instance not available');
+                }
+                
+                // Test required methods
+                const requiredMethods = [
+                    'initializeEnhancedSharing',
+                    'shareToSocial',
+                    'addToSharingHistory',
+                    'generateShareMessage',
+                    'getSharingStatistics'
+                ];
+                
+                const missingMethods = requiredMethods.filter(method => 
+                    typeof window.enhancedSharing[method] !== 'function'
+                );
+                
+                if (missingMethods.length > 0) {
+                    throw new Error(`Missing methods: ${missingMethods.join(', ')}`);
+                }
+                
+                // Test position sharing system integration
+                if (!window.positionSharingSystem) {
+                    throw new Error('Position sharing system not available');
+                }
+                
+                logResult('Integration', true, 'All integration points working correctly');
+                showResult('integrationResult', true, `✅ Integration test passed!\n- EnhancedSharingInterface class: ✅\n- Global instance: ✅\n- Required methods: ${requiredMethods.length}/✅\n- Position sharing integration: ✅`);
+                
+            } catch (error) {
+                logResult('Integration', false, error.message);
+                showResult('integrationResult', false, 'Integration test failed: ' + error.message);
+            }
+        }
+        
+        function testEventHandling() {
+            try {
+                if (!window.enhancedSharing) {
+                    throw new Error('Enhanced sharing not initialized');
+                }
+                
+                let eventReceived = false;
+                
+                // Test custom event handling
+                document.addEventListener('positionShared', (event) => {
+                    eventReceived = true;
+                    console.log('Received positionShared event:', event.detail);
+                });
+                
+                // Dispatch test event
+                document.dispatchEvent(new CustomEvent('positionShared', {
+                    detail: {
+                        platform: 'twitter',
+                        code: 'EVENT123',
+                        url: 'http://example.com/event'
+                    }
+                }));
+                
+                // Give event time to process
+                setTimeout(() => {
+                    if (!eventReceived) {
+                        throw new Error('Custom event not received');
+                    }
+                    
+                    logResult('Event Handling', true, 'Custom events working correctly');
+                    showResult('integrationResult', true, `✅ Event handling test passed!\n- Custom events: ✅\n- Event listeners: ✅\n- Event dispatching: ✅`);
+                }, 100);
+                
+            } catch (error) {
+                logResult('Event Handling', false, error.message);
+                showResult('integrationResult', false, 'Event handling test failed: ' + error.message);
+            }
+        }
+        
+        function runAllTests() {
+            testResults = [];
+            
+            setupTestEnvironment();
+            
+            setTimeout(() => {
+                testSocialSharing();
+                testShareMessage();
+                testSharingHistory();
+                testHistoryOperations();
+                testIntegration();
+                testEventHandling();
+                
+                setTimeout(showTestSummary, 500);
+            }, 500);
+        }
+        
+        function showTestSummary() {
+            const totalTests = testResults.length;
+            const passedTests = testResults.filter(r => r.success).length;
+            const failedTests = totalTests - passedTests;
+            
+            const summary = `
+Test Summary:
+=============
+Total Tests: ${totalTests}
+Passed: ${passedTests} ✅
+Failed: ${failedTests} ${failedTests > 0 ? '❌' : ''}
+Success Rate: ${totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0}%
+
+Test Details:
+${testResults.map(r => `${r.success ? '✅' : '❌'} ${r.test}: ${r.message}`).join('\n')}
+            `;
+            
+            showResult('summaryResult', failedTests === 0, summary);
+            
+            console.log('🔗 Enhanced Sharing Interface Test Summary:');
+            console.log(summary);
+        }
+        
+        // Auto-initialize when page loads
+        window.addEventListener('load', () => {
+            setTimeout(setupTestEnvironment, 1000);
+        });
+    </script>
+</body>
+</html>

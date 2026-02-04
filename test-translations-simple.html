@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Translation Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .language-test { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .rtl { direction: rtl; text-align: right; }
+    </style>
+</head>
+<body>
+    <h1>🌍 Translation System Test</h1>
+    <div id="testResults"></div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        // Test the translation system
+        function runTranslationTests() {
+            const results = [];
+            
+            // Test 1: Check if translations object exists
+            if (typeof translations !== 'undefined') {
+                results.push({ type: 'success', message: '✅ Translations object loaded successfully' });
+            } else {
+                results.push({ type: 'error', message: '❌ Translations object not found' });
+                return results;
+            }
+            
+            // Test 2: Check available languages
+            const languages = Object.keys(translations);
+            results.push({ type: 'info', message: `📋 Found ${languages.length} languages: ${languages.join(', ')}` });
+            
+            // Test 3: Check if all languages have basic keys
+            const basicKeys = ['settings', 'newGame', 'language', 'gameTitle'];
+            let allLanguagesComplete = true;
+            
+            languages.forEach(lang => {
+                const missing = basicKeys.filter(key => !translations[lang] || !translations[lang][key]);
+                if (missing.length > 0) {
+                    results.push({ type: 'warning', message: `⚠️ ${lang}: Missing basic keys: ${missing.join(', ')}` });
+                    allLanguagesComplete = false;
+                }
+            });
+            
+            if (allLanguagesComplete) {
+                results.push({ type: 'success', message: '✅ All languages have basic translation keys' });
+            }
+            
+            // Test 4: Check enhanced features translations
+            const enhancedKeys = ['themeToggle', 'sharePosition', 'positionAnalysis', 'generateShareCode'];
+            let enhancedComplete = true;
+            
+            languages.forEach(lang => {
+                const missing = enhancedKeys.filter(key => !translations[lang] || !translations[lang][key]);
+                if (missing.length > 0) {
+                    results.push({ type: 'warning', message: `⚠️ ${lang}: Missing enhanced keys: ${missing.join(', ')}` });
+                    enhancedComplete = false;
+                }
+            });
+            
+            if (enhancedComplete) {
+                results.push({ type: 'success', message: '✅ All languages have enhanced feature translations' });
+            }
+            
+            // Test 5: Check RTL support
+            const rtlKeys = ['textDirection', 'alignStart', 'alignEnd'];
+            const rtlLanguages = languages.filter(lang => 
+                translations[lang] && translations[lang].textDirection === 'rtl'
+            );
+            
+            if (rtlLanguages.length > 0) {
+                results.push({ type: 'success', message: `✅ RTL support found for: ${rtlLanguages.join(', ')}` });
+            } else {
+                results.push({ type: 'warning', message: '⚠️ No RTL languages detected' });
+            }
+            
+            // Test 6: Test translation function
+            if (typeof t === 'function') {
+                results.push({ type: 'success', message: '✅ Translation function t() is available' });
+                
+                // Test some translations
+                const testTranslations = [
+                    { key: 'gameTitle', lang: 'en', expected: '♔ 4×5 Chess Pro ♚' },
+                    { key: 'themeToggle', lang: 'tr' },
+                    { key: 'sharePosition', lang: 'es' },
+                    { key: 'textDirection', lang: 'ar', expected: 'rtl' }
+                ];
+                
+                testTranslations.forEach(({ key, lang, expected }) => {
+                    const oldLang = currentLang;
+                    setLanguage(lang);
+                    const translation = t(key);
+                    setLanguage(oldLang);
+                    
+                    if (translation && translation !== key) {
+                        if (expected && translation === expected) {
+                            results.push({ type: 'success', message: `✅ t('${key}', '${lang}') = '${translation}' ✓` });
+                        } else {
+                            results.push({ type: 'info', message: `📝 t('${key}', '${lang}') = '${translation}'` });
+                        }
+                    } else {
+                        results.push({ type: 'error', message: `❌ t('${key}', '${lang}') failed or returned key` });
+                    }
+                });
+            } else {
+                results.push({ type: 'error', message: '❌ Translation function t() not found' });
+            }
+            
+            // Test 7: Test helper functions
+            const helperFunctions = ['getTextDirection', 'getAlignStart', 'getAlignEnd', 'isRTL'];
+            helperFunctions.forEach(func => {
+                if (typeof window[func] === 'function') {
+                    results.push({ type: 'success', message: `✅ Helper function ${func}() is available` });
+                } else {
+                    results.push({ type: 'warning', message: `⚠️ Helper function ${func}() not found` });
+                }
+            });
+            
+            return results;
+        }
+        
+        // Display test results
+        function displayResults(results) {
+            const container = document.getElementById('testResults');
+            let html = '';
+            
+            results.forEach(result => {
+                html += `<div class="test-result ${result.type}">${result.message}</div>`;
+            });
+            
+            // Add language samples
+            html += '<h2>🌐 Language Samples</h2>';
+            
+            const sampleKeys = ['gameTitle', 'themeToggle', 'sharePosition', 'positionAnalysis'];
+            const sampleLanguages = ['en', 'tr', 'es', 'fr', 'de', 'ar'];
+            
+            sampleLanguages.forEach(lang => {
+                const isRTLLang = translations[lang] && translations[lang].textDirection === 'rtl';
+                html += `<div class="language-test ${isRTLLang ? 'rtl' : ''}">`;
+                html += `<h3>${lang.toUpperCase()} ${isRTLLang ? '(RTL)' : '(LTR)'}</h3>`;
+                
+                sampleKeys.forEach(key => {
+                    const translation = translations[lang] && translations[lang][key] ? translations[lang][key] : key;
+                    html += `<p><strong>${key}:</strong> ${translation}</p>`;
+                });
+                
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const results = runTranslationTests();
+            displayResults(results);
+        });
+    </script>
+</body>
+</html>

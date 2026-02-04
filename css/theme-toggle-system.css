@@ -1,0 +1,664 @@
+/**
+ * Theme Toggle System for Enhanced Piece Setup
+ * 
+ * Comprehensive dark/light mode toggle implementation including:
+ * - Smooth theme transitions
+ * - System preference detection
+ * - Theme persistence
+ * - Animated toggle button
+ * - Theme-aware components
+ * - Accessibility compliance
+ * 
+ * Requirements: 1.1, 1.2, 1.5
+ * Task: 10.2 CSS styling sistemi tamamla - Dark/light mode desteği
+ */
+
+/* ===== THEME TOGGLE BUTTON ===== */
+
+.theme-toggle-container {
+  position: fixed;
+  top: var(--enhanced-space-lg, 1.5rem);
+  right: var(--enhanced-space-lg, 1.5rem);
+  z-index: var(--enhanced-z-fixed, 1030);
+}
+
+.theme-toggle-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--enhanced-border-primary, #e2e8f0);
+  background: var(--enhanced-bg-card, #ffffff);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+  box-shadow: var(--enhanced-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle-button:hover {
+  transform: scale(1.05);
+  border-color: var(--enhanced-primary, #4f46e5);
+  box-shadow: var(--enhanced-shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+}
+
+.theme-toggle-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+.theme-toggle-button:active {
+  transform: scale(0.95);
+}
+
+/* Theme toggle icon container */
+.theme-toggle-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  transition: all var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Sun icon (light mode) */
+.theme-toggle-sun {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+  transition: all var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+  color: var(--enhanced-warning, #f59e0b);
+}
+
+/* Moon icon (dark mode) */
+.theme-toggle-moon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: rotate(90deg) scale(0.8);
+  transition: all var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+  color: var(--enhanced-info, #3b82f6);
+}
+
+/* Dark theme active states */
+[data-theme="dark"] .theme-toggle-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.8);
+}
+
+[data-theme="dark"] .theme-toggle-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* Theme toggle ripple effect */
+.theme-toggle-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: var(--enhanced-primary, #4f46e5);
+  opacity: 0.3;
+  transform: translate(-50%, -50%);
+  transition: all var(--enhanced-transition-fast, 150ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.theme-toggle-button:active::before {
+  width: 100%;
+  height: 100%;
+}
+
+/* Theme toggle tooltip */
+.theme-toggle-tooltip {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--enhanced-bg-card, #ffffff);
+  color: var(--enhanced-text-primary, #1e293b);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--enhanced-transition-fast, 150ms cubic-bezier(0.4, 0, 0.2, 1));
+  box-shadow: var(--enhanced-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--enhanced-border-primary, #e2e8f0);
+  z-index: 1;
+}
+
+.theme-toggle-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid var(--enhanced-bg-card, #ffffff);
+}
+
+.theme-toggle-button:hover .theme-toggle-tooltip {
+  opacity: 1;
+  visibility: visible;
+  bottom: -45px;
+}
+
+/* ===== THEME TRANSITION ANIMATIONS ===== */
+
+/* Global theme transition */
+.theme-transition * {
+  transition: background-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              border-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              box-shadow var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)) !important;
+}
+
+/* Disable transitions during theme change for performance */
+.theme-changing * {
+  transition: none !important;
+}
+
+/* Theme change overlay effect */
+.theme-change-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at var(--click-x, 50%) var(--click-y, 50%), 
+    transparent 0%, 
+    var(--enhanced-bg-primary, #ffffff) 100%);
+  opacity: 0;
+  visibility: hidden;
+  z-index: var(--enhanced-z-modal, 1050);
+  pointer-events: none;
+  transition: all var(--enhanced-transition-slow, 500ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.theme-change-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== THEME-AWARE COMPONENT STYLES ===== */
+
+/* Enhanced piece setup modal theme transitions */
+.enhanced-theme .piece-setup-modal {
+  transition: background-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.enhanced-theme .piece-setup-content {
+  transition: background-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              border-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              box-shadow var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Modal header theme transitions */
+.enhanced-theme .modal-header {
+  transition: background var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Palette and board theme transitions */
+.enhanced-theme .piece-palette,
+.enhanced-theme .setup-board {
+  transition: background-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              border-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.enhanced-theme .palette-piece,
+.enhanced-theme .setup-square {
+  transition: background-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              border-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Button theme transitions */
+.enhanced-theme button,
+.enhanced-theme .setup-actions button,
+.enhanced-theme .palette-tools button {
+  transition: background var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1)),
+              border-color var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* ===== SYSTEM THEME DETECTION ===== */
+
+/* Auto theme based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    /* Apply dark theme variables automatically */
+    --enhanced-bg-primary: #0f172a;
+    --enhanced-bg-secondary: #1e293b;
+    --enhanced-bg-tertiary: #334155;
+    --enhanced-bg-card: #1e293b;
+    --enhanced-bg-modal: rgba(0, 0, 0, 0.9);
+    
+    --enhanced-text-primary: #f8fafc;
+    --enhanced-text-secondary: #cbd5e1;
+    --enhanced-text-tertiary: #94a3b8;
+    
+    --enhanced-border-primary: #334155;
+    --enhanced-border-secondary: #475569;
+    
+    --enhanced-board-light: #9ca3af;
+    --enhanced-board-dark: #4b5563;
+    --enhanced-piece-white: #f9fafb;
+    --enhanced-piece-black: #111827;
+  }
+  
+  /* Auto-adjust theme toggle for system dark mode */
+  :root:not([data-theme]) .theme-toggle-sun {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.8);
+  }
+  
+  :root:not([data-theme]) .theme-toggle-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* ===== THEME PERSISTENCE INDICATOR ===== */
+
+.theme-persistence-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--enhanced-success, #10b981);
+  border: 2px solid var(--enhanced-bg-card, #ffffff);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0);
+  transition: all var(--enhanced-transition-fast, 150ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.theme-persistence-indicator.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.theme-persistence-indicator::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 8px;
+  color: white;
+  font-weight: bold;
+}
+
+/* ===== THEME PREVIEW SYSTEM ===== */
+
+.theme-preview-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 200px;
+  background: var(--enhanced-bg-card, #ffffff);
+  border: 2px solid var(--enhanced-border-primary, #e2e8f0);
+  border-radius: var(--enhanced-radius-xl, 1rem);
+  box-shadow: var(--enhanced-shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+  opacity: 0;
+  visibility: hidden;
+  z-index: var(--enhanced-z-modal, 1050);
+  transition: all var(--enhanced-transition-normal, 300ms cubic-bezier(0.4, 0, 0.2, 1));
+  overflow: hidden;
+}
+
+.theme-preview-container.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.theme-preview-header {
+  background: linear-gradient(135deg, 
+    var(--enhanced-primary, #4f46e5) 0%, 
+    var(--enhanced-primary-hover, #4338ca) 100%);
+  color: var(--enhanced-text-inverse, #ffffff);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.theme-preview-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.theme-preview-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2px;
+  height: 60px;
+  border: 2px solid var(--enhanced-border-primary, #e2e8f0);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.theme-preview-square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.theme-preview-square.light {
+  background: var(--enhanced-board-light, #f0d9b5);
+}
+
+.theme-preview-square.dark {
+  background: var(--enhanced-board-dark, #b58863);
+}
+
+.theme-preview-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-preview-button {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--enhanced-border-primary, #e2e8f0);
+  border-radius: 6px;
+  background: var(--enhanced-bg-secondary, #f8fafc);
+  color: var(--enhanced-text-primary, #1e293b);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--enhanced-transition-fast, 150ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.theme-preview-button:hover {
+  border-color: var(--enhanced-primary, #4f46e5);
+  background: var(--enhanced-primary, #4f46e5);
+  color: var(--enhanced-text-inverse, #ffffff);
+}
+
+/* ===== RESPONSIVE THEME TOGGLE ===== */
+
+@media (max-width: 768px) {
+  .theme-toggle-container {
+    top: var(--enhanced-space-md, 1rem);
+    right: var(--enhanced-space-md, 1rem);
+  }
+  
+  .theme-toggle-button {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .theme-toggle-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .theme-toggle-tooltip {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+  
+  .theme-preview-container {
+    width: 280px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-toggle-container {
+    top: var(--enhanced-space-sm, 0.5rem);
+    right: var(--enhanced-space-sm, 0.5rem);
+  }
+  
+  .theme-toggle-button {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .theme-toggle-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .theme-preview-container {
+    width: 260px;
+    height: 160px;
+  }
+  
+  .theme-preview-content {
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .theme-preview-board {
+    height: 50px;
+  }
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .theme-toggle-button {
+    border-width: 3px;
+    border-color: var(--enhanced-text-primary, #1e293b);
+  }
+  
+  .theme-toggle-button:focus {
+    box-shadow: 0 0 0 4px var(--enhanced-primary, #4f46e5);
+  }
+  
+  .theme-toggle-sun,
+  .theme-toggle-moon {
+    color: var(--enhanced-text-primary, #1e293b);
+  }
+  
+  [data-theme="dark"] .theme-toggle-sun,
+  [data-theme="dark"] .theme-toggle-moon {
+    color: var(--enhanced-text-primary, #f8fafc);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-button,
+  .theme-toggle-icon,
+  .theme-toggle-sun,
+  .theme-toggle-moon,
+  .theme-toggle-tooltip,
+  .theme-change-overlay,
+  .theme-preview-container {
+    transition: none !important;
+  }
+  
+  .theme-toggle-button:hover {
+    transform: none;
+  }
+  
+  .theme-toggle-button:active {
+    transform: none;
+  }
+  
+  .theme-transition * {
+    transition: none !important;
+  }
+}
+
+/* Focus visible support */
+.theme-toggle-button:focus:not(:focus-visible) {
+  box-shadow: var(--enhanced-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+}
+
+.theme-toggle-button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+/* ===== THEME TOGGLE KEYBOARD SUPPORT ===== */
+
+.theme-toggle-button[tabindex="0"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+/* Screen reader support */
+.theme-toggle-sr-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== THEME TOGGLE STATES ===== */
+
+/* Loading state */
+.theme-toggle-button.loading {
+  pointer-events: none;
+}
+
+.theme-toggle-button.loading .theme-toggle-icon {
+  animation: theme-toggle-spin 1s linear infinite;
+}
+
+@keyframes theme-toggle-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error state */
+.theme-toggle-button.error {
+  border-color: var(--enhanced-error, #ef4444);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.theme-toggle-button.error .theme-toggle-icon {
+  color: var(--enhanced-error, #ef4444);
+}
+
+/* Success state */
+.theme-toggle-button.success {
+  border-color: var(--enhanced-success, #10b981);
+}
+
+.theme-toggle-button.success .theme-persistence-indicator {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ===== PRINT STYLES ===== */
+
+@media print {
+  .theme-toggle-container,
+  .theme-preview-container,
+  .theme-change-overlay {
+    display: none !important;
+  }
+}
+
+/* ===== THEME TOGGLE INTEGRATION ===== */
+
+/* Integration with piece setup modal */
+.enhanced-theme .piece-setup-modal .theme-toggle-container {
+  position: absolute;
+  top: 20px;
+  right: 80px; /* Position next to close button */
+}
+
+.enhanced-theme .piece-setup-modal .theme-toggle-button {
+  width: 40px;
+  height: 40px;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.enhanced-theme .piece-setup-modal .theme-toggle-button:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.enhanced-theme .piece-setup-modal .theme-toggle-sun,
+.enhanced-theme .piece-setup-modal .theme-toggle-moon {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== THEME TOGGLE ANIMATIONS ===== */
+
+/* Entrance animation */
+@keyframes theme-toggle-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.theme-toggle-container.animate-entrance {
+  animation: theme-toggle-entrance 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Pulse animation for theme changes */
+@keyframes theme-toggle-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.theme-toggle-button.pulse {
+  animation: theme-toggle-pulse 0.6s ease-in-out;
+}
+
+/* Glow effect for active theme */
+.theme-toggle-button.active-glow {
+  box-shadow: 0 0 20px rgba(79, 70, 229, 0.4),
+              var(--enhanced-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+}
+
+[data-theme="dark"] .theme-toggle-button.active-glow {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4),
+              var(--enhanced-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+}

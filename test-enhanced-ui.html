@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced UI Manager Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #4338ca;
+        }
+        .test-piece {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            border: 2px solid #666;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        .test-square {
+            width: 60px;
+            height: 60px;
+            background: #f0d9b5;
+            border: 1px solid #333;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2px;
+            cursor: pointer;
+        }
+        .test-square.dark {
+            background: #b58863;
+        }
+        .test-board {
+            display: inline-block;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Enhanced UI Manager Test</h1>
+        
+        <div>
+            <h2>Test Buttons</h2>
+            <button class="test-button" onclick="testNotification('info')">Test Info Notification</button>
+            <button class="test-button" onclick="testNotification('success')">Test Success Notification</button>
+            <button class="test-button" onclick="testNotification('warning')">Test Warning Notification</button>
+            <button class="test-button" onclick="testNotification('error')">Test Error Notification</button>
+        </div>
+        
+        <div>
+            <h2>Test Pieces (Click for selection feedback)</h2>
+            <div class="test-piece palette-piece" data-piece="K">♔</div>
+            <div class="test-piece palette-piece" data-piece="Q">♕</div>
+            <div class="test-piece palette-piece" data-piece="R">♖</div>
+            <div class="test-piece palette-piece" data-piece="B">♗</div>
+            <div class="test-piece palette-piece" data-piece="N">♘</div>
+            <div class="test-piece palette-piece" data-piece="P">♙</div>
+        </div>
+        
+        <div>
+            <h2>Test Board (Hover for effects)</h2>
+            <div class="test-board">
+                <div class="test-square setup-square"></div>
+                <div class="test-square setup-square dark"></div>
+                <div class="test-square setup-square"></div>
+                <div class="test-square setup-square dark"></div>
+                <br>
+                <div class="test-square setup-square dark"></div>
+                <div class="test-square setup-square"></div>
+                <div class="test-square setup-square dark"></div>
+                <div class="test-square setup-square"></div>
+            </div>
+        </div>
+        
+        <div>
+            <h2>Device Type</h2>
+            <p id="device-type">Detecting...</p>
+        </div>
+        
+        <div>
+            <h2>Test Results</h2>
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script>
+        let enhancedUI;
+        let testResults = [];
+        
+        function addTestResult(test, result) {
+            testResults.push(`${test}: ${result ? '✅ PASS' : '❌ FAIL'}`);
+            updateTestResults();
+        }
+        
+        function updateTestResults() {
+            document.getElementById('test-results').innerHTML = testResults.join('<br>');
+        }
+        
+        function testNotification(type) {
+            if (enhancedUI) {
+                enhancedUI.showEnhancedNotification(`This is a ${type} notification!`, type);
+                addTestResult(`${type} notification`, true);
+            } else {
+                addTestResult(`${type} notification`, false);
+            }
+        }
+        
+        // Initialize Enhanced UI Manager
+        try {
+            enhancedUI = new EnhancedPieceSetupUI();
+            addTestResult('Enhanced UI Manager initialization', true);
+            
+            // Test device type detection
+            const deviceType = enhancedUI.getCurrentBreakpoint();
+            document.getElementById('device-type').textContent = `Current device type: ${deviceType}`;
+            addTestResult('Device type detection', deviceType !== undefined);
+            
+            // Test animation enable/disable
+            enhancedUI.setAnimationEnabled(false);
+            enhancedUI.setAnimationEnabled(true);
+            addTestResult('Animation toggle', true);
+            
+        } catch (error) {
+            console.error('Enhanced UI Manager initialization failed:', error);
+            addTestResult('Enhanced UI Manager initialization', false);
+        }
+        
+        // Test responsive behavior
+        window.addEventListener('resize', () => {
+            if (enhancedUI) {
+                const newDeviceType = enhancedUI.getCurrentBreakpoint();
+                document.getElementById('device-type').textContent = `Current device type: ${newDeviceType}`;
+            }
+        });
+    </script>
+</body>
+</html>

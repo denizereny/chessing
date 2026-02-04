@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Piece Setup Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-button { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 10px;
+        }
+        .test-button:hover { background: #0056b3; }
+        
+        .piece-setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .piece-setup-modal.hidden {
+            display: none;
+        }
+        
+        .piece-setup-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            padding: 5px;
+        }
+        
+        .close-modal:hover {
+            color: #000;
+        }
+        
+        #setupBoard {
+            width: 300px;
+            height: 375px;
+            border: 2px solid #333;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+        }
+        
+        .setup-square {
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .setup-square.light {
+            background: #f0d9b5;
+        }
+        
+        .setup-square.dark {
+            background: #b58863;
+        }
+        
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Simple Piece Setup Test</h1>
+    
+    <button class="test-button" onclick="testOpenPieceSetup()">♔ Test Piece Setup</button>
+    <button class="test-button" onclick="clearLog()">🧹 Clear Log</button>
+    
+    <div id="log" class="log">Test log will appear here...\n</div>
+
+    <!-- Piece Setup Modal -->
+    <div id="pieceSetupModal" class="piece-setup-modal hidden">
+        <div class="piece-setup-content">
+            <div class="modal-header">
+                <h2>♔ Piece Setup Test</h2>
+                <button class="close-modal" onclick="closePieceSetup()">✖</button>
+            </div>
+            
+            <div class="piece-setup-body">
+                <p>This is a test version of the piece setup modal.</p>
+                <div id="setupBoard"></div>
+                <button class="test-button" onclick="closePieceSetup()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load only essential scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/game.js"></script>
+
+    <script>
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = 'Log cleared...\n';
+        }
+
+        function testOpenPieceSetup() {
+            log('🧪 Testing openPieceSetup function...');
+            
+            try {
+                if (typeof openPieceSetup === 'function') {
+                    log('✅ openPieceSetup function exists');
+                    openPieceSetup();
+                    log('✅ openPieceSetup() called successfully');
+                } else {
+                    log('❌ openPieceSetup function not found');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                console.error('Error details:', error);
+            }
+        }
+
+        // Override console functions to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log(`LOG: ${args.join(' ')}`);
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            log(`ERROR: ${args.join(' ')}`);
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            log(`WARN: ${args.join(' ')}`);
+        };
+
+        // Test on page load
+        window.addEventListener('load', () => {
+            log('🚀 Page loaded');
+            log(`Modal element exists: ${!!document.getElementById('pieceSetupModal')}`);
+            log(`openPieceSetup function exists: ${typeof openPieceSetup === 'function'}`);
+            log(`initializePieceSetup function exists: ${typeof initializePieceSetup === 'function'}`);
+            log(`drawSetupBoard function exists: ${typeof drawSetupBoard === 'function'}`);
+            log(`setupBoard variable exists: ${typeof setupBoard !== 'undefined'}`);
+        });
+    </script>
+</body>
+</html>

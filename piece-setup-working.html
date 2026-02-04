@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4x5 Chess - Taş Düzeni</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .piece-palette {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .palette-section {
+            margin-bottom: 25px;
+        }
+
+        .palette-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .palette-pieces {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .palette-piece {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: grab;
+            border: 3px solid #dee2e6;
+            border-radius: 12px;
+            background: white;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .palette-piece:hover {
+            transform: scale(1.1);
+            border-color: #007bff;
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+
+        .palette-piece:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .board-container {
+            text-align: center;
+        }
+
+        .board-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .chess-board {
+            width: 400px;
+            height: 500px;
+            border: 6px solid #8b4513;
+            border-radius: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .square.light {
+            background: #f0d9b5;
+        }
+
+        .square.dark {
+            background: #b58863;
+        }
+
+        .square:hover {
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .square.drop-zone {
+            background: #90EE90 !important;
+            box-shadow: inset 0 0 20px rgba(0,255,0,0.5);
+        }
+
+        .square.invalid-drop {
+            background: #FFB6C1 !important;
+            box-shadow: inset 0 0 20px rgba(255,0,0,0.5);
+        }
+
+        .piece {
+            font-size: 40px;
+            cursor: grab;
+            transition: all 0.2s ease;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            user-select: none;
+        }
+
+        .piece:hover {
+            transform: scale(1.1);
+        }
+
+        .piece:active {
+            cursor: grabbing;
+        }
+
+        .piece.white {
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .piece.black {
+            color: #2c2c2c;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+
+        .controls {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .controls h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #545b62);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108,117,125,0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220,53,69,0.4);
+        }
+
+        .stats {
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .presets {
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .preset-btn:hover {
+            border-color: #007bff;
+            background: #f8f9ff;
+            transform: translateX(5px);
+        }
+
+        .dragging {
+            opacity: 0.7;
+            transform: scale(1.1) rotate(5deg);
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .chess-board {
+                width: 320px;
+                height: 400px;
+            }
+            
+            .square {
+                font-size: 32px;
+            }
+            
+            .piece {
+                font-size: 32px;
+            }
+            
+            .palette-piece {
+                width: 50px;
+                height: 50px;
+                font-size: 28px;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.info {
+            background: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>♔ 4×5 Satranç Taş Düzeni ♚</h1>
+            <p>Taşları sürükleyip bırakarak kendi pozisyonunuzu oluşturun</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Sol Panel - Taş Paleti -->
+            <div class="piece-palette">
+                <div class="palette-section">
+                    <h3>⚪ Beyaz Taşlar</h3>
+                    <div class="palette-pieces">
+                        <div class="palette-piece" data-piece="K" draggable="true">♔</div>
+                        <div class="palette-piece" data-piece="Q" draggable="true">♕</div>
+                        <div class="palette-piece" data-piece="R" draggable="true">♖</div>
+                        <div class="palette-piece" data-piece="B" draggable="true">♗</div>
+                        <div class="palette-piece" data-piece="N" draggable="true">♘</div>
+                        <div class="palette-piece" data-piece="P" draggable="true">♙</div>
+                    </div>
+                </div>
+
+                <div class="palette-section">
+                    <h3>⚫ Siyah Taşlar</h3>
+                    <div class="palette-pieces">
+                        <div class="palette-piece" data-piece="k" draggable="true">♚</div>
+                        <div class="palette-piece" data-piece="q" draggable="true">♛</div>
+                        <div class="palette-piece" data-piece="r" draggable="true">♜</div>
+                        <div class="palette-piece" data-piece="b" draggable="true">♝</div>
+                        <div class="palette-piece" data-piece="n" draggable="true">♞</div>
+                        <div class="palette-piece" data-piece="p" draggable="true">♟</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orta Panel - Satranç Tahtası -->
+            <div class="board-container">
+                <h2>🏁 Satranç Tahtası</h2>
+                <div class="chess-board" id="chessBoard">
+                    <!-- Kareler JavaScript ile oluşturulacak -->
+                </div>
+                
+                <div class="stats" id="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Beyaz Kral:</span>
+                        <span class="stat-value" id="whiteKings">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Siyah Kral:</span>
+                        <span class="stat-value" id="blackKings">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Toplam Taş:</span>
+                        <span class="stat-value" id="totalPieces">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Materyal Dengesi:</span>
+                        <span class="stat-value" id="materialBalance">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Panel - Kontroller -->
+            <div class="controls">
+                <h3>🎮 Kontroller</h3>
+                
+                <div class="presets">
+                    <button class="preset-btn" onclick="loadPreset('default')">🏠 Varsayılan Pozisyon</button>
+                    <button class="preset-btn" onclick="loadPreset('endgame')">👑 Son Oyun</button>
+                    <button class="preset-btn" onclick="loadPreset('middlegame')">⚔️ Orta Oyun</button>
+                    <button class="preset-btn" onclick="loadPreset('puzzle')">🧩 Puzzle</button>
+                    <button class="preset-btn" onclick="loadPreset('random')">🎲 Rastgele</button>
+                </div>
+
+                <button class="btn btn-primary" onclick="analyzePosition()">🔍 Pozisyonu Analiz Et</button>
+                <button class="btn btn-secondary" onclick="clearBoard()">🗑️ Tahtayı Temizle</button>
+                <button class="btn btn-success" onclick="savePosition()">💾 Pozisyonu Kaydet</button>
+                <button class="btn btn-danger" onclick="resetBoard()">🔄 Sıfırla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bildirim -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Taş sembolleri
+        const PIECES = {
+            K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
+            k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
+        };
+
+        // Taş değerleri
+        const PIECE_VALUES = {
+            P: 1, N: 3, B: 3, R: 5, Q: 9, K: 0,
+            p: 1, n: 3, b: 3, r: 5, q: 9, k: 0
+        };
+
+        // Oyun tahtası (5x4)
+        let board = Array(5).fill().map(() => Array(4).fill(null));
+        let draggedPiece = null;
+        let draggedFrom = null;
+
+        // Sayfa yüklendiğinde başlat
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBoard();
+            initializeDragAndDrop();
+            loadPreset('default');
+            showNotification('Taş düzeni hazır! Taşları sürükleyip bırakabilirsiniz.', 'success');
+        });
+
+        // Tahtayı başlat
+        function initializeBoard() {
+            const boardElement = document.getElementById('chessBoard');
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement('div');
+                    square.className = 'square';
+                    square.className += (row + col) % 2 === 0 ? ' light' : ' dark';
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    
+                    // Drop event listeners
+                    square.addEventListener('dragover', handleDragOver);
+                    square.addEventListener('drop', handleDrop);
+                    square.addEventListener('dragenter', handleDragEnter);
+                    square.addEventListener('dragleave', handleDragLeave);
+                    
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+
+        // Drag & Drop başlat
+        function initializeDragAndDrop() {
+            // Palette pieces
+            document.querySelectorAll('.palette-piece').forEach(piece => {
+                piece.addEventListener('dragstart', handlePaletteDragStart);
+                piece.addEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        // Palette'ten sürükleme başlangıcı
+        function handlePaletteDragStart(e) {
+            draggedPiece = e.target.dataset.piece;
+            draggedFrom = 'palette';
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'copy';
+        }
+
+        // Tahta üzerindeki taştan sürükleme başlangıcı
+        function handleBoardDragStart(e) {
+            const square = e.target.closest('.square');
+            const row = parseInt(square.dataset.row);
+            const col = parseInt(square.dataset.col);
+            
+            draggedPiece = board[row][col];
+            draggedFrom = { row, col };
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        // Sürükleme bitişi
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.square').forEach(sq => {
+                sq.classList.remove('drop-zone', 'invalid-drop');
+            });
+        }
+
+        // Sürükleme üzerine gelme
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        }
+
+        // Sürükleme girişi
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.target.classList.add('drop-zone');
+        }
+
+        // Sürükleme çıkışı
+        function handleDragLeave(e) {
+            e.target.classList.remove('drop-zone');
+        }
+
+        // Bırakma
+        function handleDrop(e) {
+            e.preventDefault();
+            const square = e.target.closest('.square');
+            const row = parseInt(square.dataset.row);
+            const col = parseInt(square.dataset.col);
+
+            if (draggedPiece) {
+                // Eski pozisyonu temizle (eğer tahtadan geliyorsa)
+                if (draggedFrom !== 'palette' && draggedFrom.row !== undefined) {
+                    board[draggedFrom.row][draggedFrom.col] = null;
+                }
+
+                // Yeni pozisyona yerleştir
+                board[row][col] = draggedPiece;
+                
+                // Tahtayı güncelle
+                updateBoard();
+                updateStats();
+                
+                showNotification(`${PIECES[draggedPiece]} taşı ${String.fromCharCode(97 + col)}${5 - row} karesine yerleştirildi`, 'success');
+            }
+
+            // Temizle
+            square.classList.remove('drop-zone', 'invalid-drop');
+            draggedPiece = null;
+            draggedFrom = null;
+        }
+
+        // Tahtayı güncelle
+        function updateBoard() {
+            const squares = document.querySelectorAll('.square');
+            
+            squares.forEach((square, index) => {
+                const row = Math.floor(index / 4);
+                const col = index % 4;
+                const piece = board[row][col];
+                
+                // Mevcut taşı temizle
+                const existingPiece = square.querySelector('.piece');
+                if (existingPiece) {
+                    existingPiece.remove();
+                }
+                
+                // Yeni taş ekle
+                if (piece) {
+                    const pieceElement = document.createElement('div');
+                    pieceElement.className = 'piece';
+                    pieceElement.className += piece === piece.toUpperCase() ? ' white' : ' black';
+                    pieceElement.textContent = PIECES[piece];
+                    pieceElement.draggable = true;
+                    pieceElement.dataset.piece = piece;
+                    
+                    // Drag events
+                    pieceElement.addEventListener('dragstart', handleBoardDragStart);
+                    pieceElement.addEventListener('dragend', handleDragEnd);
+                    
+                    square.appendChild(pieceElement);
+                }
+            });
+        }
+
+        // İstatistikleri güncelle
+        function updateStats() {
+            let whiteKings = 0, blackKings = 0, totalPieces = 0, materialBalance = 0;
+
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const piece = board[row][col];
+                    if (piece) {
+                        totalPieces++;
+                        
+                        if (piece === 'K') whiteKings++;
+                        if (piece === 'k') blackKings++;
+                        
+                        const value = PIECE_VALUES[piece.toLowerCase()];
+                        if (piece === piece.toUpperCase()) {
+                            materialBalance += value;
+                        } else {
+                            materialBalance -= value;
+                        }
+                    }
+                }
+            }
+
+            document.getElementById('whiteKings').textContent = whiteKings;
+            document.getElementById('blackKings').textContent = blackKings;
+            document.getElementById('totalPieces').textContent = totalPieces;
+            document.getElementById('materialBalance').textContent = materialBalance > 0 ? `+${materialBalance}` : materialBalance;
+        }
+
+        // Preset pozisyonları yükle
+        function loadPreset(type) {
+            const presets = {
+                default: [
+                    ["r", "q", "k", "r"],
+                    ["p", "p", "p", "p"],
+                    [null, null, null, null],
+                    ["P", "P", "P", "P"],
+                    ["R", "Q", "K", "R"]
+                ],
+                endgame: [
+                    [null, null, "k", null],
+                    [null, null, null, null],
+                    [null, "Q", null, null],
+                    [null, null, null, null],
+                    [null, null, "K", null]
+                ],
+                middlegame: [
+                    ["r", null, "k", null],
+                    ["p", "p", null, "p"],
+                    [null, "N", "p", null],
+                    ["P", null, "P", "P"],
+                    ["R", null, "K", "R"]
+                ],
+                puzzle: [
+                    [null, null, "k", null],
+                    [null, "q", null, null],
+                    [null, null, null, null],
+                    [null, "Q", null, null],
+                    [null, null, "K", null]
+                ]
+            };
+
+            if (type === 'random') {
+                // Rastgele pozisyon oluştur
+                clearBoard();
+                const pieces = ['K', 'Q', 'R', 'B', 'N', 'P', 'k', 'q', 'r', 'b', 'n', 'p'];
+                for (let i = 0; i < 12; i++) {
+                    const row = Math.floor(Math.random() * 5);
+                    const col = Math.floor(Math.random() * 4);
+                    if (!board[row][col]) {
+                        board[row][col] = pieces[Math.floor(Math.random() * pieces.length)];
+                    }
+                }
+            } else if (presets[type]) {
+                board = presets[type].map(row => [...row]);
+            }
+
+            updateBoard();
+            updateStats();
+            showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} pozisyonu yüklendi`, 'info');
+        }
+
+        // Tahtayı temizle
+        function clearBoard() {
+            board = Array(5).fill().map(() => Array(4).fill(null));
+            updateBoard();
+            updateStats();
+            showNotification('Tahta temizlendi', 'info');
+        }
+
+        // Tahtayı sıfırla
+        function resetBoard() {
+            loadPreset('default');
+        }
+
+        // Pozisyonu analiz et
+        function analyzePosition() {
+            let analysis = [];
+            
+            // Kral kontrolü
+            let whiteKings = 0, blackKings = 0;
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (board[row][col] === 'K') whiteKings++;
+                    if (board[row][col] === 'k') blackKings++;
+                }
+            }
+            
+            if (whiteKings !== 1) analysis.push('⚠️ Beyaz kral eksik veya fazla');
+            if (blackKings !== 1) analysis.push('⚠️ Siyah kral eksik veya fazla');
+            
+            // Materyal analizi
+            const balance = parseInt(document.getElementById('materialBalance').textContent);
+            if (balance > 3) analysis.push('✅ Beyaz materyal avantajında');
+            else if (balance < -3) analysis.push('✅ Siyah materyal avantajında');
+            else analysis.push('⚖️ Materyal dengeli');
+            
+            if (analysis.length === 0) analysis.push('✅ Pozisyon geçerli görünüyor');
+            
+            showNotification(analysis.join(' | '), 'info');
+        }
+
+        // Pozisyonu kaydet
+        function savePosition() {
+            const positionString = JSON.stringify(board);
+            localStorage.setItem('savedChessPosition', positionString);
+            showNotification('Pozisyon kaydedildi', 'success');
+        }
+
+        // Bildirim göster
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Klavye kısayolları
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        savePosition();
+                        break;
+                    case 'z':
+                        e.preventDefault();
+                        clearBoard();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        resetBoard();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

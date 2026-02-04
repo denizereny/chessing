@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Layout System Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/enhanced-drag-drop.css">
+    <link rel="stylesheet" href="css/responsive-layout.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-main, #121212);
+            color: var(--text-primary, #e0e0e0);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--bg-card, #1e1e1e);
+            border-radius: 12px;
+            border: 1px solid var(--border-color, #333);
+        }
+        
+        .test-section h2 {
+            color: var(--accent-gold, #d4af37);
+            margin-bottom: 20px;
+        }
+        
+        .breakpoint-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-gold, #d4af37);
+            color: var(--bg-card, #1e1e1e);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 9999;
+        }
+        
+        .responsive-demo {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-columns-mobile, 1), 1fr);
+            gap: var(--grid-gap-mobile, 1rem);
+            margin-bottom: 20px;
+        }
+        
+        .demo-item {
+            background: var(--bg-panel, #252525);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .size-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .piece-size-demo {
+            font-size: var(--piece-size-mobile, 2rem);
+            background: var(--bg-panel, #252525);
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color, #333);
+        }
+        
+        .square-size-demo {
+            width: var(--square-size-mobile, 45px);
+            height: var(--square-size-mobile, 45px);
+            background: var(--board-light, #f0d9b5);
+            border: 2px solid var(--border-color, #333);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(var(--square-size-mobile, 45px) * 0.7);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: var(--accent-blue, #5c85d6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background: #4a70c0;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-panel, #252525);
+            border: 2px solid var(--border-color, #333);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent-gold, #d4af37);
+        }
+        
+        .status-display {
+            background: var(--bg-panel, #252525);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .palette-test {
+            background: var(--bg-panel, #252525);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-palette-pieces {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .test-palette-piece {
+            aspect-ratio: 1;
+            background: var(--bg-card, #1e1e1e);
+            border: 2px solid var(--border-color, #333);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--piece-size-mobile, 2rem);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .test-palette-piece:hover {
+            border-color: var(--accent-gold, #d4af37);
+            transform: scale(1.05);
+        }
+        
+        .test-board {
+            display: grid;
+            grid-template-columns: repeat(4, var(--square-size-mobile, 45px));
+            grid-template-rows: repeat(5, var(--square-size-mobile, 45px));
+            gap: 1px;
+            border: 3px solid var(--border-color, #333);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 0 auto;
+            width: fit-content;
+        }
+        
+        .test-square {
+            width: var(--square-size-mobile, 45px);
+            height: var(--square-size-mobile, 45px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .test-square.light {
+            background: var(--board-light, #f0d9b5);
+        }
+        
+        .test-square.dark {
+            background: var(--board-dark, #b58863);
+        }
+        
+        .test-square:hover {
+            transform: scale(1.1);
+        }
+        
+        .test-piece {
+            font-size: calc(var(--square-size-mobile, 45px) * 0.7);
+            user-select: none;
+        }
+        
+        @media (min-width: 768px) {
+            .responsive-demo {
+                grid-template-columns: repeat(var(--grid-columns-tablet, 2), 1fr);
+                gap: var(--grid-gap-tablet, 1.5rem);
+            }
+            
+            .piece-size-demo {
+                font-size: var(--piece-size-tablet, 2.5rem);
+            }
+            
+            .square-size-demo {
+                width: var(--square-size-tablet, 55px);
+                height: var(--square-size-tablet, 55px);
+                font-size: calc(var(--square-size-tablet, 55px) * 0.7);
+            }
+            
+            .test-palette-pieces {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .test-palette-piece {
+                font-size: var(--piece-size-tablet, 2.5rem);
+            }
+            
+            .test-board {
+                grid-template-columns: repeat(4, var(--square-size-tablet, 55px));
+                grid-template-rows: repeat(5, var(--square-size-tablet, 55px));
+            }
+            
+            .test-square {
+                width: var(--square-size-tablet, 55px);
+                height: var(--square-size-tablet, 55px);
+            }
+            
+            .test-piece {
+                font-size: calc(var(--square-size-tablet, 55px) * 0.7);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .responsive-demo {
+                grid-template-columns: repeat(var(--grid-columns-desktop, 3), 1fr);
+                gap: var(--grid-gap-desktop, 2rem);
+            }
+            
+            .piece-size-demo {
+                font-size: var(--piece-size-desktop, 3rem);
+            }
+            
+            .square-size-demo {
+                width: var(--square-size-desktop, 65px);
+                height: var(--square-size-desktop, 65px);
+                font-size: calc(var(--square-size-desktop, 65px) * 0.7);
+            }
+            
+            .test-palette-piece {
+                font-size: var(--piece-size-desktop, 3rem);
+            }
+            
+            .test-board {
+                grid-template-columns: repeat(4, var(--square-size-desktop, 65px));
+                grid-template-rows: repeat(5, var(--square-size-desktop, 65px));
+            }
+            
+            .test-square {
+                width: var(--square-size-desktop, 65px);
+                height: var(--square-size-desktop, 65px);
+            }
+            
+            .test-piece {
+                font-size: calc(var(--square-size-desktop, 65px) * 0.7);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="breakpoint-indicator" id="breakpointIndicator">Mobile</div>
+    
+    <div class="test-container">
+        <h1>🎯 Responsive Layout System Test</h1>
+        <p>This page tests the responsive layout system for the Enhanced Piece Setup. Resize your browser window or rotate your device to see the responsive behavior.</p>
+        
+        <div class="controls">
+            <button class="btn" onclick="testResponsiveLayout()">Test Layout</button>
+            <button class="btn" onclick="toggleCollapsiblePalette()">Toggle Palette</button>
+            <button class="btn" onclick="forceLayoutUpdate()">Force Update</button>
+            <button class="btn btn-secondary" onclick="showLayoutInfo()">Show Info</button>
+        </div>
+        
+        <div class="status-display" id="statusDisplay">
+            Initializing responsive layout system...
+        </div>
+        
+        <div class="test-section">
+            <h2>📱 Breakpoint Detection</h2>
+            <p>Current breakpoint: <span id="currentBreakpoint">detecting...</span></p>
+            <p>Viewport: <span id="viewportSize">calculating...</span></p>
+            <p>Orientation: <span id="orientationInfo">detecting...</span></p>
+        </div>
+        
+        <div class="test-section">
+            <h2>📐 Responsive Grid System</h2>
+            <div class="responsive-demo">
+                <div class="demo-item">Grid Item 1</div>
+                <div class="demo-item">Grid Item 2</div>
+                <div class="demo-item">Grid Item 3</div>
+                <div class="demo-item">Grid Item 4</div>
+                <div class="demo-item">Grid Item 5</div>
+                <div class="demo-item">Grid Item 6</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 Dynamic Sizing</h2>
+            <div class="size-demo">
+                <div class="piece-size-demo">♔</div>
+                <div class="piece-size-demo">♕</div>
+                <div class="piece-size-demo">♖</div>
+                <div class="square-size-demo light">♙</div>
+                <div class="square-size-demo dark">♟</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎨 Palette Responsiveness</h2>
+            <div class="palette-test">
+                <h4>White Pieces</h4>
+                <div class="test-palette-pieces">
+                    <div class="test-palette-piece">♔</div>
+                    <div class="test-palette-piece">♕</div>
+                    <div class="test-palette-piece">♖</div>
+                    <div class="test-palette-piece">♗</div>
+                    <div class="test-palette-piece">♘</div>
+                    <div class="test-palette-piece">♙</div>
+                </div>
+                
+                <h4>Black Pieces</h4>
+                <div class="test-palette-pieces">
+                    <div class="test-palette-piece">♚</div>
+                    <div class="test-palette-piece">♛</div>
+                    <div class="test-palette-piece">♜</div>
+                    <div class="test-palette-piece">♝</div>
+                    <div class="test-palette-piece">♞</div>
+                    <div class="test-palette-piece">♟</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>♔ Board Responsiveness</h2>
+            <div style="display: flex; justify-content: center;">
+                <div class="test-board">
+                    <div class="test-square light"><span class="test-piece">♜</span></div>
+                    <div class="test-square dark"><span class="test-piece">♞</span></div>
+                    <div class="test-square light"><span class="test-piece">♝</span></div>
+                    <div class="test-square dark"><span class="test-piece">♛</span></div>
+                    
+                    <div class="test-square dark"><span class="test-piece">♚</span></div>
+                    <div class="test-square light"><span class="test-piece">♝</span></div>
+                    <div class="test-square dark"><span class="test-piece">♞</span></div>
+                    <div class="test-square light"><span class="test-piece">♜</span></div>
+                    
+                    <div class="test-square light"><span class="test-piece">♟</span></div>
+                    <div class="test-square dark"><span class="test-piece">♟</span></div>
+                    <div class="test-square light"><span class="test-piece">♟</span></div>
+                    <div class="test-square dark"><span class="test-piece">♟</span></div>
+                    
+                    <div class="test-square dark"></div>
+                    <div class="test-square light"></div>
+                    <div class="test-square dark"></div>
+                    <div class="test-square light"></div>
+                    
+                    <div class="test-square light"><span class="test-piece">♙</span></div>
+                    <div class="test-square dark"><span class="test-piece">♙</span></div>
+                    <div class="test-square light"><span class="test-piece">♙</span></div>
+                    <div class="test-square dark"><span class="test-piece">♙</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Layout Information</h2>
+            <div id="layoutInfo">
+                <p><strong>Layout State:</strong> <span id="layoutState">Loading...</span></p>
+                <p><strong>Collapsible Palette:</strong> <span id="paletteState">Loading...</span></p>
+                <p><strong>CSS Properties:</strong></p>
+                <ul id="cssProperties">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mock piece setup modal for testing -->
+    <div id="pieceSetupModal" class="piece-setup-modal hidden">
+        <div class="piece-setup-content">
+            <div class="modal-header">
+                <h2>♔ Responsive Layout Test Modal</h2>
+                <button class="close-modal" onclick="closeTestModal()">✖</button>
+            </div>
+            <div class="piece-setup-body">
+                <div class="setup-container">
+                    <div class="piece-palette">
+                        <h3>Test Palette</h3>
+                        <div class="palette-section">
+                            <h4>White Pieces</h4>
+                            <div class="palette-pieces">
+                                <div class="palette-piece">♔</div>
+                                <div class="palette-piece">♕</div>
+                                <div class="palette-piece">♖</div>
+                                <div class="palette-piece">♗</div>
+                                <div class="palette-piece">♘</div>
+                                <div class="palette-piece">♙</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setup-board-container">
+                        <h3>Test Board</h3>
+                        <div class="setup-board">
+                            <div class="setup-square light"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square dark"></div>
+                            <div class="setup-square light"></div>
+                            <div class="setup-square dark"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/mobile-optimization-manager.js"></script>
+    <script src="js/responsive-layout-manager.js"></script>
+    
+    <script>
+        // Initialize responsive layout system
+        let responsiveLayoutManager = null;
+        let mobileOptimizationManager = null;
+        let enhancedUI = null;
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Initializing Responsive Layout Test...');
+            
+            // Initialize Enhanced UI Manager (mock)
+            if (typeof EnhancedPieceSetupUI !== 'undefined') {
+                enhancedUI = new EnhancedPieceSetupUI();
+            }
+            
+            // Initialize Mobile Optimization Manager
+            if (typeof MobileOptimizationManager !== 'undefined') {
+                mobileOptimizationManager = new MobileOptimizationManager(enhancedUI, null);
+            }
+            
+            // Initialize Responsive Layout Manager
+            if (typeof ResponsiveLayoutManager !== 'undefined') {
+                responsiveLayoutManager = new ResponsiveLayoutManager(enhancedUI, mobileOptimizationManager);
+                
+                // Setup event listeners
+                setupEventListeners();
+                
+                // Initial update
+                updateDisplay();
+                
+                console.log('✅ Responsive Layout Test initialized');
+            } else {
+                console.error('❌ ResponsiveLayoutManager not found');
+                document.getElementById('statusDisplay').textContent = 'Error: ResponsiveLayoutManager not loaded';
+            }
+        });
+        
+        function setupEventListeners() {
+            // Listen for responsive layout events
+            document.addEventListener('responsive-layout-breakpointchange', function(e) {
+                console.log('📱 Breakpoint changed:', e.detail);
+                updateDisplay();
+            });
+            
+            document.addEventListener('responsive-layout-resize', function(e) {
+                console.log('📱 Layout resized:', e.detail);
+                updateDisplay();
+            });
+            
+            document.addEventListener('responsive-layout-orientationchange', function(e) {
+                console.log('📱 Orientation changed:', e.detail);
+                updateDisplay();
+            });
+            
+            document.addEventListener('responsive-layout-palettetoggle', function(e) {
+                console.log('📱 Palette toggled:', e.detail);
+                updateDisplay();
+            });
+            
+            // Update display on window resize
+            window.addEventListener('resize', function() {
+                setTimeout(updateDisplay, 100);
+            });
+        }
+        
+        function updateDisplay() {
+            if (!responsiveLayoutManager) return;
+            
+            const state = responsiveLayoutManager.getResponsiveState();
+            
+            // Update breakpoint indicator
+            const indicator = document.getElementById('breakpointIndicator');
+            indicator.textContent = state.breakpoint.charAt(0).toUpperCase() + state.breakpoint.slice(1);
+            
+            // Update status display
+            const statusDisplay = document.getElementById('statusDisplay');
+            statusDisplay.innerHTML = `
+                <strong>Responsive Layout Status:</strong><br>
+                Breakpoint: ${state.breakpoint}<br>
+                Viewport: ${state.viewport.width}x${state.viewport.height}<br>
+                Orientation: ${state.viewport.orientation}<br>
+                Collapsible Palette: ${state.isCollapsiblePaletteActive ? 'Active' : 'Inactive'}<br>
+                Palette State: ${state.paletteCollapsed ? 'Collapsed' : 'Expanded'}
+            `;
+            
+            // Update individual elements
+            document.getElementById('currentBreakpoint').textContent = state.breakpoint;
+            document.getElementById('viewportSize').textContent = `${state.viewport.width}x${state.viewport.height}`;
+            document.getElementById('orientationInfo').textContent = state.viewport.orientation;
+            
+            // Update layout info
+            updateLayoutInfo(state);
+        }
+        
+        function updateLayoutInfo(state) {
+            document.getElementById('layoutState').textContent = JSON.stringify(state.layoutState, null, 2);
+            document.getElementById('paletteState').textContent = state.isCollapsiblePaletteActive ? 
+                (state.paletteCollapsed ? 'Collapsible (Collapsed)' : 'Collapsible (Expanded)') : 
+                'Static';
+            
+            // Update CSS properties
+            const cssProps = document.getElementById('cssProperties');
+            const root = document.documentElement;
+            const computedStyle = getComputedStyle(root);
+            
+            const properties = [
+                '--piece-size-current',
+                '--square-size-current',
+                '--grid-columns-current',
+                '--dynamic-square-size',
+                '--dynamic-piece-size'
+            ];
+            
+            cssProps.innerHTML = properties.map(prop => {
+                const value = computedStyle.getPropertyValue(prop) || 'not set';
+                return `<li><code>${prop}</code>: ${value}</li>`;
+            }).join('');
+        }
+        
+        function testResponsiveLayout() {
+            if (!responsiveLayoutManager) {
+                alert('Responsive Layout Manager not initialized');
+                return;
+            }
+            
+            console.log('🎯 Testing responsive layout...');
+            
+            // Show test modal
+            const modal = document.getElementById('pieceSetupModal');
+            modal.classList.remove('hidden');
+            
+            // Force layout update
+            responsiveLayoutManager.forceLayoutUpdate();
+            
+            // Update display
+            updateDisplay();
+            
+            console.log('✅ Responsive layout test completed');
+        }
+        
+        function toggleCollapsiblePalette() {
+            if (!responsiveLayoutManager) {
+                alert('Responsive Layout Manager not initialized');
+                return;
+            }
+            
+            responsiveLayoutManager.toggleCollapsiblePalette();
+        }
+        
+        function forceLayoutUpdate() {
+            if (!responsiveLayoutManager) {
+                alert('Responsive Layout Manager not initialized');
+                return;
+            }
+            
+            responsiveLayoutManager.forceLayoutUpdate();
+            updateDisplay();
+        }
+        
+        function showLayoutInfo() {
+            if (!responsiveLayoutManager) {
+                alert('Responsive Layout Manager not initialized');
+                return;
+            }
+            
+            const state = responsiveLayoutManager.getResponsiveState();
+            alert(JSON.stringify(state, null, 2));
+        }
+        
+        function closeTestModal() {
+            const modal = document.getElementById('pieceSetupModal');
+            modal.classList.add('hidden');
+        }
+        
+        // Simulate window resize for testing
+        function simulateResize(width, height) {
+            // This is just for demonstration - actual resize would be done by browser
+            console.log(`📱 Simulating resize to ${width}x${height}`);
+            updateDisplay();
+        }
+        
+        // Test different breakpoints
+        function testBreakpoint(breakpoint) {
+            console.log(`📱 Testing ${breakpoint} breakpoint`);
+            
+            const sizes = {
+                mobile: { width: 400, height: 800 },
+                tablet: { width: 800, height: 600 },
+                desktop: { width: 1200, height: 800 },
+                large: { width: 1600, height: 900 }
+            };
+            
+            const size = sizes[breakpoint];
+            if (size) {
+                simulateResize(size.width, size.height);
+            }
+        }
+        
+        // Add keyboard shortcuts for testing
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case '1':
+                        e.preventDefault();
+                        testBreakpoint('mobile');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        testBreakpoint('tablet');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        testBreakpoint('desktop');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        testBreakpoint('large');
+                        break;
+                    case 't':
+                        e.preventDefault();
+                        testResponsiveLayout();
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        toggleCollapsiblePalette();
+                        break;
+                }
+            }
+        });
+        
+        // Show keyboard shortcuts
+        console.log(`
+🎯 Responsive Layout Test Keyboard Shortcuts:
+Ctrl/Cmd + 1: Test Mobile
+Ctrl/Cmd + 2: Test Tablet  
+Ctrl/Cmd + 3: Test Desktop
+Ctrl/Cmd + 4: Test Large Desktop
+Ctrl/Cmd + T: Test Layout
+Ctrl/Cmd + P: Toggle Palette
+        `);
+    </script>
+</body>
+</html>

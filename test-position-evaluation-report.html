@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Position Evaluation Report System Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/position-evaluation-report.css">
+    <style>
+        body {
+            padding: 20px;
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 10px 15px;
+            background: var(--accent-gold);
+            color: #1a0f0a;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .test-btn:hover {
+            background: #b8860b;
+            transform: translateY(-1px);
+        }
+        
+        .test-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .test-square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .test-square.light {
+            background: var(--board-light);
+        }
+        
+        .test-square.dark {
+            background: var(--board-dark);
+        }
+        
+        .test-info {
+            background: rgba(244, 241, 232, 0.05);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        
+        .test-info h4 {
+            color: var(--accent-gold);
+            margin: 0 0 10px 0;
+        }
+        
+        .test-info pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Position Evaluation Report System Test</h1>
+        <p>Test the visual position analysis reporting system with various chess positions.</p>
+        
+        <div class="test-section">
+            <h2>Test Controls</h2>
+            <div class="test-controls">
+                <button class="test-btn" onclick="testStartingPosition()">📋 Starting Position</button>
+                <button class="test-btn" onclick="testEndgamePosition()">👑 Endgame Position</button>
+                <button class="test-btn" onclick="testTacticalPosition()">⚔️ Tactical Position</button>
+                <button class="test-btn" onclick="testBalancedPosition()">⚖️ Balanced Position</button>
+                <button class="test-btn" onclick="testWhiteAdvantage()">⚪ White Advantage</button>
+                <button class="test-btn" onclick="testBlackAdvantage()">⚫ Black Advantage</button>
+                <button class="test-btn" onclick="testKingInCheck()">👑 King in Check</button>
+                <button class="test-btn" onclick="testErrorCase()">⚠️ Error Case</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Current Test Position</h2>
+            <div id="currentPositionName">No position loaded</div>
+            <div class="test-board" id="testBoard"></div>
+            <div class="test-info">
+                <h4>Position Analysis</h4>
+                <pre id="analysisOutput">No analysis available</pre>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Instructions</h2>
+            <ul>
+                <li>Click any test button to load a position and generate analysis</li>
+                <li>The Position Evaluation Report will appear as a modal overlay</li>
+                <li>Test different positions to see various analysis results</li>
+                <li>Check responsive behavior by resizing the window</li>
+                <li>Verify all sections display correctly (Position Type, Analysis Overview, Recommendations, Statistics)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/position-evaluation-report.js"></script>
+
+    <script>
+        // Test positions
+        const testPositions = {
+            starting: [
+                ['r', 'n', 'b', 'q'],
+                ['p', 'p', 'p', 'p'],
+                [null, null, null, null],
+                ['P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q']
+            ],
+            
+            endgame: [
+                [null, null, null, 'k'],
+                [null, null, null, null],
+                [null, null, 'K', null],
+                [null, null, null, null],
+                [null, null, null, 'Q']
+            ],
+            
+            tactical: [
+                ['r', null, null, 'k'],
+                ['p', 'p', null, 'p'],
+                [null, 'N', 'p', null],
+                ['P', 'P', 'Q', 'P'],
+                ['R', null, null, 'K']
+            ],
+            
+            balanced: [
+                ['r', 'n', 'b', 'k'],
+                ['p', 'p', null, 'p'],
+                [null, null, 'p', null],
+                ['P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'K']
+            ],
+            
+            whiteAdvantage: [
+                [null, null, null, 'k'],
+                [null, 'p', null, 'p'],
+                [null, null, null, null],
+                ['P', 'P', 'Q', 'P'],
+                ['R', 'N', 'B', 'K']
+            ],
+            
+            blackAdvantage: [
+                ['r', 'q', 'b', 'k'],
+                ['p', 'p', 'p', 'p'],
+                [null, null, null, null],
+                ['P', 'P', null, 'P'],
+                [null, null, null, 'K']
+            ],
+            
+            kingInCheck: [
+                ['r', null, null, 'k'],
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, null, null, null],
+                ['R', null, null, 'K']
+            ]
+        };
+
+        // Initialize components
+        let analyzer = null;
+        let reportSystem = null;
+        let currentPosition = null;
+
+        function initializeTest() {
+            try {
+                analyzer = new AdvancedPositionAnalyzer();
+                reportSystem = new PositionEvaluationReport();
+                window.positionEvaluationReport = reportSystem;
+                console.log('✅ Test components initialized successfully');
+            } catch (error) {
+                console.error('❌ Failed to initialize test components:', error);
+            }
+        }
+
+        function displayPosition(position, name) {
+            currentPosition = position;
+            document.getElementById('currentPositionName').textContent = name;
+            
+            const board = document.getElementById('testBoard');
+            board.innerHTML = '';
+            
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement('div');
+                    square.className = `test-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    
+                    const piece = position[row][col];
+                    if (piece) {
+                        const pieceSymbols = {
+                            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+                            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+                        };
+                        square.textContent = pieceSymbols[piece] || piece;
+                    }
+                    
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        function analyzeAndReport(position, name) {
+            if (!analyzer || !reportSystem) {
+                console.error('Components not initialized');
+                return;
+            }
+            
+            try {
+                const analysis = analyzer.analyzePosition(position);
+                
+                // Display analysis in text form
+                document.getElementById('analysisOutput').textContent = JSON.stringify(analysis, null, 2);
+                
+                // Generate visual report
+                reportSystem.generateReport(analysis);
+                
+                console.log(`📊 Generated report for: ${name}`);
+            } catch (error) {
+                console.error('Analysis failed:', error);
+                document.getElementById('analysisOutput').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Test functions
+        function testStartingPosition() {
+            displayPosition(testPositions.starting, 'Starting Position');
+            analyzeAndReport(testPositions.starting, 'Starting Position');
+        }
+
+        function testEndgamePosition() {
+            displayPosition(testPositions.endgame, 'Endgame Position');
+            analyzeAndReport(testPositions.endgame, 'Endgame Position');
+        }
+
+        function testTacticalPosition() {
+            displayPosition(testPositions.tactical, 'Tactical Position');
+            analyzeAndReport(testPositions.tactical, 'Tactical Position');
+        }
+
+        function testBalancedPosition() {
+            displayPosition(testPositions.balanced, 'Balanced Position');
+            analyzeAndReport(testPositions.balanced, 'Balanced Position');
+        }
+
+        function testWhiteAdvantage() {
+            displayPosition(testPositions.whiteAdvantage, 'White Advantage Position');
+            analyzeAndReport(testPositions.whiteAdvantage, 'White Advantage Position');
+        }
+
+        function testBlackAdvantage() {
+            displayPosition(testPositions.blackAdvantage, 'Black Advantage Position');
+            analyzeAndReport(testPositions.blackAdvantage, 'Black Advantage Position');
+        }
+
+        function testKingInCheck() {
+            displayPosition(testPositions.kingInCheck, 'King in Check Position');
+            analyzeAndReport(testPositions.kingInCheck, 'King in Check Position');
+        }
+
+        function testErrorCase() {
+            // Invalid position (no kings)
+            const invalidPosition = [
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, null, null, null]
+            ];
+            
+            displayPosition(invalidPosition, 'Invalid Position (No Kings)');
+            analyzeAndReport(invalidPosition, 'Invalid Position');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeTest);
+    </script>
+</body>
+</html>

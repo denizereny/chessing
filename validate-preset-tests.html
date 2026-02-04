@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preset Tests Validation</title>
+    <style>
+        body {
+            font-family: 'Consolas', 'Monaco', monospace;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-output {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #444;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .info { color: #2196F3; }
+        .warning { color: #ff9800; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Preset Tests Validation</h1>
+        <p>Validating Property-Based Tests for Enhanced Piece Setup</p>
+        <p><strong>Task:</strong> 2.3 Preset sistem testlerini yaz</p>
+    </div>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <button onclick="runValidation()">Run Validation</button>
+        <button onclick="runFullPropertyTests()">Run Full Property Tests</button>
+        <button onclick="clearOutput()">Clear Output</button>
+    </div>
+
+    <div class="test-output" id="testOutput">Click "Run Validation" to start...</div>
+
+    <script src="js/extended-preset-manager.js"></script>
+    <script src="test/extended-preset-manager-property-tests.js"></script>
+    <script src="validate-preset-tests.js"></script>
+    <script>
+        let testOutput = document.getElementById('testOutput');
+
+        // Override console.log to capture output
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            testOutput.textContent += message + '\n';
+            testOutput.scrollTop = testOutput.scrollHeight;
+        };
+
+        function clearOutput() {
+            testOutput.textContent = 'Output cleared...\n';
+        }
+
+        function runValidation() {
+            clearOutput();
+            console.log('🚀 Starting Preset Tests Validation');
+            console.log('=' .repeat(50));
+            
+            try {
+                const success = validatePresetTests();
+                console.log('\n🎯 Validation completed successfully!');
+            } catch (error) {
+                console.log('❌ Validation failed:', error.message);
+                console.error(error);
+            }
+        }
+
+        function runFullPropertyTests() {
+            clearOutput();
+            console.log('🚀 Starting Full Property-Based Tests');
+            console.log('=' .repeat(50));
+            
+            try {
+                const summary = runAllPresetPropertyTests();
+                console.log('\n🎯 Full property tests completed!');
+                console.log('Final Summary:', JSON.stringify(summary, null, 2));
+            } catch (error) {
+                console.log('❌ Property tests failed:', error.message);
+                console.error(error);
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            console.log('🎯 Preset Tests Validation Ready');
+            console.log('Click "Run Validation" to validate the test setup...\n');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Analyzer Test</title>
+</head>
+<body>
+    <h1>Advanced Position Analyzer Test</h1>
+    <div id="output"></div>
+    
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            output.innerHTML += message + '<br>';
+            console.log(message);
+        }
+        
+        try {
+            log('🧠 Testing Advanced Position Analyzer...');
+            
+            // Create analyzer instance
+            const analyzer = new AdvancedPositionAnalyzer();
+            log('✅ Analyzer created successfully');
+            
+            // Test position
+            const testPosition = [
+                ["r", "q", "k", "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "R"]
+            ];
+            
+            log('📋 Testing starting position...');
+            
+            // Analyze position
+            const analysis = analyzer.analyzePosition(testPosition);
+            
+            if (analysis.error) {
+                log('❌ Error: ' + analysis.message);
+            } else {
+                log('✅ Analysis completed successfully');
+                log('Material Balance: ' + analysis.materialBalance.balance);
+                log('White Activity: ' + analysis.pieceActivity.white.mobilePieces + ' pieces');
+                log('Black Activity: ' + analysis.pieceActivity.black.mobilePieces + ' pieces');
+                log('Center Control: ' + analysis.centerControl.white + '-' + analysis.centerControl.black);
+                log('Position Type: ' + analysis.positionType);
+                log('King Safety - White: ' + analysis.kingSafety.white.status);
+                log('King Safety - Black: ' + analysis.kingSafety.black.status);
+                log('Recommendations: ' + analysis.recommendations.length);
+                
+                // Test performance
+                log('🚀 Testing performance...');
+                const startTime = performance.now();
+                for (let i = 0; i < 10; i++) {
+                    analyzer.analyzePosition(testPosition);
+                }
+                const endTime = performance.now();
+                const avgTime = (endTime - startTime) / 10;
+                log('Average analysis time: ' + avgTime.toFixed(2) + 'ms');
+                
+                if (avgTime < 500) {
+                    log('✅ Performance requirement met (< 500ms)');
+                } else {
+                    log('⚠️ Performance requirement not met (>= 500ms)');
+                }
+            }
+            
+            log('🎉 Test completed!');
+            
+        } catch (error) {
+            log('❌ Test failed: ' + error.message);
+            console.error(error);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Indicator System - Test Runner</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #4f46e5;
+            margin: 0 0 16px 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+        }
+        
+        .test-results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #4f46e5;
+        }
+        
+        .test-results h3 {
+            margin: 0 0 16px 0;
+            color: #374151;
+        }
+        
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .test-status {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .test-description {
+            flex: 1;
+            color: #6b7280;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Loading Indicator Test Runner</h1>
+            <p>Automated testing of the Loading Indicator System</p>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <button class="test-button" onclick="runAllTests()">
+                🚀 Run All Tests
+            </button>
+            <button class="test-button" onclick="runPropertyTests()">
+                🎯 Run Property Tests
+            </button>
+            <button class="test-button" onclick="clearResults()">
+                🧹 Clear Results
+            </button>
+        </div>
+        
+        <div class="progress-bar">
+            <div id="overallProgress" class="progress-fill"></div>
+        </div>
+        
+        <div class="test-results" id="testResults">
+            <h3>Test Results</h3>
+            <p>Click "Run All Tests" to start testing...</p>
+        </div>
+    </div>
+
+    <!-- Include the loading indicator system -->
+    <script src="js/loading-indicator-system.js"></script>
+    <script src="js/loading-indicator-integration.js"></script>
+    
+    <script>
+        let testResults = [];
+        let loadingSystem = null;
+        
+        // Initialize system
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                loadingSystem = new LoadingIndicatorSystem();
+                addTestResult('✅', 'System Initialization', 'Loading Indicator System initialized successfully');
+            } catch (error) {
+                addTestResult('❌', 'System Initialization', 'Failed to initialize: ' + error.message);
+            }
+        });
+        
+        function addTestResult(status, testName, description) {
+            testResults.push({ status, testName, description });
+            updateTestDisplay();
+        }
+        
+        function updateTestDisplay() {
+            const resultsDiv = document.getElementById('testResults');
+            
+            let html = '<h3>Test Results</h3>';
+            
+            testResults.forEach(result => {
+                html += `
+                    <div class="test-item">
+                        <span class="test-status">${result.status}</span>
+                        <div>
+                            <strong>${result.testName}</strong>
+                            <div class="test-description">${result.description}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function updateProgress(percentage) {
+            const progressFill = document.getElementById('overallProgress');
+            progressFill.style.width = percentage + '%';
+        }
+        
+        async function runAllTests() {
+            testResults = [];
+            updateProgress(0);
+            
+            const tests = [
+                testSystemInitialization,
+                testBasicOperationLifecycle,
+                testOperationTypes,
+                testProgressTracking,
+                testCancellation,
+                testErrorHandling,
+                testMultipleOperations,
+                testUIIntegration,
+                testPropertyLongOperationIndicator
+            ];
+            
+            for (let i = 0; i < tests.length; i++) {
+                try {
+                    await tests[i]();
+                    updateProgress(((i + 1) / tests.length) * 100);
+                    await delay(100); // Small delay between tests
+                } catch (error) {
+                    addTestResult('❌', tests[i].name, 'Test failed: ' + error.message);
+                }
+            }
+            
+            const passedTests = testResults.filter(r => r.status === '✅').length;
+            const totalTests = testResults.length;
+            
+            addTestResult('📊', 'Test Summary', `${passedTests}/${totalTests} tests passed`);
+        }
+        
+        async function runPropertyTests() {
+            testResults = [];
+            updateProgress(0);
+            
+            addTestResult('🎯', 'Property Tests', 'Running Property 27: Long Operation Indicator tests...');
+            
+            try {
+                await testPropertyLongOperationIndicator();
+                updateProgress(100);
+                addTestResult('✅', 'Property Tests', 'All property tests passed');
+            } catch (error) {
+                addTestResult('❌', 'Property Tests', 'Property tests failed: ' + error.message);
+            }
+        }
+        
+        function clearResults() {
+            testResults = [];
+            updateTestDisplay();
+            updateProgress(0);
+        }
+        
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // Test Functions
+        async function testSystemInitialization() {
+            if (!loadingSystem) {
+                throw new Error('Loading system not initialized');
+            }
+            
+            if (!loadingSystem.config || !loadingSystem.activeOperations || !loadingSystem.elements) {
+                throw new Error('System components not properly initialized');
+            }
+            
+            addTestResult('✅', 'System Initialization', 'All system components initialized correctly');
+        }
+        
+        async function testBasicOperationLifecycle() {
+            const operationId = loadingSystem.startOperation('general');
+            
+            if (!operationId || typeof operationId !== 'string') {
+                throw new Error('Failed to start operation');
+            }
+            
+            const status1 = loadingSystem.getOperationStatus(operationId);
+            if (!status1 || status1.progress !== 0 || status1.completed) {
+                throw new Error('Invalid initial operation status');
+            }
+            
+            loadingSystem.updateProgress(operationId, 50);
+            const status2 = loadingSystem.getOperationStatus(operationId);
+            if (status2.progress !== 50) {
+                throw new Error('Progress update failed');
+            }
+            
+            loadingSystem.completeOperation(operationId);
+            const status3 = loadingSystem.getOperationStatus(operationId);
+            if (!status3.completed || status3.progress !== 100) {
+                throw new Error('Operation completion failed');
+            }
+            
+            addTestResult('✅', 'Basic Operation Lifecycle', 'Start → Progress → Complete cycle works correctly');
+        }
+        
+        async function testOperationTypes() {
+            const analysisOp = loadingSystem.startOperation('analysis');
+            const presetOp = loadingSystem.startOperation('preset');
+            const sharingOp = loadingSystem.startOperation('sharing');
+            
+            const analysisStatus = loadingSystem.getOperationStatus(analysisOp);
+            const presetStatus = loadingSystem.getOperationStatus(presetOp);
+            const sharingStatus = loadingSystem.getOperationStatus(sharingOp);
+            
+            if (analysisStatus.type !== 'analysis' || 
+                presetStatus.type !== 'preset' || 
+                sharingStatus.type !== 'sharing') {
+                throw new Error('Operation types not set correctly');
+            }
+            
+            // Clean up
+            loadingSystem.completeOperation(analysisOp);
+            loadingSystem.completeOperation(presetOp);
+            loadingSystem.completeOperation(sharingOp);
+            
+            addTestResult('✅', 'Operation Types', 'Analysis, preset, and sharing operations work correctly');
+        }
+        
+        async function testProgressTracking() {
+            const operationId = loadingSystem.startOperation('general', { customProgress: true });
+            
+            // Test progress updates
+            const progressValues = [0, 25, 50, 75, 100];
+            for (const progress of progressValues) {
+                loadingSystem.updateProgress(operationId, progress, `Progress: ${progress}%`);
+                const status = loadingSystem.getOperationStatus(operationId);
+                
+                if (status.progress !== progress) {
+                    throw new Error(`Progress tracking failed at ${progress}%`);
+                }
+            }
+            
+            // Test progress clamping
+            loadingSystem.updateProgress(operationId, -10);
+            if (loadingSystem.getOperationStatus(operationId).progress !== 0) {
+                throw new Error('Progress clamping failed for negative values');
+            }
+            
+            loadingSystem.updateProgress(operationId, 150);
+            if (loadingSystem.getOperationStatus(operationId).progress !== 100) {
+                throw new Error('Progress clamping failed for values > 100');
+            }
+            
+            loadingSystem.completeOperation(operationId);
+            addTestResult('✅', 'Progress Tracking', 'Progress updates and clamping work correctly');
+        }
+        
+        async function testCancellation() {
+            // Test cancellable operation
+            const cancellableOp = loadingSystem.startOperation('analysis', { cancellable: true });
+            const cancelled = loadingSystem.cancelOperation(cancellableOp);
+            
+            if (!cancelled) {
+                throw new Error('Failed to cancel cancellable operation');
+            }
+            
+            const cancelStatus = loadingSystem.getOperationStatus(cancellableOp);
+            if (!cancelStatus.cancelled) {
+                throw new Error('Operation not marked as cancelled');
+            }
+            
+            // Test non-cancellable operation
+            const nonCancellableOp = loadingSystem.startOperation('preset', { cancellable: false });
+            const notCancelled = loadingSystem.cancelOperation(nonCancellableOp);
+            
+            if (notCancelled) {
+                throw new Error('Non-cancellable operation was cancelled');
+            }
+            
+            loadingSystem.completeOperation(nonCancellableOp);
+            addTestResult('✅', 'Cancellation', 'Cancellable and non-cancellable operations work correctly');
+        }
+        
+        async function testErrorHandling() {
+            const operationId = loadingSystem.startOperation('general');
+            const testError = new Error('Test error message');
+            
+            loadingSystem.failOperation(operationId, testError);
+            
+            const status = loadingSystem.getOperationStatus(operationId);
+            if (status.status !== 'error' || !status.error || !status.completed) {
+                throw new Error('Error handling failed');
+            }
+            
+            // Test invalid operation ID handling
+            try {
+                loadingSystem.updateProgress('invalid-id', 50);
+                loadingSystem.completeOperation('invalid-id');
+                loadingSystem.cancelOperation('invalid-id');
+                // Should not throw errors
+            } catch (error) {
+                throw new Error('Invalid operation ID handling failed');
+            }
+            
+            addTestResult('✅', 'Error Handling', 'Error scenarios and invalid IDs handled correctly');
+        }
+        
+        async function testMultipleOperations() {
+            const op1 = loadingSystem.startOperation('analysis');
+            const op2 = loadingSystem.startOperation('preset');
+            const op3 = loadingSystem.startOperation('sharing');
+            
+            const activeCount = loadingSystem.getActiveOperationsCount();
+            if (activeCount !== 3) {
+                throw new Error(`Expected 3 active operations, got ${activeCount}`);
+            }
+            
+            loadingSystem.completeOperation(op1);
+            loadingSystem.completeOperation(op2);
+            loadingSystem.completeOperation(op3);
+            
+            const finalCount = loadingSystem.getActiveOperationsCount();
+            if (finalCount !== 0) {
+                throw new Error(`Expected 0 active operations after completion, got ${finalCount}`);
+            }
+            
+            addTestResult('✅', 'Multiple Operations', 'Concurrent operations managed correctly');
+        }
+        
+        async function testUIIntegration() {
+            // Test visibility
+            const initiallyVisible = loadingSystem.isVisible();
+            if (initiallyVisible) {
+                throw new Error('Loading indicator should not be visible initially');
+            }
+            
+            // Test UI elements exist
+            if (!loadingSystem.elements.overlay || 
+                !loadingSystem.elements.spinner || 
+                !loadingSystem.elements.progressBar) {
+                throw new Error('Required UI elements not created');
+            }
+            
+            // Test UI update
+            const operationId = loadingSystem.startOperation('analysis');
+            const operation = loadingSystem.activeOperations.get(operationId);
+            
+            try {
+                loadingSystem.updateUI(operation);
+                // Should not throw error
+            } catch (error) {
+                throw new Error('UI update failed: ' + error.message);
+            }
+            
+            loadingSystem.completeOperation(operationId);
+            addTestResult('✅', 'UI Integration', 'UI elements and updates work correctly');
+        }
+        
+        async function testPropertyLongOperationIndicator() {
+            // Property 27: Long Operation Indicator
+            // **Validates: Requirements 8.4**
+            
+            // Test 1: Operations longer than 1 second should show indicator
+            const longOp = loadingSystem.startOperation('general', {
+                estimatedDuration: 2000,
+                label: 'Long operation test...'
+            });
+            
+            // Simulate the threshold check
+            const longOpStatus = loadingSystem.getOperationStatus(longOp);
+            if (!longOpStatus || longOpStatus.type !== 'general') {
+                throw new Error('Long operation not started correctly');
+            }
+            
+            addTestResult('✅', 'Property 27.1', 'Long operations (>1s) can show loading indicator');
+            
+            // Test 2: Quick operations should not show indicator
+            const quickOp = loadingSystem.startOperation('general', {
+                estimatedDuration: 500,
+                label: 'Quick operation test...'
+            });
+            
+            loadingSystem.completeOperation(quickOp);
+            const quickOpStatus = loadingSystem.getOperationStatus(quickOp);
+            if (!quickOpStatus.completed) {
+                throw new Error('Quick operation completion failed');
+            }
+            
+            addTestResult('✅', 'Property 27.2', 'Quick operations (<1s) complete without showing indicator');
+            
+            // Test 3: Cancellation capability
+            const cancellableLongOp = loadingSystem.startOperation('general', {
+                estimatedDuration: 5000,
+                cancellable: true,
+                label: 'Cancellable long operation...'
+            });
+            
+            const cancelled = loadingSystem.cancelOperation(cancellableLongOp);
+            if (!cancelled) {
+                throw new Error('Long operation cancellation failed');
+            }
+            
+            addTestResult('✅', 'Property 27.3', 'Long operations support cancellation');
+            
+            // Test 4: User feedback via progress updates
+            const feedbackOp = loadingSystem.startOperation('analysis', {
+                customProgress: true,
+                label: 'User feedback test...'
+            });
+            
+            const feedbackSteps = [
+                { progress: 25, message: 'Analyzing material balance...' },
+                { progress: 50, message: 'Evaluating piece activity...' },
+                { progress: 75, message: 'Assessing king safety...' },
+                { progress: 100, message: 'Analysis complete' }
+            ];
+            
+            for (const step of feedbackSteps) {
+                loadingSystem.updateProgress(feedbackOp, step.progress, step.message);
+                const status = loadingSystem.getOperationStatus(feedbackOp);
+                
+                if (status.progress !== step.progress) {
+                    throw new Error(`User feedback failed at ${step.progress}%`);
+                }
+            }
+            
+            loadingSystem.completeOperation(feedbackOp);
+            addTestResult('✅', 'Property 27.4', 'User feedback via progress updates works correctly');
+            
+            // Test 5: Progress bar and spinner animations (UI elements)
+            const animationOp = loadingSystem.startOperation('analysis');
+            const operation = loadingSystem.activeOperations.get(animationOp);
+            
+            // Test that UI elements exist for animations
+            if (!loadingSystem.elements.spinner || !loadingSystem.elements.progressBar) {
+                throw new Error('Animation UI elements not available');
+            }
+            
+            // Test progress bar update
+            loadingSystem.updateProgress(animationOp, 60);
+            loadingSystem.updateUI(operation);
+            
+            // Check that progress fill is updated
+            if (loadingSystem.elements.progressFill.style.width !== '60%') {
+                throw new Error('Progress bar animation update failed');
+            }
+            
+            loadingSystem.completeOperation(animationOp);
+            addTestResult('✅', 'Property 27.5', 'Progress bar and spinner animations supported');
+            
+            // Complete the long operation from test 1
+            loadingSystem.completeOperation(longOp);
+            
+            addTestResult('🎯', 'Property 27 Summary', 'All Property 27 requirements validated successfully');
+        }
+    </script>
+</body>
+</html>

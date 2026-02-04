@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+    <title>Mobile Optimization Manager Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/enhanced-drag-drop.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            min-width: 44px;
+            min-height: 44px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+        
+        .device-info {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        
+        .status-inactive {
+            background: #ef4444;
+        }
+        
+        .gesture-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .gesture-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .gesture-item:hover {
+            border-color: #4f46e5;
+            background: rgba(79, 70, 229, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .gesture-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .log-container {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .log-timestamp {
+            color: #06b6d4;
+            margin-right: 8px;
+        }
+        
+        .mobile-demo-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            max-width: 300px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .demo-square {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        .demo-square:hover {
+            background: rgba(79, 70, 229, 0.3);
+            border-color: #4f46e5;
+            transform: scale(1.05);
+        }
+        
+        .demo-palette {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .demo-piece {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        
+        .demo-piece:hover {
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+        
+        .demo-piece.selected {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            border-color: #06b6d4;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .test-container {
+                padding: 10px;
+            }
+            
+            .gesture-demo {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .mobile-demo-board {
+                max-width: 250px;
+            }
+            
+            .demo-square {
+                min-width: 50px;
+                min-height: 50px;
+            }
+            
+            .demo-piece {
+                min-width: 50px;
+                min-height: 50px;
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>📱 Mobile Optimization Manager Test</h1>
+            <p>Test touch events, gestures, haptic feedback, and mobile UI adaptations</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>Device Information</h2>
+            <div class="device-info" id="deviceInfo">
+                <div><span class="status-indicator" id="touchStatus"></span>Touch Support: <span id="touchSupport">Detecting...</span></div>
+                <div><span class="status-indicator" id="hapticStatus"></span>Haptic Feedback: <span id="hapticSupport">Detecting...</span></div>
+                <div><span class="status-indicator" id="mobileStatus"></span>Mobile Device: <span id="mobileDevice">Detecting...</span></div>
+                <div>Screen Size: <span id="screenSize">Detecting...</span></div>
+                <div>Device Type: <span id="deviceType">Detecting...</span></div>
+                <div>Orientation: <span id="orientation">Detecting...</span></div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Gesture Recognition Demo</h2>
+            <p>Try different gestures on the items below:</p>
+            <div class="gesture-demo">
+                <div class="gesture-item" data-gesture="tap">
+                    <div class="gesture-icon">👆</div>
+                    <div>Tap</div>
+                </div>
+                <div class="gesture-item" data-gesture="doubleTap">
+                    <div class="gesture-icon">👆👆</div>
+                    <div>Double Tap</div>
+                </div>
+                <div class="gesture-item" data-gesture="longPress">
+                    <div class="gesture-icon">👆⏱️</div>
+                    <div>Long Press</div>
+                </div>
+                <div class="gesture-item" data-gesture="drag">
+                    <div class="gesture-icon">👆➡️</div>
+                    <div>Drag</div>
+                </div>
+                <div class="gesture-item" data-gesture="pinch">
+                    <div class="gesture-icon">🤏</div>
+                    <div>Pinch</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Mobile Chess Demo</h2>
+            <p>Select pieces and place them on the board:</p>
+            
+            <div class="demo-palette">
+                <div class="demo-piece" data-piece="K">♔</div>
+                <div class="demo-piece" data-piece="Q">♕</div>
+                <div class="demo-piece" data-piece="R">♖</div>
+                <div class="demo-piece" data-piece="B">♗</div>
+                <div class="demo-piece" data-piece="N">♘</div>
+                <div class="demo-piece" data-piece="P">♙</div>
+            </div>
+            
+            <div class="mobile-demo-board" id="demoBoard">
+                <!-- Board squares will be generated by JavaScript -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="test-button" onclick="clearDemoBoard()">🗑️ Clear Board</button>
+                <button class="test-button" onclick="testHapticFeedback()">📳 Test Haptic</button>
+                <button class="test-button" onclick="toggleMobileMode()">📱 Toggle Mobile Mode</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Test Controls</h2>
+            <div style="text-align: center;">
+                <button class="test-button" onclick="testTouchEvents()">Test Touch Events</button>
+                <button class="test-button" onclick="testGestureRecognition()">Test Gestures</button>
+                <button class="test-button" onclick="testHapticPatterns()">Test Haptic Patterns</button>
+                <button class="test-button" onclick="testUIAdaptations()">Test UI Adaptations</button>
+                <button class="test-button" onclick="simulateOrientationChange()">Rotate Device</button>
+                <button class="test-button" onclick="clearLog()">Clear Log</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Event Log</h2>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry">
+                    <span class="log-timestamp">[00:00:00]</span>
+                    <span>Mobile Optimization Manager Test Started</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/enhanced-drag-drop.js"></script>
+    <script src="js/mobile-optimization-manager.js"></script>
+    
+    <script>
+        // Global variables
+        let mobileManager;
+        let enhancedUI;
+        let dragDropSystem;
+        let selectedDemoPiece = null;
+        let demoBoard = Array(4).fill().map(() => Array(4).fill(null));
+        
+        // Mock global variables for compatibility
+        window.setupBoard = Array(5).fill().map(() => Array(4).fill(null));
+        window.selectedPalettePiece = null;
+        window.TASLAR = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+        
+        // Mock functions
+        window.drawSetupBoard = function() {
+            log('drawSetupBoard called');
+        };
+        
+        // Initialize the test
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTest();
+        });
+        
+        function initializeTest() {
+            log('Initializing Mobile Optimization Manager Test...');
+            
+            // Initialize enhanced UI
+            enhancedUI = new EnhancedPieceSetupUI();
+            
+            // Initialize drag & drop system
+            dragDropSystem = new EnhancedDragDropSystem(enhancedUI);
+            
+            // Initialize mobile optimization manager
+            mobileManager = new MobileOptimizationManager(enhancedUI, dragDropSystem);
+            
+            // Update device information
+            updateDeviceInfo();
+            
+            // Generate demo board
+            generateDemoBoard();
+            
+            // Setup demo event listeners
+            setupDemoEventListeners();
+            
+            log('Mobile Optimization Manager initialized successfully');
+        }
+        
+        function updateDeviceInfo() {
+            const status = mobileManager.getOptimizationStatus();
+            
+            // Update status indicators
+            document.getElementById('touchStatus').className = 
+                'status-indicator ' + (status.hasTouch ? 'status-active' : 'status-inactive');
+            document.getElementById('hapticStatus').className = 
+                'status-indicator ' + (status.hasHaptic ? 'status-active' : 'status-inactive');
+            document.getElementById('mobileStatus').className = 
+                'status-indicator ' + (status.isActive ? 'status-active' : 'status-inactive');
+            
+            // Update text content
+            document.getElementById('touchSupport').textContent = status.hasTouch ? 'Yes' : 'No';
+            document.getElementById('hapticSupport').textContent = status.hasHaptic ? 'Yes' : 'No';
+            document.getElementById('mobileDevice').textContent = status.isActive ? 'Yes' : 'No';
+            document.getElementById('screenSize').textContent = 
+                `${window.screen.width}x${window.screen.height} (${window.devicePixelRatio || 1}x)`;
+            document.getElementById('deviceType').textContent = status.deviceType || 'Unknown';
+            document.getElementById('orientation').textContent = 
+                screen.orientation?.type || window.orientation || 'Unknown';
+        }
+        
+        function generateDemoBoard() {
+            const boardElement = document.getElementById('demoBoard');
+            boardElement.innerHTML = '';
+            
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement('div');
+                    square.className = 'demo-square';
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    square.textContent = demoBoard[row][col] || '';
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+        
+        function setupDemoEventListeners() {
+            // Demo piece selection
+            document.querySelectorAll('.demo-piece').forEach(piece => {
+                piece.addEventListener('click', function() {
+                    // Remove previous selection
+                    document.querySelectorAll('.demo-piece.selected').forEach(p => {
+                        p.classList.remove('selected');
+                    });
+                    
+                    // Select current piece
+                    this.classList.add('selected');
+                    selectedDemoPiece = this.dataset.piece;
+                    
+                    log(`Selected demo piece: ${selectedDemoPiece}`);
+                    
+                    // Trigger haptic feedback
+                    if (mobileManager) {
+                        mobileManager.triggerHapticFeedback('selection');
+                    }
+                });
+                
+                // Double tap for quick placement
+                let lastTap = 0;
+                piece.addEventListener('touchstart', function(e) {
+                    const currentTime = Date.now();
+                    if (currentTime - lastTap < 300) {
+                        e.preventDefault();
+                        quickPlacePiece(this.dataset.piece);
+                        log(`Quick placement: ${this.dataset.piece}`);
+                    }
+                    lastTap = currentTime;
+                });
+            });
+            
+            // Demo board interaction
+            document.querySelectorAll('.demo-square').forEach(square => {
+                square.addEventListener('click', function() {
+                    if (selectedDemoPiece) {
+                        const row = parseInt(this.dataset.row);
+                        const col = parseInt(this.dataset.col);
+                        
+                        // Place piece
+                        demoBoard[row][col] = selectedDemoPiece;
+                        this.textContent = TASLAR[selectedDemoPiece];
+                        
+                        log(`Placed ${selectedDemoPiece} at ${row},${col}`);
+                        
+                        // Trigger haptic feedback
+                        if (mobileManager) {
+                            mobileManager.triggerHapticFeedback('success');
+                        }
+                    }
+                });
+                
+                // Double tap to clear
+                let lastTap = 0;
+                square.addEventListener('touchstart', function(e) {
+                    const currentTime = Date.now();
+                    if (currentTime - lastTap < 300) {
+                        e.preventDefault();
+                        const row = parseInt(this.dataset.row);
+                        const col = parseInt(this.dataset.col);
+                        
+                        if (demoBoard[row][col]) {
+                            demoBoard[row][col] = null;
+                            this.textContent = '';
+                            log(`Cleared square ${row},${col}`);
+                            
+                            // Trigger haptic feedback
+                            if (mobileManager) {
+                                mobileManager.triggerHapticFeedback('warning');
+                            }
+                        }
+                    }
+                    lastTap = currentTime;
+                });
+            });
+            
+            // Gesture demo items
+            document.querySelectorAll('.gesture-item').forEach(item => {
+                const gestureType = item.dataset.gesture;
+                
+                item.addEventListener('click', function() {
+                    testGesture(gestureType);
+                });
+                
+                // Long press detection
+                let longPressTimer;
+                item.addEventListener('touchstart', function(e) {
+                    if (gestureType === 'longPress') {
+                        longPressTimer = setTimeout(() => {
+                            testGesture('longPress');
+                        }, 500);
+                    }
+                });
+                
+                item.addEventListener('touchend', function() {
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                    }
+                });
+            });
+        }
+        
+        function testGesture(gestureType) {
+            log(`Testing gesture: ${gestureType}`);
+            
+            if (mobileManager) {
+                mobileManager.triggerHapticFeedback(gestureType);
+            }
+            
+            // Visual feedback
+            const gestureItem = document.querySelector(`[data-gesture="${gestureType}"]`);
+            if (gestureItem) {
+                gestureItem.style.transform = 'scale(1.1)';
+                gestureItem.style.background = 'rgba(79, 70, 229, 0.4)';
+                
+                setTimeout(() => {
+                    gestureItem.style.transform = '';
+                    gestureItem.style.background = '';
+                }, 300);
+            }
+        }
+        
+        function quickPlacePiece(pieceType) {
+            // Find first empty square
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (!demoBoard[row][col]) {
+                        demoBoard[row][col] = pieceType;
+                        const square = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                        if (square) {
+                            square.textContent = TASLAR[pieceType];
+                        }
+                        
+                        // Trigger haptic feedback
+                        if (mobileManager) {
+                            mobileManager.triggerHapticFeedback('success');
+                        }
+                        
+                        return;
+                    }
+                }
+            }
+            
+            log('No empty squares available for quick placement');
+            if (mobileManager) {
+                mobileManager.triggerHapticFeedback('error');
+            }
+        }
+        
+        function clearDemoBoard() {
+            demoBoard = Array(4).fill().map(() => Array(4).fill(null));
+            generateDemoBoard();
+            setupDemoEventListeners();
+            log('Demo board cleared');
+            
+            if (mobileManager) {
+                mobileManager.triggerHapticFeedback('warning');
+            }
+        }
+        
+        function testTouchEvents() {
+            log('Testing touch events...');
+            
+            if (!mobileManager.deviceCapabilities.hasTouch) {
+                log('Touch not supported on this device');
+                return;
+            }
+            
+            // Simulate touch events
+            const testElement = document.querySelector('.demo-piece');
+            if (testElement) {
+                const touchEvent = new TouchEvent('touchstart', {
+                    touches: [{
+                        clientX: 100,
+                        clientY: 100,
+                        target: testElement
+                    }]
+                });
+                
+                testElement.dispatchEvent(touchEvent);
+                log('Touch event simulated');
+            }
+        }
+        
+        function testGestureRecognition() {
+            log('Testing gesture recognition...');
+            
+            const gestures = ['tap', 'doubleTap', 'longPress', 'drag', 'pinch'];
+            gestures.forEach((gesture, index) => {
+                setTimeout(() => {
+                    testGesture(gesture);
+                }, index * 500);
+            });
+        }
+        
+        function testHapticFeedback() {
+            log('Testing haptic feedback...');
+            
+            if (!mobileManager.deviceCapabilities.hasHaptic) {
+                log('Haptic feedback not supported on this device');
+                return;
+            }
+            
+            mobileManager.triggerHapticFeedback('tap');
+            log('Haptic feedback triggered');
+        }
+        
+        function testHapticPatterns() {
+            log('Testing all haptic patterns...');
+            
+            if (!mobileManager.deviceCapabilities.hasHaptic) {
+                log('Haptic feedback not supported on this device');
+                return;
+            }
+            
+            const patterns = ['tap', 'doubleTap', 'longPress', 'success', 'error', 'warning', 'selection', 'drag', 'drop', 'invalid'];
+            patterns.forEach((pattern, index) => {
+                setTimeout(() => {
+                    mobileManager.triggerHapticFeedback(pattern);
+                    log(`Haptic pattern: ${pattern}`);
+                }, index * 800);
+            });
+        }
+        
+        function testUIAdaptations() {
+            log('Testing UI adaptations...');
+            
+            if (mobileManager.deviceCapabilities.isMobile) {
+                mobileManager.adaptUIForMobile();
+                log('Mobile UI adaptations applied');
+            } else {
+                log('Not a mobile device - UI adaptations not needed');
+            }
+        }
+        
+        function simulateOrientationChange() {
+            log('Simulating orientation change...');
+            
+            // Simulate orientation change
+            const orientationEvent = new Event('orientationchange');
+            window.dispatchEvent(orientationEvent);
+            
+            setTimeout(() => {
+                updateDeviceInfo();
+                log('Orientation change handled');
+            }, 100);
+        }
+        
+        function toggleMobileMode() {
+            log('Toggling mobile mode...');
+            
+            // Toggle mobile device detection
+            mobileManager.deviceCapabilities.isMobile = !mobileManager.deviceCapabilities.isMobile;
+            
+            if (mobileManager.deviceCapabilities.isMobile) {
+                mobileManager.adaptUIForMobile();
+                log('Mobile mode enabled');
+            } else {
+                log('Mobile mode disabled');
+            }
+            
+            updateDeviceInfo();
+        }
+        
+        function clearLog() {
+            const logContainer = document.getElementById('logContainer');
+            logContainer.innerHTML = '<div class="log-entry"><span class="log-timestamp">[00:00:00]</span><span>Log cleared</span></div>';
+        }
+        
+        function log(message) {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span>${message}</span>
+            `;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[Mobile Test] ${message}`);
+        }
+        
+        // Handle orientation changes
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                updateDeviceInfo();
+                log('Device orientation changed');
+            }, 100);
+        });
+        
+        // Handle visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                log('App hidden - pausing optimizations');
+            } else {
+                log('App visible - resuming optimizations');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Position Analyzer Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        .square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid #333;
+        }
+        .light { background: #f0d9b5; }
+        .dark { background: #b58863; }
+        .analysis-result {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .error {
+            background: #ffe8e8;
+            border-left-color: #f44336;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .stat-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Advanced Position Analyzer Test</h1>
+        <p>Testing the Advanced Position Analyzer class for 4x5 chess positions.</p>
+        
+        <div class="test-section">
+            <div class="test-title">Test Position 1: Starting Position</div>
+            <div id="board1" class="test-board"></div>
+            <button onclick="testPosition1()">Analyze Starting Position</button>
+            <div id="result1" class="analysis-result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">Test Position 2: Endgame Position</div>
+            <div id="board2" class="test-board"></div>
+            <button onclick="testPosition2()">Analyze Endgame Position</button>
+            <div id="result2" class="analysis-result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">Test Position 3: Tactical Position</div>
+            <div id="board3" class="test-board"></div>
+            <button onclick="testPosition3()">Analyze Tactical Position</button>
+            <div id="result3" class="analysis-result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">Performance Test</div>
+            <button onclick="performanceTest()">Run Performance Test</button>
+            <div id="performanceResult" class="analysis-result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script>
+        const PIECES = {
+            K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
+            k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
+        };
+
+        let analyzer = new AdvancedPositionAnalyzer();
+
+        // Test positions
+        const testPositions = {
+            starting: [
+                ["r", "q", "k", "r"],
+                ["p", "p", "p", "p"],
+                [null, null, null, null],
+                ["P", "P", "P", "P"],
+                ["R", "Q", "K", "R"]
+            ],
+            endgame: [
+                [null, null, "k", null],
+                [null, null, null, null],
+                [null, null, null, null],
+                ["P", null, null, null],
+                ["R", null, "K", null]
+            ],
+            tactical: [
+                [null, "q", "k", null],
+                [null, "p", null, "p"],
+                [null, null, "Q", null],
+                [null, "P", null, "P"],
+                [null, null, "K", null]
+            ]
+        };
+
+        function drawBoard(boardId, position) {
+            const board = document.getElementById(boardId);
+            board.innerHTML = '';
+            
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const square = document.createElement('div');
+                    square.className = 'square ' + ((row + col) % 2 === 0 ? 'light' : 'dark');
+                    
+                    const piece = position[row][col];
+                    if (piece) {
+                        square.textContent = PIECES[piece] || piece;
+                    }
+                    
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        function displayAnalysis(resultId, analysis) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.style.display = 'block';
+            
+            if (analysis.error) {
+                resultDiv.className = 'analysis-result error';
+                resultDiv.innerHTML = `<strong>Error:</strong> ${analysis.message}`;
+                return;
+            }
+            
+            resultDiv.className = 'analysis-result';
+            
+            const html = `
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Material Balance</div>
+                        <div class="stat-value">${analysis.materialBalance.balance > 0 ? '+' : ''}${analysis.materialBalance.balance}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">White Activity</div>
+                        <div class="stat-value">${analysis.pieceActivity.white.mobilePieces} pieces</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Black Activity</div>
+                        <div class="stat-value">${analysis.pieceActivity.black.mobilePieces} pieces</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Center Control</div>
+                        <div class="stat-value">${analysis.centerControl.white}-${analysis.centerControl.black}</div>
+                    </div>
+                </div>
+                
+                <div><strong>Position Type:</strong> ${analysis.positionType.replace(/_/g, ' ')}</div>
+                
+                <div><strong>King Safety:</strong></div>
+                <ul>
+                    <li>White King: ${analysis.kingSafety.white.status} ${analysis.kingSafety.white.inCheck ? '(IN CHECK)' : ''} - ${analysis.kingSafety.white.escapeSquares} escape squares</li>
+                    <li>Black King: ${analysis.kingSafety.black.status} ${analysis.kingSafety.black.inCheck ? '(IN CHECK)' : ''} - ${analysis.kingSafety.black.escapeSquares} escape squares</li>
+                </ul>
+                
+                ${analysis.recommendations.length > 0 ? `
+                <div><strong>Recommendations:</strong></div>
+                <ul>
+                    ${analysis.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+                ` : ''}
+            `;
+            
+            resultDiv.innerHTML = html;
+        }
+
+        function testPosition1() {
+            console.log('Testing starting position...');
+            drawBoard('board1', testPositions.starting);
+            const analysis = analyzer.analyzePosition(testPositions.starting);
+            console.log('Starting position analysis:', analysis);
+            displayAnalysis('result1', analysis);
+        }
+
+        function testPosition2() {
+            console.log('Testing endgame position...');
+            drawBoard('board2', testPositions.endgame);
+            const analysis = analyzer.analyzePosition(testPositions.endgame);
+            console.log('Endgame position analysis:', analysis);
+            displayAnalysis('result2', analysis);
+        }
+
+        function testPosition3() {
+            console.log('Testing tactical position...');
+            drawBoard('board3', testPositions.tactical);
+            const analysis = analyzer.analyzePosition(testPositions.tactical);
+            console.log('Tactical position analysis:', analysis);
+            displayAnalysis('result3', analysis);
+        }
+
+        function performanceTest() {
+            console.log('Running performance test...');
+            const iterations = 100;
+            const startTime = performance.now();
+            
+            for (let i = 0; i < iterations; i++) {
+                analyzer.analyzePosition(testPositions.starting);
+                analyzer.analyzePosition(testPositions.endgame);
+                analyzer.analyzePosition(testPositions.tactical);
+            }
+            
+            const endTime = performance.now();
+            const totalTime = endTime - startTime;
+            const avgTime = totalTime / (iterations * 3);
+            
+            const resultDiv = document.getElementById('performanceResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>Performance Test Results:</strong><br>
+                Total time: ${totalTime.toFixed(2)}ms<br>
+                Average time per analysis: ${avgTime.toFixed(2)}ms<br>
+                Analyses per second: ${(1000 / avgTime).toFixed(0)}<br>
+                Cache size: ${analyzer.getCacheStats().size}
+            `;
+            
+            console.log('Performance test completed:', {
+                totalTime,
+                avgTime,
+                analysesPerSecond: 1000 / avgTime,
+                cacheSize: analyzer.getCacheStats().size
+            });
+        }
+
+        // Initialize boards on load
+        window.onload = function() {
+            drawBoard('board1', testPositions.starting);
+            drawBoard('board2', testPositions.endgame);
+            drawBoard('board3', testPositions.tactical);
+            
+            console.log('Advanced Position Analyzer Test initialized');
+            console.log('Analyzer instance:', analyzer);
+        };
+    </script>
+</body>
+</html>

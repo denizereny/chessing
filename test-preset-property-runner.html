@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preset System Property-Based Tests</title>
+    <style>
+        body {
+            font-family: 'Consolas', 'Monaco', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .test-output {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #444;
+        }
+        .summary {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .info { color: #2196F3; }
+        .warning { color: #ff9800; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .progress {
+            background: #333;
+            border-radius: 4px;
+            padding: 3px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            background: #4CAF50;
+            height: 20px;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Preset System Property-Based Tests</h1>
+        <p>Testing Properties 3, 4, and 5 for Enhanced Piece Setup</p>
+        <p><strong>Task:</strong> 2.3 Preset sistem testlerini yaz</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Test Controls</h2>
+        <button onclick="runAllTests()" id="runAllBtn">Run All Property Tests</button>
+        <button onclick="runProperty3()" id="runProp3Btn">Property 3: Kategori Organizasyonu</button>
+        <button onclick="runProperty4()" id="runProp4Btn">Property 4: Yükleme ve Analiz</button>
+        <button onclick="runProperty5()" id="runProp5Btn">Property 5: Kullanıcı Yönetimi</button>
+        <button onclick="clearOutput()">Clear Output</button>
+        
+        <div class="progress" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Output</h2>
+        <div class="test-output" id="testOutput">Ready to run tests...</div>
+    </div>
+
+    <div class="summary" id="summarySection" style="display: none;">
+        <h2>📈 Test Summary</h2>
+        <div id="summaryContent"></div>
+    </div>
+
+    <script src="js/extended-preset-manager.js"></script>
+    <script src="test/extended-preset-manager-property-tests.js"></script>
+    <script>
+        let testOutput = document.getElementById('testOutput');
+        let isRunning = false;
+
+        // Override console.log to capture output
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            testOutput.textContent += message + '\n';
+            testOutput.scrollTop = testOutput.scrollHeight;
+        };
+
+        function clearOutput() {
+            testOutput.textContent = 'Output cleared...\n';
+            document.getElementById('summarySection').style.display = 'none';
+        }
+
+        function setButtonsDisabled(disabled) {
+            const buttons = ['runAllBtn', 'runProp3Btn', 'runProp4Btn', 'runProp5Btn'];
+            buttons.forEach(id => {
+                document.getElementById(id).disabled = disabled;
+            });
+            isRunning = disabled;
+        }
+
+        function showProgress(show, percent = 0) {
+            const container = document.getElementById('progressContainer');
+            const bar = document.getElementById('progressBar');
+            
+            if (show) {
+                container.style.display = 'block';
+                bar.style.width = percent + '%';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function showSummary(summary) {
+            const section = document.getElementById('summarySection');
+            const content = document.getElementById('summaryContent');
+            
+            let html = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                    <div style="background: #3a3a3a; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #4CAF50;">${summary.total}</div>
+                        <div style="color: #ccc;">Total Tests</div>
+                    </div>
+                    <div style="background: #3a3a3a; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #4CAF50;">${summary.passed}</div>
+                        <div style="color: #ccc;">Passed</div>
+                    </div>
+                    <div style="background: #3a3a3a; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #f44336;">${summary.failed}</div>
+                        <div style="color: #ccc;">Failed</div>
+                    </div>
+                    <div style="background: #3a3a3a; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #2196F3;">${summary.totalIterations}</div>
+                        <div style="color: #ccc;">Total Iterations</div>
+                    </div>
+                </div>
+            `;
+
+            if (summary.failed > 0) {
+                html += '<h3 style="color: #f44336;">❌ Failed Tests:</h3><ul>';
+                summary.results.filter(r => !r.success).forEach(result => {
+                    html += `<li style="color: #f44336; margin: 5px 0;">${result.name}`;
+                    if (result.error) {
+                        html += ` - Error: ${result.error}`;
+                    }
+                    html += '</li>';
+                });
+                html += '</ul>';
+            }
+
+            const successRate = summary.total > 0 ? ((summary.passed / summary.total) * 100).toFixed(1) : 0;
+            html += `<p><strong>Success Rate:</strong> ${successRate}%</p>`;
+
+            content.innerHTML = html;
+            section.style.display = 'block';
+        }
+
+        async function runAllTests() {
+            if (isRunning) return;
+            
+            setButtonsDisabled(true);
+            clearOutput();
+            showProgress(true, 0);
+            
+            console.log('🚀 Starting All Preset Property-Based Tests');
+            console.log('=' .repeat(70));
+            
+            try {
+                showProgress(true, 25);
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                showProgress(true, 50);
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                showProgress(true, 75);
+                const summary = runAllPresetPropertyTests();
+                
+                showProgress(true, 100);
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                showProgress(false);
+                showSummary(summary);
+                
+            } catch (error) {
+                console.log('❌ Error running all tests:', error.message);
+                console.error(error);
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        async function runProperty3() {
+            if (isRunning) return;
+            
+            setButtonsDisabled(true);
+            clearOutput();
+            showProgress(true, 0);
+            
+            console.log('📁 Running Property 3: Preset Kategori Organizasyonu');
+            console.log('=' .repeat(50));
+            
+            try {
+                showProgress(true, 50);
+                const results = testPresetCategoryOrganization();
+                
+                showProgress(true, 100);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                showProgress(false);
+                
+                const passed = results.filter(r => r.success).length;
+                const total = results.length;
+                console.log(`\n✅ Property 3 completed: ${passed}/${total} tests passed`);
+                
+            } catch (error) {
+                console.log('❌ Error running Property 3:', error.message);
+                console.error(error);
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        async function runProperty4() {
+            if (isRunning) return;
+            
+            setButtonsDisabled(true);
+            clearOutput();
+            showProgress(true, 0);
+            
+            console.log('⚡ Running Property 4: Preset Yükleme ve Analiz');
+            console.log('=' .repeat(50));
+            
+            try {
+                showProgress(true, 50);
+                const results = testPresetLoadingAndAnalysis();
+                
+                showProgress(true, 100);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                showProgress(false);
+                
+                const passed = results.filter(r => r.success).length;
+                const total = results.length;
+                console.log(`\n✅ Property 4 completed: ${passed}/${total} tests passed`);
+                
+            } catch (error) {
+                console.log('❌ Error running Property 4:', error.message);
+                console.error(error);
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        async function runProperty5() {
+            if (isRunning) return;
+            
+            setButtonsDisabled(true);
+            clearOutput();
+            showProgress(true, 0);
+            
+            console.log('👤 Running Property 5: Kullanıcı Preset Yönetimi');
+            console.log('=' .repeat(50));
+            
+            try {
+                showProgress(true, 50);
+                const results = testUserPresetManagement();
+                
+                showProgress(true, 100);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                showProgress(false);
+                
+                const passed = results.filter(r => r.success).length;
+                const total = results.length;
+                console.log(`\n✅ Property 5 completed: ${passed}/${total} tests passed`);
+                
+            } catch (error) {
+                console.log('❌ Error running Property 5:', error.message);
+                console.error(error);
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            console.log('🎯 Preset Property-Based Test Runner Ready');
+            console.log('Click "Run All Property Tests" to start testing...\n');
+        };
+    </script>
+</body>
+</html>

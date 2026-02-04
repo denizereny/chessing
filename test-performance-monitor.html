@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Monitor Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        .test-section {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #444;
+        }
+        
+        .test-button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .test-button:hover {
+            background: #4338ca;
+        }
+        
+        .test-button:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            background: #1f2937;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .performance-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #374151;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+        
+        .target-status {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .target-met {
+            background: #10b981;
+            color: white;
+        }
+        
+        .target-missed {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+        }
+        
+        .log-success { color: #10b981; }
+        .log-warning { color: #f59e0b; }
+        .log-error { color: #ef4444; }
+        .log-info { color: #06b6d4; }
+    </style>
+</head>
+<body>
+    <h1>⚡ Performance Monitor Test</h1>
+    <p>Test the performance monitoring system for enhanced piece setup operations.</p>
+    
+    <div class="test-section">
+        <h2>🎯 Performance Targets</h2>
+        <div class="performance-stats">
+            <div class="stat-card">
+                <div class="stat-value">16ms</div>
+                <div class="stat-label">Drag Operations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">500ms</div>
+                <div class="stat-label">Analysis Operations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">200ms</div>
+                <div class="stat-label">Preset Loading</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test Operations</h2>
+        <button class="test-button" onclick="testDragOperation()">Test Drag Operation</button>
+        <button class="test-button" onclick="testAnalysisOperation()">Test Analysis Operation</button>
+        <button class="test-button" onclick="testPresetLoading()">Test Preset Loading</button>
+        <button class="test-button" onclick="testMultipleOperations()">Test Multiple Operations</button>
+        <button class="test-button" onclick="testSlowOperations()">Test Slow Operations</button>
+        <button class="test-button" onclick="clearResults()">Clear Results</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Current Statistics</h2>
+        <div class="performance-stats" id="currentStats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalOperations">0</div>
+                <div class="stat-label">Total Operations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgDragTime">0ms</div>
+                <div class="stat-label">Avg Drag Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgAnalysisTime">0ms</div>
+                <div class="stat-label">Avg Analysis Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgPresetTime">0ms</div>
+                <div class="stat-label">Avg Preset Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="performanceIssues">0</div>
+                <div class="stat-label">Performance Issues</div>
+            </div>
+        </div>
+        <button class="test-button" onclick="updateStats()">Update Stats</button>
+        <button class="test-button" onclick="generateReport()">Generate Report</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 Test Results</h2>
+        <div class="results" id="testResults"></div>
+    </div>
+    
+    <!-- Include required scripts -->
+    <script src="js/performance-monitor.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/extended-preset-manager.js"></script>
+    
+    <script>
+        let performanceMonitor;
+        let advancedPositionAnalyzer;
+        let extendedPresetManager;
+        
+        // Test position for analysis
+        const testPosition = [
+            ["r", "q", "k", "r"],
+            ["p", "p", "p", "p"],
+            [null, null, null, null],
+            ["P", "P", "P", "P"],
+            ["R", "Q", "K", "R"]
+        ];
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('testResults');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(entry);
+            results.scrollTop = results.scrollHeight;
+            console.log(message);
+        }
+        
+        function initializeComponents() {
+            try {
+                // Initialize Performance Monitor
+                if (typeof PerformanceMonitor !== 'undefined') {
+                    performanceMonitor = new PerformanceMonitor();
+                    log('✅ Performance Monitor initialized', 'success');
+                } else {
+                    log('❌ PerformanceMonitor class not found', 'error');
+                    return false;
+                }
+                
+                // Initialize Advanced Position Analyzer
+                if (typeof AdvancedPositionAnalyzer !== 'undefined') {
+                    advancedPositionAnalyzer = new AdvancedPositionAnalyzer();
+                    log('✅ Advanced Position Analyzer initialized', 'success');
+                } else {
+                    log('⚠️ AdvancedPositionAnalyzer not available', 'warning');
+                }
+                
+                // Initialize Extended Preset Manager
+                if (typeof ExtendedPresetManager !== 'undefined') {
+                    extendedPresetManager = new ExtendedPresetManager();
+                    log('✅ Extended Preset Manager initialized', 'success');
+                } else {
+                    log('⚠️ ExtendedPresetManager not available', 'warning');
+                }
+                
+                return true;
+            } catch (error) {
+                log(`❌ Initialization failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        async function testDragOperation() {
+            if (!performanceMonitor) {
+                log('❌ Performance Monitor not available', 'error');
+                return;
+            }
+            
+            log('🎯 Testing drag operation...', 'info');
+            
+            try {
+                const { result, measurement } = await performanceMonitor.measureDragOperation(
+                    () => {
+                        // Simulate drag operation
+                        const startTime = performance.now();
+                        while (performance.now() - startTime < Math.random() * 20) {
+                            // Simulate work
+                        }
+                        return { success: true, operation: 'drag-test' };
+                    },
+                    { testType: 'simulated-drag', element: 'test-piece' }
+                );
+                
+                const duration = measurement.duration.toFixed(2);
+                const target = performanceMonitor.targets.dragOperation;
+                const status = measurement.withinTarget ? '✅' : '❌';
+                
+                log(`${status} Drag operation: ${duration}ms (target: ${target}ms)`, 
+                    measurement.withinTarget ? 'success' : 'warning');
+                
+            } catch (error) {
+                log(`❌ Drag test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAnalysisOperation() {
+            if (!performanceMonitor || !advancedPositionAnalyzer) {
+                log('❌ Required components not available', 'error');
+                return;
+            }
+            
+            log('🧠 Testing analysis operation...', 'info');
+            
+            try {
+                const { result, measurement } = await performanceMonitor.measureAnalysisOperation(
+                    () => advancedPositionAnalyzer.analyzePosition(testPosition),
+                    { positionType: 'starting-position' }
+                );
+                
+                const duration = measurement.duration.toFixed(2);
+                const target = performanceMonitor.targets.analysisOperation;
+                const status = measurement.withinTarget ? '✅' : '❌';
+                
+                log(`${status} Analysis operation: ${duration}ms (target: ${target}ms)`, 
+                    measurement.withinTarget ? 'success' : 'warning');
+                
+                if (result && !result.error) {
+                    log(`📊 Analysis result: ${result.positionType}`, 'info');
+                }
+                
+            } catch (error) {
+                log(`❌ Analysis test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testPresetLoading() {
+            if (!performanceMonitor || !extendedPresetManager) {
+                log('❌ Required components not available', 'error');
+                return;
+            }
+            
+            log('📂 Testing preset loading...', 'info');
+            
+            try {
+                const { result, measurement } = await performanceMonitor.measurePresetLoading(
+                    () => {
+                        const preset = extendedPresetManager.getPresetById('opening-1');
+                        // Simulate loading work
+                        const startTime = performance.now();
+                        while (performance.now() - startTime < Math.random() * 100) {
+                            // Simulate work
+                        }
+                        return preset;
+                    },
+                    { presetId: 'opening-1' }
+                );
+                
+                const duration = measurement.duration.toFixed(2);
+                const target = performanceMonitor.targets.presetLoading;
+                const status = measurement.withinTarget ? '✅' : '❌';
+                
+                log(`${status} Preset loading: ${duration}ms (target: ${target}ms)`, 
+                    measurement.withinTarget ? 'success' : 'warning');
+                
+                if (result) {
+                    log(`📂 Loaded preset: ${result.name}`, 'info');
+                }
+                
+            } catch (error) {
+                log(`❌ Preset loading test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testMultipleOperations() {
+            log('🔄 Testing multiple operations...', 'info');
+            
+            const operations = [
+                () => testDragOperation(),
+                () => testAnalysisOperation(),
+                () => testPresetLoading()
+            ];
+            
+            for (let i = 0; i < 3; i++) {
+                log(`🔄 Running operation set ${i + 1}/3...`, 'info');
+                
+                for (const operation of operations) {
+                    await operation();
+                    // Small delay between operations
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+            
+            log('✅ Multiple operations test completed', 'success');
+        }
+        
+        async function testSlowOperations() {
+            if (!performanceMonitor) {
+                log('❌ Performance Monitor not available', 'error');
+                return;
+            }
+            
+            log('🐌 Testing slow operations (intentionally exceeding targets)...', 'info');
+            
+            // Test slow drag operation
+            try {
+                const { result, measurement } = await performanceMonitor.measureDragOperation(
+                    () => {
+                        // Intentionally slow operation
+                        const startTime = performance.now();
+                        while (performance.now() - startTime < 50) {
+                            // Simulate slow work
+                        }
+                        return { success: true, operation: 'slow-drag' };
+                    },
+                    { testType: 'intentionally-slow-drag' }
+                );
+                
+                const duration = measurement.duration.toFixed(2);
+                log(`🐌 Slow drag operation: ${duration}ms (should exceed 16ms target)`, 'warning');
+                
+            } catch (error) {
+                log(`❌ Slow drag test failed: ${error.message}`, 'error');
+            }
+            
+            // Test slow analysis if available
+            if (advancedPositionAnalyzer) {
+                try {
+                    const { result, measurement } = await performanceMonitor.measureAnalysisOperation(
+                        () => {
+                            // Run analysis multiple times to make it slower
+                            let result;
+                            for (let i = 0; i < 10; i++) {
+                                result = advancedPositionAnalyzer.analyzePosition(testPosition);
+                            }
+                            return result;
+                        },
+                        { testType: 'intentionally-slow-analysis' }
+                    );
+                    
+                    const duration = measurement.duration.toFixed(2);
+                    log(`🐌 Slow analysis operation: ${duration}ms`, 'warning');
+                    
+                } catch (error) {
+                    log(`❌ Slow analysis test failed: ${error.message}`, 'error');
+                }
+            }
+        }
+        
+        function updateStats() {
+            if (!performanceMonitor) {
+                log('❌ Performance Monitor not available', 'error');
+                return;
+            }
+            
+            const stats = performanceMonitor.getStatistics();
+            
+            document.getElementById('totalOperations').textContent = 
+                stats.totalDragOperations + stats.totalAnalysisOperations + stats.totalPresetLoads;
+            
+            document.getElementById('avgDragTime').textContent = 
+                stats.averageDragTime.toFixed(2) + 'ms';
+            
+            document.getElementById('avgAnalysisTime').textContent = 
+                stats.averageAnalysisTime.toFixed(2) + 'ms';
+            
+            document.getElementById('avgPresetTime').textContent = 
+                stats.averagePresetTime.toFixed(2) + 'ms';
+            
+            document.getElementById('performanceIssues').textContent = 
+                stats.performanceIssues.length;
+            
+            log('📊 Statistics updated', 'info');
+        }
+        
+        function generateReport() {
+            if (!performanceMonitor) {
+                log('❌ Performance Monitor not available', 'error');
+                return;
+            }
+            
+            const report = performanceMonitor.generateReport();
+            
+            log('📋 Performance Report Generated:', 'info');
+            log(`Total Operations: ${report.summary.totalOperations}`, 'info');
+            log(`Average Times - Drag: ${report.summary.averageTimes.drag}, Analysis: ${report.summary.averageTimes.analysis}, Preset: ${report.summary.averageTimes.preset}`, 'info');
+            log(`Performance Issues: ${report.summary.performanceIssues}`, 'info');
+            log(`Targets Status - Drag: ${report.summary.targetsStatus.drag}, Analysis: ${report.summary.targetsStatus.analysis}, Preset: ${report.summary.targetsStatus.preset}`, 'info');
+            
+            if (report.recentIssues.length > 0) {
+                log(`Recent Issues: ${report.recentIssues.length}`, 'warning');
+                report.recentIssues.slice(0, 3).forEach(issue => {
+                    log(`  - ${issue.type}: ${issue.duration.toFixed(2)}ms (target: ${issue.target}ms)`, 'warning');
+                });
+            }
+            
+            // Also log to console for detailed inspection
+            console.log('Full Performance Report:', report);
+        }
+        
+        function clearResults() {
+            document.getElementById('testResults').innerHTML = '';
+            
+            if (performanceMonitor) {
+                performanceMonitor.clearData();
+                updateStats();
+                log('🧹 Results and performance data cleared', 'info');
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            log('🚀 Performance Monitor Test Page Loaded', 'info');
+            
+            if (initializeComponents()) {
+                log('✅ All components initialized successfully', 'success');
+                updateStats();
+            } else {
+                log('❌ Component initialization failed', 'error');
+            }
+        });
+        
+        // Auto-update stats every 5 seconds
+        setInterval(() => {
+            if (performanceMonitor) {
+                updateStats();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

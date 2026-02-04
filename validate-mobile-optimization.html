@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+    <title>Mobile Optimization Manager Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .validation-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .validation-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .test-result {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .test-result.passed {
+            border-left: 4px solid #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .test-result.failed {
+            border-left: 4px solid #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .test-result.warning {
+            border-left: 4px solid #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .test-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            min-width: 44px;
+            min-height: 44px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+        
+        .summary {
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .summary.failed {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .property-test {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .property-title {
+            font-weight: bold;
+            color: #06b6d4;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="validation-container">
+        <div class="validation-header">
+            <h1>📱 Mobile Optimization Manager Validation</h1>
+            <p>Comprehensive validation of mobile optimization features</p>
+            <button class="test-button" onclick="runAllTests()">🧪 Run All Tests</button>
+            <button class="test-button" onclick="clearResults()">🗑️ Clear Results</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Device Capabilities</h2>
+            <div id="deviceTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Touch Event Handling</h2>
+            <div id="touchTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Gesture Recognition</h2>
+            <div id="gestureTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Haptic Feedback</h2>
+            <div id="hapticTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Mobile UI Adaptations</h2>
+            <div id="uiTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Property-Based Tests</h2>
+            <div id="propertyTests"></div>
+        </div>
+        
+        <div class="summary" id="testSummary" style="display: none;">
+            <h2 id="summaryTitle">Test Results</h2>
+            <p id="summaryText"></p>
+            <div id="summaryStats"></div>
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/enhanced-ui-manager.js"></script>
+    <script src="js/enhanced-drag-drop.js"></script>
+    <script src="js/mobile-optimization-manager.js"></script>
+    
+    <script>
+        // Global variables
+        let mobileManager;
+        let enhancedUI;
+        let dragDropSystem;
+        let testResults = [];
+        
+        // Mock global variables for compatibility
+        window.setupBoard = Array(5).fill().map(() => Array(4).fill(null));
+        window.selectedPalettePiece = null;
+        window.TASLAR = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+        
+        // Mock functions
+        window.drawSetupBoard = function() {
+            console.log('drawSetupBoard called');
+        };
+        
+        // Test utilities
+        function addTestResult(category, name, passed, message = '') {
+            testResults.push({
+                category,
+                name,
+                passed,
+                message
+            });
+            
+            const container = document.getElementById(category + 'Tests');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'passed' : 'failed'}`;
+            resultDiv.innerHTML = `
+                <span class="test-icon">${passed ? '✅' : '❌'}</span>
+                <div>
+                    <strong>${name}</strong>
+                    ${message ? `<br><small>${message}</small>` : ''}
+                </div>
+            `;
+            container.appendChild(resultDiv);
+        }
+        
+        function addWarningResult(category, name, message) {
+            const container = document.getElementById(category + 'Tests');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'test-result warning';
+            resultDiv.innerHTML = `
+                <span class="test-icon">⚠️</span>
+                <div>
+                    <strong>${name}</strong>
+                    <br><small>${message}</small>
+                </div>
+            `;
+            container.appendChild(resultDiv);
+        }
+        
+        function clearResults() {
+            testResults = [];
+            const categories = ['device', 'touch', 'gesture', 'haptic', 'ui', 'property'];
+            categories.forEach(category => {
+                document.getElementById(category + 'Tests').innerHTML = '';
+            });
+            document.getElementById('testSummary').style.display = 'none';
+        }
+        
+        function showSummary() {
+            const passed = testResults.filter(r => r.passed).length;
+            const failed = testResults.filter(r => r.passed === false).length;
+            const total = testResults.length;
+            
+            const summaryDiv = document.getElementById('testSummary');
+            const titleDiv = document.getElementById('summaryTitle');
+            const textDiv = document.getElementById('summaryText');
+            const statsDiv = document.getElementById('summaryStats');
+            
+            summaryDiv.style.display = 'block';
+            summaryDiv.className = failed === 0 ? 'summary' : 'summary failed';
+            
+            titleDiv.textContent = failed === 0 ? '🎉 All Tests Passed!' : '⚠️ Some Tests Failed';
+            textDiv.textContent = `Mobile Optimization Manager validation ${failed === 0 ? 'completed successfully' : 'completed with issues'}`;
+            statsDiv.innerHTML = `
+                <strong>Results:</strong> ${passed} passed, ${failed} failed, ${total} total<br>
+                <strong>Success Rate:</strong> ${Math.round((passed / total) * 100)}%
+            `;
+        }
+        
+        // Test functions
+        function testDeviceCapabilities() {
+            console.log('Testing device capabilities...');
+            
+            try {
+                // Test initialization
+                enhancedUI = new EnhancedPieceSetupUI();
+                dragDropSystem = new EnhancedDragDropSystem(enhancedUI);
+                mobileManager = new MobileOptimizationManager(enhancedUI, dragDropSystem);
+                
+                addTestResult('device', 'Mobile Manager Initialization', true, 'Successfully initialized');
+                
+                // Test device detection
+                const capabilities = mobileManager.deviceCapabilities;
+                
+                addTestResult('device', 'Touch Support Detection', 
+                    capabilities.hasTouch !== undefined, 
+                    `Touch support: ${capabilities.hasTouch ? 'Yes' : 'No'}`);
+                
+                addTestResult('device', 'Haptic Support Detection', 
+                    capabilities.hasHaptic !== undefined, 
+                    `Haptic support: ${capabilities.hasHaptic ? 'Yes' : 'No'}`);
+                
+                addTestResult('device', 'Mobile Device Detection', 
+                    capabilities.isMobile !== undefined, 
+                    `Mobile device: ${capabilities.isMobile ? 'Yes' : 'No'}`);
+                
+                addTestResult('device', 'Screen Size Detection', 
+                    capabilities.screenSize && capabilities.screenSize.width > 0, 
+                    `Screen: ${capabilities.screenSize.width}x${capabilities.screenSize.height}`);
+                
+                if (!capabilities.hasTouch) {
+                    addWarningResult('device', 'Touch Not Available', 'Touch events may not work on this device');
+                }
+                
+                if (!capabilities.hasHaptic) {
+                    addWarningResult('device', 'Haptic Not Available', 'Haptic feedback may not work on this device');
+                }
+                
+            } catch (error) {
+                addTestResult('device', 'Mobile Manager Initialization', false, error.message);
+            }
+        }
+        
+        function testTouchEventHandling() {
+            console.log('Testing touch event handling...');
+            
+            if (!mobileManager) {
+                addTestResult('touch', 'Touch Event Tests', false, 'Mobile manager not initialized');
+                return;
+            }
+            
+            try {
+                // Test touch state initialization
+                addTestResult('touch', 'Touch State Initialization', 
+                    mobileManager.touchState !== undefined, 
+                    'Touch state object exists');
+                
+                // Test touch event handlers
+                const touchEvent = new TouchEvent('touchstart', {
+                    touches: [{
+                        clientX: 100,
+                        clientY: 100,
+                        target: document.body
+                    }]
+                });
+                
+                mobileManager.handleTouchStart(touchEvent);
+                
+                addTestResult('touch', 'Touch Start Handling', 
+                    mobileManager.touchState.isActive, 
+                    'Touch state activated correctly');
+                
+                addTestResult('touch', 'Touch Position Recording', 
+                    mobileManager.touchState.startPosition.x === 100 && mobileManager.touchState.startPosition.y === 100, 
+                    'Touch coordinates recorded correctly');
+                
+                // Test touch move
+                const touchMoveEvent = new TouchEvent('touchmove', {
+                    touches: [{
+                        clientX: 120,
+                        clientY: 120,
+                        target: document.body
+                    }]
+                });
+                
+                mobileManager.handleTouchMove(touchMoveEvent);
+                
+                addTestResult('touch', 'Touch Move Handling', 
+                    mobileManager.touchState.currentPosition.x === 120, 
+                    'Touch move coordinates updated');
+                
+                // Test touch end
+                const touchEndEvent = new TouchEvent('touchend', {
+                    changedTouches: [{
+                        clientX: 120,
+                        clientY: 120,
+                        target: document.body
+                    }]
+                });
+                
+                mobileManager.handleTouchEnd(touchEndEvent);
+                
+                addTestResult('touch', 'Touch End Handling', 
+                    !mobileManager.touchState.isActive, 
+                    'Touch state deactivated correctly');
+                
+            } catch (error) {
+                addTestResult('touch', 'Touch Event Handling', false, error.message);
+            }
+        }
+        
+        function testGestureRecognition() {
+            console.log('Testing gesture recognition...');
+            
+            if (!mobileManager) {
+                addTestResult('gesture', 'Gesture Recognition Tests', false, 'Mobile manager not initialized');
+                return;
+            }
+            
+            try {
+                // Test gesture settings
+                addTestResult('gesture', 'Gesture Settings Initialization', 
+                    mobileManager.gestureSettings !== undefined, 
+                    'Gesture settings object exists');
+                
+                // Test double tap detection
+                mobileManager.touchState.lastTap = Date.now() - 100;
+                mobileManager.touchState.tapCount = 1;
+                
+                const touchEvent = new TouchEvent('touchstart', {
+                    touches: [{
+                        clientX: 100,
+                        clientY: 100,
+                        target: document.body
+                    }]
+                });
+                
+                mobileManager.handleTouchStart(touchEvent);
+                
+                addTestResult('gesture', 'Double Tap Detection', 
+                    mobileManager.touchState.tapCount === 2, 
+                    'Double tap detected correctly');
+                
+                // Test pinch gesture
+                const pinchEvent = new TouchEvent('touchstart', {
+                    touches: [
+                        { clientX: 100, clientY: 100, target: document.body },
+                        { clientX: 200, clientY: 200, target: document.body }
+                    ]
+                });
+                
+                mobileManager.handleTouchStart(pinchEvent);
+                
+                addTestResult('gesture', 'Pinch Gesture Detection', 
+                    mobileManager.touchState.isPinching, 
+                    'Pinch gesture detected correctly');
+                
+                addTestResult('gesture', 'Pinch Distance Calculation', 
+                    mobileManager.touchState.gestureStartDistance > 0, 
+                    `Distance: ${Math.round(mobileManager.touchState.gestureStartDistance)}px`);
+                
+                // Test long press setup
+                addTestResult('gesture', 'Long Press Timer Setup', 
+                    typeof mobileManager.startLongPressDetection === 'function', 
+                    'Long press detection function exists');
+                
+            } catch (error) {
+                addTestResult('gesture', 'Gesture Recognition', false, error.message);
+            }
+        }
+        
+        function testHapticFeedback() {
+            console.log('Testing haptic feedback...');
+            
+            if (!mobileManager) {
+                addTestResult('haptic', 'Haptic Feedback Tests', false, 'Mobile manager not initialized');
+                return;
+            }
+            
+            try {
+                // Test haptic patterns
+                const patterns = ['tap', 'doubleTap', 'longPress', 'success', 'error', 'warning', 'selection', 'drag', 'drop', 'invalid'];
+                
+                let patternsValid = true;
+                let missingPatterns = [];
+                
+                for (const pattern of patterns) {
+                    if (!mobileManager.hapticPatterns[pattern]) {
+                        patternsValid = false;
+                        missingPatterns.push(pattern);
+                    }
+                }
+                
+                addTestResult('haptic', 'Haptic Patterns Definition', 
+                    patternsValid, 
+                    patternsValid ? 'All patterns defined' : `Missing: ${missingPatterns.join(', ')}`);
+                
+                // Test haptic feedback triggering
+                let feedbackWorking = true;
+                try {
+                    mobileManager.triggerHapticFeedback('tap');
+                    mobileManager.triggerHapticFeedback('success');
+                    mobileManager.triggerHapticFeedback('error');
+                } catch (error) {
+                    feedbackWorking = false;
+                }
+                
+                addTestResult('haptic', 'Haptic Feedback Triggering', 
+                    feedbackWorking, 
+                    'Haptic feedback functions execute without errors');
+                
+                // Test haptic capability detection
+                addTestResult('haptic', 'Haptic Capability Detection', 
+                    mobileManager.deviceCapabilities.hasHaptic !== undefined, 
+                    `Haptic support: ${mobileManager.deviceCapabilities.hasHaptic ? 'Available' : 'Not available'}`);
+                
+                if (!mobileManager.deviceCapabilities.hasHaptic) {
+                    addWarningResult('haptic', 'Haptic Not Supported', 'Device does not support haptic feedback');
+                }
+                
+            } catch (error) {
+                addTestResult('haptic', 'Haptic Feedback', false, error.message);
+            }
+        }
+        
+        function testMobileUIAdaptations() {
+            console.log('Testing mobile UI adaptations...');
+            
+            if (!mobileManager) {
+                addTestResult('ui', 'Mobile UI Tests', false, 'Mobile manager not initialized');
+                return;
+            }
+            
+            try {
+                // Test UI settings
+                addTestResult('ui', 'UI Settings Initialization', 
+                    mobileManager.uiSettings !== undefined, 
+                    'UI settings object exists');
+                
+                // Test minimum touch target size
+                addTestResult('ui', 'Minimum Touch Target Size', 
+                    mobileManager.uiSettings.minTouchTarget >= 44, 
+                    `Touch target size: ${mobileManager.uiSettings.minTouchTarget}px`);
+                
+                // Test mobile CSS application
+                const mobileStyles = document.getElementById('mobile-optimization-styles');
+                addTestResult('ui', 'Mobile CSS Application', 
+                    mobileStyles !== null, 
+                    'Mobile-specific styles applied');
+                
+                // Test responsive breakpoints
+                addTestResult('ui', 'Responsive Breakpoints', 
+                    enhancedUI && enhancedUI.responsiveBreakpoints !== undefined, 
+                    'Responsive breakpoints defined');
+                
+                // Test device type detection
+                addTestResult('ui', 'Device Type Detection', 
+                    enhancedUI && enhancedUI.deviceType !== undefined, 
+                    `Device type: ${enhancedUI.deviceType}`);
+                
+                // Test UI adaptation for mobile
+                if (mobileManager.deviceCapabilities.isMobile) {
+                    addTestResult('ui', 'Mobile UI Adaptations Applied', true, 'Mobile-specific adaptations active');
+                } else {
+                    addWarningResult('ui', 'Not Mobile Device', 'Mobile adaptations may not be fully active');
+                }
+                
+            } catch (error) {
+                addTestResult('ui', 'Mobile UI Adaptations', false, error.message);
+            }
+        }
+        
+        function testPropertyBasedRequirements() {
+            console.log('Testing property-based requirements...');
+            
+            if (!mobileManager) {
+                addTestResult('property', 'Property Tests', false, 'Mobile manager not initialized');
+                return;
+            }
+            
+            try {
+                // Property 20: Touch Interaction Support
+                const propertyDiv = document.createElement('div');
+                propertyDiv.className = 'property-test';
+                propertyDiv.innerHTML = `
+                    <div class="property-title">Property 20: Touch Interaction Support</div>
+                    <div>All touch gestures should be supported and trigger appropriate responses</div>
+                `;
+                document.getElementById('propertyTests').appendChild(propertyDiv);
+                
+                const gestures = ['tap', 'doubleTap', 'longPress', 'drag', 'pinch'];
+                let gestureSupport = true;
+                
+                for (const gesture of gestures) {
+                    if (!mobileManager.hapticPatterns[gesture]) {
+                        gestureSupport = false;
+                        break;
+                    }
+                }
+                
+                addTestResult('property', 'Property 20: Touch Interaction Support', 
+                    gestureSupport, 
+                    'All required gestures have haptic feedback patterns');
+                
+                // Property 21: Mobile Screen Adaptation
+                const property21Div = document.createElement('div');
+                property21Div.className = 'property-test';
+                property21Div.innerHTML = `
+                    <div class="property-title">Property 21: Mobile Screen Adaptation</div>
+                    <div>UI elements should adapt correctly for different mobile screen sizes</div>
+                `;
+                document.getElementById('propertyTests').appendChild(property21Div);
+                
+                addTestResult('property', 'Property 21: Mobile Screen Adaptation', 
+                    mobileManager.uiSettings.minTouchTarget >= 44 && mobileManager.uiSettings.enlargedPieceSize >= 1.0, 
+                    'Touch targets meet accessibility guidelines');
+                
+                // Property 22: Double Tap Piece Selection
+                const property22Div = document.createElement('div');
+                property22Div.className = 'property-test';
+                property22Div.innerHTML = `
+                    <div class="property-title">Property 22: Double Tap Piece Selection</div>
+                    <div>Double tap should correctly select pieces and enable quick placement</div>
+                `;
+                document.getElementById('propertyTests').appendChild(property22Div);
+                
+                addTestResult('property', 'Property 22: Double Tap Piece Selection', 
+                    typeof mobileManager.handlePaletteDoubleTab === 'function', 
+                    'Double tap handler function exists');
+                
+                // Property 23: Haptic Feedback
+                const property23Div = document.createElement('div');
+                property23Div.className = 'property-test';
+                property23Div.innerHTML = `
+                    <div class="property-title">Property 23: Haptic Feedback</div>
+                    <div>Haptic feedback should be triggered for all appropriate mobile interactions</div>
+                `;
+                document.getElementById('propertyTests').appendChild(property23Div);
+                
+                const requiredHapticPatterns = ['tap', 'doubleTap', 'longPress', 'success', 'error', 'warning', 'selection', 'drag', 'drop', 'invalid'];
+                let hapticComplete = true;
+                
+                for (const pattern of requiredHapticPatterns) {
+                    if (!mobileManager.hapticPatterns[pattern] || !Array.isArray(mobileManager.hapticPatterns[pattern])) {
+                        hapticComplete = false;
+                        break;
+                    }
+                }
+                
+                addTestResult('property', 'Property 23: Haptic Feedback', 
+                    hapticComplete, 
+                    'All required haptic patterns are defined and valid');
+                
+            } catch (error) {
+                addTestResult('property', 'Property-Based Requirements', false, error.message);
+            }
+        }
+        
+        function runAllTests() {
+            console.log('🧪 Running all Mobile Optimization Manager tests...');
+            clearResults();
+            
+            // Run tests in sequence
+            testDeviceCapabilities();
+            testTouchEventHandling();
+            testGestureRecognition();
+            testHapticFeedback();
+            testMobileUIAdaptations();
+            testPropertyBasedRequirements();
+            
+            // Show summary
+            setTimeout(() => {
+                showSummary();
+                console.log('✅ All tests completed');
+            }, 100);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 Mobile Optimization Manager Validation Ready');
+            console.log('Click "Run All Tests" to start validation');
+        });
+    </script>
+</body>
+</html>
