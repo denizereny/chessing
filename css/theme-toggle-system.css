@@ -14,8 +14,9 @@
  */
 
 /* ===== THEME TOGGLE BUTTON ===== */
-
+/* DISABLED: Theme toggle is now in the settings menu */
 .theme-toggle-container {
+  display: none !important; /* Hide the floating theme toggle button */
   position: fixed;
   top: var(--enhanced-space-lg, 1.5rem);
   right: var(--enhanced-space-lg, 1.5rem);

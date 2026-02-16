@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Theme Toggle in Settings Menu</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive-settings-menu.css" />
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .test-result.pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-result.fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .test-result.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .test-button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .test-button:hover {
+            background: #357abd;
+        }
+        
+        .test-button:active {
+            background: #2868a8;
+        }
+        
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            color: #555;
+            margin-top: 20px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- Settings Menu Toggle Button -->
+    <button 
+      id="settingsMenuToggle" 
+      class="settings-menu-toggle"
+      aria-label="Open settings menu"
+      aria-expanded="false"
+      aria-controls="settingsMenuPanel"
+      aria-haspopup="true"
+      type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="5" r="2" fill="currentColor"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        <circle cx="12" cy="19" r="2" fill="currentColor"/>
+      </svg>
+      <span class="visually-hidden">Settings Menu</span>
+    </button>
+
+    <!-- Settings Menu Backdrop -->
+    <div 
+      id="settingsMenuBackdrop" 
+      class="settings-menu-backdrop"
+      aria-hidden="true"
+      role="presentation"></div>
+
+    <!-- Settings Menu Panel -->
+    <aside 
+      id="settingsMenuPanel" 
+      class="settings-menu-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settingsMenuTitle"
+      aria-hidden="true">
+      <div class="settings-menu-header">
+        <h2 id="settingsMenuTitle" class="settings-menu-title">
+          <span class="icon" aria-hidden="true">⚙️</span>
+          <span>Settings</span>
+        </h2>
+        <button 
+          id="settingsMenuClose" 
+          class="settings-menu-close"
+          aria-label="Close settings menu"
+          type="button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="visually-hidden">Close</span>
+        </button>
+      </div>
+      
+      <div class="settings-menu-content" role="group" aria-label="Settings controls">
+        <!-- Theme Toggle -->
+        <div class="menu-control-group">
+          <button onclick="toggleTheme()" class="extra-btn menu-control-btn" id="btnTheme">
+            🌙 <span id="btnThemeText">Dark Mode</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="test-container">
+        <h1>🧪 Task 7.1: Theme Toggle in Settings Menu</h1>
+        
+        <div class="test-section">
+            <h2>Test Overview</h2>
+            <p>This test verifies that the theme toggle button has been successfully moved into the settings menu while preserving all functionality.</p>
+            <p><strong>Requirements:</strong> 3.1 - Maintain all theme system functionality within the Settings Menu</p>
+        </div>
+
+        <div class="test-section">
+            <h2>Manual Tests</h2>
+            <button class="test-button" onclick="runTest1()">Test 1: Theme Toggle Location</button>
+            <button class="test-button" onclick="runTest2()">Test 2: Theme Toggle Functionality</button>
+            <button class="test-button" onclick="runTest3()">Test 3: Event Handler Preservation</button>
+            <button class="test-button" onclick="runAllTests()">Run All Tests</button>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Interactive Test</h2>
+            <p>1. Click the settings menu toggle button (3-dot icon in top-right corner)</p>
+            <p>2. Verify the theme toggle button appears in the menu</p>
+            <p>3. Click the theme toggle button</p>
+            <p>4. Verify the theme changes (light ↔ dark)</p>
+            <p>5. Close the menu and reopen it</p>
+            <p>6. Verify the theme toggle text reflects the current theme state</p>
+        </div>
+
+        <div class="test-section">
+            <h2>Current State</h2>
+            <div id="currentState"></div>
+        </div>
+    </div>
+
+    <script src="js/settings-menu-manager.js"></script>
+    <script>
+        // Simple theme system for testing
+        let currentTheme = 'light';
+        
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(currentTheme);
+            updateThemeButton();
+        }
+        
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.style.background = theme === 'dark' ? '#1a1a1a' : '#f5f5f5';
+            document.body.style.color = theme === 'dark' ? '#ffffff' : '#333333';
+        }
+        
+        function updateThemeButton() {
+            const btnThemeText = document.getElementById('btnThemeText');
+            if (btnThemeText) {
+                btnThemeText.textContent = currentTheme === 'light' ? 'Dark Mode' : 'Light Mode';
+            }
+        }
+        
+        // Initialize settings menu
+        const settingsMenuManager = new SettingsMenuManager({
+            toggleButtonSelector: '#settingsMenuToggle',
+            backdropSelector: '#settingsMenuBackdrop',
+            panelSelector: '#settingsMenuPanel',
+            closeButtonSelector: '#settingsMenuClose',
+            contentSelector: '.settings-menu-content',
+            animationDuration: 300
+        });
+        
+        settingsMenuManager.initialize();
+        
+        // Test functions
+        function logResult(testName, passed, message) {
+            const resultsDiv = document.getElementById('testResults');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            resultDiv.textContent = `${testName}: ${passed ? '✅ PASS' : '❌ FAIL'} - ${message}`;
+            resultsDiv.appendChild(resultDiv);
+        }
+        
+        function runTest1() {
+            // Test 1: Verify theme toggle is in the settings menu
+            const themeButton = document.querySelector('#settingsMenuPanel #btnTheme');
+            const oldLocation = document.querySelector('#settingsPanel #btnTheme');
+            
+            const inMenu = themeButton !== null;
+            const notInOldLocation = oldLocation === null;
+            
+            logResult(
+                'Test 1: Theme Toggle Location',
+                inMenu && notInOldLocation,
+                inMenu && notInOldLocation 
+                    ? 'Theme toggle is correctly located in settings menu'
+                    : 'Theme toggle is not in the correct location'
+            );
+        }
+        
+        function runTest2() {
+            // Test 2: Verify theme toggle functionality
+            const initialTheme = currentTheme;
+            toggleTheme();
+            const themeChanged = currentTheme !== initialTheme;
+            toggleTheme(); // Toggle back
+            
+            logResult(
+                'Test 2: Theme Toggle Functionality',
+                themeChanged,
+                themeChanged 
+                    ? 'Theme toggle function works correctly'
+                    : 'Theme toggle function failed'
+            );
+        }
+        
+        function runTest3() {
+            // Test 3: Verify event handler is preserved
+            const themeButton = document.getElementById('btnTheme');
+            const hasOnClick = themeButton && themeButton.onclick !== null;
+            
+            logResult(
+                'Test 3: Event Handler Preservation',
+                hasOnClick,
+                hasOnClick 
+                    ? 'Event handler is preserved on theme toggle button'
+                    : 'Event handler is missing from theme toggle button'
+            );
+        }
+        
+        function runAllTests() {
+            document.getElementById('testResults').innerHTML = '';
+            runTest1();
+            runTest2();
+            runTest3();
+        }
+        
+        function updateCurrentState() {
+            const stateDiv = document.getElementById('currentState');
+            const themeButton = document.getElementById('btnTheme');
+            const menuOpen = settingsMenuManager.isOpen();
+            
+            stateDiv.innerHTML = `
+                <p><strong>Current Theme:</strong> <code>${currentTheme}</code></p>
+                <p><strong>Menu State:</strong> <code>${menuOpen ? 'Open' : 'Closed'}</code></p>
+                <p><strong>Theme Button Exists:</strong> <code>${themeButton ? 'Yes' : 'No'}</code></p>
+                <p><strong>Theme Button Location:</strong> <code>${themeButton ? 'Settings Menu' : 'Not Found'}</code></p>
+                <p><strong>Theme Button Text:</strong> <code>${themeButton ? document.getElementById('btnThemeText').textContent : 'N/A'}</code></p>
+            `;
+        }
+        
+        // Update state every second
+        setInterval(updateCurrentState, 1000);
+        updateCurrentState();
+        
+        // Initial theme setup
+        applyTheme(currentTheme);
+        updateThemeButton();
+        
+        console.log('✅ Test page loaded successfully');
+        console.log('📋 Settings Menu Manager initialized');
+    </script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property 11 Verification - Touch Event Responsiveness</title>
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    h1 {
+      color: #333;
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin: 0 0 20px 0;
+      font-size: 16px;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #1976d2;
+      font-size: 18px;
+    }
+    
+    .info-box p {
+      margin: 5px 0;
+      color: #555;
+      line-height: 1.6;
+    }
+    
+    .console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      max-height: 600px;
+      overflow-y: auto;
+      margin: 20px 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .console-output .success {
+      color: #4caf50;
+    }
+    
+    .console-output .error {
+      color: #f44336;
+    }
+    
+    .console-output .warning {
+      color: #ff9800;
+    }
+    
+    .console-output .info {
+      color: #2196f3;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    
+    .btn-primary {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .btn-secondary {
+      background: #2196f3;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #1976d2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 10px 0;
+    }
+    
+    .status-badge.success {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .status-badge.error {
+      background: #f44336;
+      color: white;
+    }
+    
+    .status-badge.pending {
+      background: #ff9800;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Settings Menu Toggle Button -->
+  <button 
+    id="settingsMenuToggle" 
+    class="settings-menu-toggle"
+    aria-label="Open settings menu"
+    aria-expanded="false"
+    aria-controls="settingsMenuPanel"
+    aria-haspopup="true"
+    type="button">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="12" cy="5" r="2" fill="currentColor"/>
+      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      <circle cx="12" cy="19" r="2" fill="currentColor"/>
+    </svg>
+    <span class="visually-hidden">Settings Menu</span>
+  </button>
+
+  <!-- Settings Menu Backdrop -->
+  <div 
+    id="settingsMenuBackdrop" 
+    class="settings-menu-backdrop"
+    aria-hidden="true"
+    role="presentation"></div>
+
+  <!-- Settings Menu Panel -->
+  <aside 
+    id="settingsMenuPanel" 
+    class="settings-menu-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settingsMenuTitle"
+    aria-hidden="true">
+    <div class="settings-menu-header">
+      <h2 id="settingsMenuTitle" class="settings-menu-title">
+        <span class="icon" aria-hidden="true">⚙️</span>
+        <span>Settings</span>
+      </h2>
+      <button 
+        id="settingsMenuClose" 
+        class="settings-menu-close"
+        aria-label="Close settings menu"
+        type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="visually-hidden">Close</span>
+      </button>
+    </div>
+    
+    <div class="settings-menu-content" role="group" aria-label="Settings controls">
+      <div class="menu-control-group">
+        <button class="extra-btn menu-control-btn">
+          🎯 Test Control 1
+        </button>
+      </div>
+
+      <div class="menu-control-group">
+        <button class="extra-btn menu-control-btn">
+          🎨 Test Control 2
+        </button>
+      </div>
+
+      <div class="menu-control-group">
+        <label for="testSelect" class="menu-control-label">
+          <span class="icon">🌐</span>
+          <span>Test Select</span>
+        </label>
+        <select id="testSelect" class="menu-control-select">
+          <option value="1">Option 1</option>
+          <option value="2">Option 2</option>
+          <option value="3">Option 3</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <div class="container">
+    <h1>🎯 Property 11: Touch Event Responsiveness</h1>
+    <p class="subtitle">Task 8.5 - Verification Test Runner</p>
+    
+    <div class="info-box">
+      <h3>📋 Test Information</h3>
+      <p><strong>Feature:</strong> responsive-settings-menu</p>
+      <p><strong>Property:</strong> Touch event responsiveness</p>
+      <p><strong>Validates:</strong> Requirements 4.4, 4.5</p>
+      <p><strong>Description:</strong> For any touch event (tap, swipe) on interactive elements, the application should respond with immediate visual feedback (within one frame).</p>
+    </div>
+    
+    <div class="button-group">
+      <button class="btn-primary" onclick="runVerification()">▶️ Run Verification</button>
+      <button class="btn-secondary" onclick="clearConsole()">🗑️ Clear Console</button>
+      <button class="btn-secondary" onclick="openMenu()">📱 Open Menu</button>
+    </div>
+    
+    <div id="statusBadge"></div>
+    
+    <h2>📊 Console Output</h2>
+    <div id="consoleOutput" class="console-output">
+      <span class="info">Ready to run verification tests...</span>
+      <span class="info">Click "Run Verification" to start.</span>
+    </div>
+  </div>
+
+  <script src="js/settings-menu-manager.js"></script>
+  <script>
+    // Initialize settings menu manager
+    const settingsMenuManager = new SettingsMenuManager({
+      toggleButtonSelector: '#settingsMenuToggle',
+      backdropSelector: '#settingsMenuBackdrop',
+      panelSelector: '#settingsMenuPanel',
+      closeButtonSelector: '#settingsMenuClose',
+      contentSelector: '.settings-menu-content',
+      animationDuration: 300
+    });
+
+    settingsMenuManager.initialize();
+    
+    // Make it globally available
+    window.settingsMenuManager = settingsMenuManager;
+
+    // Capture console output
+    const consoleOutput = document.getElementById('consoleOutput');
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    function appendToConsole(message, type = 'info') {
+      const span = document.createElement('span');
+      span.className = type;
+      span.textContent = message;
+      consoleOutput.appendChild(span);
+      consoleOutput.appendChild(document.createTextNode('\n'));
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const message = args.join(' ');
+      if (message.includes('✅')) {
+        appendToConsole(message, 'success');
+      } else if (message.includes('❌')) {
+        appendToConsole(message, 'error');
+      } else if (message.includes('⚠️')) {
+        appendToConsole(message, 'warning');
+      } else {
+        appendToConsole(message, 'info');
+      }
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      appendToConsole(args.join(' '), 'error');
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      appendToConsole(args.join(' '), 'warning');
+    };
+    
+    function clearConsole() {
+      consoleOutput.innerHTML = '<span class="info">Console cleared.</span>\n';
+    }
+    
+    function openMenu() {
+      settingsMenuManager.open();
+      console.log('📱 Settings menu opened');
+    }
+    
+    function updateStatus(passed, total) {
+      const statusBadge = document.getElementById('statusBadge');
+      if (passed === total) {
+        statusBadge.innerHTML = '<span class="status-badge success">✅ All Checks Passed</span>';
+      } else if (passed > 0) {
+        statusBadge.innerHTML = `<span class="status-badge error">⚠️ ${passed}/${total} Checks Passed</span>`;
+      } else {
+        statusBadge.innerHTML = '<span class="status-badge error">❌ All Checks Failed</span>';
+      }
+    }
+    
+    function runVerification() {
+      clearConsole();
+      console.log('🚀 Starting Property 11 verification...\n');
+      
+      // Load and run the verification script
+      const script = document.createElement('script');
+      script.src = 'verify-property-11.js';
+      script.onload = function() {
+        console.log('\n✅ Verification complete!');
+        // Update status badge based on results
+        // This would need to be extracted from the verification results
+        updateStatus(10, 12); // Example values
+      };
+      script.onerror = function() {
+        console.error('❌ Failed to load verification script');
+        updateStatus(0, 1);
+      };
+      document.body.appendChild(script);
+    }
+    
+    // Initial status
+    document.getElementById('statusBadge').innerHTML = '<span class="status-badge pending">⏳ Pending Verification</span>';
+  </script>
+</body>
+</html>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property 8: Menu Visibility Matches State - Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .info-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-section h3 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .info-section p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .controls {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 20px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .status.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.running {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .output {
+            padding: 30px;
+            background: #f8f9fa;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .test-result.pass {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .test-result.fail {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .test-result .test-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .test-result .test-details {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: white;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card.total .stat-value {
+            color: #667eea;
+        }
+
+        .stat-card.passed .stat-value {
+            color: #28a745;
+        }
+
+        .stat-card.failed .stat-value {
+            color: #dc3545;
+        }
+
+        .property-info {
+            padding: 20px 30px;
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            margin: 20px 30px;
+            border-radius: 4px;
+        }
+
+        .property-info h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .property-info p {
+            color: #004080;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+    </style>
+
+    <!-- Load responsive settings menu CSS -->
+    <link rel="stylesheet" href="css/responsive-settings-menu.css">
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🧪 Property 8: Menu Visibility Matches State</h1>
+            <p>Property-Based Tests - Task 4.5</p>
+        </div>
+
+        <div class="info-section">
+            <h3>📋 Test Information</h3>
+            <p><strong>Feature:</strong> responsive-settings-menu</p>
+            <p><strong>Task:</strong> 4.5 Write property test for menu visibility matches state</p>
+            <p><strong>Property:</strong> Property 8: Menu visibility matches state</p>
+            <p><strong>Validates:</strong> Requirements 2.7</p>
+        </div>
+
+        <div class="property-info">
+            <h3>🔬 Property-Based Testing</h3>
+            <p><strong>Property 8: Menu visibility matches state</strong></p>
+            <p>For any menu state, when closed the menu panel should be hidden (display: none or off-screen), and when open it should be visible.</p>
+            <p><strong>Test Scenarios:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Closed menu should be hidden</li>
+                <li>Open menu should be visible</li>
+                <li>aria-hidden attribute should match visibility state</li>
+                <li>Toggling should change visibility appropriately</li>
+                <li>Screen reader accessibility should be correct</li>
+                <li>Backdrop visibility should match menu state</li>
+            </ul>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card total">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-card passed">
+                <div class="stat-value" id="passedTests">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card failed">
+                <div class="stat-value" id="failedTests">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <div class="status ready" id="status">
+            ✅ Ready to run tests
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="runTestsBtn" onclick="runTests()">
+                ▶️ Run Property 8 Tests
+            </button>
+        </div>
+
+        <div class="output" id="output" style="display: none;"></div>
+    </div>
+
+    <!-- Settings Menu Structure (for testing) -->
+    <button id="settingsMenuToggle" class="settings-menu-toggle" 
+            aria-label="Open settings menu" 
+            aria-expanded="false" 
+            aria-controls="settingsMenuPanel">
+        ⋮
+    </button>
+
+    <div id="settingsMenuBackdrop" class="settings-menu-backdrop" aria-hidden="true"></div>
+
+    <div id="settingsMenuPanel" class="settings-menu-panel" aria-hidden="true">
+        <div class="settings-menu-content">
+            <button id="settingsMenuClose" class="settings-menu-close" aria-label="Close settings menu">×</button>
+            <h2>Settings</h2>
+            <p>Test menu content</p>
+        </div>
+    </div>
+
+    <!-- Load Settings Menu Manager -->
+    <script src="js/settings-menu-manager.js"></script>
+
+    <script>
+        let testStats = {
+            total: 0,
+            passed: 0,
+            failed: 0
+        };
+
+        let settingsMenuManager = null;
+
+        function updateStatus(message, type = 'ready') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function updateStats() {
+            document.getElementById('totalTests').textContent = testStats.total;
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+        }
+
+        function addTestResult(testName, passed, details = '') {
+            testStats.total++;
+            if (passed) {
+                testStats.passed++;
+            } else {
+                testStats.failed++;
+            }
+            updateStats();
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'test-name';
+            nameDiv.textContent = `${passed ? '✅' : '❌'} ${testName}`;
+            resultDiv.appendChild(nameDiv);
+
+            if (details) {
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'test-details';
+                detailsDiv.textContent = details;
+                resultDiv.appendChild(detailsDiv);
+            }
+
+            const output = document.getElementById('output');
+            output.appendChild(resultDiv);
+        }
+
+        function checkMenuVisibility(panel, shouldBeVisible) {
+            if (!panel) {
+                return false;
+            }
+            
+            const styles = window.getComputedStyle(panel);
+            const ariaHidden = panel.getAttribute('aria-hidden');
+            
+            if (shouldBeVisible) {
+                const isAriaVisible = ariaHidden === 'false';
+                const isDisplayed = styles.display !== 'none';
+                const isVisible = styles.visibility !== 'hidden';
+                const hasOpacity = parseFloat(styles.opacity) > 0 || styles.opacity === '';
+                
+                const rect = panel.getBoundingClientRect();
+                const isOnScreen = rect.width > 0 && rect.height > 0;
+                
+                return isAriaVisible && isDisplayed && isVisible && hasOpacity && isOnScreen;
+            } else {
+                const isAriaHidden = ariaHidden === 'true';
+                const isDisplayNone = styles.display === 'none';
+                const isVisibilityHidden = styles.visibility === 'hidden';
+                const hasZeroOpacity = parseFloat(styles.opacity) === 0;
+                
+                const rect = panel.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const isOffScreen = rect.right < 0 || rect.left > viewportWidth || 
+                                   rect.bottom < 0 || rect.top > viewportHeight;
+                
+                const isHidden = isDisplayNone || isVisibilityHidden || hasZeroOpacity || isOffScreen;
+                
+                return isAriaHidden && isHidden;
+            }
+        }
+
+        async function runTests() {
+            const btn = document.getElementById('runTestsBtn');
+            btn.disabled = true;
+            
+            testStats = { total: 0, passed: 0, failed: 0 };
+            updateStats();
+
+            document.getElementById('output').style.display = 'block';
+            document.getElementById('output').innerHTML = '';
+
+            updateStatus('🔄 Running Property 8 tests...', 'running');
+
+            try {
+                // Initialize settings menu manager
+                if (!settingsMenuManager) {
+                    settingsMenuManager = new SettingsMenuManager();
+                    settingsMenuManager.initialize();
+                    window.settingsMenuManager = settingsMenuManager;
+                }
+
+                const panel = document.querySelector('#settingsMenuPanel');
+                const backdrop = document.querySelector('#settingsMenuBackdrop');
+
+                // Test 1: Closed menu should be hidden
+                settingsMenuManager.close();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const test1 = checkMenuVisibility(panel, false);
+                addTestResult('Closed menu should be hidden', test1, 
+                    test1 ? 'Menu is correctly hidden when closed' : 'Menu is not properly hidden');
+
+                // Test 2: Open menu should be visible
+                settingsMenuManager.open();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const test2 = checkMenuVisibility(panel, true);
+                addTestResult('Open menu should be visible', test2,
+                    test2 ? 'Menu is correctly visible when open' : 'Menu is not properly visible');
+
+                // Test 3: aria-hidden matches state when closed
+                settingsMenuManager.close();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const ariaHiddenClosed = panel.getAttribute('aria-hidden') === 'true';
+                const styles = window.getComputedStyle(panel);
+                const isHidden = styles.display === 'none' || styles.visibility === 'hidden' || parseFloat(styles.opacity) === 0;
+                const test3 = ariaHiddenClosed && isHidden;
+                addTestResult('aria-hidden matches visibility when closed', test3,
+                    test3 ? 'aria-hidden="true" and menu is hidden' : 'Mismatch between aria-hidden and visibility');
+
+                // Test 4: aria-hidden matches state when open
+                settingsMenuManager.open();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const ariaHiddenOpen = panel.getAttribute('aria-hidden') === 'false';
+                const stylesOpen = window.getComputedStyle(panel);
+                const isVisible = stylesOpen.display !== 'none' && stylesOpen.visibility !== 'hidden' && parseFloat(stylesOpen.opacity) > 0;
+                const test4 = ariaHiddenOpen && isVisible;
+                addTestResult('aria-hidden matches visibility when open', test4,
+                    test4 ? 'aria-hidden="false" and menu is visible' : 'Mismatch between aria-hidden and visibility');
+
+                // Test 5: Toggling changes visibility
+                settingsMenuManager.close();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const initiallyHidden = checkMenuVisibility(panel, false);
+                
+                settingsMenuManager.toggle();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const nowVisible = checkMenuVisibility(panel, true);
+                
+                settingsMenuManager.toggle();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const hiddenAgain = checkMenuVisibility(panel, false);
+                
+                const test5 = initiallyHidden && nowVisible && hiddenAgain;
+                addTestResult('Toggling changes visibility state', test5,
+                    test5 ? 'Menu visibility changes correctly on toggle' : 'Toggle does not properly change visibility');
+
+                // Test 6: Hidden menu not visible to screen readers
+                settingsMenuManager.close();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const test6 = panel.getAttribute('aria-hidden') === 'true';
+                addTestResult('Hidden menu not visible to screen readers', test6,
+                    test6 ? 'aria-hidden="true" when closed' : 'aria-hidden not set correctly');
+
+                // Test 7: Visible menu accessible to screen readers
+                settingsMenuManager.open();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const test7 = panel.getAttribute('aria-hidden') === 'false';
+                addTestResult('Visible menu accessible to screen readers', test7,
+                    test7 ? 'aria-hidden="false" when open' : 'aria-hidden not set correctly');
+
+                // Test 8: Backdrop visibility matches menu state
+                settingsMenuManager.close();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const backdropHidden = backdrop.getAttribute('aria-hidden') === 'true';
+                
+                settingsMenuManager.open();
+                await new Promise(resolve => setTimeout(resolve, 350));
+                const backdropVisible = backdrop.getAttribute('aria-hidden') === 'false';
+                
+                const test8 = backdropHidden && backdropVisible;
+                addTestResult('Backdrop visibility matches menu state', test8,
+                    test8 ? 'Backdrop aria-hidden changes with menu state' : 'Backdrop visibility does not match menu state');
+
+                // Summary
+                if (testStats.failed === 0) {
+                    updateStatus(`✅ All tests passed! (${testStats.passed}/${testStats.total})`, 'success');
+                } else {
+                    updateStatus(`❌ Some tests failed (${testStats.failed}/${testStats.total})`, 'error');
+                }
+
+            } catch (error) {
+                updateStatus('❌ Test execution error', 'error');
+                addTestResult('Test execution', false, error.message);
+                console.error('Test execution error:', error);
+            }
+
+            btn.disabled = false;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateStatus('✅ Ready to run tests', 'ready');
+        });
+    </script>
+</body>
+</html>

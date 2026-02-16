@@ -1,0 +1,1160 @@
+/**
+ * Responsive Settings Menu CSS Foundation
+ * 
+ * This file provides the CSS foundation for the responsive settings menu system.
+ * It defines CSS custom properties, breakpoint media queries, and base responsive styles.
+ * 
+ * Requirements: 1.1, 1.6, 8.1, 8.2, 8.3
+ */
+
+/* ============================================
+   CSS Custom Properties (CSS Variables)
+   ============================================ */
+
+:root {
+  /* Breakpoint values */
+  --breakpoint-mobile: 768px;
+  --breakpoint-tablet: 1024px;
+  
+  /* Menu dimensions */
+  --menu-width-mobile: 100%;
+  --menu-width-tablet: 400px;
+  --menu-width-desktop: 450px;
+  --menu-height-mobile: 70vh;
+  
+  /* Animation settings */
+  --menu-animation-duration: 300ms;
+  --menu-animation-timing: cubic-bezier(0.4, 0.0, 0.2, 1);
+  
+  /* Touch target sizes */
+  --touch-target-size: 44px;
+  --touch-target-min-spacing: 8px;
+  
+  /* Menu spacing */
+  --menu-spacing: 16px;
+  --menu-spacing-mobile: 12px;
+  
+  /* Z-index layers */
+  --z-index-backdrop: 1000;
+  --z-index-menu: 1001;
+  --z-index-toggle: 1002;
+  
+  /* Menu positioning */
+  --menu-position-mobile: bottom;
+  --menu-position-tablet: right;
+  --menu-position-desktop: right;
+  
+  /* Board sizing percentages */
+  --board-size-mobile: 95%;
+  --board-size-tablet: 80%;
+  --board-size-desktop: 70%;
+}
+
+/* ============================================
+   Base Responsive Styles
+   ============================================ */
+
+/* Ensure box-sizing is consistent */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal overflow on body and html */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Base container styles to prevent overflow */
+.container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   Mobile Breakpoint (< 768px)
+   ============================================ */
+
+@media (max-width: 767px) {
+  /* Mobile-specific styles */
+  :root {
+    --current-breakpoint: 'mobile';
+  }
+  
+  /* Prioritize board visibility */
+  .board-container {
+    width: var(--board-size-mobile);
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  /* Minimize control spacing */
+  .controls,
+  .side-panel {
+    padding: var(--menu-spacing-mobile);
+    margin: var(--menu-spacing-mobile) 0;
+  }
+  
+  /* Touch-friendly sizing */
+  button,
+  select,
+  input[type="button"],
+  input[type="submit"],
+  .btn,
+  .extra-btn {
+    min-height: var(--touch-target-size);
+    min-width: var(--touch-target-size);
+    padding: 12px 16px;
+  }
+  
+  /* Adequate spacing between interactive elements */
+  button + button,
+  .btn + .btn,
+  .extra-btn + .extra-btn {
+    margin-top: var(--touch-target-min-spacing);
+  }
+  
+  /* Single column layout */
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--menu-spacing-mobile);
+  }
+  
+  /* Ensure content fits viewport */
+  .card,
+  .side-panel {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  /* Prevent text overflow */
+  h1, h2, h3, h4, h5, h6,
+  p, span, label {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* ============================================
+   Tablet Breakpoint (768px - 1023px)
+   ============================================ */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet-specific styles */
+  :root {
+    --current-breakpoint: 'tablet';
+  }
+  
+  /* Balance board size with control accessibility */
+  .board-container {
+    width: var(--board-size-tablet);
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  /* Tablet layout optimization */
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: var(--menu-spacing);
+    max-width: 100%;
+    padding: var(--menu-spacing);
+  }
+  
+  /* Ensure panels fit within grid */
+  .side-panel {
+    max-width: 100%;
+    overflow-y: auto;
+  }
+  
+  /* Touch-friendly sizing maintained */
+  button,
+  select,
+  input[type="button"],
+  input[type="submit"],
+  .btn,
+  .extra-btn {
+    min-height: var(--touch-target-size);
+    padding: 10px 14px;
+  }
+  
+  /* Prevent content overflow */
+  .card {
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* ============================================
+   Desktop Breakpoint (≥ 1024px)
+   ============================================ */
+
+@media (min-width: 1024px) {
+  /* Desktop-specific styles */
+  :root {
+    --current-breakpoint: 'desktop';
+  }
+  
+  /* Maximize board size with comfortable spacing */
+  .board-container {
+    width: var(--board-size-desktop);
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  /* Desktop layout with maximum board visibility */
+  .container {
+    display: grid;
+    grid-template-columns: minmax(250px, 1fr) minmax(400px, 2fr) minmax(250px, 1fr);
+    gap: var(--menu-spacing);
+    max-width: 100%;
+    padding: var(--menu-spacing);
+  }
+  
+  /* Comfortable control spacing */
+  .side-panel {
+    padding: var(--menu-spacing);
+    max-width: 100%;
+    overflow-y: auto;
+  }
+  
+  /* Standard button sizing */
+  button,
+  select,
+  input[type="button"],
+  input[type="submit"],
+  .btn,
+  .extra-btn {
+    min-height: 40px;
+    padding: 8px 16px;
+  }
+  
+  /* Prevent content overflow */
+  .card {
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* ============================================
+   Orientation Change Handling
+   ============================================ */
+
+@media (orientation: portrait) {
+  /* Portrait-specific adjustments */
+  .board-container {
+    width: 90vw;
+    max-width: 600px;
+  }
+}
+
+@media (orientation: landscape) {
+  /* Landscape-specific adjustments */
+  .board-container {
+    height: 80vh;
+    width: auto;
+    aspect-ratio: 1;
+  }
+}
+
+/* ============================================
+   Prevent Content Overflow (All Breakpoints)
+   ============================================ */
+
+/* Ensure all content respects viewport boundaries */
+* {
+  max-width: 100%;
+}
+
+/* Prevent images and media from overflowing */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent tables from overflowing */
+table {
+  max-width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+/* Ensure flex and grid containers don't overflow */
+.flex-container,
+.grid-container {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* ============================================
+   Responsive Typography
+   ============================================ */
+
+/* Scale font sizes based on viewport */
+@media (max-width: 767px) {
+  html {
+    font-size: 14px;
+  }
+  
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.1rem; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  html {
+    font-size: 15px;
+  }
+  
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+  h4 { font-size: 1.25rem; }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 16px;
+  }
+  
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+/* Breakpoint-specific visibility */
+.mobile-only {
+  display: none;
+}
+
+.tablet-only {
+  display: none;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .tablet-up {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tablet-only {
+    display: block;
+  }
+  
+  .mobile-only {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktop-only {
+    display: block;
+  }
+  
+  .mobile-only {
+    display: none !important;
+  }
+  
+  .tablet-only {
+    display: none !important;
+  }
+}
+
+/* Responsive spacing utilities */
+.spacing-mobile {
+  padding: var(--menu-spacing-mobile);
+}
+
+.spacing-default {
+  padding: var(--menu-spacing);
+}
+
+/* Prevent layout shift during animations */
+.no-layout-shift {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  /* Hide non-essential elements when printing */
+  .side-panel,
+  button,
+  .controls {
+    display: none;
+  }
+  
+  /* Ensure board is visible and centered */
+  .board-container {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ============================================
+   Settings Menu Structure Styles
+   Requirements: 2.1, 2.6, 2.7
+   ============================================ */
+
+/* Settings Menu Toggle Button */
+.settings-menu-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: var(--z-index-toggle);
+  width: var(--touch-target-size);
+  height: var(--touch-target-size);
+  border: none;
+  border-radius: 50%;
+  background: var(--primary-color, #4a90e2);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.settings-menu-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.settings-menu-toggle:active {
+  transform: scale(0.95);
+}
+
+.settings-menu-toggle:focus {
+  outline: 2px solid var(--focus-color, #4a90e2);
+  outline-offset: 2px;
+}
+
+.settings-menu-toggle svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Visually hidden but accessible to screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Settings Menu Backdrop */
+.settings-menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-index-backdrop);
+  opacity: 0;
+  visibility: hidden;
+  /* Fade-in/fade-out animation for backdrop - Requirements 7.1, 7.5 */
+  transition: opacity var(--menu-animation-duration) var(--menu-animation-timing),
+              visibility var(--menu-animation-duration) var(--menu-animation-timing);
+  /* Use GPU acceleration for smooth 60fps performance */
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.settings-menu-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Settings Menu Panel */
+.settings-menu-panel {
+  position: fixed;
+  z-index: var(--z-index-menu);
+  background: var(--panel-bg, #ffffff);
+  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Slide-in/slide-out animation using CSS transforms - Requirements 7.1, 7.3, 7.5 */
+  transition: transform var(--menu-animation-duration) var(--menu-animation-timing),
+              visibility var(--menu-animation-duration) var(--menu-animation-timing);
+  display: flex;
+  flex-direction: column;
+  /* Use GPU acceleration for smooth 60fps performance */
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  /* Enable hardware acceleration */
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+/* Settings Menu Header */
+.settings-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--menu-spacing);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  background: var(--header-bg, #f5f5f5);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.settings-menu-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-color, #333);
+}
+
+.settings-menu-close {
+  width: var(--touch-target-size);
+  height: var(--touch-target-size);
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-color, #333);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.settings-menu-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.settings-menu-close:active {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.settings-menu-close:focus {
+  outline: 2px solid var(--focus-color, #4a90e2);
+  outline-offset: 2px;
+}
+
+/* Settings Menu Content */
+.settings-menu-content {
+  flex: 1;
+  padding: var(--menu-spacing);
+  overflow-y: auto;
+}
+
+/* Menu Control Groups */
+.menu-control-group {
+  margin-bottom: var(--menu-spacing);
+  padding: var(--menu-spacing);
+  border-radius: 8px;
+  background: var(--control-group-bg, rgba(0, 0, 0, 0.02));
+  border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.menu-control-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Touch target spacing - Requirement 4.3 */
+.menu-control-group + .menu-control-group {
+  margin-top: var(--touch-target-min-spacing);
+}
+
+/* Menu Control Buttons */
+.menu-control-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  /* Touch target sizing - Requirements 4.1, 4.2 */
+  min-height: var(--touch-target-size);
+  min-width: var(--touch-target-size);
+  padding: 12px 16px;
+}
+
+/* Menu Control Labels */
+.menu-control-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-color, #333);
+  font-size: 0.95rem;
+}
+
+.menu-control-label .icon {
+  font-size: 1.2rem;
+}
+
+/* Menu Control Select Dropdowns */
+.menu-control-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  background: var(--input-bg, #ffffff);
+  color: var(--text-color, #333);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-height: var(--touch-target-size);
+}
+
+.menu-control-select:hover {
+  border-color: var(--primary-color, #4a90e2);
+}
+
+.menu-control-select:focus {
+  outline: none;
+  border-color: var(--primary-color, #4a90e2);
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.menu-control-select option {
+  padding: 8px;
+}
+
+/* Dark theme support for controls */
+@media (prefers-color-scheme: dark) {
+  .menu-control-label {
+    --text-color: #ffffff;
+  }
+  
+  .menu-control-select {
+    --input-bg: #1a1a1a;
+    --text-color: #ffffff;
+    --border-color: #444;
+  }
+}
+
+/* Dark theme support for control groups */
+@media (prefers-color-scheme: dark) {
+  .menu-control-group {
+    --control-group-bg: rgba(255, 255, 255, 0.05);
+    --border-color: #444;
+  }
+}
+
+/* Mobile Layout (< 768px) - Menu slides from bottom */
+@media (max-width: 767px) {
+  .settings-menu-panel {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: var(--menu-width-mobile);
+    height: var(--menu-height-mobile);
+    max-height: var(--menu-height-mobile);
+    border-radius: 16px 16px 0 0;
+    /* Initial state: translated down (hidden) - Slide-in animation */
+    transform: translateY(100%);
+  }
+  
+  .settings-menu-panel[aria-hidden="false"] {
+    /* Active state: translated to normal position (visible) - Slide-in complete */
+    transform: translateY(0);
+    visibility: visible;
+  }
+  
+  .settings-menu-panel[aria-hidden="true"] {
+    /* Hidden state: translated down (hidden) - Slide-out complete */
+    transform: translateY(100%);
+    visibility: hidden;
+  }
+  
+  .settings-menu-toggle {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+/* Tablet Layout (768px - 1023px) - Menu slides from right */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .settings-menu-panel {
+    top: 0;
+    right: 0;
+    width: var(--menu-width-tablet);
+    height: 100%;
+    max-width: var(--menu-width-tablet);
+    border-radius: 0;
+    /* Initial state: translated right (hidden) - Slide-in animation */
+    transform: translateX(100%);
+  }
+  
+  .settings-menu-panel[aria-hidden="false"] {
+    /* Active state: translated to normal position (visible) - Slide-in complete */
+    transform: translateX(0);
+    visibility: visible;
+  }
+  
+  .settings-menu-panel[aria-hidden="true"] {
+    /* Hidden state: translated right (hidden) - Slide-out complete */
+    transform: translateX(100%);
+    visibility: hidden;
+  }
+}
+
+/* Desktop Layout (≥ 1024px) - Menu slides from right */
+@media (min-width: 1024px) {
+  .settings-menu-panel {
+    top: 0;
+    right: 0;
+    width: var(--menu-width-desktop);
+    height: 100%;
+    max-width: var(--menu-width-desktop);
+    border-radius: 0;
+    /* Initial state: translated right (hidden) - Slide-in animation */
+    transform: translateX(100%);
+  }
+  
+  .settings-menu-panel[aria-hidden="false"] {
+    /* Active state: translated to normal position (visible) - Slide-in complete */
+    transform: translateX(0);
+    visibility: visible;
+  }
+  
+  .settings-menu-panel[aria-hidden="true"] {
+    /* Hidden state: translated right (hidden) - Slide-out complete */
+    transform: translateX(100%);
+    visibility: hidden;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .settings-menu-panel {
+    --panel-bg: #2c2c2c;
+    --header-bg: #1a1a1a;
+    --text-color: #ffffff;
+    --border-color: #444;
+  }
+  
+  .settings-menu-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .settings-menu-close:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .settings-menu-toggle {
+    border: 2px solid currentColor;
+  }
+  
+  .settings-menu-panel {
+    border: 2px solid currentColor;
+  }
+  
+  .settings-menu-header {
+    border-bottom-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .settings-menu-toggle,
+  .settings-menu-backdrop,
+  .settings-menu-panel,
+  .settings-menu-close {
+    transition: none;
+  }
+  
+  .settings-menu-panel[aria-hidden="false"] {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+/* ============================================
+   Touch Target Sizing for Settings Menu
+   Requirements: 4.1, 4.2, 4.3
+   ============================================ */
+
+/* 
+ * Touch Target Sizing Rules:
+ * - All interactive elements must be at least 44x44px (Requirements 4.1, 4.2)
+ * - Minimum 8px spacing between interactive elements (Requirement 4.3)
+ * - Apply touch-friendly sizing on mobile breakpoint
+ */
+
+/* Ensure all buttons in settings menu meet minimum touch target size */
+.settings-menu-content button,
+.settings-menu-content .btn,
+.settings-menu-content .extra-btn,
+.settings-menu-content input[type="button"],
+.settings-menu-content input[type="submit"] {
+  min-height: var(--touch-target-size);
+  min-width: var(--touch-target-size);
+  padding: 12px 16px;
+  /* Ensure adequate spacing between buttons */
+  margin-bottom: var(--touch-target-min-spacing);
+}
+
+/* Ensure select dropdowns meet minimum touch target size */
+.settings-menu-content select,
+.settings-menu-content .menu-control-select {
+  min-height: var(--touch-target-size);
+  padding: 12px 16px;
+  /* Ensure adequate spacing */
+  margin-bottom: var(--touch-target-min-spacing);
+}
+
+/* Ensure input fields meet minimum touch target size */
+.settings-menu-content input[type="text"],
+.settings-menu-content input[type="number"],
+.settings-menu-content input[type="email"],
+.settings-menu-content input[type="password"] {
+  min-height: var(--touch-target-size);
+  padding: 12px 16px;
+  /* Ensure adequate spacing */
+  margin-bottom: var(--touch-target-min-spacing);
+}
+
+/* Ensure checkboxes and radio buttons have adequate touch targets */
+.settings-menu-content input[type="checkbox"],
+.settings-menu-content input[type="radio"] {
+  min-width: var(--touch-target-size);
+  min-height: var(--touch-target-size);
+  /* Add spacing around checkbox/radio */
+  margin: var(--touch-target-min-spacing);
+}
+
+/* Ensure labels for checkboxes/radios have adequate touch targets */
+.settings-menu-content label {
+  min-height: var(--touch-target-size);
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  /* Ensure adequate spacing between labels */
+  margin-bottom: var(--touch-target-min-spacing);
+}
+
+/* Ensure links meet minimum touch target size */
+.settings-menu-content a {
+  min-height: var(--touch-target-size);
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  /* Ensure adequate spacing */
+  margin: var(--touch-target-min-spacing) 0;
+}
+
+/* Remove bottom margin from last interactive element in a group */
+.menu-control-group > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Ensure adequate spacing between different types of controls */
+.settings-menu-content .menu-control-label + .menu-control-select,
+.settings-menu-content .menu-control-label + button,
+.settings-menu-content .menu-control-label + input {
+  margin-top: var(--touch-target-min-spacing);
+}
+
+/* Mobile-specific touch target enhancements */
+@media (max-width: 767px) {
+  /* Increase touch targets on mobile for better usability */
+  .settings-menu-content button,
+  .settings-menu-content .btn,
+  .settings-menu-content .extra-btn,
+  .settings-menu-content .menu-control-btn {
+    min-height: 48px; /* Slightly larger on mobile */
+    padding: 14px 18px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .settings-menu-content select,
+  .settings-menu-content .menu-control-select {
+    min-height: 48px;
+    padding: 14px 18px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .settings-menu-content input[type="text"],
+  .settings-menu-content input[type="number"],
+  .settings-menu-content input[type="email"],
+  .settings-menu-content input[type="password"] {
+    min-height: 48px;
+    padding: 14px 18px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Increase spacing between interactive elements on mobile */
+  .menu-control-group + .menu-control-group {
+    margin-top: 12px; /* Increased from 8px */
+  }
+  
+  .settings-menu-content button,
+  .settings-menu-content select,
+  .settings-menu-content input {
+    margin-bottom: 12px; /* Increased from 8px */
+  }
+  
+  /* Ensure toggle and close buttons are easily tappable on mobile */
+  .settings-menu-toggle,
+  .settings-menu-close {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+/* Tablet-specific touch target sizing */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Maintain touch-friendly sizing on tablets */
+  .settings-menu-content button,
+  .settings-menu-content .btn,
+  .settings-menu-content .extra-btn,
+  .settings-menu-content .menu-control-btn {
+    min-height: var(--touch-target-size);
+    padding: 12px 16px;
+  }
+  
+  .settings-menu-content select,
+  .settings-menu-content .menu-control-select {
+    min-height: var(--touch-target-size);
+    padding: 12px 16px;
+  }
+  
+  /* Ensure adequate spacing on tablets */
+  .menu-control-group + .menu-control-group {
+    margin-top: 10px;
+  }
+}
+
+/* Desktop - can use slightly smaller targets but still comfortable */
+@media (min-width: 1024px) {
+  .settings-menu-content button,
+  .settings-menu-content .btn,
+  .settings-menu-content .extra-btn,
+  .settings-menu-content .menu-control-btn {
+    min-height: 40px;
+    padding: 10px 16px;
+  }
+  
+  .settings-menu-content select,
+  .settings-menu-content .menu-control-select {
+    min-height: 40px;
+    padding: 10px 16px;
+  }
+  
+  .settings-menu-content input[type="text"],
+  .settings-menu-content input[type="number"],
+  .settings-menu-content input[type="email"],
+  .settings-menu-content input[type="password"] {
+    min-height: 40px;
+    padding: 10px 16px;
+  }
+  
+  /* Standard spacing on desktop */
+  .menu-control-group + .menu-control-group {
+    margin-top: var(--touch-target-min-spacing);
+  }
+  
+  .settings-menu-content button,
+  .settings-menu-content select,
+  .settings-menu-content input {
+    margin-bottom: var(--touch-target-min-spacing);
+  }
+}
+
+/* Ensure focus indicators are visible and don't interfere with touch targets */
+.settings-menu-content button:focus,
+.settings-menu-content select:focus,
+.settings-menu-content input:focus,
+.settings-menu-content a:focus {
+  outline: 2px solid var(--focus-color, #4a90e2);
+  outline-offset: 2px;
+  /* Ensure outline doesn't reduce effective touch target */
+  box-shadow: 0 0 0 2px transparent;
+}
+
+/* Active state feedback for touch interactions - Requirements 4.4, 4.5 */
+.settings-menu-content button:active,
+.settings-menu-content .menu-control-btn:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Touch-active state for immediate visual feedback on touch */
+.touch-active {
+  opacity: 0.8;
+  background-color: rgba(74, 144, 226, 0.1) !important;
+  transition: opacity 0.05s ease, background-color 0.05s ease;
+}
+
+/* Touch-active state for buttons */
+button.touch-active,
+.btn.touch-active,
+.extra-btn.touch-active,
+.menu-control-btn.touch-active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Touch-active state for toggle and close buttons */
+.settings-menu-toggle.touch-active,
+.settings-menu-close.touch-active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}
+
+/* Touch-active state for select dropdowns */
+select.touch-active,
+.menu-control-select.touch-active {
+  background-color: rgba(74, 144, 226, 0.05);
+  border-color: var(--primary-color, #4a90e2);
+}
+
+/* Touch-active state for links */
+a.touch-active {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+/* Dark theme support for touch-active state */
+@media (prefers-color-scheme: dark) {
+  .touch-active {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  select.touch-active,
+  .menu-control-select.touch-active {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Ensure adequate hit area for small icons/controls */
+.settings-menu-content .icon {
+  /* Add padding to increase hit area */
+  padding: 8px;
+  margin: -8px; /* Negative margin to maintain visual spacing */
+}
+
+/* ============================================
+   Animation Performance Optimizations
+   Requirements: 7.1, 7.3, 7.5
+   ============================================ */
+
+/* 
+ * Performance Notes:
+ * - All animations use CSS transforms (translateX, translateY) for 60fps performance
+ * - Animation duration is 300ms as specified in requirements
+ * - GPU acceleration is enabled via will-change, translateZ(0), and backface-visibility
+ * - Animations are non-blocking and don't prevent user interaction with other elements
+ * - Backdrop uses opacity transitions for smooth fade-in/fade-out
+ * - Menu panel uses transform transitions for smooth slide-in/slide-out
+ */
+
+/* Ensure animations don't block user interaction */
+.settings-menu-panel,
+.settings-menu-backdrop {
+  pointer-events: auto;
+}
+
+.settings-menu-panel[aria-hidden="true"],
+.settings-menu-backdrop:not(.active) {
+  pointer-events: none;
+}
+
+/* Additional GPU acceleration hints for older browsers */
+@supports (will-change: transform) {
+  .settings-menu-panel,
+  .settings-menu-backdrop {
+    will-change: transform, opacity;
+  }
+}
+
+/* Optimize rendering during animations */
+.settings-menu-panel.animating,
+.settings-menu-backdrop.animating {
+  /* Promote to own layer for smoother animations */
+  isolation: isolate;
+  contain: layout style paint;
+}
+
+/* Smooth scroll for menu content */
+.settings-menu-content {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Optimize button hover/active transitions */
+.settings-menu-toggle,
+.settings-menu-close {
+  /* Use transform for scale effects instead of width/height */
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+/* Focus visible support for better keyboard navigation */
+.settings-menu-toggle:focus-visible,
+.settings-menu-close:focus-visible {
+  outline: 3px solid var(--focus-color, #4a90e2);
+  outline-offset: 2px;
+}
+
+/* Ensure menu is accessible when JavaScript is disabled */
+.no-js .settings-menu-panel {
+  position: static;
+  transform: none;
+  visibility: visible;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.no-js .settings-menu-toggle {
+  display: none;
+}
+
+.no-js .settings-menu-backdrop {
+  display: none;
+}

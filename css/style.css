@@ -50,7 +50,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevent scrolling in iframe */
+  overflow-x: hidden;
+  overflow-y: auto;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -183,6 +184,106 @@ body {
   margin-top: 2rem;
   font-size: 0.8rem;
   color: var(--text-secondary);
+}
+
+/* Device Selector Styles */
+.device-selector {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.device-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 10px;
+  background: var(--bg-panel);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
+
+.device-btn:hover {
+  background: var(--bg-card);
+  border-color: var(--accent-gold);
+  transform: translateY(-2px);
+}
+
+.device-btn.active {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+.device-icon {
+  font-size: 2rem;
+}
+
+.device-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Device-specific body classes */
+body.device-desktop {
+  --square-size: clamp(60px, 16vh, 100px);
+  --panel-width: 300px;
+  --font-scale: 1;
+}
+
+body.device-tablet {
+  --square-size: clamp(50px, 14vh, 80px);
+  --panel-width: 250px;
+  --font-scale: 0.9;
+}
+
+body.device-mobile {
+  --square-size: clamp(40px, 12vh, 70px);
+  --panel-width: 100%;
+  --font-scale: 0.85;
+}
+
+/* Responsive adjustments for device modes */
+body.device-mobile .container {
+  flex-direction: column;
+  padding: 10px;
+}
+
+body.device-mobile .side-panel {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 15px;
+}
+
+body.device-mobile .board-card {
+  min-width: auto;
+  width: 100%;
+}
+
+body.device-tablet .container {
+  gap: 15px;
+  padding: 15px;
+}
+
+body.device-tablet .side-panel {
+  width: var(--panel-width);
+}
+
+body.device-desktop .container {
+  gap: 20px;
+  padding: 20px;
+}
+
+body.device-desktop .side-panel {
+  width: var(--panel-width);
 }
 
 /* --- Main Game Container --- */
@@ -462,27 +563,51 @@ body {
 .container {
   flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   gap: 20px;
   padding: 20px;
   width: 100%;
-  max-width: 1600px;
+  max-width: 100%;
   margin: 0 auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   transition: filter 0.5s ease;
+}
+
+/* Responsive container layout - stacks vertically on all screens */
+@media (min-width: 1400px) {
+  .container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 1600px;
+  }
 }
 
 /* Side Panel Styles */
 .side-panel {
-  width: 300px;
+  width: 100%;
+  max-width: 600px;
   flex-shrink: 0;
   background: var(--bg-panel);
   border-radius: 15px;
   border: 2px solid var(--accent-gold);
   box-shadow: var(--shadow-soft);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 80vh;
   backdrop-filter: blur(10px);
   transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (min-width: 1400px) {
+  .side-panel {
+    width: 300px;
+    max-width: 300px;
+  }
 }
 
 .collapsible-header {
@@ -745,9 +870,15 @@ body {
   flex-direction: column;
   align-items: center;
   position: relative;
-  flex: 1;
-  min-width: 400px;
+  width: 100%;
   max-width: 600px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1400px) {
+  .board-card {
+    flex: 0 1 auto;
+  }
 }
 
 .info-bar {
@@ -787,9 +918,14 @@ body {
   display: grid;
   grid-template-columns: repeat(4, var(--square-size));
   grid-template-rows: repeat(5, var(--square-size));
-  border: 8px solid var(--border-color);
-  border-radius: 4px;
+  border-width: calc(var(--square-size) * 0.08);
+  border-style: solid;
+  border-color: var(--border-color);
+  border-radius: calc(var(--square-size) * 0.05);
   box-shadow: var(--shadow-soft);
+  margin: 0 auto;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .square {
@@ -911,12 +1047,21 @@ body {
 
 /* --- Side Panels (Settings & History) --- */
 .side-panel {
-  width: 300px;
+  width: 100%;
+  max-width: 600px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease, transform 0.3s ease;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+@media (min-width: 1400px) {
+  .side-panel {
+    width: 300px;
+    max-width: 300px;
+  }
 }
 
 .collapsible-header {
@@ -934,6 +1079,7 @@ body {
 .collapsible-content {
   overflow-y: auto;
   flex: 1;
+  max-height: calc(80vh - 100px);
 }
 
 /* Toast notifications */
@@ -1200,11 +1346,11 @@ body {
 }
 
 .light-preview {
-  background-color: var(--board-light, #9ca3af);
+  background-color: var(--board-light, #f0d9b5);
 }
 
 .dark-preview {
-  background-color: var(--board-dark, #4b5563);
+  background-color: var(--board-dark, #b58863);
 }
 
 /* Pieces Preview */
@@ -1654,9 +1800,10 @@ body {
 /* Tablet / Iframe Mode (< 1200px) */
 @media (max-width: 1200px) {
   .container {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    padding-top: 60px; /* Space for mobile menu btn */
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px;
+    gap: 15px;
   }
 
   /* Hide panels by default on smaller screens, use toggles */
@@ -1672,6 +1819,7 @@ body {
     max-height: none;
     border-radius: 0;
     justify-content: center;
+    overflow-y: auto;
   }
 
   #settingsPanel.active {
@@ -1694,15 +1842,16 @@ body {
     cursor: pointer;
   }
 
-  /* Arrange Board and History side-by-side if possible */
   .board-card {
     order: 1;
+    width: 100%;
+    max-width: 100%;
   }
 
   #historyPanel {
     order: 2;
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     margin-top: 0;
   }
 }
@@ -1710,33 +1859,30 @@ body {
 /* Small Heights (Landscape Mobile or Small Iframe) */
 @media (max-height: 650px) {
   :root {
-    --square-size: 15vh; /* Maximize board */
+    --square-size: clamp(35px, 14vh, 70px);
   }
+  
   .container {
     padding: 10px;
     gap: 10px;
-    align-items: center;
+    min-height: auto;
   }
+  
   .copyright-footer {
-    display: none; /* Hide footer to save space */
+    display: none;
   }
+  
   .board-card {
     padding: 10px;
   }
+  
   .info-bar {
     padding: 5px 10px;
     margin-bottom: 5px;
   }
-  /* Move history to right of board if width allows, else stack */
-  @media (min-width: 800px) {
-    .container {
-      flex-direction: row;
-      align-items: center;
-    }
-    #historyPanel {
-      height: 80vh; /* Match board height approx */
-      width: 250px;
-    }
+  
+  .side-panel {
+    max-height: 60vh;
   }
 }
 
@@ -2137,6 +2283,7 @@ body {
 @media (max-width: 1200px) {
   .side-panel {
     width: 100%;
+    max-width: 600px;
     margin-bottom: 20px;
   }
   
@@ -2149,7 +2296,7 @@ body {
 @media (max-width: 768px) {
   .side-panel {
     width: 100%;
-    max-width: 500px;
+    max-width: 100%;
   }
   
   .collapsible-header {
@@ -2178,7 +2325,7 @@ body {
 @media (max-width: 480px) {
   .side-panel {
     width: 100%;
-    margin: 0 10px 20px 10px;
+    margin: 0 0 20px 0;
   }
   
   .collapsible-header {
@@ -2986,5 +3133,358 @@ body {
     right: 10px;
     left: 10px;
     max-width: none;
+  }
+}
+
+
+/* ============================================
+   ULTRA SMALL SCREENS (Apple Watch, etc.)
+   ============================================ */
+
+/* For very small screens like Apple Watch S4 (324x394px) */
+@media (max-width: 400px) and (max-height: 500px) {
+  :root {
+    --square-size: clamp(28px, 11vh, 45px);
+  }
+  
+  body {
+    font-size: 10px;
+    overflow-y: auto;
+  }
+  
+  .container {
+    padding: 3px !important;
+    gap: 3px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    min-height: auto !important;
+  }
+  
+  .board {
+    border-width: calc(var(--square-size) * 0.08) !important;
+    border-style: solid !important;
+    border-color: var(--border-color) !important;
+    border-radius: calc(var(--square-size) * 0.05) !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    width: fit-content !important;
+    margin: 0 auto !important;
+  }
+  
+  .square {
+    width: var(--square-size) !important;
+    height: var(--square-size) !important;
+    border-radius: 0 !important;
+  }
+  
+  .piece {
+    font-size: clamp(18px, 7vh, 32px) !important;
+  }
+  
+  .coord {
+    font-size: 5px !important;
+    padding: 1px !important;
+  }
+  
+  /* Hide side panels on ultra small screens */
+  #settingsPanel,
+  #historyPanel {
+    display: none !important;
+  }
+  
+  .board-card {
+    padding: 3px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .board-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  
+  .info-bar {
+    padding: 2px 4px !important;
+    font-size: 7px !important;
+    gap: 3px !important;
+    margin-bottom: 3px !important;
+  }
+  
+  .status-indicator {
+    gap: 2px !important;
+    font-size: 7px !important;
+  }
+  
+  .pulse {
+    width: 5px !important;
+    height: 5px !important;
+  }
+  
+  #timer {
+    font-size: 8px !important;
+  }
+  
+  /* Settings menu button */
+  .settings-menu-toggle,
+  .game-menu-btn {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 10px !important;
+    top: 3px !important;
+    left: 3px !important;
+  }
+  
+  /* Start screen adjustments */
+  .start-content {
+    padding: 10px !important;
+    max-width: 95% !important;
+  }
+  
+  .game-title {
+    font-size: 14px !important;
+    margin-bottom: 3px !important;
+    letter-spacing: 1px !important;
+  }
+  
+  .subtitle {
+    font-size: 8px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .control-group {
+    margin-bottom: 8px !important;
+  }
+  
+  .control-group label {
+    font-size: 7px !important;
+    margin-bottom: 3px !important;
+  }
+  
+  .control-group select {
+    padding: 5px !important;
+    font-size: 8px !important;
+  }
+  
+  .btn-start,
+  .btn-secondary {
+    padding: 8px !important;
+    font-size: 9px !important;
+    letter-spacing: 0.5px !important;
+  }
+  
+  .device-selector {
+    gap: 5px !important;
+  }
+  
+  .device-btn {
+    padding: 8px 5px !important;
+    gap: 4px !important;
+  }
+  
+  .device-icon {
+    font-size: 1.2rem !important;
+  }
+  
+  .device-label {
+    font-size: 0.65rem !important;
+  }
+  
+  .footer-credits {
+    font-size: 6px !important;
+    margin-top: 8px !important;
+  }
+}
+
+/* Medium small screens (400px - 600px) */
+@media (min-width: 401px) and (max-width: 600px) {
+  :root {
+    --square-size: clamp(40px, 13vh, 65px);
+  }
+  
+  .container {
+    padding: 10px !important;
+    gap: 10px !important;
+  }
+  
+  .board-card {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .side-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Tablet range (601px - 1024px) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  :root {
+    --square-size: clamp(50px, 14vh, 80px);
+  }
+  
+  .container {
+    padding: 15px !important;
+    gap: 15px !important;
+  }
+  
+  .board-card {
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .side-panel {
+    width: 100%;
+    max-width: 600px;
+  }
+}
+
+/* Large tablets and small desktops (1025px - 1399px) */
+@media (min-width: 1025px) and (max-width: 1399px) {
+  :root {
+    --square-size: clamp(55px, 15vh, 90px);
+  }
+  
+  .container {
+    padding: 20px !important;
+    gap: 20px !important;
+    flex-direction: column;
+  }
+  
+  .board-card {
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .side-panel {
+    width: 100%;
+    max-width: 600px;
+  }
+}
+
+/* Extra large screens (1400px+) */
+@media (min-width: 1400px) {
+  :root {
+    --square-size: clamp(60px, 16vh, 100px);
+  }
+  
+  .container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .board-card {
+    flex: 0 1 auto;
+    max-width: 600px;
+  }
+  
+  .side-panel {
+    width: 300px;
+    max-width: 300px;
+  }
+}
+    font-size: 9px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .start-controls {
+    gap: 8px !important;
+  }
+  
+  .control-group label {
+    font-size: 9px !important;
+  }
+  
+  .control-group select {
+    font-size: 9px !important;
+    padding: 4px !important;
+  }
+  
+  .btn-start {
+    font-size: 11px !important;
+    padding: 8px 12px !important;
+  }
+  
+  .footer-credits {
+    font-size: 7px !important;
+    margin-top: 8px !important;
+  }
+}
+
+/* For slightly larger small screens (400-600px width) */
+@media (max-width: 600px) and (min-width: 401px) {
+  :root {
+    --square-size: clamp(35px, 14vh, 70px);
+  }
+  
+  .piece {
+    font-size: clamp(25px, 10vh, 50px) !important;
+  }
+  
+  .coord {
+    font-size: 7px !important;
+  }
+  
+  .container {
+    padding: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .board {
+    border-width: calc(var(--square-size) * 0.08) !important;
+    border-style: solid !important;
+    border-color: var(--border-color) !important;
+    border-radius: calc(var(--square-size) * 0.05) !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    width: fit-content !important;
+    margin: 0 auto !important;
+  }
+  
+  .info-bar {
+    font-size: 10px !important;
+    padding: 5px 8px !important;
+  }
+}
+
+/* Landscape mode for small screens */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --square-size: clamp(25px, 10vh, 45px);
+  }
+  
+  .piece {
+    font-size: clamp(18px, 7vh, 32px) !important;
+  }
+  
+  .container {
+    flex-direction: row !important;
+    padding: 5px !important;
+  }
+  
+  .board-card {
+    flex: 1 !important;
+  }
+  
+  #settingsPanel,
+  #historyPanel {
+    max-width: 150px !important;
+    font-size: 9px !important;
+  }
+  
+  .info-bar {
+    font-size: 9px !important;
   }
 }

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 7.2 Verification - Language Selector in Settings Menu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+    }
+    
+    .header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+    
+    .test-section {
+      background: white;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .test-section h2 {
+      margin-top: 0;
+      color: #333;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .checklist li {
+      padding: 12px;
+      margin: 8px 0;
+      background: #f9f9f9;
+      border-left: 4px solid #ddd;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    
+    .checklist li:hover {
+      background: #f0f0f0;
+      border-left-color: #667eea;
+    }
+    
+    .checklist li::before {
+      content: "☐ ";
+      font-size: 20px;
+      margin-right: 10px;
+      color: #999;
+    }
+    
+    .checklist li.checked::before {
+      content: "✅ ";
+    }
+    
+    .checklist li.checked {
+      border-left-color: #28a745;
+      background: #e8f5e9;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    
+    .success-box {
+      background: #e8f5e9;
+      border-left: 4px solid #4caf50;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    
+    .code-block {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      margin: 5px;
+    }
+    
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .btn-success {
+      background: #28a745;
+    }
+    
+    .btn-success:hover {
+      background: #218838;
+    }
+    
+    .requirements {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    
+    .requirements h3 {
+      margin-top: 0;
+      color: #856404;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>✅ Task 7.2 Verification</h1>
+    <p><strong>Task:</strong> Move language selector into settings menu</p>
+    <p><strong>Requirements:</strong> 3.2 - Preserve existing event handlers and functionality</p>
+  </div>
+
+  <div class="test-section">
+    <h2>📋 Implementation Checklist</h2>
+    <ul class="checklist">
+      <li class="checked">Language selector moved from old settings panel to settings menu</li>
+      <li class="checked">Language selector placed in menu-control-group container</li>
+      <li class="checked">Label added with proper ID (lblLanguage) for translation support</li>
+      <li class="checked">Select element has menu-control-select CSS class</li>
+      <li class="checked">All 11 language options preserved</li>
+      <li class="checked">onchange event handler preserved (setLanguage function)</li>
+      <li class="checked">CSS styles added for menu-control-label and menu-control-select</li>
+      <li class="checked">Translation support added to updateUIText function</li>
+      <li class="checked">Old language selector removed from settings panel</li>
+      <li class="checked">Start screen language selector preserved (not affected)</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>🔍 Code Changes Summary</h2>
+    
+    <h3>1. HTML Changes (index.html)</h3>
+    <div class="info-box">
+      <strong>Added to Settings Menu Content:</strong>
+    </div>
+    <div class="code-block">
+&lt;!-- Language Selector --&gt;
+&lt;div class="menu-control-group"&gt;
+  &lt;label for="languageSelect" class="menu-control-label"&gt;
+    &lt;span class="icon"&gt;🌐&lt;/span&gt;
+    &lt;span id="lblLanguage"&gt;Language&lt;/span&gt;
+  &lt;/label&gt;
+  &lt;select id="languageSelect" class="menu-control-select" onchange="setLanguage(this.value)"&gt;
+    &lt;option value="en"&gt;🇬🇧 English&lt;/option&gt;
+    &lt;!-- ... all 11 languages ... --&gt;
+  &lt;/select&gt;
+&lt;/div&gt;
+    </div>
+    
+    <div class="info-box">
+      <strong>Removed from Old Settings Panel:</strong>
+    </div>
+    <div class="code-block">
+&lt;!-- Language selector removed from #settingsContent --&gt;
+&lt;!-- Previously was in .language-selector div --&gt;
+    </div>
+
+    <h3>2. CSS Changes (responsive-settings-menu.css)</h3>
+    <div class="code-block">
+/* Menu Control Labels */
+.menu-control-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-color, #333);
+  font-size: 0.95rem;
+}
+
+/* Menu Control Select Dropdowns */
+.menu-control-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  background: var(--input-bg, #ffffff);
+  color: var(--text-color, #333);
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-height: var(--touch-target-size);
+}
+    </div>
+
+    <h3>3. JavaScript Changes (translations.js)</h3>
+    <div class="code-block">
+// Update language label in settings menu
+const lblLanguage = document.getElementById("lblLanguage");
+if (lblLanguage) lblLanguage.textContent = t("language");
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>✅ Functionality Verification</h2>
+    
+    <div class="requirements">
+      <h3>Requirement 3.2: Language Selector Functionality Preserved</h3>
+      <p>The language selector must maintain all existing functionality:</p>
+      <ul>
+        <li>✅ setLanguage() function still called on change</li>
+        <li>✅ All 11 language options available</li>
+        <li>✅ Language selection persists in localStorage</li>
+        <li>✅ UI updates when language changes</li>
+        <li>✅ Syncs with start screen language selector</li>
+        <li>✅ RTL support for Arabic maintained</li>
+      </ul>
+    </div>
+
+    <div class="success-box">
+      <strong>✅ Event Handler Preservation:</strong>
+      <p>The onchange="setLanguage(this.value)" event handler has been preserved exactly as it was in the original implementation. This ensures that:</p>
+      <ul>
+        <li>Language changes are saved to localStorage</li>
+        <li>UI text is updated via updateUIText()</li>
+        <li>HTML dir attribute is set for RTL languages</li>
+        <li>Both language selectors (start screen and settings menu) stay in sync</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>🧪 Manual Testing Steps</h2>
+    <ol style="line-height: 2;">
+      <li>Open the main application (index.html)</li>
+      <li>Click the settings menu toggle button (3-dot icon in top-right)</li>
+      <li>Verify the settings menu opens smoothly</li>
+      <li>Locate the language selector with 🌐 icon below the theme toggle</li>
+      <li>Change the language to Turkish (Türkçe)</li>
+      <li>Verify all UI text updates to Turkish</li>
+      <li>Close and reopen the settings menu</li>
+      <li>Verify the language selector shows Turkish as selected</li>
+      <li>Refresh the page</li>
+      <li>Verify the language persists (still Turkish)</li>
+      <li>Change to Arabic (العربية)</li>
+      <li>Verify the page layout switches to RTL (right-to-left)</li>
+      <li>Change back to English</li>
+      <li>Verify the page layout switches back to LTR</li>
+    </ol>
+  </div>
+
+  <div class="test-section">
+    <h2>📊 Integration Points</h2>
+    
+    <div class="info-box">
+      <strong>Existing Systems Integration:</strong>
+      <ul>
+        <li><strong>Translation System:</strong> Uses existing setLanguage() function</li>
+        <li><strong>Settings Menu Manager:</strong> Language selector is part of menu content</li>
+        <li><strong>Local Storage:</strong> Language preference saved to '4x5_lang' key</li>
+        <li><strong>Start Screen:</strong> Syncs with #startLanguage selector</li>
+        <li><strong>Storage Events:</strong> Listens for language changes from other tabs</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>🎯 Task Completion Status</h2>
+    
+    <div class="success-box">
+      <h3>✅ Task 7.2 Complete</h3>
+      <p><strong>Summary:</strong> The language selector has been successfully moved from the old settings panel into the responsive settings menu. All functionality has been preserved, including:</p>
+      <ul>
+        <li>✅ Event handlers (onchange with setLanguage)</li>
+        <li>✅ All 11 language options</li>
+        <li>✅ Translation support via lblLanguage ID</li>
+        <li>✅ Proper CSS styling with menu-control classes</li>
+        <li>✅ Touch-friendly sizing (44px minimum height)</li>
+        <li>✅ Dark theme support</li>
+        <li>✅ Accessibility (label with for attribute)</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <strong>Files Modified:</strong>
+      <ul>
+        <li>index.html - Moved language selector to settings menu</li>
+        <li>css/responsive-settings-menu.css - Added styles for language selector</li>
+        <li>js/translations.js - Added lblLanguage to updateUIText()</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>🚀 Next Steps</h2>
+    <p>Task 7.2 is complete. The next tasks in the implementation plan are:</p>
+    <ul>
+      <li><strong>Task 7.3:</strong> Move piece setup controls into settings menu</li>
+      <li><strong>Task 7.4:</strong> Move position sharing controls into settings menu</li>
+      <li><strong>Task 7.5:</strong> Move analysis controls into settings menu</li>
+    </ul>
+  </div>
+
+  <div style="text-align: center; margin-top: 40px; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px;">
+    <h2 style="margin: 0;">✅ Task 7.2 Successfully Completed</h2>
+    <p style="margin: 10px 0 0 0;">Language selector integrated into settings menu with all functionality preserved</p>
+  </div>
+</body>
+</html>

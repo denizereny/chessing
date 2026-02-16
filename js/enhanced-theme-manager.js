@@ -87,62 +87,13 @@ class EnhancedThemeManager {
     
     /**
      * Create theme toggle button
+     * DISABLED: Theme toggle is now in the settings menu, no need for separate button
      */
     createThemeToggle() {
-        // Check if toggle already exists
-        if (document.querySelector('.theme-toggle-container')) {
-            this.themeToggleButton = document.querySelector('.theme-toggle-button');
-            return;
-        }
-        
-        const container = document.createElement('div');
-        container.className = 'theme-toggle-container animate-entrance';
-        
-        const button = document.createElement('button');
-        button.className = 'theme-toggle-button';
-        button.setAttribute('aria-label', 'Toggle theme');
-        button.setAttribute('title', 'Switch between light and dark themes');
-        button.setAttribute('tabindex', '0');
-        
-        const iconContainer = document.createElement('div');
-        iconContainer.className = 'theme-toggle-icon';
-        
-        const sunIcon = document.createElement('div');
-        sunIcon.className = 'theme-toggle-sun';
-        sunIcon.innerHTML = '☀️';
-        
-        const moonIcon = document.createElement('div');
-        moonIcon.className = 'theme-toggle-moon';
-        moonIcon.innerHTML = '🌙';
-        
-        const tooltip = document.createElement('div');
-        tooltip.className = 'theme-toggle-tooltip';
-        tooltip.textContent = this.getTooltipText();
-        
-        const persistenceIndicator = document.createElement('div');
-        persistenceIndicator.className = 'theme-persistence-indicator';
-        
-        const srText = document.createElement('span');
-        srText.className = 'theme-toggle-sr-text';
-        srText.textContent = `Current theme: ${this.currentTheme}. Click to toggle.`;
-        
-        iconContainer.appendChild(sunIcon);
-        iconContainer.appendChild(moonIcon);
-        
-        button.appendChild(iconContainer);
-        button.appendChild(tooltip);
-        button.appendChild(persistenceIndicator);
-        button.appendChild(srText);
-        
-        container.appendChild(button);
-        
-        // Insert into DOM
-        document.body.appendChild(container);
-        
-        this.themeToggleButton = button;
-        
-        // Update button state
-        this.updateToggleButton();
+        // Theme toggle button creation disabled
+        // The theme toggle is now integrated into the settings menu
+        // No separate floating button is needed
+        return;
     }
     
     /**

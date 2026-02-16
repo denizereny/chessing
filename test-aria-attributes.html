@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARIA Attributes Tests - Responsive Settings Menu</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    
+    #test-results {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    
+    .test-suite {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      border-left: 4px solid #2196F3;
+    }
+    
+    .test-suite.passed {
+      border-left-color: #4CAF50;
+    }
+    
+    .test-suite.failed {
+      border-left-color: #f44336;
+    }
+    
+    .test-case {
+      margin: 10px 0;
+      padding: 8px;
+      background: #fafafa;
+      border-radius: 4px;
+    }
+    
+    .test-case.passed {
+      color: #4CAF50;
+    }
+    
+    .test-case.failed {
+      color: #f44336;
+    }
+    
+    .test-summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    
+    .error-details {
+      margin-top: 5px;
+      padding: 8px;
+      background: #ffebee;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #c62828;
+      white-space: pre-wrap;
+    }
+    
+    /* Visually hidden class for accessibility */
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 ARIA Attributes Tests - Responsive Settings Menu</h1>
+  <p><strong>Feature:</strong> responsive-settings-menu</p>
+  <p><strong>Task:</strong> 9.8 Write unit tests for ARIA attributes</p>
+  <p><strong>Validates:</strong> Requirements 6.1, 6.5, 6.7</p>
+  
+  <button id="run-tests" onclick="runTests()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+    ▶️ Run Tests
+  </button>
+  
+  <div id="test-results"></div>
+  
+  <!-- Settings Menu Toggle Button -->
+  <button 
+    id="settingsMenuToggle" 
+    class="settings-menu-toggle"
+    aria-label="Open settings menu"
+    aria-expanded="false"
+    aria-controls="settingsMenuPanel"
+    aria-haspopup="true"
+    type="button">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="12" cy="5" r="2" fill="currentColor"/>
+      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      <circle cx="12" cy="19" r="2" fill="currentColor"/>
+    </svg>
+    <span class="visually-hidden">Settings Menu</span>
+  </button>
+
+  <!-- Settings Menu Backdrop -->
+  <div 
+    id="settingsMenuBackdrop" 
+    class="settings-menu-backdrop"
+    aria-hidden="true"
+    role="presentation"></div>
+
+  <!-- Settings Menu Panel -->
+  <aside 
+    id="settingsMenuPanel" 
+    class="settings-menu-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settingsMenuTitle"
+    aria-hidden="true">
+    <!-- Screen reader announcements for menu state changes -->
+    <div 
+      id="settingsMenuAnnouncer" 
+      class="visually-hidden" 
+      role="status" 
+      aria-live="polite" 
+      aria-atomic="true"></div>
+    
+    <div class="settings-menu-header">
+      <h2 id="settingsMenuTitle" class="settings-menu-title">
+        <span class="icon" aria-hidden="true">⚙️</span>
+        <span>Settings</span>
+      </h2>
+      <button 
+        id="settingsMenuClose" 
+        class="settings-menu-close"
+        aria-label="Close settings menu"
+        type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="visually-hidden">Close</span>
+      </button>
+    </div>
+    
+    <div class="settings-menu-content" role="group" aria-label="Settings controls">
+      <!-- Theme Toggle -->
+      <div class="menu-control-group">
+        <button onclick="toggleTheme()" class="extra-btn menu-control-btn" id="btnTheme">
+          🌙 <span id="btnThemeText">Dark Mode</span>
+        </button>
+      </div>
+
+      <!-- Language Selector -->
+      <div class="menu-control-group">
+        <label for="languageSelect" class="menu-control-label">
+          <span class="icon">🌐</span>
+          <span id="lblLanguage">Language</span>
+        </label>
+        <select id="languageSelect" class="menu-control-select" onchange="setLanguage(this.value)">
+          <option value="en">🇬🇧 English</option>
+          <option value="tr">🇹🇷 Türkçe</option>
+          <option value="es">🇪🇸 Español</option>
+        </select>
+      </div>
+
+      <!-- Piece Setup -->
+      <div class="menu-control-group">
+        <button onclick="openPieceSetup()" class="extra-btn menu-control-btn" id="btnPieceSetup">
+          ♔ <span id="btnPieceSetupText">Piece Setup</span>
+        </button>
+      </div>
+
+      <!-- Position Analysis -->
+      <div class="menu-control-group">
+        <button onclick="analyzeCurrentPosition()" class="extra-btn menu-control-btn" id="btnAnalyzePosition">
+          🔍 <span id="btnAnalyzePositionText">Analyze Position</span>
+        </button>
+      </div>
+
+      <!-- Position Sharing -->
+      <div class="menu-control-group">
+        <button onclick="shareCurrentPosition()" class="extra-btn menu-control-btn" id="btnSharePosition">
+          🔗 <span id="btnSharePositionText">Share Position</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <script src="js/settings-menu-manager.js"></script>
+  
+  <script>
+    // Simple test framework
+    const testResults = {
+      suites: [],
+      totalTests: 0,
+      passedTests: 0,
+      failedTests: 0
+    };
+    
+    let currentSuite = null;
+    
+    function describe(name, fn) {
+      currentSuite = {
+        name: name,
+        tests: [],
+        passed: 0,
+        failed: 0
+      };
+      testResults.suites.push(currentSuite);
+      fn();
+      currentSuite = null;
+    }
+    
+    function test(name, fn) {
+      testResults.totalTests++;
+      try {
+        fn();
+        testResults.passedTests++;
+        if (currentSuite) {
+          currentSuite.passed++;
+          currentSuite.tests.push({ name, passed: true });
+        }
+      } catch (error) {
+        testResults.failedTests++;
+        if (currentSuite) {
+          currentSuite.failed++;
+          currentSuite.tests.push({ name, passed: false, error: error.message });
+        }
+      }
+    }
+    
+    function expect(value) {
+      return {
+        toBe(expected) {
+          if (value !== expected) {
+            throw new Error(`Expected ${JSON.stringify(expected)} but got ${JSON.stringify(value)}`);
+          }
+        },
+        toBeTruthy() {
+          if (!value) {
+            throw new Error(`Expected truthy value but got ${JSON.stringify(value)}`);
+          }
+        },
+        toContain(expected) {
+          if (Array.isArray(value)) {
+            if (!value.includes(expected)) {
+              throw new Error(`Expected array to contain ${JSON.stringify(expected)}`);
+            }
+          } else if (typeof value === 'string') {
+            if (!value.includes(expected)) {
+              throw new Error(`Expected string to contain "${expected}"`);
+            }
+          } else {
+            throw new Error(`toContain() requires array or string`);
+          }
+        },
+        toBeGreaterThan(expected) {
+          if (value <= expected) {
+            throw new Error(`Expected ${value} to be greater than ${expected}`);
+          }
+        },
+        toBeGreaterThanOrEqual(expected) {
+          if (value < expected) {
+            throw new Error(`Expected ${value} to be greater than or equal to ${expected}`);
+          }
+        },
+        toMatch(pattern) {
+          if (!pattern.test(value)) {
+            throw new Error(`Expected "${value}" to match pattern ${pattern}`);
+          }
+        },
+        toBeDefined() {
+          if (value === undefined) {
+            throw new Error(`Expected value to be defined`);
+          }
+        }
+      };
+    }
+    
+    function runTests() {
+      // Reset results
+      testResults.suites = [];
+      testResults.totalTests = 0;
+      testResults.passedTests = 0;
+      testResults.failedTests = 0;
+      
+      // Initialize settings menu manager
+      window.settingsMenuManager = new SettingsMenuManager();
+      window.settingsMenuManager.initialize();
+      
+      // Load and run tests
+      const script = document.createElement('script');
+      script.src = 'test/responsive-settings-menu-aria.test.js';
+      script.onload = () => {
+        displayResults();
+      };
+      document.body.appendChild(script);
+    }
+    
+    function displayResults() {
+      const resultsDiv = document.getElementById('test-results');
+      let html = '<h2>Test Results</h2>';
+      
+      testResults.suites.forEach(suite => {
+        const suiteClass = suite.failed === 0 ? 'passed' : 'failed';
+        html += `<div class="test-suite ${suiteClass}">`;
+        html += `<h3>${suite.passed === suite.tests.length ? '✅' : '❌'} ${suite.name}</h3>`;
+        html += `<p>Passed: ${suite.passed} / ${suite.tests.length}</p>`;
+        
+        suite.tests.forEach(test => {
+          const testClass = test.passed ? 'passed' : 'failed';
+          html += `<div class="test-case ${testClass}">`;
+          html += `${test.passed ? '✓' : '✗'} ${test.name}`;
+          if (!test.passed && test.error) {
+            html += `<div class="error-details">${test.error}</div>`;
+          }
+          html += `</div>`;
+        });
+        
+        html += `</div>`;
+      });
+      
+      const summaryClass = testResults.failedTests === 0 ? 'passed' : 'failed';
+      html += `<div class="test-summary ${summaryClass}">`;
+      html += `<h3>Summary</h3>`;
+      html += `<p>Total Tests: ${testResults.totalTests}</p>`;
+      html += `<p>Passed: ${testResults.passedTests} ✅</p>`;
+      html += `<p>Failed: ${testResults.failedTests} ❌</p>`;
+      html += `<p>Success Rate: ${((testResults.passedTests / testResults.totalTests) * 100).toFixed(1)}%</p>`;
+      html += `</div>`;
+      
+      resultsDiv.innerHTML = html;
+    }
+    
+    // Stub functions to prevent errors
+    function toggleTheme() {}
+    function setLanguage() {}
+    function openPieceSetup() {}
+    function analyzeCurrentPosition() {}
+    function shareCurrentPosition() {}
+  </script>
+</body>
+</html>

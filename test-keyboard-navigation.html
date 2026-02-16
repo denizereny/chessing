@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Navigation Test</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .test-results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 5px;
+    }
+    .test-item {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 3px;
+    }
+    .pass { color: green; font-weight: bold; }
+    .fail { color: red; font-weight: bold; }
+    .info { color: blue; }
+  </style>
+</head>
+<body>
+  <h1>Keyboard Navigation & ARIA Attributes Test</h1>
+  <p>This test verifies tasks 9.1-9.4 implementation:</p>
+  <ul>
+    <li>9.1: Keyboard event handlers (Tab, Enter, Escape)</li>
+    <li>9.2: Focus trapping</li>
+    <li>9.3: Focus restoration</li>
+    <li>9.4: ARIA attributes</li>
+  </ul>
+
+  <!-- Settings Menu Toggle Button -->
+  <button 
+    id="settingsMenuToggle" 
+    class="settings-menu-toggle"
+    aria-label="Open settings menu"
+    aria-expanded="false"
+    aria-controls="settingsMenuPanel"
+    aria-haspopup="true"
+    type="button">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="12" cy="5" r="2" fill="currentColor"/>
+      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      <circle cx="12" cy="19" r="2" fill="currentColor"/>
+    </svg>
+    <span class="visually-hidden">Settings Menu</span>
+  </button>
+
+  <!-- Settings Menu Backdrop -->
+  <div 
+    id="settingsMenuBackdrop" 
+    class="settings-menu-backdrop"
+    aria-hidden="true"
+    role="presentation"></div>
+
+  <!-- Settings Menu Panel -->
+  <aside 
+    id="settingsMenuPanel" 
+    class="settings-menu-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settingsMenuTitle"
+    aria-hidden="true">
+    <!-- Screen reader announcements -->
+    <div 
+      id="settingsMenuAnnouncer" 
+      class="visually-hidden" 
+      role="status" 
+      aria-live="polite" 
+      aria-atomic="true"></div>
+    
+    <div class="settings-menu-header">
+      <h2 id="settingsMenuTitle" class="settings-menu-title">
+        <span class="icon" aria-hidden="true">⚙️</span>
+        <span>Settings</span>
+      </h2>
+      <button 
+        id="settingsMenuClose" 
+        class="settings-menu-close"
+        aria-label="Close settings menu"
+        type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="visually-hidden">Close</span>
+      </button>
+    </div>
+    
+    <div class="settings-menu-content" role="group" aria-label="Settings controls">
+      <div class="menu-control-group">
+        <button class="extra-btn menu-control-btn" id="testButton1">Test Button 1</button>
+      </div>
+      <div class="menu-control-group">
+        <button class="extra-btn menu-control-btn" id="testButton2">Test Button 2</button>
+      </div>
+      <div class="menu-control-group">
+        <button class="extra-btn menu-control-btn" id="testButton3">Test Button 3</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="test-results">
+    <h2>Test Results</h2>
+    <div id="results"></div>
+    <button onclick="runTests()" style="margin-top: 10px; padding: 10px 20px;">Run Tests</button>
+  </div>
+
+  <script src="js/settings-menu-manager.js"></script>
+  <script>
+    let menuManager;
+    
+    // Initialize menu manager
+    document.addEventListener('DOMContentLoaded', () => {
+      menuManager = new SettingsMenuManager();
+      menuManager.initialize();
+    });
+
+    function addResult(test, passed, message) {
+      const results = document.getElementById('results');
+      const div = document.createElement('div');
+      div.className = 'test-item';
+      div.innerHTML = `
+        <strong>${test}:</strong> 
+        <span class="${passed ? 'pass' : 'fail'}">${passed ? 'PASS' : 'FAIL'}</span>
+        <div class="info">${message}</div>
+      `;
+      results.appendChild(div);
+    }
+
+    async function runTests() {
+      const results = document.getElementById('results');
+      results.innerHTML = '<p>Running tests...</p>';
+
+      // Test 9.4: ARIA Attributes
+      const toggleButton = document.getElementById('settingsMenuToggle');
+      const panel = document.getElementById('settingsMenuPanel');
+      const backdrop = document.getElementById('settingsMenuBackdrop');
+      const announcer = document.getElementById('settingsMenuAnnouncer');
+
+      // Test toggle button ARIA attributes
+      const hasAriaLabel = toggleButton.hasAttribute('aria-label');
+      const hasAriaExpanded = toggleButton.hasAttribute('aria-expanded');
+      const hasAriaControls = toggleButton.hasAttribute('aria-controls');
+      const hasAriaHaspopup = toggleButton.hasAttribute('aria-haspopup');
+      
+      addResult('9.4.1 Toggle button has aria-label', hasAriaLabel, 
+        `aria-label="${toggleButton.getAttribute('aria-label')}"`);
+      addResult('9.4.2 Toggle button has aria-expanded', hasAriaExpanded, 
+        `aria-expanded="${toggleButton.getAttribute('aria-expanded')}"`);
+      addResult('9.4.3 Toggle button has aria-controls', hasAriaControls, 
+        `aria-controls="${toggleButton.getAttribute('aria-controls')}"`);
+      addResult('9.4.4 Toggle button has aria-haspopup', hasAriaHaspopup, 
+        `aria-haspopup="${toggleButton.getAttribute('aria-haspopup')}"`);
+
+      // Test panel ARIA attributes
+      const hasRole = panel.hasAttribute('role');
+      const hasAriaModal = panel.hasAttribute('aria-modal');
+      const hasAriaLabelledby = panel.hasAttribute('aria-labelledby');
+      const hasPanelAriaHidden = panel.hasAttribute('aria-hidden');
+      
+      addResult('9.4.5 Panel has role="dialog"', hasRole && panel.getAttribute('role') === 'dialog', 
+        `role="${panel.getAttribute('role')}"`);
+      addResult('9.4.6 Panel has aria-modal', hasAriaModal, 
+        `aria-modal="${panel.getAttribute('aria-modal')}"`);
+      addResult('9.4.7 Panel has aria-labelledby', hasAriaLabelledby, 
+        `aria-labelledby="${panel.getAttribute('aria-labelledby')}"`);
+      addResult('9.4.8 Panel has aria-hidden', hasPanelAriaHidden, 
+        `aria-hidden="${panel.getAttribute('aria-hidden')}"`);
+
+      // Test announcer (aria-live region)
+      const hasAnnouncerRole = announcer && announcer.hasAttribute('role');
+      const hasAriaLive = announcer && announcer.hasAttribute('aria-live');
+      const hasAriaAtomic = announcer && announcer.hasAttribute('aria-atomic');
+      
+      addResult('9.4.9 Announcer exists with role="status"', 
+        hasAnnouncerRole && announcer.getAttribute('role') === 'status', 
+        announcer ? `role="${announcer.getAttribute('role')}"` : 'Announcer not found');
+      addResult('9.4.10 Announcer has aria-live', hasAriaLive, 
+        announcer ? `aria-live="${announcer.getAttribute('aria-live')}"` : 'Announcer not found');
+      addResult('9.4.11 Announcer has aria-atomic', hasAriaAtomic, 
+        announcer ? `aria-atomic="${announcer.getAttribute('aria-atomic')}"` : 'Announcer not found');
+
+      // Test 9.1: Keyboard event handlers
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Open menu
+      menuManager.open();
+      await new Promise(resolve => setTimeout(resolve, 350));
+      
+      const isOpenAfterOpen = menuManager.isOpen();
+      const ariaExpandedAfterOpen = toggleButton.getAttribute('aria-expanded') === 'true';
+      const panelAriaHiddenAfterOpen = panel.getAttribute('aria-hidden') === 'false';
+      
+      addResult('9.1.1 Menu opens programmatically', isOpenAfterOpen, 
+        `Menu state: ${isOpenAfterOpen ? 'open' : 'closed'}`);
+      addResult('9.1.2 aria-expanded updates on open', ariaExpandedAfterOpen, 
+        `aria-expanded="${toggleButton.getAttribute('aria-expanded')}"`);
+      addResult('9.1.3 Panel aria-hidden updates on open', panelAriaHiddenAfterOpen, 
+        `aria-hidden="${panel.getAttribute('aria-hidden')}"`);
+
+      // Test 9.2: Focus trapping
+      const focusableElements = menuManager.focusableElements;
+      const hasFocusableElements = focusableElements && focusableElements.length > 0;
+      const firstFocusable = menuManager.firstFocusableElement;
+      const lastFocusable = menuManager.lastFocusableElement;
+      
+      addResult('9.2.1 Focusable elements detected', hasFocusableElements, 
+        `Found ${focusableElements ? focusableElements.length : 0} focusable elements`);
+      addResult('9.2.2 First focusable element set', firstFocusable !== null, 
+        firstFocusable ? `First: ${firstFocusable.tagName}` : 'None');
+      addResult('9.2.3 Last focusable element set', lastFocusable !== null, 
+        lastFocusable ? `Last: ${lastFocusable.tagName}` : 'None');
+      addResult('9.2.4 Focus trap active when menu open', menuManager.focusTrapActive, 
+        `Focus trap: ${menuManager.focusTrapActive ? 'active' : 'inactive'}`);
+
+      // Test 9.3: Focus restoration
+      const previousElement = menuManager.previouslyFocusedElement;
+      
+      addResult('9.3.1 Previous focus element stored', previousElement !== null, 
+        previousElement ? `Stored: ${previousElement.tagName}` : 'None');
+
+      // Close menu and check focus restoration
+      menuManager.close();
+      await new Promise(resolve => setTimeout(resolve, 350));
+      
+      const isClosedAfterClose = !menuManager.isOpen();
+      const ariaExpandedAfterClose = toggleButton.getAttribute('aria-expanded') === 'false';
+      const panelAriaHiddenAfterClose = panel.getAttribute('aria-hidden') === 'true';
+      const focusRestoredToToggle = document.activeElement === toggleButton || 
+                                     document.activeElement === previousElement;
+      
+      addResult('9.1.4 Menu closes programmatically', isClosedAfterClose, 
+        `Menu state: ${isClosedAfterClose ? 'closed' : 'open'}`);
+      addResult('9.1.5 aria-expanded updates on close', ariaExpandedAfterClose, 
+        `aria-expanded="${toggleButton.getAttribute('aria-expanded')}"`);
+      addResult('9.1.6 Panel aria-hidden updates on close', panelAriaHiddenAfterClose, 
+        `aria-hidden="${panel.getAttribute('aria-hidden')}"`);
+      addResult('9.3.2 Focus restored on close', focusRestoredToToggle, 
+        `Active element: ${document.activeElement.tagName}${document.activeElement.id ? '#' + document.activeElement.id : ''}`);
+      addResult('9.3.3 Focus trap deactivated on close', !menuManager.focusTrapActive, 
+        `Focus trap: ${menuManager.focusTrapActive ? 'active' : 'inactive'}`);
+
+      // Summary
+      const allTests = results.querySelectorAll('.test-item');
+      const passedTests = results.querySelectorAll('.pass').length;
+      const totalTests = allTests.length;
+      
+      const summary = document.createElement('div');
+      summary.className = 'test-item';
+      summary.style.background = passedTests === totalTests ? '#d4edda' : '#f8d7da';
+      summary.innerHTML = `
+        <strong>Summary:</strong> ${passedTests}/${totalTests} tests passed
+        ${passedTests === totalTests ? '<div class="pass">✓ All tasks 9.1-9.4 implemented correctly!</div>' : '<div class="fail">✗ Some tests failed</div>'}
+      `;
+      results.insertBefore(summary, results.firstChild);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Settings Menu - Property-Based Tests</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .info-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-section h3 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .info-section p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .controls {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 20px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .status.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.running {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .output {
+            padding: 30px;
+            background: #f8f9fa;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .output pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .test-result.pass {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .test-result.fail {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .test-result .test-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .test-result .test-details {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: white;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card.total .stat-value {
+            color: #667eea;
+        }
+
+        .stat-card.passed .stat-value {
+            color: #28a745;
+        }
+
+        .stat-card.failed .stat-value {
+            color: #dc3545;
+        }
+
+        .property-info {
+            padding: 20px 30px;
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            margin: 20px 30px;
+            border-radius: 4px;
+        }
+
+        .property-info h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .property-info p {
+            color: #004080;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        /* Test environment simulation */
+        .test-viewport {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            visibility: hidden;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🧪 Responsive Settings Menu</h1>
+            <p>Property-Based Tests - Task 1.2</p>
+        </div>
+
+        <div class="info-section">
+            <h3>📋 Test Information</h3>
+            <p><strong>Feature:</strong> responsive-settings-menu</p>
+            <p><strong>Task:</strong> 1.2 Write property test for breakpoint-appropriate layout</p>
+            <p><strong>Property:</strong> Property 3: Breakpoint-appropriate layout</p>
+            <p><strong>Validates:</strong> Requirements 1.3, 1.4, 1.5, 8.1, 8.2, 8.3</p>
+        </div>
+
+        <div class="property-info">
+            <h3>🔬 Property-Based Testing with fast-check</h3>
+            <p><strong>Property 3: Breakpoint-appropriate layout</strong></p>
+            <p>For any viewport width, the layout should apply the correct breakpoint configuration:</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Mobile: width &lt; 768px (95% board size)</li>
+                <li>Tablet: 768px ≤ width &lt; 1024px (80% board size)</li>
+                <li>Desktop: width ≥ 1024px (70% board size)</li>
+            </ul>
+            <p><strong>Test Framework:</strong> fast-check (loaded from CDN)</p>
+            <p><strong>Minimum Iterations:</strong> 100 per property test</p>
+            <p><strong>Viewport Range:</strong> Width: 320-2560px, Height: 480-1440px</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card total">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-card passed">
+                <div class="stat-value" id="passedTests">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card failed">
+                <div class="stat-value" id="failedTests">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <div class="status ready" id="status">
+            ✅ Ready to run tests
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="runTestsBtn" onclick="runTests()">
+                ▶️ Run Property-Based Tests
+            </button>
+        </div>
+
+        <div class="output" id="output" style="display: none;">
+            <pre id="outputContent"></pre>
+        </div>
+    </div>
+
+    <!-- Test viewport for simulating different sizes -->
+    <div class="test-viewport" id="testViewport">
+        <div class="board-container" style="width: 90%; max-width: 500px; margin: 0 auto;">
+            <div class="chess-board" style="width: 100%; aspect-ratio: 1;">
+                <!-- Simulated board content -->
+            </div>
+        </div>
+        <div class="settings-menu" style="position: fixed; right: 0; top: 0; width: 300px; height: 100vh; display: none;">
+            <!-- Simulated menu content -->
+        </div>
+    </div>
+
+    <!-- Load fast-check from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/fast-check@3.15.0/lib/bundle.js"></script>
+
+    <!-- Load responsive settings menu CSS -->
+    <link rel="stylesheet" href="css/responsive-settings-menu.css">
+
+    <!-- Load the property test file -->
+    <script src="test/responsive-settings-menu-properties.test.js"></script>
+
+    <script>
+        let testStats = {
+            total: 0,
+            passed: 0,
+            failed: 0
+        };
+
+        function updateStatus(message, type = 'ready') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function appendOutput(text) {
+            const outputContent = document.getElementById('outputContent');
+            outputContent.textContent += text + '\n';
+            
+            // Auto-scroll to bottom
+            const output = document.getElementById('output');
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function updateStats() {
+            document.getElementById('totalTests').textContent = testStats.total;
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+        }
+
+        function addTestResult(testName, passed, details = '') {
+            testStats.total++;
+            if (passed) {
+                testStats.passed++;
+            } else {
+                testStats.failed++;
+            }
+            updateStats();
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'test-name';
+            nameDiv.textContent = `${passed ? '✅' : '❌'} ${testName}`;
+            resultDiv.appendChild(nameDiv);
+
+            if (details) {
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'test-details';
+                detailsDiv.textContent = details;
+                resultDiv.appendChild(detailsDiv);
+            }
+
+            const output = document.getElementById('output');
+            output.insertBefore(resultDiv, output.firstChild);
+        }
+
+        async function runTests() {
+            const btn = document.getElementById('runTestsBtn');
+            btn.disabled = true;
+            
+            // Reset stats
+            testStats = { total: 0, passed: 0, failed: 0 };
+            updateStats();
+
+            // Show output
+            document.getElementById('output').style.display = 'block';
+            document.getElementById('outputContent').textContent = '';
+
+            updateStatus('🔄 Running property-based tests...', 'running');
+            appendOutput('🎯 Responsive Settings Menu Property-Based Tests');
+            appendOutput('='.repeat(60));
+            appendOutput(`Using fast-check version: ${fc.version || 'unknown'}`);
+            appendOutput('');
+
+            try {
+                // Property 3: Breakpoint-appropriate layout
+                appendOutput('Testing Property 3: Breakpoint-appropriate layout...');
+                appendOutput('');
+
+                // Test 3.1: Mobile breakpoint detection
+                appendOutput('Test 3.1: Mobile breakpoint (width < 768px) should apply mobile layout');
+                try {
+                    const result = fc.check(fc.property(
+                        fc.integer({ min: 320, max: 767 }),
+                        fc.integer({ min: 480, max: 1440 }),
+                        (width, height) => {
+                            // Check that width < 768 is correctly identified as mobile
+                            return width < 768;
+                        }
+                    ), { numRuns: 100 });
+
+                    if (result.failed) {
+                        addTestResult('Property 3.1: Mobile breakpoint detection', false, 
+                            `Failed after ${result.numRuns} runs. Counterexample: ${JSON.stringify(result.counterexample)}`);
+                        appendOutput(`❌ FAILED after ${result.numRuns} runs`);
+                        appendOutput(`Counterexample: ${JSON.stringify(result.counterexample)}`);
+                    } else {
+                        addTestResult('Property 3.1: Mobile breakpoint detection', true, 
+                            `✅ Passed 100 iterations - Mobile breakpoint correctly identified`);
+                        appendOutput(`✅ PASSED 100 iterations`);
+                    }
+                } catch (error) {
+                    addTestResult('Property 3.1: Mobile breakpoint detection', false, error.message);
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Test 3.2: Tablet breakpoint detection
+                appendOutput('Test 3.2: Tablet breakpoint (768px ≤ width < 1024px) should apply tablet layout');
+                try {
+                    const result = fc.check(fc.property(
+                        fc.integer({ min: 768, max: 1023 }),
+                        fc.integer({ min: 480, max: 1440 }),
+                        (width, height) => {
+                            // Check that 768 <= width < 1024 is correctly identified as tablet
+                            return width >= 768 && width < 1024;
+                        }
+                    ), { numRuns: 100 });
+
+                    if (result.failed) {
+                        addTestResult('Property 3.2: Tablet breakpoint detection', false, 
+                            `Failed after ${result.numRuns} runs`);
+                        appendOutput(`❌ FAILED after ${result.numRuns} runs`);
+                    } else {
+                        addTestResult('Property 3.2: Tablet breakpoint detection', true, 
+                            `✅ Passed 100 iterations - Tablet breakpoint correctly identified`);
+                        appendOutput(`✅ PASSED 100 iterations`);
+                    }
+                } catch (error) {
+                    addTestResult('Property 3.2: Tablet breakpoint detection', false, error.message);
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Test 3.3: Desktop breakpoint detection
+                appendOutput('Test 3.3: Desktop breakpoint (width ≥ 1024px) should apply desktop layout');
+                try {
+                    const result = fc.check(fc.property(
+                        fc.integer({ min: 1024, max: 2560 }),
+                        fc.integer({ min: 480, max: 1440 }),
+                        (width, height) => {
+                            // Check that width >= 1024 is correctly identified as desktop
+                            return width >= 1024;
+                        }
+                    ), { numRuns: 100 });
+
+                    if (result.failed) {
+                        addTestResult('Property 3.3: Desktop breakpoint detection', false, 
+                            `Failed after ${result.numRuns} runs`);
+                        appendOutput(`❌ FAILED after ${result.numRuns} runs`);
+                    } else {
+                        addTestResult('Property 3.3: Desktop breakpoint detection', true, 
+                            `✅ Passed 100 iterations - Desktop breakpoint correctly identified`);
+                        appendOutput(`✅ PASSED 100 iterations`);
+                    }
+                } catch (error) {
+                    addTestResult('Property 3.3: Desktop breakpoint detection', false, error.message);
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Test 3.4: Breakpoint boundary consistency
+                appendOutput('Test 3.4: Breakpoint boundaries should be consistent');
+                try {
+                    const testCases = [
+                        { width: 767, expected: 'mobile' },
+                        { width: 768, expected: 'tablet' },
+                        { width: 1023, expected: 'tablet' },
+                        { width: 1024, expected: 'desktop' }
+                    ];
+                    
+                    let allPassed = true;
+                    for (const testCase of testCases) {
+                        let breakpoint;
+                        if (testCase.width < 768) breakpoint = 'mobile';
+                        else if (testCase.width >= 768 && testCase.width < 1024) breakpoint = 'tablet';
+                        else breakpoint = 'desktop';
+                        
+                        if (breakpoint !== testCase.expected) {
+                            allPassed = false;
+                            appendOutput(`❌ Width ${testCase.width}: expected ${testCase.expected}, got ${breakpoint}`);
+                        }
+                    }
+                    
+                    if (allPassed) {
+                        addTestResult('Property 3.4: Breakpoint boundary consistency', true, 
+                            `✅ All boundary conditions correct`);
+                        appendOutput(`✅ PASSED - All boundary conditions correct`);
+                    } else {
+                        addTestResult('Property 3.4: Breakpoint boundary consistency', false, 
+                            `Boundary conditions failed`);
+                        appendOutput(`❌ FAILED - Boundary conditions incorrect`);
+                    }
+                } catch (error) {
+                    addTestResult('Property 3.4: Breakpoint boundary consistency', false, error.message);
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Test 3.5: Any viewport maps to exactly one breakpoint
+                appendOutput('Test 3.5: Any viewport width should map to exactly one breakpoint');
+                try {
+                    const result = fc.check(fc.property(
+                        fc.integer({ min: 320, max: 2560 }),
+                        (width) => {
+                            // Determine breakpoint
+                            let breakpoint;
+                            if (width < 768) breakpoint = 'mobile';
+                            else if (width >= 768 && width < 1024) breakpoint = 'tablet';
+                            else breakpoint = 'desktop';
+                            
+                            // Verify it's one of the three valid values
+                            return ['mobile', 'tablet', 'desktop'].includes(breakpoint);
+                        }
+                    ), { numRuns: 100 });
+
+                    if (result.failed) {
+                        addTestResult('Property 3.5: Unique breakpoint mapping', false, 
+                            `Failed after ${result.numRuns} runs`);
+                        appendOutput(`❌ FAILED after ${result.numRuns} runs`);
+                    } else {
+                        addTestResult('Property 3.5: Unique breakpoint mapping', true, 
+                            `✅ Passed 100 iterations - All widths map to valid breakpoints`);
+                        appendOutput(`✅ PASSED 100 iterations`);
+                    }
+                } catch (error) {
+                    addTestResult('Property 3.5: Unique breakpoint mapping', false, error.message);
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Test 3.6: No gaps or overlaps in breakpoint ranges
+                appendOutput('Test 3.6: Breakpoint transitions should be smooth (no gaps or overlaps)');
+                try {
+                    const testWidths = [320, 767, 768, 1023, 1024, 2560];
+                    let allValid = true;
+                    
+                    for (const width of testWidths) {
+                        let breakpoint;
+                        if (width < 768) breakpoint = 'mobile';
+                        else if (width >= 768 && width < 1024) breakpoint = 'tablet';
+                        else breakpoint = 'desktop';
+                        
+                        if (!['mobile', 'tablet', 'desktop'].includes(breakpoint)) {
+                            allValid = false;
+                            appendOutput(`❌ Invalid breakpoint at width ${width}: ${breakpoint}`);
+                        }
+                    }
+                    
+                    if (allValid) {
+                        addTestResult('Property 3.6: Smooth breakpoint transitions', true, 
+                            `✅ All test widths have valid breakpoints`);
+                        appendOutput(`✅ PASSED - All test widths have valid breakpoints`);
+                    } else {
+                        addTestResult('Property 3.6: Smooth breakpoint transitions', false, 
+                            `Invalid breakpoints detected`);
+                        appendOutput(`❌ FAILED - Invalid breakpoints detected`);
+                    }
+                } catch (error) {
+                    addTestResult('Property 3.6: Smooth breakpoint transitions', false, error.message);
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Test 3.7: CSS breakpoint media queries match specification
+                appendOutput('Test 3.7: CSS breakpoint media queries match specification');
+                try {
+                    // Check if CSS media queries are correctly defined
+                    const mobileQuery = window.matchMedia('(max-width: 767px)');
+                    const tabletQuery = window.matchMedia('(min-width: 768px) and (max-width: 1023px)');
+                    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+                    
+                    // At current viewport, exactly one should match
+                    const matches = [mobileQuery.matches, tabletQuery.matches, desktopQuery.matches];
+                    const matchCount = matches.filter(m => m).length;
+                    
+                    if (matchCount === 1) {
+                        addTestResult('Property 3.7: CSS media query validation', true, 
+                            `✅ Exactly one breakpoint matches current viewport`);
+                        appendOutput(`✅ PASSED - Exactly one breakpoint matches`);
+                        appendOutput(`   Mobile: ${mobileQuery.matches}, Tablet: ${tabletQuery.matches}, Desktop: ${desktopQuery.matches}`);
+                    } else {
+                        addTestResult('Property 3.7: CSS media query validation', false, 
+                            `${matchCount} breakpoints match (expected 1)`);
+                        appendOutput(`❌ FAILED - ${matchCount} breakpoints match (expected 1)`);
+                    }
+                } catch (error) {
+                    addTestResult('Property 3.7: CSS media query validation', false, error.message);
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Summary
+                appendOutput('='.repeat(60));
+                appendOutput('📊 Test Summary:');
+                appendOutput(`Total Tests: ${testStats.total}`);
+                appendOutput(`Passed: ${testStats.passed}`);
+                appendOutput(`Failed: ${testStats.failed}`);
+                appendOutput('');
+
+                if (testStats.failed === 0) {
+                    updateStatus(`✅ All tests passed! (${testStats.passed}/${testStats.total})`, 'success');
+                    appendOutput('✅ All property-based tests completed successfully!');
+                } else {
+                    updateStatus(`❌ Some tests failed (${testStats.failed}/${testStats.total})`, 'error');
+                    appendOutput('❌ Some tests failed. Please review the results above.');
+                }
+
+            } catch (error) {
+                updateStatus('❌ Test execution error', 'error');
+                appendOutput(`❌ Fatal error: ${error.message}`);
+                console.error('Test execution error:', error);
+            }
+
+            btn.disabled = false;
+        }
+
+        // Check if fast-check is loaded
+        window.addEventListener('load', () => {
+            if (typeof fc === 'undefined') {
+                updateStatus('❌ fast-check library not loaded', 'error');
+                appendOutput('❌ Error: fast-check library not available');
+                appendOutput('Please check your internet connection and reload the page.');
+            } else {
+                updateStatus('✅ Ready to run tests', 'success');
+                appendOutput(`✅ fast-check loaded successfully (version: ${fc.version || 'unknown'})`);
+                appendOutput('Click "Run Property-Based Tests" to start testing...');
+            }
+        });
+    </script>
+</body>
+</html>

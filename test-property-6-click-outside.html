@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property 6: Click-outside closes menu - Property-Based Tests</title>
+    
+    <!-- Load responsive settings menu CSS -->
+    <link rel="stylesheet" href="css/responsive-settings-menu.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .info-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-section h3 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .info-section p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .property-info {
+            padding: 20px 30px;
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            margin: 20px 30px;
+            border-radius: 4px;
+        }
+
+        .property-info h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .property-info p {
+            color: #004080;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .property-info ul {
+            margin-left: 20px;
+            margin-top: 10px;
+            color: #004080;
+        }
+
+        .controls {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 20px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .status.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.running {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .output {
+            padding: 30px;
+            background: #f8f9fa;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .test-result.pass {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .test-result.fail {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .test-result .test-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .test-result .test-details {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: white;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card.total .stat-value {
+            color: #667eea;
+        }
+
+        .stat-card.passed .stat-value {
+            color: #28a745;
+        }
+
+        .stat-card.failed .stat-value {
+            color: #dc3545;
+        }
+
+        .demo-menu-container {
+            position: relative;
+            margin: 20px 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🧪 Property 6: Click-outside closes menu</h1>
+            <p>Property-Based Tests - Task 4.3</p>
+        </div>
+
+        <div class="info-section">
+            <h3>📋 Test Information</h3>
+            <p><strong>Feature:</strong> responsive-settings-menu</p>
+            <p><strong>Task:</strong> 4.3 Write property test for click-outside closes menu</p>
+            <p><strong>Property:</strong> Property 6: Click-outside closes menu</p>
+            <p><strong>Validates:</strong> Requirements 2.4</p>
+        </div>
+
+        <div class="property-info">
+            <h3>🔬 Property-Based Testing</h3>
+            <p><strong>Property 6: Click-outside closes menu</strong></p>
+            <p>For any open menu state, clicking outside the menu panel (on the backdrop) should close the menu.</p>
+            <ul>
+                <li>Backdrop click closes open menu</li>
+                <li>Backdrop click on closed menu has no effect</li>
+                <li>Panel clicks do not close menu</li>
+                <li>Backdrop only clickable when menu is open (pointer-events)</li>
+                <li>Focus restored to toggle button after backdrop click</li>
+                <li>ARIA attributes updated correctly</li>
+            </ul>
+            <p><strong>Test Framework:</strong> Jest-like assertions with manual test execution</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card total">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-card passed">
+                <div class="stat-value" id="passedTests">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card failed">
+                <div class="stat-value" id="failedTests">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <div class="status ready" id="status">
+            ✅ Ready to run tests
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="runTestsBtn" onclick="runTests()">
+                ▶️ Run Property-Based Tests
+            </button>
+        </div>
+
+        <div class="output" id="output" style="display: none;">
+            <div id="testResults"></div>
+        </div>
+    </div>
+
+    <!-- Demo Settings Menu for Testing -->
+    <div class="demo-menu-container">
+        <!-- Settings Menu Toggle Button -->
+        <button id="settingsMenuToggle" class="settings-menu-toggle" aria-label="Settings Menu" aria-expanded="false" aria-controls="settingsMenuPanel">
+            <span class="menu-icon">⋮</span>
+        </button>
+
+        <!-- Settings Menu Backdrop -->
+        <div id="settingsMenuBackdrop" class="settings-menu-backdrop" aria-hidden="true"></div>
+
+        <!-- Settings Menu Panel -->
+        <div id="settingsMenuPanel" class="settings-menu-panel" aria-hidden="true">
+            <div class="settings-menu-content">
+                <h2>Settings</h2>
+                <button id="settingsMenuClose" class="close-button">✕</button>
+                <p>Test menu content</p>
+                <button>Test Button 1</button>
+                <button>Test Button 2</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Settings Menu Manager -->
+    <script src="js/settings-menu-manager.js"></script>
+
+    <script>
+        let testStats = {
+            total: 0,
+            passed: 0,
+            failed: 0
+        };
+
+        let settingsMenuManager;
+
+        function updateStatus(message, type = 'ready') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function updateStats() {
+            document.getElementById('totalTests').textContent = testStats.total;
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+        }
+
+        function addTestResult(testName, passed, details = '') {
+            testStats.total++;
+            if (passed) {
+                testStats.passed++;
+            } else {
+                testStats.failed++;
+            }
+            updateStats();
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'test-name';
+            nameDiv.textContent = `${passed ? '✅' : '❌'} ${testName}`;
+            resultDiv.appendChild(nameDiv);
+
+            if (details) {
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'test-details';
+                detailsDiv.textContent = details;
+                resultDiv.appendChild(detailsDiv);
+            }
+
+            const output = document.getElementById('testResults');
+            output.appendChild(resultDiv);
+        }
+
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function runTests() {
+            const btn = document.getElementById('runTestsBtn');
+            btn.disabled = true;
+            
+            // Reset stats
+            testStats = { total: 0, passed: 0, failed: 0 };
+            updateStats();
+
+            // Show output
+            document.getElementById('output').style.display = 'block';
+            document.getElementById('testResults').innerHTML = '';
+
+            updateStatus('🔄 Running property-based tests...', 'running');
+
+            try {
+                // Initialize settings menu manager
+                settingsMenuManager = new SettingsMenuManager({
+                    toggleButtonSelector: '#settingsMenuToggle',
+                    backdropSelector: '#settingsMenuBackdrop',
+                    panelSelector: '#settingsMenuPanel',
+                    closeButtonSelector: '#settingsMenuClose',
+                    animationDuration: 300
+                });
+                
+                const initialized = settingsMenuManager.initialize();
+                
+                if (!initialized) {
+                    addTestResult('Settings Menu Manager Initialization', false, 'Failed to initialize');
+                    updateStatus('❌ Initialization failed', 'error');
+                    btn.disabled = false;
+                    return;
+                }
+
+                addTestResult('Settings Menu Manager Initialization', true, 'Successfully initialized');
+
+                // Get menu elements
+                const toggleButton = document.getElementById('settingsMenuToggle');
+                const backdrop = document.getElementById('settingsMenuBackdrop');
+                const panel = document.getElementById('settingsMenuPanel');
+
+                // Test 1: Backdrop click closes open menu
+                await wait(100);
+                settingsMenuManager.open();
+                await wait(350);
+                
+                const wasOpen = settingsMenuManager.isOpen();
+                backdrop.click();
+                await wait(350);
+                
+                const isClosed = !settingsMenuManager.isOpen();
+                addTestResult('Test 1: Backdrop click closes open menu', wasOpen && isClosed, 
+                    `Menu was open: ${wasOpen}, Menu is now closed: ${isClosed}`);
+
+                // Test 2: Backdrop click on closed menu has no effect
+                await wait(100);
+                const wasClosedBefore = !settingsMenuManager.isOpen();
+                backdrop.click();
+                await wait(100);
+                const stillClosed = !settingsMenuManager.isOpen();
+                addTestResult('Test 2: Backdrop click on closed menu has no effect', wasClosedBefore && stillClosed,
+                    `Menu was closed: ${wasClosedBefore}, Menu still closed: ${stillClosed}`);
+
+                // Test 3: Multiple backdrop clicks
+                await wait(100);
+                settingsMenuManager.open();
+                await wait(350);
+                
+                backdrop.click();
+                await wait(50);
+                backdrop.click();
+                await wait(50);
+                backdrop.click();
+                await wait(350);
+                
+                const closedAfterMultiple = !settingsMenuManager.isOpen();
+                addTestResult('Test 3: Multiple backdrop clicks do not cause errors', closedAfterMultiple,
+                    `Menu closed after multiple clicks: ${closedAfterMultiple}`);
+
+                // Test 4: Panel click does not close menu
+                await wait(100);
+                settingsMenuManager.open();
+                await wait(350);
+                
+                panel.click();
+                await wait(100);
+                
+                const stillOpenAfterPanelClick = settingsMenuManager.isOpen();
+                addTestResult('Test 4: Panel click does not close menu', stillOpenAfterPanelClick,
+                    `Menu still open after panel click: ${stillOpenAfterPanelClick}`);
+                
+                // Close menu for next test
+                settingsMenuManager.close();
+                await wait(350);
+
+                // Test 5: Backdrop pointer-events when closed
+                await wait(100);
+                const closedBackdropStyles = window.getComputedStyle(backdrop);
+                const closedPointerEvents = closedBackdropStyles.pointerEvents;
+                addTestResult('Test 5: Backdrop has pointer-events: none when closed', closedPointerEvents === 'none',
+                    `Backdrop pointer-events when closed: ${closedPointerEvents}`);
+
+                // Test 6: Backdrop pointer-events when open
+                settingsMenuManager.open();
+                await wait(350);
+                
+                const openBackdropStyles = window.getComputedStyle(backdrop);
+                const openPointerEvents = openBackdropStyles.pointerEvents;
+                addTestResult('Test 6: Backdrop has pointer-events: auto when open', openPointerEvents === 'auto',
+                    `Backdrop pointer-events when open: ${openPointerEvents}`);
+                
+                // Close for next test
+                settingsMenuManager.close();
+                await wait(350);
+
+                // Test 7: ARIA attributes after backdrop click
+                await wait(100);
+                settingsMenuManager.open();
+                await wait(350);
+                
+                backdrop.click();
+                await wait(350);
+                
+                const ariaExpanded = toggleButton.getAttribute('aria-expanded');
+                const ariaHidden = panel.getAttribute('aria-hidden');
+                addTestResult('Test 7: ARIA attributes update after backdrop click', 
+                    ariaExpanded === 'false' && ariaHidden === 'true',
+                    `aria-expanded: ${ariaExpanded}, aria-hidden: ${ariaHidden}`);
+
+                // Test 8: Focus restoration after backdrop click
+                await wait(100);
+                settingsMenuManager.open();
+                await wait(350);
+                
+                backdrop.click();
+                await wait(350);
+                
+                const focusRestored = document.activeElement === toggleButton;
+                addTestResult('Test 8: Focus restored to toggle button after backdrop click', focusRestored,
+                    `Focus on toggle button: ${focusRestored}`);
+
+                // Summary
+                if (testStats.failed === 0) {
+                    updateStatus(`✅ All tests passed! (${testStats.passed}/${testStats.total})`, 'success');
+                } else {
+                    updateStatus(`❌ Some tests failed (${testStats.failed}/${testStats.total})`, 'error');
+                }
+
+            } catch (error) {
+                updateStatus('❌ Test execution error', 'error');
+                addTestResult('Test Execution', false, `Error: ${error.message}`);
+                console.error('Test execution error:', error);
+            }
+
+            btn.disabled = false;
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            updateStatus('✅ Ready to run tests', 'success');
+        });
+    </script>
+</body>
+</html>

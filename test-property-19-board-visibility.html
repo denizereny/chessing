@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property 19: Board Visibility Priority Tests</title>
+  
+  <!-- Jasmine CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/jasmine.min.css">
+  
+  <!-- Application CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  <link rel="stylesheet" href="css/enhanced-theme-system.css">
+  
+  <style>
+    /* Test-specific styles */
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    
+    /* Ensure board container exists for testing */
+    .board-container {
+      margin: 20px auto;
+      background: #f0d9b5;
+      border: 2px solid #b58863;
+    }
+    
+    #board {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+    }
+    
+    /* Mock UI elements for testing */
+    .settings-menu {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 300px;
+      height: 100vh;
+      background: white;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+      display: none;
+    }
+    
+    .settings-menu.open {
+      display: block;
+    }
+    
+    .move-history {
+      padding: 10px;
+      background: #f5f5f5;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .status-bar {
+      padding: 10px;
+      background: #333;
+      color: white;
+      text-align: center;
+    }
+    
+    #settingsMenuToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Test UI Structure -->
+  <button id="settingsMenuToggle" aria-label="Settings Menu">⋮</button>
+  
+  <div class="settings-menu" id="settingsMenu">
+    <h2>Settings</h2>
+    <button>Theme Toggle</button>
+    <button>Language</button>
+    <button>Piece Setup</button>
+  </div>
+  
+  <div class="status-bar">
+    <span>White to move</span>
+  </div>
+  
+  <div class="board-container">
+    <div id="board"></div>
+  </div>
+  
+  <div class="move-history">
+    <h3>Move History</h3>
+    <div>1. e4 e5</div>
+    <div>2. Nf3 Nc6</div>
+  </div>
+  
+  <!-- Jasmine JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/jasmine.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/jasmine-html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/boot0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/boot1.min.js"></script>
+  
+  <!-- fast-check for property-based testing -->
+  <script src="https://cdn.jsdelivr.net/npm/fast-check@3.13.2/lib/bundle.js"></script>
+  
+  <!-- Application JS -->
+  <script src="js/responsive-layout-manager.js"></script>
+  <script src="js/settings-menu-manager.js"></script>
+  
+  <!-- Property Tests -->
+  <script src="test/responsive-settings-menu-properties.test.js"></script>
+  
+  <script>
+    // Initialize the responsive system for testing
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🧪 Initializing test environment for Property 19...');
+      
+      // Initialize responsive layout manager
+      window.layoutManager = new ResponsiveLayoutManager();
+      
+      // Initialize settings menu manager
+      window.menuManager = new SettingsMenuManager({
+        toggleButtonId: 'settingsMenuToggle',
+        menuPanelId: 'settingsMenu'
+      });
+      
+      console.log('✅ Test environment initialized');
+      
+      // Configure Jasmine to only run Property 19 tests
+      const jasmineEnv = jasmine.getEnv();
+      jasmineEnv.configure({
+        specFilter: function(spec) {
+          // Only run Property 19 tests
+          return spec.getFullName().includes('Property 19');
+        }
+      });
+      
+      console.log('🧪 Running Property 19: Board Visibility Priority tests...');
+    });
+  </script>
+</body>
+</html>

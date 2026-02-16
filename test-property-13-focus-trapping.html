@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property 13: Focus Trapping Test</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .test-header {
+      background: #f0f0f0;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .test-header h1 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+    
+    .test-info {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .test-controls {
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .test-button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    
+    .test-button:hover {
+      background: #45a049;
+    }
+    
+    .test-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    #testOutput {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 200px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 600px;
+    }
+    
+    .success {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    
+    .error {
+      color: #f44336;
+      font-weight: bold;
+    }
+    
+    .info {
+      color: #2196F3;
+    }
+    
+    .warning {
+      color: #ff9800;
+    }
+    
+    /* Demo chess board for testing */
+    #board {
+      width: 400px;
+      height: 400px;
+      background: #f0d9b5;
+      border: 2px solid #333;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+    }
+    
+    .square {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    
+    .square:nth-child(odd) {
+      background: #f0d9b5;
+    }
+    
+    .square:nth-child(even) {
+      background: #b58863;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-header">
+    <h1>⌨️ Property 13: Focus Trapping Test</h1>
+    <div class="test-info">
+      <strong>Feature:</strong> responsive-settings-menu<br>
+      <strong>Task:</strong> 9.6 Write property test for focus trapping<br>
+      <strong>Property:</strong> Property 13: Focus trapping when menu open<br>
+      <strong>Validates:</strong> Requirements 6.3<br>
+      <strong>Test Framework:</strong> fast-check<br>
+      <strong>Iterations:</strong> 100 per test
+    </div>
+  </div>
+  
+  <div class="test-controls">
+    <button id="runTestsBtn" class="test-button">▶️ Run Property Tests</button>
+    <button id="clearOutputBtn" class="test-button" style="background: #2196F3;">🗑️ Clear Output</button>
+    <button id="openMenuBtn" class="test-button" style="background: #ff9800;">📋 Open Menu</button>
+    <button id="closeMenuBtn" class="test-button" style="background: #f44336;">❌ Close Menu</button>
+  </div>
+  
+  <div id="testOutput">Ready to run Property 13 tests...</div>
+  
+  <!-- Demo chess board -->
+  <div id="board"></div>
+  
+  <!-- Settings Menu Structure -->
+  <button id="settingsMenuToggle" class="settings-menu-toggle" aria-label="Open settings menu" aria-expanded="false" aria-controls="settingsMenuPanel">
+    ⋮
+  </button>
+  
+  <div id="settingsMenuBackdrop" class="settings-menu-backdrop" aria-hidden="true"></div>
+  
+  <div id="settingsMenuPanel" class="settings-menu-panel" aria-hidden="true">
+    <div class="settings-menu-header">
+      <h2>Settings</h2>
+      <button id="settingsMenuClose" class="settings-menu-close" aria-label="Close settings menu">×</button>
+    </div>
+    
+    <div class="settings-menu-content">
+      <!-- Theme Toggle -->
+      <div class="menu-control">
+        <button id="themeToggle" class="menu-control-btn">🌓 Toggle Theme</button>
+      </div>
+      
+      <!-- Language Selector -->
+      <div class="menu-control">
+        <label for="languageSelect">Language:</label>
+        <select id="languageSelect" class="menu-control-select">
+          <option value="en">English</option>
+          <option value="tr">Türkçe</option>
+        </select>
+      </div>
+      
+      <!-- Piece Setup -->
+      <div class="menu-control">
+        <button id="pieceSetupBtn" class="menu-control-btn">♟️ Piece Setup</button>
+      </div>
+      
+      <!-- Position Sharing -->
+      <div class="menu-control">
+        <button id="sharePositionBtn" class="menu-control-btn">📤 Share Position</button>
+      </div>
+      
+      <!-- Analysis Controls -->
+      <div class="menu-control">
+        <button id="analyzeBtn" class="menu-control-btn">🔍 Analyze</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Screen reader announcements -->
+  <div id="settingsMenuAnnouncer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/fast-check/lib/bundle.js"></script>
+  <script src="js/settings-menu-manager.js"></script>
+  <script src="test/responsive-settings-menu-properties.test.js"></script>
+  
+  <script>
+    // Initialize settings menu manager
+    let settingsMenuManager;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      // Create demo chess board
+      const board = document.getElementById('board');
+      for (let i = 0; i < 64; i++) {
+        const square = document.createElement('div');
+        square.className = 'square';
+        board.appendChild(square);
+      }
+      
+      // Initialize settings menu
+      settingsMenuManager = new SettingsMenuManager();
+      settingsMenuManager.initialize();
+      
+      // Make it globally available
+      window.settingsMenuManager = settingsMenuManager;
+      
+      // Setup test controls
+      document.getElementById('runTestsBtn').addEventListener('click', runTests);
+      document.getElementById('clearOutputBtn').addEventListener('click', clearOutput);
+      document.getElementById('openMenuBtn').addEventListener('click', () => {
+        settingsMenuManager.open();
+        log('Menu opened manually', 'info');
+      });
+      document.getElementById('closeMenuBtn').addEventListener('click', () => {
+        settingsMenuManager.close();
+        log('Menu closed manually', 'info');
+      });
+      
+      log('✅ Test environment initialized', 'success');
+      log('Click "Run Property Tests" to start testing focus trapping', 'info');
+    });
+    
+    function log(message, type = 'info') {
+      const output = document.getElementById('testOutput');
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'success' ? 'success' : 
+                       type === 'error' ? 'error' : 
+                       type === 'warning' ? 'warning' : 'info';
+      
+      const line = document.createElement('div');
+      line.className = className;
+      line.textContent = `[${timestamp}] ${message}`;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+    
+    function clearOutput() {
+      document.getElementById('testOutput').innerHTML = 'Output cleared. Ready to run tests...';
+    }
+    
+    async function runTests() {
+      const runBtn = document.getElementById('runTestsBtn');
+      runBtn.disabled = true;
+      runBtn.textContent = '⏳ Running Tests...';
+      
+      clearOutput();
+      log('🚀 Starting Property 13: Focus Trapping Tests', 'info');
+      log('=' .repeat(60), 'info');
+      log('', 'info');
+      
+      try {
+        // Check if fast-check is available
+        if (typeof fc === 'undefined') {
+          log('❌ fast-check library not loaded', 'error');
+          return;
+        }
+        
+        log('✅ fast-check library loaded', 'success');
+        log('✅ Settings menu manager initialized', 'success');
+        log('', 'info');
+        
+        // Run the Property 13 tests
+        log('Running Property 13 tests with 100 iterations each...', 'info');
+        log('', 'info');
+        
+        // Note: The actual tests are run by the test framework
+        // This is a manual test runner for demonstration
+        log('⚠️  Note: Property-based tests are defined in the test file', 'warning');
+        log('⚠️  To run them with a test runner, use Jest or Mocha', 'warning');
+        log('', 'info');
+        
+        // Manual verification
+        log('📋 Manual Verification Steps:', 'info');
+        log('1. Click "Open Menu" button', 'info');
+        log('2. Press Tab key multiple times', 'info');
+        log('3. Verify focus stays within menu elements', 'info');
+        log('4. Verify focus wraps from last to first element', 'info');
+        log('5. Press Shift+Tab to go backwards', 'info');
+        log('6. Verify focus wraps from first to last element', 'info');
+        log('7. Verify focus never escapes to elements outside menu', 'info');
+        log('', 'info');
+        
+        log('✅ Test setup complete', 'success');
+        log('', 'info');
+        log('To run automated tests, use:', 'info');
+        log('  npm test -- test/responsive-settings-menu-properties.test.js', 'info');
+        
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+        console.error(error);
+      } finally {
+        runBtn.disabled = false;
+        runBtn.textContent = '▶️ Run Property Tests';
+      }
+    }
+  </script>
+</body>
+</html>

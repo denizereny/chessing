@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Position Sharing in Settings Menu - Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive-settings-menu.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .test-description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .test-section h2 {
+            margin-top: 0;
+            color: #007bff;
+            font-size: 1.2rem;
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .test-result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .test-result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .test-result.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        
+        .status-icon {
+            display: inline-block;
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .pass { color: #28a745; }
+        .fail { color: #dc3545; }
+        .pending { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <!-- Settings Menu Toggle Button -->
+    <button 
+      id="settingsMenuToggle" 
+      class="settings-menu-toggle"
+      aria-label="Open settings menu"
+      aria-expanded="false"
+      aria-controls="settingsMenuPanel"
+      type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="5" r="2" fill="currentColor"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        <circle cx="12" cy="19" r="2" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <!-- Settings Menu Backdrop -->
+    <div id="settingsMenuBackdrop" class="settings-menu-backdrop"></div>
+
+    <!-- Settings Menu Panel -->
+    <aside 
+      id="settingsMenuPanel" 
+      class="settings-menu-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settingsMenuTitle">
+      <div class="settings-menu-header">
+        <h2 id="settingsMenuTitle" class="settings-menu-title">
+          <span class="icon">⚙️</span>
+          <span>Settings</span>
+        </h2>
+        <button 
+          id="settingsMenuClose" 
+          class="settings-menu-close"
+          aria-label="Close settings menu"
+          type="button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="settings-menu-content" role="group" aria-label="Settings controls">
+        <!-- Position sharing controls will be dynamically added here -->
+      </div>
+    </aside>
+
+    <div class="test-container">
+        <h1>🔗 Position Sharing in Settings Menu - Integration Test</h1>
+        <p class="test-description">
+            This test verifies that position sharing controls have been successfully moved into the settings menu
+            and that all functionality is preserved. Task 7.4 requires relocating position sharing controls into
+            the menu content container while preserving existing event handlers and functionality.
+        </p>
+
+        <div class="test-section">
+            <h2>📋 Test Checklist</h2>
+            <ul class="checklist" id="checklist">
+                <li><span class="status-icon pending">⏳</span> Position sharing panel exists in settings menu</li>
+                <li><span class="status-icon pending">⏳</span> All position sharing buttons are present</li>
+                <li><span class="status-icon pending">⏳</span> Event handlers are preserved</li>
+                <li><span class="status-icon pending">⏳</span> UI styling matches settings menu theme</li>
+                <li><span class="status-icon pending">⏳</span> Position sharing system is initialized</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Automated Tests</h2>
+            <button class="test-button" onclick="runAllTests()">Run All Tests</button>
+            <button class="test-button" onclick="openSettingsMenu()">Open Settings Menu</button>
+            <button class="test-button" onclick="testPositionSharing()">Test Position Sharing</button>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 Manual Verification Steps</h2>
+            <ol>
+                <li>Click "Open Settings Menu" button above</li>
+                <li>Verify that "Position Sharing" section appears in the menu</li>
+                <li>Check that all buttons are visible: Generate Code, Copy Code, Load, Share URL, QR Code, Scan QR</li>
+                <li>Verify that the styling matches other menu controls</li>
+                <li>Test generating a sharing code (requires setupBoard to be defined)</li>
+                <li>Verify that the controls are responsive and work on different screen sizes</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Load required scripts -->
+    <script src="js/position-sharing-system.js"></script>
+    <script src="js/qr-code-generator.js"></script>
+    <script src="js/settings-menu-manager.js"></script>
+    <script src="js/position-sharing-integration.js"></script>
+
+    <script>
+        // Mock setupBoard for testing
+        window.setupBoard = [
+            ['r', 'n', 'b', 'q'],
+            ['p', 'p', 'p', 'p'],
+            ['.', '.', '.', '.'],
+            ['P', 'P', 'P', 'P'],
+            ['R', 'N', 'B', 'K']
+        ];
+
+        // Mock notification function
+        window.bildirimGoster = function(message) {
+            console.log('Notification:', message);
+        };
+
+        // Initialize settings menu
+        let settingsMenuManager;
+        
+        function initializeMenu() {
+            settingsMenuManager = new SettingsMenuManager({
+                toggleButtonSelector: '#settingsMenuToggle',
+                backdropSelector: '#settingsMenuBackdrop',
+                panelSelector: '#settingsMenuPanel',
+                closeButtonSelector: '#settingsMenuClose',
+                contentSelector: '.settings-menu-content',
+                animationDuration: 300
+            });
+            
+            settingsMenuManager.initialize();
+            console.log('✅ Settings menu initialized');
+        }
+
+        function openSettingsMenu() {
+            if (settingsMenuManager) {
+                settingsMenuManager.open();
+            }
+        }
+
+        function updateChecklistItem(index, status) {
+            const checklist = document.getElementById('checklist');
+            const items = checklist.getElementsByTagName('li');
+            if (items[index]) {
+                const icon = items[index].querySelector('.status-icon');
+                if (status === 'pass') {
+                    icon.textContent = '✅';
+                    icon.className = 'status-icon pass';
+                } else if (status === 'fail') {
+                    icon.textContent = '❌';
+                    icon.className = 'status-icon fail';
+                }
+            }
+        }
+
+        function showTestResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('testResults');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.textContent = message;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function runAllTests() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '';
+            
+            let passCount = 0;
+            let totalTests = 5;
+
+            // Test 1: Position sharing panel exists in settings menu
+            const sharingPanel = document.getElementById('positionSharingPanel');
+            const inSettingsMenu = sharingPanel && sharingPanel.closest('.settings-menu-content');
+            
+            if (inSettingsMenu) {
+                showTestResult('✅ Test 1 PASSED: Position sharing panel exists in settings menu', 'success');
+                updateChecklistItem(0, 'pass');
+                passCount++;
+            } else {
+                showTestResult('❌ Test 1 FAILED: Position sharing panel not found in settings menu', 'error');
+                updateChecklistItem(0, 'fail');
+            }
+
+            // Test 2: All position sharing buttons are present
+            const requiredButtons = [
+                'btnGenerateCode',
+                'btnCopyCode',
+                'btnLoadCode',
+                'btnShareURL',
+                'btnQRCode',
+                'btnQRReader',
+                'btnStopQR'
+            ];
+            
+            const missingButtons = requiredButtons.filter(id => !document.getElementById(id));
+            
+            if (missingButtons.length === 0) {
+                showTestResult('✅ Test 2 PASSED: All position sharing buttons are present', 'success');
+                updateChecklistItem(1, 'pass');
+                passCount++;
+            } else {
+                showTestResult(`❌ Test 2 FAILED: Missing buttons: ${missingButtons.join(', ')}`, 'error');
+                updateChecklistItem(1, 'fail');
+            }
+
+            // Test 3: Event handlers are preserved
+            const btnGenerateCode = document.getElementById('btnGenerateCode');
+            const hasEventHandler = btnGenerateCode && btnGenerateCode.onclick !== null;
+            
+            if (hasEventHandler) {
+                showTestResult('✅ Test 3 PASSED: Event handlers are preserved', 'success');
+                updateChecklistItem(2, 'pass');
+                passCount++;
+            } else {
+                showTestResult('❌ Test 3 FAILED: Event handlers not found', 'error');
+                updateChecklistItem(2, 'fail');
+            }
+
+            // Test 4: UI styling matches settings menu theme
+            const hasMenuControlClass = sharingPanel && sharingPanel.classList.contains('menu-control-group');
+            
+            if (hasMenuControlClass) {
+                showTestResult('✅ Test 4 PASSED: UI styling matches settings menu theme', 'success');
+                updateChecklistItem(3, 'pass');
+                passCount++;
+            } else {
+                showTestResult('❌ Test 4 FAILED: Menu control styling not applied', 'error');
+                updateChecklistItem(3, 'fail');
+            }
+
+            // Test 5: Position sharing system is initialized
+            const systemInitialized = typeof positionSharingSystem !== 'undefined' && positionSharingSystem !== null;
+            
+            if (systemInitialized) {
+                showTestResult('✅ Test 5 PASSED: Position sharing system is initialized', 'success');
+                updateChecklistItem(4, 'pass');
+                passCount++;
+            } else {
+                showTestResult('❌ Test 5 FAILED: Position sharing system not initialized', 'error');
+                updateChecklistItem(4, 'fail');
+            }
+
+            // Summary
+            showTestResult(`\n📊 Test Summary: ${passCount}/${totalTests} tests passed`, 
+                          passCount === totalTests ? 'success' : 'error');
+        }
+
+        function testPositionSharing() {
+            if (typeof generateSharingCode === 'function') {
+                try {
+                    generateSharingCode();
+                    showTestResult('✅ Position sharing code generation successful', 'success');
+                } catch (error) {
+                    showTestResult(`❌ Position sharing code generation failed: ${error.message}`, 'error');
+                }
+            } else {
+                showTestResult('❌ generateSharingCode function not available', 'error');
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing test page...');
+            initializeMenu();
+            
+            // Wait for position sharing integration to initialize
+            setTimeout(() => {
+                console.log('🔗 Position sharing integration should be initialized');
+                showTestResult('Test page loaded. Click "Run All Tests" to verify integration.', 'info');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

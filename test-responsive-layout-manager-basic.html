@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Layout Manager - Basic Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .test-section h2 {
+            margin-top: 0;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .board-container {
+            background-color: #f0f0f0;
+            border: 2px solid #333;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .info-item {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 3px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .info-value {
+            color: #333;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Responsive Layout Manager - Basic Test</h1>
+    <p>This page tests the new ResponsiveLayoutManager implementation for the responsive-settings-menu spec.</p>
+    
+    <div class="test-section">
+        <h2>Initialization Test</h2>
+        <div id="initStatus" class="status">Testing...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Current State</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Breakpoint:</div>
+                <div class="info-value" id="currentBreakpoint">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Viewport:</div>
+                <div class="info-value" id="viewportSize">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Board Size:</div>
+                <div class="info-value" id="boardSize">-</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Board Size Visualization</h2>
+        <div class="board-container" id="boardContainer">
+            Chess Board
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>API Tests</h2>
+        <button onclick="testGetCurrentBreakpoint()">Test getCurrentBreakpoint()</button>
+        <button onclick="testCalculateBoardSize()">Test calculateBoardSize()</button>
+        <button onclick="testRecalculateLayout()">Test recalculateLayout()</button>
+        <button onclick="testBreakpointCallback()">Test onBreakpointChange()</button>
+        <div id="apiTestResults" class="status" style="display: none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Event Log</h2>
+        <div id="eventLog" style="max-height: 200px; overflow-y: auto; background-color: #f8f9fa; padding: 10px; border-radius: 3px; font-family: monospace; font-size: 12px;"></div>
+    </div>
+
+    <script src="js/responsive-layout-manager.js"></script>
+    <script>
+        let layoutManager = null;
+        const eventLog = [];
+        
+        function logEvent(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            eventLog.push(`[${timestamp}] ${message}`);
+            updateEventLog();
+        }
+        
+        function updateEventLog() {
+            const logElement = document.getElementById('eventLog');
+            logElement.innerHTML = eventLog.slice(-20).join('<br>');
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function updateDisplay() {
+            if (!layoutManager) return;
+            
+            const breakpoint = layoutManager.getCurrentBreakpoint();
+            const boardSize = layoutManager.calculateBoardSize();
+            
+            document.getElementById('currentBreakpoint').textContent = breakpoint;
+            document.getElementById('viewportSize').textContent = 
+                `${window.innerWidth} x ${window.innerHeight}`;
+            document.getElementById('boardSize').textContent = 
+                `${boardSize.width} x ${boardSize.height}`;
+        }
+        
+        function showStatus(elementId, message, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${isSuccess ? 'success' : 'error'}`;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // Create layout manager without legacy features
+                layoutManager = new ResponsiveLayoutManager();
+                
+                logEvent('ResponsiveLayoutManager initialized');
+                showStatus('initStatus', '✓ ResponsiveLayoutManager initialized successfully', true);
+                
+                // Register breakpoint change callback
+                layoutManager.onBreakpointChange((current, previous) => {
+                    logEvent(`Breakpoint changed: ${previous} → ${current}`);
+                    updateDisplay();
+                });
+                
+                // Listen for custom events
+                document.addEventListener('responsive-layout-resize', (e) => {
+                    logEvent(`Resize event: ${e.detail.width}x${e.detail.height}`);
+                });
+                
+                document.addEventListener('responsive-layout-breakpointchange', (e) => {
+                    logEvent(`Breakpoint change event: ${e.detail.previous} → ${e.detail.current}`);
+                });
+                
+                document.addEventListener('responsive-layout-recalculate', (e) => {
+                    logEvent(`Recalculate event: ${e.detail.breakpoint}`);
+                });
+                
+                // Initial display update
+                updateDisplay();
+                
+                // Test that board size is applied
+                const boardContainer = document.getElementById('boardContainer');
+                const computedWidth = boardContainer.style.width;
+                if (computedWidth) {
+                    logEvent(`Board size applied: ${computedWidth}`);
+                }
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showStatus('initStatus', `✗ Error: ${error.message}`, false);
+                logEvent(`ERROR: ${error.message}`);
+            }
+        });
+        
+        // API Tests
+        function testGetCurrentBreakpoint() {
+            try {
+                const breakpoint = layoutManager.getCurrentBreakpoint();
+                const message = `getCurrentBreakpoint() returned: "${breakpoint}"`;
+                showApiResult(message, true);
+                logEvent(message);
+            } catch (error) {
+                showApiResult(`Error: ${error.message}`, false);
+                logEvent(`ERROR in getCurrentBreakpoint(): ${error.message}`);
+            }
+        }
+        
+        function testCalculateBoardSize() {
+            try {
+                const size = layoutManager.calculateBoardSize();
+                const message = `calculateBoardSize() returned: ${size.width}x${size.height}`;
+                showApiResult(message, true);
+                logEvent(message);
+            } catch (error) {
+                showApiResult(`Error: ${error.message}`, false);
+                logEvent(`ERROR in calculateBoardSize(): ${error.message}`);
+            }
+        }
+        
+        function testRecalculateLayout() {
+            try {
+                layoutManager.recalculateLayout();
+                const message = 'recalculateLayout() executed successfully';
+                showApiResult(message, true);
+                logEvent(message);
+                updateDisplay();
+            } catch (error) {
+                showApiResult(`Error: ${error.message}`, false);
+                logEvent(`ERROR in recalculateLayout(): ${error.message}`);
+            }
+        }
+        
+        function testBreakpointCallback() {
+            try {
+                let callbackCalled = false;
+                layoutManager.onBreakpointChange((current, previous) => {
+                    callbackCalled = true;
+                    logEvent(`Callback triggered: ${previous} → ${current}`);
+                });
+                
+                const message = 'Callback registered. Resize window to test.';
+                showApiResult(message, true);
+                logEvent(message);
+            } catch (error) {
+                showApiResult(`Error: ${error.message}`, false);
+                logEvent(`ERROR in onBreakpointChange(): ${error.message}`);
+            }
+        }
+        
+        function showApiResult(message, isSuccess) {
+            const element = document.getElementById('apiTestResults');
+            element.textContent = message;
+            element.className = `status ${isSuccess ? 'success' : 'error'}`;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Update display on window resize
+        window.addEventListener('resize', () => {
+            setTimeout(updateDisplay, 150);
+        });
+    </script>
+</body>
+</html>

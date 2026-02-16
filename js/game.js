@@ -543,7 +543,8 @@ ${hamle.yakalanan ? `<span>❌ ${hamle.yakalanan}</span>` : ""}
     gecmisEl.appendChild(div);
   });
 
-  gecmisEl.scrollTop = gecmisEl.scrollHeight;
+  // Auto-scroll if enabled
+  performAutoScroll();
 }
 
 function yakananGuncelle() {
@@ -1211,8 +1212,25 @@ function updatePieceColorsFromHex(type) {
 }
 
 function updateColorPreviews() {
-  // This function is called to update preview colors in real-time
-  // The CSS variables are already updated, so previews will update automatically
+  // Update preview squares with current CSS variable values
+  const lightColor = getComputedStyle(document.documentElement).getPropertyValue('--board-light').trim();
+  const darkColor = getComputedStyle(document.documentElement).getPropertyValue('--board-dark').trim();
+  
+  // Update all light preview squares
+  const lightPreviews = document.querySelectorAll('.light-preview, .preview-square.light-preview');
+  lightPreviews.forEach(preview => {
+    if (lightColor) {
+      preview.style.backgroundColor = lightColor;
+    }
+  });
+  
+  // Update all dark preview squares
+  const darkPreviews = document.querySelectorAll('.dark-preview, .preview-square.dark-preview');
+  darkPreviews.forEach(preview => {
+    if (darkColor) {
+      preview.style.backgroundColor = darkColor;
+    }
+  });
 }
 
 function applyColorPreset(presetName) {
@@ -1262,6 +1280,9 @@ function applyColorPreset(presetName) {
     document.head.appendChild(style);
   }
   
+  // Update color previews
+  updateColorPreviews();
+  
   saveColorSettings();
   bildirimGoster(t('presetApplied') || `${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset applied!`);
 }
@@ -1299,6 +1320,9 @@ function resetColors() {
   
   // Clear localStorage
   localStorage.removeItem('chessColorSettings');
+  
+  // Update color previews
+  updateColorPreviews();
   
   bildirimGoster(t('colorsReset') || 'Colors reset to default!');
 }
@@ -1363,6 +1387,9 @@ function loadColorSettings() {
     if (!document.getElementById('dynamic-piece-colors')) {
       document.head.appendChild(style);
     }
+    
+    // Update color previews
+    updateColorPreviews();
   } catch (e) {
     console.error('Error loading color settings:', e);
   }
@@ -3513,6 +3540,8 @@ function toggleTheme() {
         (t('switchToDark') || 'Switched to dark theme') : 
         (t('switchToLight') || 'Switched to light theme');
     bildirimGoster(message);
+    
+    console.log('Theme toggled to:', currentTheme);
 }
 
 // Apply theme to document
@@ -3541,15 +3570,20 @@ function saveTheme(theme) {
 // Update theme button text and icon
 function updateThemeButton() {
     const themeBtn = document.getElementById('btnTheme');
-    const themeBtnText = document.getElementById('btnThemeText');
     
-    if (themeBtn && themeBtnText) {
+    if (themeBtn) {
         if (currentTheme === 'dark') {
             themeBtn.innerHTML = '☀️ <span id="btnThemeText">' + (t('lightMode') || 'Light Mode') + '</span>';
         } else {
             themeBtn.innerHTML = '🌙 <span id="btnThemeText">' + (t('darkMode') || 'Dark Mode') + '</span>';
         }
+        
+        // Update aria-label for accessibility
+        themeBtn.setAttribute('aria-label', 
+            currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
     }
+    
+    console.log('Theme button updated for:', currentTheme);
 }
 
 // Get current theme
@@ -3570,3 +3604,323 @@ window.addEventListener('storage', function(e) {
         updateThemeButton();
     }
 });
+
+// ===== AUTO-SCROLL MANAGEMENT FUNCTIONS =====
+
+// Global auto-scroll state
+let autoScrollEnabled = false;
+
+// Initialize auto-scroll system
+function initAutoScrollSystem() {
+    // Load saved auto-scroll preference
+    const savedAutoScroll = localStorage.getItem('4x5-chess-autoscroll');
+    autoScrollEnabled = savedAutoScroll === 'true';
+    
+    // Update button text
+    updateAutoScrollButton();
+    
+    console.log('Auto-scroll system initialized:', autoScrollEnabled);
+}
+
+// Toggle auto-scroll function
+function toggleAutoScroll() {
+    autoScrollEnabled = !autoScrollEnabled;
+    saveAutoScrollPreference(autoScrollEnabled);
+    updateAutoScrollButton();
+    
+    // Show notification
+    const message = autoScrollEnabled ? 
+        (t('autoScrollEnabled') || 'Auto-scroll enabled') : 
+        (t('autoScrollDisabled') || 'Auto-scroll disabled');
+    bildirimGoster(message);
+    
+    console.log('Auto-scroll toggled to:', autoScrollEnabled);
+}
+
+// Save auto-scroll preference to localStorage
+function saveAutoScrollPreference(enabled) {
+    try {
+        localStorage.setItem('4x5-chess-autoscroll', enabled.toString());
+    } catch (error) {
+        console.warn('Failed to save auto-scroll preference:', error);
+    }
+}
+
+// Update auto-scroll button text and icon
+function updateAutoScrollButton() {
+    const autoScrollBtn = document.getElementById('btnAutoScroll');
+    const autoScrollText = document.getElementById('btnAutoScrollText');
+    
+    if (autoScrollBtn && autoScrollText) {
+        if (autoScrollEnabled) {
+            autoScrollText.textContent = t('disableAutoScroll') || 'Disable Auto-Scroll';
+            autoScrollBtn.classList.add('active');
+        } else {
+            autoScrollText.textContent = t('enableAutoScroll') || 'Enable Auto-Scroll';
+            autoScrollBtn.classList.remove('active');
+        }
+        
+        // Update aria-label for accessibility
+        autoScrollBtn.setAttribute('aria-label', 
+            autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll');
+    }
+}
+
+// Perform auto-scroll on move history panel
+function performAutoScroll() {
+    if (!autoScrollEnabled) return;
+    
+    const moveHistoryEl = document.getElementById('moveHistory');
+    if (moveHistoryEl) {
+        // Smooth scroll to bottom
+        moveHistoryEl.scrollTo({
+            top: moveHistoryEl.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Get current auto-scroll state
+function getAutoScrollEnabled() {
+    return autoScrollEnabled;
+}
+
+// Initialize auto-scroll system when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initAutoScrollSystem();
+});
+
+/**
+ * Analyze the current game position
+ * This function is called from the settings menu to analyze the current board state
+ */
+function analyzeCurrentPosition() {
+  console.log('🔍 Analyzing current game position...');
+  
+  // Check if game is active
+  if (!tahta || tahta.length === 0) {
+    bildirimGoster('⚠️ No active game to analyze', 'error');
+    return;
+  }
+  
+  // Use performance monitoring if available
+  if (performanceMonitor && advancedPositionAnalyzer) {
+    monitoredAnalyzePosition(tahta).then(({ result: analysis, measurement }) => {
+      if (analysis && !analysis.error) {
+        displayAdvancedAnalysis(analysis);
+        
+        // Log performance info
+        if (measurement) {
+          const duration = measurement.duration.toFixed(2);
+          const target = performanceMonitor.targets.analysisOperation;
+          
+          if (measurement.withinTarget) {
+            console.log(`⚡ Position analysis completed in ${duration}ms (target: ${target}ms) ✅`);
+          } else {
+            console.warn(`🐌 Position analysis took ${duration}ms (target: ${target}ms) ❌`);
+          }
+        }
+      } else {
+        bildirimGoster('⚠️ Analysis failed', 'error');
+      }
+    }).catch(error => {
+      console.error('Monitored analysis failed:', error);
+      bildirimGoster('⚠️ Analysis failed: ' + error.message, 'error');
+    });
+    return;
+  }
+  
+  // Use Advanced Position Analyzer if available
+  if (advancedPositionAnalyzer) {
+    try {
+      const analysis = advancedPositionAnalyzer.analyzePosition(tahta);
+      
+      if (analysis.error) {
+        bildirimGoster('⚠️ Analysis failed: ' + analysis.message, 'error');
+        return;
+      }
+      
+      displayAdvancedAnalysis(analysis);
+      return;
+    } catch (error) {
+      console.error('Advanced analysis failed:', error);
+      bildirimGoster('⚠️ Analysis failed: ' + error.message, 'error');
+    }
+  } else {
+    bildirimGoster('⚠️ Position analyzer not available', 'error');
+  }
+}
+
+/**
+ * Share the current game position
+ * This function is called from the settings menu to share the current board state
+ */
+function shareCurrentPosition() {
+  console.log('🔗 Sharing current game position...');
+  
+  // Check if game is active
+  if (!tahta || tahta.length === 0) {
+    bildirimGoster('⚠️ No active game to share', 'error');
+    return;
+  }
+  
+  // Check if position sharing system is available
+  if (!window.positionSharingSystem) {
+    bildirimGoster('⚠️ Position sharing system not available', 'error');
+    return;
+  }
+  
+  try {
+    // Generate sharing code
+    const code = window.positionSharingSystem.encodePosition(tahta);
+    
+    // Generate shareable URL
+    const shareUrl = window.positionSharingSystem.shareViaURL(tahta);
+    
+    // Copy to clipboard
+    window.positionSharingSystem.copyToClipboard(code).then(success => {
+      if (success) {
+        bildirimGoster(`✅ Position code copied: ${code}`, 'success');
+        
+        // Also show the URL in console for easy access
+        console.log('📋 Share URL:', shareUrl);
+        console.log('📋 Share Code:', code);
+      } else {
+        // Fallback: show the code in an alert
+        alert(`Share this position code:\n\n${code}\n\nOr use this URL:\n${shareUrl}`);
+        bildirimGoster('📋 Position code: ' + code, 'info');
+      }
+    }).catch(error => {
+      console.error('Failed to copy to clipboard:', error);
+      // Fallback: show the code in an alert
+      alert(`Share this position code:\n\n${code}\n\nOr use this URL:\n${shareUrl}`);
+      bildirimGoster('📋 Position code: ' + code, 'info');
+    });
+    
+  } catch (error) {
+    console.error('Position sharing failed:', error);
+    bildirimGoster('⚠️ Failed to share position: ' + error.message, 'error');
+  }
+}
+
+// Make functions available globally
+window.analyzeCurrentPosition = analyzeCurrentPosition;
+window.shareCurrentPosition = shareCurrentPosition;
+
+
+/**
+ * Analyze the current game position
+ * This function is called from the settings menu to analyze the current board state
+ */
+function analyzeCurrentPosition() {
+  console.log('🔍 Analyzing current game position...');
+  
+  // Check if game is active
+  if (!tahta || tahta.length === 0) {
+    bildirimGoster('⚠️ No active game to analyze', 'error');
+    return;
+  }
+  
+  // Use performance monitoring if available
+  if (performanceMonitor && advancedPositionAnalyzer) {
+    monitoredAnalyzePosition(tahta).then(({ result: analysis, measurement }) => {
+      if (analysis && !analysis.error) {
+        displayAdvancedAnalysis(analysis);
+        
+        // Log performance info
+        if (measurement) {
+          const duration = measurement.duration.toFixed(2);
+          const target = performanceMonitor.targets.analysisOperation;
+          
+          if (measurement.withinTarget) {
+            console.log(`⚡ Position analysis completed in ${duration}ms (target: ${target}ms) ✅`);
+          } else {
+            console.warn(`🐌 Position analysis took ${duration}ms (target: ${target}ms) ❌`);
+          }
+        }
+      } else {
+        bildirimGoster('⚠️ Analysis failed', 'error');
+      }
+    }).catch(error => {
+      console.error('Monitored analysis failed:', error);
+      bildirimGoster('⚠️ Analysis failed: ' + error.message, 'error');
+    });
+    return;
+  }
+  
+  // Use Advanced Position Analyzer if available
+  if (advancedPositionAnalyzer) {
+    try {
+      const analysis = advancedPositionAnalyzer.analyzePosition(tahta);
+      
+      if (analysis.error) {
+        bildirimGoster('⚠️ Analysis failed: ' + analysis.message, 'error');
+        return;
+      }
+      
+      displayAdvancedAnalysis(analysis);
+      return;
+    } catch (error) {
+      console.error('Advanced analysis failed:', error);
+      bildirimGoster('⚠️ Analysis failed: ' + error.message, 'error');
+    }
+  } else {
+    bildirimGoster('⚠️ Position analyzer not available', 'error');
+  }
+}
+
+/**
+ * Share the current game position
+ * This function is called from the settings menu to share the current board state
+ */
+function shareCurrentPosition() {
+  console.log('🔗 Sharing current game position...');
+  
+  // Check if game is active
+  if (!tahta || tahta.length === 0) {
+    bildirimGoster('⚠️ No active game to share', 'error');
+    return;
+  }
+  
+  // Check if position sharing system is available
+  if (!window.positionSharingSystem) {
+    bildirimGoster('⚠️ Position sharing system not available', 'error');
+    return;
+  }
+  
+  try {
+    // Generate sharing code
+    const code = window.positionSharingSystem.encodePosition(tahta);
+    
+    // Generate shareable URL
+    const shareUrl = window.positionSharingSystem.shareViaURL(tahta);
+    
+    // Copy to clipboard
+    window.positionSharingSystem.copyToClipboard(code).then(success => {
+      if (success) {
+        bildirimGoster(`✅ Position code copied: ${code}`, 'success');
+        
+        // Also show the URL in console for easy access
+        console.log('📋 Share URL:', shareUrl);
+        console.log('📋 Share Code:', code);
+      } else {
+        // Fallback: show the code in an alert
+        alert(`Share this position code:\n\n${code}\n\nOr use this URL:\n${shareUrl}`);
+        bildirimGoster('📋 Position code: ' + code, 'info');
+      }
+    }).catch(error => {
+      console.error('Failed to copy to clipboard:', error);
+      // Fallback: show the code in an alert
+      alert(`Share this position code:\n\n${code}\n\nOr use this URL:\n${shareUrl}`);
+      bildirimGoster('📋 Position code: ' + code, 'info');
+    });
+    
+  } catch (error) {
+    console.error('Position sharing failed:', error);
+    bildirimGoster('⚠️ Failed to share position: ' + error.message, 'error');
+  }
+}
+
+// Make functions available globally
+window.analyzeCurrentPosition = analyzeCurrentPosition;
+window.shareCurrentPosition = shareCurrentPosition;

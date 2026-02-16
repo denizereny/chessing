@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property 15: Color Contrast Compliance Tests</title>
+  
+  <!-- Include CSS files -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  <link rel="stylesheet" href="css/enhanced-theme-system.css">
+  <link rel="stylesheet" href="css/color-contrast-fixes.css">
+  
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4a90e2;
+      padding-bottom: 10px;
+    }
+    
+    .test-info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #4a90e2;
+    }
+    
+    .test-results {
+      margin: 20px 0;
+    }
+    
+    .test-result {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border-left: 4px solid #ccc;
+    }
+    
+    .test-result.pass {
+      background: #d1fae5;
+      border-left-color: #10b981;
+    }
+    
+    .test-result.fail {
+      background: #fee2e2;
+      border-left-color: #ef4444;
+    }
+    
+    .test-result.running {
+      background: #fef3c7;
+      border-left-color: #f59e0b;
+    }
+    
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+    }
+    
+    button {
+      padding: 10px 20px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    button:hover {
+      background: #3a7bc8;
+    }
+    
+    .summary {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    
+    .summary.pass {
+      background: #d1fae5;
+      color: #047857;
+    }
+    
+    .summary.fail {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🎨 Property 15: Color Contrast Compliance Tests</h1>
+    
+    <div class="test-info">
+      <p><strong>Task:</strong> 10.2 Write property test for color contrast compliance</p>
+      <p><strong>Property:</strong> Property 15: Color contrast compliance</p>
+      <p><strong>Validates:</strong> Requirements 6.6</p>
+      <p><strong>Standard:</strong> WCAG 2.1 Level AA (4.5:1 for normal text, 3:1 for large text)</p>
+    </div>
+    
+    <div class="controls">
+      <button onclick="runTests()">Run Tests</button>
+      <button onclick="clearResults()">Clear Results</button>
+      <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+    
+    <div id="summary" class="summary" style="display: none;"></div>
+    <div id="results" class="test-results"></div>
+    <div id="console-output" style="display: none;">
+      <h3>Console Output</h3>
+      <pre id="console-log"></pre>
+    </div>
+  </div>
+  
+  <!-- Include necessary JavaScript files -->
+  <script src="js/enhanced-theme-manager.js"></script>
+  <script src="js/settings-menu-manager.js"></script>
+  <script src="js/responsive-layout-manager.js"></script>
+  
+  <script>
+    // Mock console for capturing output
+    const consoleOutput = [];
+    const originalConsole = {
+      log: console.log,
+      warn: console.warn,
+      error: console.error
+    };
+    
+    function captureConsole() {
+      console.log = (...args) => {
+        consoleOutput.push({ type: 'log', message: args.join(' ') });
+        originalConsole.log(...args);
+      };
+      console.warn = (...args) => {
+        consoleOutput.push({ type: 'warn', message: args.join(' ') });
+        originalConsole.warn(...args);
+      };
+      console.error = (...args) => {
+        consoleOutput.push({ type: 'error', message: args.join(' ') });
+        originalConsole.error(...args);
+      };
+    }
+    
+    function restoreConsole() {
+      console.log = originalConsole.log;
+      console.warn = originalConsole.warn;
+      console.error = originalConsole.error;
+    }
+    
+    function displayConsoleOutput() {
+      const consoleLog = document.getElementById('console-log');
+      const consoleDiv = document.getElementById('console-output');
+      
+      if (consoleOutput.length > 0) {
+        consoleDiv.style.display = 'block';
+        consoleLog.textContent = consoleOutput.map(entry => 
+          `[${entry.type.toUpperCase()}] ${entry.message}`
+        ).join('\n');
+      }
+    }
+    
+    // Property 15 Test Implementation
+    const WCAG_AA_NORMAL_TEXT_RATIO = 4.5;
+    const WCAG_AA_LARGE_TEXT_RATIO = 3.0;
+    
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+    
+    function getLuminance(r, g, b) {
+      const [rs, gs, bs] = [r, g, b].map(c => {
+        c = c / 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+    }
+    
+    function getContrastRatio(color1, color2) {
+      const rgb1 = hexToRgb(color1);
+      const rgb2 = hexToRgb(color2);
+      
+      if (!rgb1 || !rgb2) return null;
+      
+      const lum1 = getLuminance(rgb1.r, rgb1.g, rgb1.b);
+      const lum2 = getLuminance(rgb2.r, rgb2.g, rgb2.b);
+      
+      const lighter = Math.max(lum1, lum2);
+      const darker = Math.min(lum1, lum2);
+      
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+    
+    function meetsWCAG_AA(ratio, isLargeText = false) {
+      const threshold = isLargeText ? WCAG_AA_LARGE_TEXT_RATIO : WCAG_AA_NORMAL_TEXT_RATIO;
+      return ratio >= threshold;
+    }
+    
+    function rgbToHex(rgbString) {
+      const match = rgbString.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)$/);
+      if (!match) return null;
+      
+      const r = parseInt(match[1]);
+      const g = parseInt(match[2]);
+      const b = parseInt(match[3]);
+      
+      return '#' + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      }).join('');
+    }
+    
+    function getComputedColor(element, property) {
+      const style = window.getComputedStyle(element);
+      const colorValue = style[property];
+      
+      if (!colorValue || colorValue === 'transparent' || colorValue === 'rgba(0, 0, 0, 0)') {
+        return null;
+      }
+      
+      if (colorValue.startsWith('rgb')) {
+        return rgbToHex(colorValue);
+      } else if (colorValue.startsWith('#')) {
+        return colorValue;
+      }
+      
+      return null;
+    }
+    
+    function getEffectiveBackgroundColor(element) {
+      let current = element;
+      
+      while (current && current !== document.body.parentElement) {
+        const bgColor = getComputedColor(current, 'backgroundColor');
+        
+        if (bgColor && bgColor !== '#00000000') {
+          return bgColor;
+        }
+        
+        current = current.parentElement;
+      }
+      
+      return '#ffffff';
+    }
+    
+    function isLargeText(element) {
+      const style = window.getComputedStyle(element);
+      const fontSize = parseFloat(style.fontSize);
+      const fontWeight = style.fontWeight;
+      
+      const isBold = fontWeight === 'bold' || parseInt(fontWeight) >= 700;
+      
+      if (fontSize >= 24) return true;
+      if (fontSize >= 18.66 && isBold) return true;
+      
+      return false;
+    }
+    
+    function getTextAndControlElements() {
+      const elements = [];
+      const textSelectors = [
+        'button', 'a', 'label', 'input', 'select', 'textarea',
+        'p', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
+      ];
+      
+      textSelectors.forEach(selector => {
+        try {
+          const found = document.querySelectorAll(selector);
+          found.forEach(el => {
+            const hasText = el.textContent && el.textContent.trim().length > 0;
+            const isInteractive = ['BUTTON', 'A', 'INPUT', 'SELECT', 'TEXTAREA'].includes(el.tagName);
+            
+            if (hasText || isInteractive) {
+              elements.push(el);
+            }
+          });
+        } catch (e) {
+          // Ignore
+        }
+      });
+      
+      return [...new Set(elements)];
+    }
+    
+    function checkElementContrast(element) {
+      const style = window.getComputedStyle(element);
+      
+      if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+        return { passes: true, skipped: true, reason: 'hidden' };
+      }
+      
+      const fgColor = getComputedColor(element, 'color');
+      if (!fgColor) {
+        return { passes: true, skipped: true, reason: 'no foreground color' };
+      }
+      
+      const bgColor = getEffectiveBackgroundColor(element);
+      if (!bgColor) {
+        return { passes: true, skipped: true, reason: 'no background color' };
+      }
+      
+      const ratio = getContrastRatio(fgColor, bgColor);
+      if (ratio === null) {
+        return { passes: true, skipped: true, reason: 'invalid colors' };
+      }
+      
+      const isLarge = isLargeText(element);
+      const passes = meetsWCAG_AA(ratio, isLarge);
+      
+      return {
+        passes,
+        skipped: false,
+        ratio: ratio.toFixed(2),
+        required: isLarge ? WCAG_AA_LARGE_TEXT_RATIO : WCAG_AA_NORMAL_TEXT_RATIO,
+        isLargeText: isLarge,
+        foreground: fgColor,
+        background: bgColor,
+        element: element.tagName,
+        className: element.className,
+        text: element.textContent ? element.textContent.substring(0, 50) : ''
+      };
+    }
+    
+    // Test suite
+    const tests = [
+      {
+        name: 'All text elements meet WCAG AA standards',
+        run: function() {
+          const textElements = getTextAndControlElements();
+          
+          if (textElements.length === 0) {
+            return { passed: true, message: 'No text elements found', details: [] };
+          }
+          
+          const failures = [];
+          let checked = 0;
+          let skipped = 0;
+          
+          textElements.forEach(element => {
+            const result = checkElementContrast(element);
+            
+            if (result.skipped) {
+              skipped++;
+              return;
+            }
+            
+            checked++;
+            
+            if (!result.passes) {
+              failures.push({
+                element: result.element,
+                className: result.className,
+                text: result.text,
+                ratio: result.ratio,
+                required: result.required,
+                foreground: result.foreground,
+                background: result.background
+              });
+            }
+          });
+          
+          if (failures.length > 0) {
+            return {
+              passed: false,
+              message: `${failures.length}/${checked} elements failed (${skipped} skipped)`,
+              details: failures.map(f => 
+                `${f.element}.${f.className}: ${f.ratio}:1 (need ${f.required}:1) - "${f.text}"`
+              )
+            };
+          }
+          
+          return {
+            passed: true,
+            message: `All ${checked} elements passed (${skipped} skipped)`,
+            details: []
+          };
+        }
+      },
+      {
+        name: 'Buttons meet WCAG AA standards',
+        run: function() {
+          const buttons = document.querySelectorAll('button');
+          
+          if (buttons.length === 0) {
+            return { passed: true, message: 'No buttons found', details: [] };
+          }
+          
+          const failures = [];
+          let checked = 0;
+          
+          buttons.forEach(button => {
+            const result = checkElementContrast(button);
+            if (result.skipped) return;
+            
+            checked++;
+            
+            if (!result.passes) {
+              failures.push(`"${result.text}": ${result.ratio}:1 (need ${result.required}:1)`);
+            }
+          });
+          
+          return {
+            passed: failures.length === 0,
+            message: failures.length === 0 ? 
+              `All ${checked} buttons passed` : 
+              `${failures.length}/${checked} buttons failed`,
+            details: failures
+          };
+        }
+      },
+      {
+        name: 'Links meet WCAG AA standards',
+        run: function() {
+          const links = document.querySelectorAll('a');
+          
+          if (links.length === 0) {
+            return { passed: true, message: 'No links found', details: [] };
+          }
+          
+          const failures = [];
+          let checked = 0;
+          
+          links.forEach(link => {
+            const result = checkElementContrast(link);
+            if (result.skipped) return;
+            
+            checked++;
+            
+            if (!result.passes) {
+              failures.push(`"${result.text}": ${result.ratio}:1 (need ${result.required}:1)`);
+            }
+          });
+          
+          return {
+            passed: failures.length === 0,
+            message: failures.length === 0 ? 
+              `All ${checked} links passed` : 
+              `${failures.length}/${checked} links failed`,
+            details: failures
+          };
+        }
+      },
+      {
+        name: 'Headings meet 3:1 contrast ratio',
+        run: function() {
+          const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+          
+          if (headings.length === 0) {
+            return { passed: true, message: 'No headings found', details: [] };
+          }
+          
+          const failures = [];
+          let checked = 0;
+          
+          headings.forEach(heading => {
+            const result = checkElementContrast(heading);
+            if (result.skipped) return;
+            
+            checked++;
+            
+            if (parseFloat(result.ratio) < WCAG_AA_LARGE_TEXT_RATIO) {
+              failures.push(`${result.element} "${result.text}": ${result.ratio}:1 (need 3:1)`);
+            }
+          });
+          
+          return {
+            passed: failures.length === 0,
+            message: failures.length === 0 ? 
+              `All ${checked} headings passed` : 
+              `${failures.length}/${checked} headings failed`,
+            details: failures
+          };
+        }
+      }
+    ];
+    
+    function runTests() {
+      const resultsDiv = document.getElementById('results');
+      const summaryDiv = document.getElementById('summary');
+      
+      resultsDiv.innerHTML = '<p>Running tests...</p>';
+      summaryDiv.style.display = 'none';
+      consoleOutput.length = 0;
+      
+      captureConsole();
+      
+      let passed = 0;
+      let failed = 0;
+      let resultsHTML = '';
+      
+      tests.forEach((test, index) => {
+        const resultDiv = document.createElement('div');
+        resultDiv.className = 'test-result running';
+        resultDiv.innerHTML = `<strong>Test ${index + 1}:</strong> ${test.name} - Running...`;
+        resultsDiv.appendChild(resultDiv);
+        
+        setTimeout(() => {
+          try {
+            const result = test.run();
+            
+            if (result.passed) {
+              passed++;
+              resultDiv.className = 'test-result pass';
+              resultDiv.innerHTML = `
+                <strong>✅ Test ${index + 1}:</strong> ${test.name}<br>
+                <em>${result.message}</em>
+              `;
+            } else {
+              failed++;
+              resultDiv.className = 'test-result fail';
+              let detailsHTML = '';
+              if (result.details && result.details.length > 0) {
+                detailsHTML = '<ul>' + result.details.slice(0, 10).map(d => `<li>${d}</li>`).join('') + '</ul>';
+                if (result.details.length > 10) {
+                  detailsHTML += `<p><em>... and ${result.details.length - 10} more</em></p>`;
+                }
+              }
+              resultDiv.innerHTML = `
+                <strong>❌ Test ${index + 1}:</strong> ${test.name}<br>
+                <em>${result.message}</em>
+                ${detailsHTML}
+              `;
+            }
+            
+            // Update summary after last test
+            if (index === tests.length - 1) {
+              summaryDiv.style.display = 'block';
+              summaryDiv.className = failed === 0 ? 'summary pass' : 'summary fail';
+              summaryDiv.innerHTML = `
+                <strong>Test Summary:</strong> ${passed} passed, ${failed} failed out of ${tests.length} tests
+                ${failed === 0 ? '<br>✅ All color contrast tests passed!' : '<br>❌ Some tests failed - see details above'}
+              `;
+              
+              restoreConsole();
+              displayConsoleOutput();
+            }
+          } catch (error) {
+            failed++;
+            resultDiv.className = 'test-result fail';
+            resultDiv.innerHTML = `
+              <strong>❌ Test ${index + 1}:</strong> ${test.name}<br>
+              <em>Error: ${error.message}</em>
+            `;
+          }
+        }, index * 100);
+      });
+    }
+    
+    function clearResults() {
+      document.getElementById('results').innerHTML = '';
+      document.getElementById('summary').style.display = 'none';
+      document.getElementById('console-output').style.display = 'none';
+      consoleOutput.length = 0;
+    }
+    
+    function toggleTheme() {
+      const themeManager = window.themeManager || window.enhancedThemeManager;
+      if (themeManager) {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        if (themeManager.setTheme) {
+          themeManager.setTheme(newTheme);
+        } else if (themeManager.applyTheme) {
+          themeManager.applyTheme(newTheme);
+        }
+      } else {
+        alert('Theme manager not available');
+      }
+    }
+    
+    // Auto-run tests on page load
+    window.addEventListener('load', () => {
+      setTimeout(runTests, 500);
+    });
+  </script>
+</body>
+</html>

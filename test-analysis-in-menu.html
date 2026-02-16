@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Analysis Controls in Settings Menu</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive-settings-menu.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .test-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .success {
+            color: #22c55e;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .info {
+            color: #3b82f6;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        .board-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 50px);
+            gap: 2px;
+            margin: 10px 0;
+        }
+        .square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        .light { background: #f0d9b5; }
+        .dark { background: #b58863; }
+    </style>
+</head>
+<body>
+    <!-- Settings Menu Toggle Button -->
+    <button 
+      id="settingsMenuToggle" 
+      class="settings-menu-toggle"
+      aria-label="Open settings menu"
+      aria-expanded="false"
+      aria-controls="settingsMenuPanel"
+      type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="5" r="2" fill="currentColor"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        <circle cx="12" cy="19" r="2" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <!-- Settings Menu Backdrop -->
+    <div id="settingsMenuBackdrop" class="settings-menu-backdrop"></div>
+
+    <!-- Settings Menu Panel -->
+    <aside id="settingsMenuPanel" class="settings-menu-panel" aria-hidden="true">
+      <div class="settings-menu-header">
+        <h2 class="settings-menu-title">Settings</h2>
+        <button id="settingsMenuClose" class="settings-menu-close">✖</button>
+      </div>
+      
+      <div class="settings-menu-content">
+        <!-- Theme Toggle -->
+        <div class="menu-control-group">
+          <button onclick="alert('Theme toggle clicked')" class="extra-btn menu-control-btn">
+            🌙 <span>Dark Mode</span>
+          </button>
+        </div>
+
+        <!-- Language Selector -->
+        <div class="menu-control-group">
+          <label for="languageSelect" class="menu-control-label">
+            <span>🌐</span>
+            <span>Language</span>
+          </label>
+          <select id="languageSelect" class="menu-control-select">
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+          </select>
+        </div>
+
+        <!-- Piece Setup -->
+        <div class="menu-control-group">
+          <button onclick="alert('Piece setup clicked')" class="extra-btn menu-control-btn">
+            ♔ <span id="btnPieceSetupText">Piece Setup</span>
+          </button>
+        </div>
+
+        <!-- Position Analysis -->
+        <div class="menu-control-group">
+          <button onclick="testAnalyzePosition()" class="extra-btn menu-control-btn" id="btnAnalyzePosition">
+            🔍 <span id="btnAnalyzePositionText">Analyze Position</span>
+          </button>
+        </div>
+
+        <!-- Position Sharing -->
+        <div class="menu-control-group">
+          <button onclick="testSharePosition()" class="extra-btn menu-control-btn" id="btnSharePosition">
+            🔗 <span id="btnSharePositionText">Share Position</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="test-container">
+        <h1>🔍 Analysis Controls in Settings Menu Test</h1>
+        <p>Testing the integration of analysis and position sharing controls into the settings menu.</p>
+
+        <div class="test-section">
+            <div class="test-title">Test 1: Menu Controls Present</div>
+            <div id="test1Result" class="test-result">Running test...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">Test 2: Analysis Button Functionality</div>
+            <div id="test2Result" class="test-result">Click the "Analyze Position" button in the menu</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">Test 3: Share Button Functionality</div>
+            <div id="test3Result" class="test-result">Click the "Share Position" button in the menu</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">Test 4: Translation Support</div>
+            <div id="test4Result" class="test-result">Running test...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">Current Test Board</div>
+            <div class="board-preview" id="testBoard"></div>
+            <p>This is a sample position for testing analysis and sharing.</p>
+        </div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script src="js/settings-menu-manager.js"></script>
+    <script src="js/advanced-position-analyzer.js"></script>
+    <script src="js/position-sharing-system.js"></script>
+    
+    <script>
+        // Mock game board for testing
+        let tahta = [
+            ["r", "q", "k", "r"],
+            ["p", "p", "p", "p"],
+            [null, null, null, null],
+            ["P", "P", "P", "P"],
+            ["R", "Q", "K", "R"]
+        ];
+
+        // Mock notification function
+        function bildirimGoster(message, type) {
+            console.log(`[${type}] ${message}`);
+            alert(message);
+        }
+
+        // Initialize systems
+        let advancedPositionAnalyzer = null;
+        let positionSharingSystem = null;
+
+        try {
+            advancedPositionAnalyzer = new AdvancedPositionAnalyzer();
+            window.advancedPositionAnalyzer = advancedPositionAnalyzer;
+            console.log('✅ Advanced Position Analyzer initialized');
+        } catch (error) {
+            console.error('❌ Failed to initialize analyzer:', error);
+        }
+
+        try {
+            positionSharingSystem = new PositionSharingSystem();
+            window.positionSharingSystem = positionSharingSystem;
+            console.log('✅ Position Sharing System initialized');
+        } catch (error) {
+            console.error('❌ Failed to initialize sharing system:', error);
+        }
+
+        // Initialize settings menu
+        const settingsMenuManager = new SettingsMenuManager({
+            toggleButtonSelector: '#settingsMenuToggle',
+            backdropSelector: '#settingsMenuBackdrop',
+            panelSelector: '#settingsMenuPanel',
+            closeButtonSelector: '#settingsMenuClose',
+            contentSelector: '.settings-menu-content',
+            animationDuration: 300
+        });
+        settingsMenuManager.initialize();
+
+        // Test functions
+        function testAnalyzePosition() {
+            const result = document.getElementById('test2Result');
+            result.innerHTML = '<span class="info">🔍 Analyzing position...</span>';
+            
+            try {
+                if (!advancedPositionAnalyzer) {
+                    throw new Error('Analyzer not available');
+                }
+                
+                const analysis = advancedPositionAnalyzer.analyzePosition(tahta);
+                
+                if (analysis.error) {
+                    result.innerHTML = `<span class="error">❌ Analysis failed: ${analysis.message}</span>`;
+                } else {
+                    result.innerHTML = `
+                        <span class="success">✅ Analysis successful!</span><br>
+                        <strong>Material Balance:</strong> ${analysis.materialBalance.balance}<br>
+                        <strong>Position Type:</strong> ${analysis.positionType}<br>
+                        <strong>White Activity:</strong> ${analysis.pieceActivity.white.mobilePieces} pieces<br>
+                        <strong>Black Activity:</strong> ${analysis.pieceActivity.black.mobilePieces} pieces
+                    `;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        function testSharePosition() {
+            const result = document.getElementById('test3Result');
+            result.innerHTML = '<span class="info">🔗 Generating share code...</span>';
+            
+            try {
+                if (!positionSharingSystem) {
+                    throw new Error('Sharing system not available');
+                }
+                
+                const code = positionSharingSystem.encodePosition(tahta);
+                const url = positionSharingSystem.shareViaURL(tahta);
+                
+                result.innerHTML = `
+                    <span class="success">✅ Share code generated!</span><br>
+                    <strong>Code:</strong> ${code}<br>
+                    <strong>URL:</strong> <a href="${url}" target="_blank">${url}</a>
+                `;
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        // Run tests
+        window.addEventListener('DOMContentLoaded', function() {
+            // Test 1: Check if controls are present
+            const test1 = document.getElementById('test1Result');
+            const analyzeBtn = document.getElementById('btnAnalyzePosition');
+            const shareBtn = document.getElementById('btnSharePosition');
+            
+            if (analyzeBtn && shareBtn) {
+                test1.innerHTML = '<span class="success">✅ Both analysis and share buttons are present in the menu</span>';
+            } else {
+                test1.innerHTML = '<span class="error">❌ One or more buttons are missing</span>';
+            }
+
+            // Test 4: Check translations
+            const test4 = document.getElementById('test4Result');
+            const translations = {
+                en: window.translations?.en?.analyzePosition || 'Not found',
+                tr: window.translations?.tr?.analyzePosition || 'Not found',
+                es: window.translations?.es?.analyzePosition || 'Not found'
+            };
+            
+            test4.innerHTML = `
+                <span class="success">✅ Translation keys checked:</span><br>
+                <strong>English:</strong> ${translations.en}<br>
+                <strong>Turkish:</strong> ${translations.tr}<br>
+                <strong>Spanish:</strong> ${translations.es}
+            `;
+
+            // Draw test board
+            drawTestBoard();
+        });
+
+        function drawTestBoard() {
+            const boardEl = document.getElementById('testBoard');
+            const pieces = {
+                'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+                'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+            };
+            
+            boardEl.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(i + j) % 2 === 0 ? 'light' : 'dark'}`;
+                    const piece = tahta[i][j];
+                    square.textContent = piece ? pieces[piece] : '';
+                    boardEl.appendChild(square);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

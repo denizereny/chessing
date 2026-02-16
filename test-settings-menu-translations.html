@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Menu Translations Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive-settings-menu.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .test-result.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-result.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .language-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .language-buttons button {
+            padding: 10px 20px;
+            border: 2px solid #4a90e2;
+            background: white;
+            color: #4a90e2;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .language-buttons button:hover {
+            background: #4a90e2;
+            color: white;
+        }
+        .language-buttons button.active {
+            background: #4a90e2;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🌍 Settings Menu Translations Test</h1>
+        
+        <div class="test-section">
+            <h2>Language Selection</h2>
+            <p>Click a language button to test translations:</p>
+            <div class="language-buttons">
+                <button onclick="testLanguage('en')" class="active">🇬🇧 English</button>
+                <button onclick="testLanguage('tr')">🇹🇷 Türkçe</button>
+                <button onclick="testLanguage('es')">🇪🇸 Español</button>
+                <button onclick="testLanguage('fr')">🇫🇷 Français</button>
+                <button onclick="testLanguage('de')">🇩🇪 Deutsch</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Translation Tests</h2>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Settings Menu Preview</h2>
+            <button onclick="openSettingsMenu()" style="padding: 10px 20px; background: #4a90e2; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Open Settings Menu
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Menu (simplified for testing) -->
+    <button 
+        id="settingsMenuToggle" 
+        class="settings-menu-toggle"
+        aria-label="Open settings menu"
+        style="position: fixed; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background: #4a90e2; color: white; border: none; cursor: pointer;">
+        ⚙️
+    </button>
+
+    <div id="settingsMenuBackdrop" class="settings-menu-backdrop" style="display: none;"></div>
+
+    <aside id="settingsMenuPanel" class="settings-menu-panel" style="display: none;">
+        <div class="settings-menu-header">
+            <h2 class="settings-menu-title">
+                <span>⚙️</span>
+                <span id="settingsMenuTitleText">Settings</span>
+            </h2>
+            <button id="settingsMenuClose" class="settings-menu-close">
+                <span id="closeMenuText">Close</span>
+            </button>
+        </div>
+        
+        <div class="settings-menu-content">
+            <div class="menu-control-group">
+                <button id="btnTheme" class="menu-control-btn">
+                    🌙 <span id="btnThemeText">Dark Mode</span>
+                </button>
+            </div>
+
+            <div class="menu-control-group">
+                <label class="menu-control-label">
+                    <span>🌐</span>
+                    <span id="lblLanguage">Language</span>
+                </label>
+                <select id="languageSelect" class="menu-control-select" onchange="setLanguage(this.value)">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="tr">🇹🇷 Türkçe</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
+            </div>
+
+            <div class="menu-control-group">
+                <button id="btnPieceSetup" class="menu-control-btn">
+                    ♔ <span id="btnPieceSetupText">Piece Setup</span>
+                </button>
+            </div>
+
+            <div class="menu-control-group">
+                <button id="btnAnalyzePosition" class="menu-control-btn">
+                    🔍 <span id="btnAnalyzePositionText">Analyze Position</span>
+                </button>
+            </div>
+
+            <div class="menu-control-group">
+                <button id="btnSharePosition" class="menu-control-btn">
+                    🔗 <span id="btnSharePositionText">Share Position</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <script src="js/translations.js"></script>
+    <script>
+        let currentTestLang = 'en';
+
+        function testLanguage(lang) {
+            currentTestLang = lang;
+            setLanguage(lang);
+            
+            // Update active button
+            document.querySelectorAll('.language-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Run tests
+            runTranslationTests(lang);
+        }
+
+        function runTranslationTests(lang) {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '';
+
+            const tests = [
+                { key: 'settingsMenu', element: 'settingsMenuTitleText', name: 'Settings Menu Title' },
+                { key: 'closeMenu', element: 'closeMenuText', name: 'Close Button' },
+                { key: 'darkMode', element: 'btnThemeText', name: 'Theme Button (Dark Mode)', checkContains: true },
+                { key: 'language', element: 'lblLanguage', name: 'Language Label' },
+                { key: 'pieceSetup', element: 'btnPieceSetupText', name: 'Piece Setup Button' },
+                { key: 'analyzePosition', element: 'btnAnalyzePositionText', name: 'Analyze Position Button' },
+                { key: 'sharePosition', element: 'btnSharePositionText', name: 'Share Position Button' }
+            ];
+
+            tests.forEach(test => {
+                const element = document.getElementById(test.element);
+                const expectedText = t(test.key);
+                const actualText = element ? element.textContent : '';
+                
+                let passed = false;
+                if (test.checkContains) {
+                    passed = actualText.includes(expectedText);
+                } else {
+                    passed = actualText === expectedText;
+                }
+
+                const resultDiv = document.createElement('div');
+                resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+                resultDiv.innerHTML = `
+                    <strong>${test.name}:</strong><br>
+                    Expected: "${expectedText}"<br>
+                    Actual: "${actualText}"<br>
+                    Status: ${passed ? '✅ PASS' : '❌ FAIL'}
+                `;
+                results.appendChild(resultDiv);
+            });
+        }
+
+        function openSettingsMenu() {
+            const panel = document.getElementById('settingsMenuPanel');
+            const backdrop = document.getElementById('settingsMenuBackdrop');
+            panel.style.display = 'block';
+            backdrop.style.display = 'block';
+        }
+
+        function closeSettingsMenu() {
+            const panel = document.getElementById('settingsMenuPanel');
+            const backdrop = document.getElementById('settingsMenuBackdrop');
+            panel.style.display = 'none';
+            backdrop.style.display = 'none';
+        }
+
+        // Setup event listeners
+        document.getElementById('settingsMenuToggle').addEventListener('click', openSettingsMenu);
+        document.getElementById('settingsMenuClose').addEventListener('click', closeSettingsMenu);
+        document.getElementById('settingsMenuBackdrop').addEventListener('click', closeSettingsMenu);
+
+        // Run initial tests
+        document.addEventListener('DOMContentLoaded', function() {
+            runTranslationTests('en');
+        });
+    </script>
+</body>
+</html>

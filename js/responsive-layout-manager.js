@@ -1,25 +1,40 @@
 /**
- * Responsive Layout Manager for Enhanced Piece Setup
+ * Responsive Layout Manager
  * 
- * Manages responsive layout behavior including:
- * - Breakpoint detection and handling
- * - Dynamic piece and square sizing
- * - Collapsible palette functionality
- * - Mobile-first layout adaptations
- * - Grid system management
- * - Typography scaling
+ * Manages responsive layout behavior for the chess application including:
+ * - Viewport monitoring using ResizeObserver
+ * - Breakpoint detection (mobile < 768px, tablet 768-1024px, desktop ≥ 1024px)
+ * - Board size calculation based on available space
+ * - Event emission for breakpoint changes
+ * - Dynamic piece and square sizing (legacy support)
+ * - Collapsible palette functionality (legacy support)
  * 
- * Requirements: 7.2, 7.3
- * Task: 8.2 Responsive layout sistemi implement et
+ * Supports both:
+ * - Responsive Settings Menu spec (Requirements: 1.2, 8.4, 8.5)
+ * - Enhanced Piece Setup spec (Requirements: 7.2, 7.3)
  */
 
 class ResponsiveLayoutManager {
-  constructor(enhancedUI, mobileOptimization) {
+  constructor(enhancedUI, mobileOptimization, options = {}) {
+    // Legacy support for enhanced piece setup
     this.enhancedUI = enhancedUI;
     this.mobileOptimization = mobileOptimization;
     
-    // Breakpoint definitions
+    // New options for responsive settings menu
+    this.options = {
+      enableLegacyFeatures: enhancedUI !== undefined, // Auto-detect legacy mode
+      ...options
+    };
+    
+    // Breakpoint definitions (aligned with responsive-settings-menu spec)
     this.breakpoints = {
+      mobile: { max: 767 },      // < 768px
+      tablet: { min: 768, max: 1023 },  // 768px - 1023px
+      desktop: { min: 1024 }     // ≥ 1024px
+    };
+    
+    // Legacy breakpoint support
+    this.legacyBreakpoints = {
       mobile: 480,
       tablet: 768,
       desktop: 1024,
@@ -30,6 +45,9 @@ class ResponsiveLayoutManager {
     this.currentBreakpoint = 'mobile';
     this.isCollapsiblePaletteActive = false;
     this.paletteCollapsed = true;
+    
+    // Breakpoint change callbacks
+    this.breakpointCallbacks = [];
     
     // Responsive settings
     this.responsiveSettings = {
@@ -92,8 +110,12 @@ class ResponsiveLayoutManager {
     // Event listeners
     this.resizeObserver = null;
     this.orientationChangeHandler = null;
+    this.resizeDebounceTimer = null;
     
-    this.initialize();
+    // Auto-initialize if not in legacy mode
+    if (!this.options.enableLegacyFeatures) {
+      this.initialize();
+    }
   }
   
   /**
@@ -111,16 +133,259 @@ class ResponsiveLayoutManager {
     // Apply initial responsive styles
     this.applyResponsiveLayout();
     
-    // Initialize collapsible palette if needed
-    this.initializeCollapsiblePalette();
+    // Calculate and apply initial board size (Requirement 8.6)
+    const initialBoardSize = this.calculateBoardSize();
+    this.applyBoardSize(initialBoardSize);
+    console.log('📐 Initial board size calculated:', initialBoardSize);
     
-    // Setup dynamic sizing
-    this.setupDynamicSizing();
+    // Initialize legacy features if enabled
+    if (this.options.enableLegacyFeatures) {
+      this.initializeCollapsiblePalette();
+      this.setupDynamicSizing();
+    }
     
     this.layoutState.isInitialized = true;
     
     console.log('✨ Responsive Layout Manager initialized');
     console.log('📊 Current breakpoint:', this.currentBreakpoint);
+    
+    return this;
+  }
+  
+  /**
+   * Get current breakpoint
+   * @returns {'mobile' | 'tablet' | 'desktop'}
+   */
+  getCurrentBreakpoint() {
+    return this.currentBreakpoint;
+  }
+  
+  /**
+   * Calculate optimal board size for current viewport
+   * Requirement 8.6: Prioritize board visibility at all breakpoints
+   * @returns {{ width: number, height: number }}
+   */
+  calculateBoardSize() {
+    const viewport = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+    
+    // Account for UI elements that take up space
+    const uiOverhead = this.calculateUIOverhead();
+    
+    // Get board size percentage based on breakpoint
+    // These percentages prioritize board visibility (Requirement 8.6)
+    let sizePercent;
+    switch (this.currentBreakpoint) {
+      case 'mobile':
+        sizePercent = 0.95; // 95% of viewport - maximize on mobile
+        break;
+      case 'tablet':
+        sizePercent = 0.80; // 80% of viewport - balance with controls
+        break;
+      case 'desktop':
+        sizePercent = 0.70; // 70% of viewport - comfortable spacing
+        break;
+      default:
+        sizePercent = 0.80;
+    }
+    
+    // Calculate available space (accounting for controls, padding, and UI overhead)
+    const availableWidth = (viewport.width - uiOverhead.horizontal) * sizePercent;
+    const availableHeight = (viewport.height - uiOverhead.vertical) * sizePercent;
+    
+    // Chess board is square, so use the smaller dimension to ensure it fits
+    const boardSize = Math.min(availableWidth, availableHeight);
+    
+    // Constrain to reasonable limits for usability
+    const minSize = 280; // Minimum 280px for usability on small screens
+    const maxSize = 800; // Maximum 800px for optimal viewing on large screens
+    const finalSize = Math.max(minSize, Math.min(maxSize, boardSize));
+    
+    console.log('📐 Board size calculated:', {
+      viewport,
+      breakpoint: this.currentBreakpoint,
+      sizePercent,
+      availableWidth,
+      availableHeight,
+      finalSize
+    });
+    
+    return {
+      width: finalSize,
+      height: finalSize
+    };
+  }
+  
+  /**
+   * Calculate UI overhead (space taken by controls, menus, etc.)
+   * @returns {{ horizontal: number, vertical: number }}
+   */
+  calculateUIOverhead() {
+    let horizontal = 0;
+    let vertical = 0;
+    
+    // Account for settings menu toggle button (always visible)
+    const toggleButton = document.querySelector('#settingsMenuToggle');
+    if (toggleButton) {
+      const toggleRect = toggleButton.getBoundingClientRect();
+      horizontal += toggleRect.width + 20; // Add some padding
+    }
+    
+    // Account for move history panel if visible
+    const moveHistory = document.querySelector('.move-history');
+    if (moveHistory && window.getComputedStyle(moveHistory).display !== 'none') {
+      const historyRect = moveHistory.getBoundingClientRect();
+      vertical += historyRect.height + 20;
+    }
+    
+    // Account for timer/status bar if visible
+    const statusBar = document.querySelector('.status-bar');
+    if (statusBar && window.getComputedStyle(statusBar).display !== 'none') {
+      const statusRect = statusBar.getBoundingClientRect();
+      vertical += statusRect.height + 10;
+    }
+    
+    // Add base padding for mobile/tablet/desktop
+    switch (this.currentBreakpoint) {
+      case 'mobile':
+        horizontal += 20; // Minimal horizontal padding
+        vertical += 40;   // More vertical padding for mobile UI
+        break;
+      case 'tablet':
+        horizontal += 40;
+        vertical += 60;
+        break;
+      case 'desktop':
+        horizontal += 60;
+        vertical += 80;
+        break;
+    }
+    
+    return { horizontal, vertical };
+  }
+  
+  /**
+   * Register callback for breakpoint changes
+   * @param {Function} callback - Function to call when breakpoint changes
+   */
+  onBreakpointChange(callback) {
+    if (typeof callback === 'function') {
+      this.breakpointCallbacks.push(callback);
+    }
+  }
+  
+  /**
+   * Force layout recalculation
+   */
+  recalculateLayout() {
+    console.log('📱 Recalculating layout...');
+    
+    this.detectBreakpoint();
+    this.applyResponsiveLayout();
+    
+    if (this.options.enableLegacyFeatures) {
+      this.updateDynamicSizing();
+    }
+    
+    // Calculate and apply board size
+    const boardSize = this.calculateBoardSize();
+    this.applyBoardSize(boardSize);
+    
+    // Trigger custom event
+    this.dispatchLayoutEvent('recalculate', {
+      boardSize,
+      breakpoint: this.currentBreakpoint
+    });
+  }
+  
+  /**
+   * Apply calculated board size to the board element
+   * Requirement 8.6: Apply calculated dimensions to board element
+   * @param {{ width: number, height: number }} size
+   */
+  applyBoardSize(size) {
+    // Try multiple selectors to find the board element
+    const boardContainer = document.querySelector('.board-container') || 
+                          document.querySelector('#board') ||
+                          document.querySelector('.chessboard') ||
+                          document.querySelector('.board');
+    
+    if (boardContainer) {
+      // Don't apply dimensions to the board itself - let CSS handle it
+      // The board uses grid layout with var(--square-size) which handles sizing automatically
+      
+      // Only update CSS custom properties for reference
+      document.documentElement.style.setProperty('--board-size', `${size.width}px`);
+      document.documentElement.style.setProperty('--board-width', `${size.width}px`);
+      document.documentElement.style.setProperty('--board-height', `${size.height}px`);
+      
+      console.log('📐 Board size calculated:', size, 'CSS variables updated');
+      
+      // Trigger a custom event for board resize
+      this.dispatchLayoutEvent('boardresize', {
+        boardSize: size,
+        element: boardContainer
+      });
+    } else {
+      console.warn('⚠️ Board container not found, cannot apply board size');
+    }
+  }
+  
+  /**
+   * Cleanup and remove listeners
+   */
+  destroy() {
+    console.log('🧹 Cleaning up Responsive Layout Manager...');
+    
+    // Remove event listeners
+    if (this.orientationChangeHandler) {
+      window.removeEventListener('orientationchange', this.orientationChangeHandler);
+    }
+    
+    // Remove ResizeObserver fallback handler if it exists
+    if (this.resizeObserverFallbackHandler) {
+      window.removeEventListener('resize', this.resizeObserverFallbackHandler);
+      this.resizeObserverFallbackHandler = null;
+    }
+    
+    // Clear debounce timer
+    if (this.resizeDebounceTimer) {
+      clearTimeout(this.resizeDebounceTimer);
+    }
+    
+    // Disconnect resize observer
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+    
+    // Disable collapsible palette
+    if (this.isCollapsiblePaletteActive) {
+      this.disableCollapsiblePalette();
+    }
+    
+    // Clear callbacks
+    this.breakpointCallbacks = [];
+    
+    // Remove layout classes
+    document.body.classList.remove(
+      'layout-mobile', 'layout-tablet', 'layout-desktop', 'layout-large',
+      'responsive-layout-active', 'orientation-portrait', 'orientation-landscape'
+    );
+    
+    console.log('✅ Responsive Layout Manager cleaned up');
+  }
+  
+  // ============================================
+  // LEGACY METHODS (for backward compatibility)
+  // ============================================
+  
+  /**
+   * Legacy cleanup method
+   */
+  cleanup() {
+    this.destroy();
   }
   
   /**
@@ -128,14 +393,27 @@ class ResponsiveLayoutManager {
    */
   detectBreakpoint() {
     const width = window.innerWidth;
-    let newBreakpoint = 'mobile';
     
-    if (width >= this.breakpoints.large) {
-      newBreakpoint = 'large';
-    } else if (width >= this.breakpoints.desktop) {
-      newBreakpoint = 'desktop';
-    } else if (width >= this.breakpoints.tablet) {
+    // Requirement 5.6: Validate viewport dimensions
+    if (!this.validateViewportDimensions(width, window.innerHeight)) {
+      console.warn('⚠️ Invalid viewport dimensions detected, using default breakpoint');
+      return this.currentBreakpoint || 'desktop'; // Fallback to current or desktop
+    }
+    
+    let newBreakpoint;
+    
+    // Use new breakpoint definitions (responsive-settings-menu spec)
+    if (width < 768) {
+      newBreakpoint = 'mobile';
+    } else if (width >= 768 && width < 1024) {
       newBreakpoint = 'tablet';
+    } else {
+      newBreakpoint = 'desktop';
+    }
+    
+    // Legacy support: also check for 'large' breakpoint
+    if (this.options.enableLegacyFeatures && width >= this.legacyBreakpoints.large) {
+      newBreakpoint = 'large';
     }
     
     if (newBreakpoint !== this.currentBreakpoint) {
@@ -153,16 +431,56 @@ class ResponsiveLayoutManager {
   }
   
   /**
+   * Validate viewport dimensions
+   * Requirement 5.6: Add validation for viewport dimensions
+   * @param {number} width - Viewport width
+   * @param {number} height - Viewport height
+   * @returns {boolean} - True if dimensions are valid
+   */
+  validateViewportDimensions(width, height) {
+    // Check for valid numeric values
+    if (typeof width !== 'number' || typeof height !== 'number') {
+      console.error('❌ Viewport dimensions are not numbers:', { width, height });
+      return false;
+    }
+    
+    // Check for NaN or Infinity
+    if (!isFinite(width) || !isFinite(height)) {
+      console.error('❌ Viewport dimensions are not finite:', { width, height });
+      return false;
+    }
+    
+    // Check for reasonable minimum dimensions (at least 200x200)
+    const minDimension = 200;
+    if (width < minDimension || height < minDimension) {
+      console.warn(`⚠️ Viewport dimensions below minimum (${minDimension}px):`, { width, height });
+      return false;
+    }
+    
+    // Check for reasonable maximum dimensions (up to 8K resolution: 7680x4320)
+    const maxDimension = 8000;
+    if (width > maxDimension || height > maxDimension) {
+      console.warn(`⚠️ Viewport dimensions exceed maximum (${maxDimension}px):`, { width, height });
+      return false;
+    }
+    
+    // All validations passed
+    return true;
+  }
+  
+  /**
    * Setup responsive event listeners
    */
   setupEventListeners() {
-    // Window resize handler with debouncing
-    let resizeTimeout;
+    // Window resize handler with debouncing (100ms for performance requirement 7.2)
     window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
+      if (this.resizeDebounceTimer) {
+        clearTimeout(this.resizeDebounceTimer);
+      }
+      
+      this.resizeDebounceTimer = setTimeout(() => {
         this.handleResize();
-      }, 150);
+      }, 100); // 100ms to meet requirement 7.2
     });
     
     // Orientation change handler
@@ -174,31 +492,92 @@ class ResponsiveLayoutManager {
     
     window.addEventListener('orientationchange', this.orientationChangeHandler);
     
-    // Setup ResizeObserver for more precise element monitoring
+    // Setup ResizeObserver for more precise viewport monitoring
+    // Requirement 5.5: Add ResizeObserver fallback
     if (window.ResizeObserver) {
-      this.resizeObserver = new ResizeObserver((entries) => {
-        this.handleElementResize(entries);
-      });
-      
-      // Observe the piece setup modal
-      const modal = document.getElementById('pieceSetupModal');
-      if (modal) {
-        this.resizeObserver.observe(modal);
+      try {
+        this.resizeObserver = new ResizeObserver((entries) => {
+          this.handleElementResize(entries);
+        });
+        
+        // Observe the document body for viewport changes
+        this.resizeObserver.observe(document.body);
+        
+        // Legacy support: observe piece setup modal
+        if (this.options.enableLegacyFeatures) {
+          const modal = document.getElementById('pieceSetupModal');
+          if (modal) {
+            this.resizeObserver.observe(modal);
+          }
+        }
+        
+        console.log('✅ ResizeObserver initialized successfully');
+      } catch (error) {
+        console.warn('⚠️ ResizeObserver initialization failed, using fallback:', error);
+        this.setupResizeObserverFallback();
       }
+    } else {
+      console.warn('⚠️ ResizeObserver not supported, using fallback');
+      this.setupResizeObserverFallback();
     }
     
-    // Media query listeners for specific breakpoints
-    this.setupMediaQueryListeners();
+    // Media query listeners for specific breakpoints (legacy support)
+    if (this.options.enableLegacyFeatures) {
+      this.setupMediaQueryListeners();
+    }
+  }
+  
+  /**
+   * Setup ResizeObserver fallback using window.resize with debouncing
+   * Requirement 5.5: Fallback for browsers without ResizeObserver support
+   */
+  setupResizeObserverFallback() {
+    console.log('📱 Setting up ResizeObserver fallback with debounced window.resize');
+    
+    // Use a separate debounce timer for the fallback
+    let fallbackDebounceTimer = null;
+    const fallbackDebounceDelay = 150; // Slightly longer delay for fallback
+    
+    const fallbackResizeHandler = () => {
+      if (fallbackDebounceTimer) {
+        clearTimeout(fallbackDebounceTimer);
+      }
+      
+      fallbackDebounceTimer = setTimeout(() => {
+        // Simulate ResizeObserver behavior
+        this.handleElementResize([{
+          target: document.body,
+          contentRect: {
+            width: document.body.clientWidth,
+            height: document.body.clientHeight
+          }
+        }]);
+      }, fallbackDebounceDelay);
+    };
+    
+    // Add the fallback resize listener
+    window.addEventListener('resize', fallbackResizeHandler);
+    
+    // Store reference for cleanup
+    this.resizeObserverFallbackHandler = fallbackResizeHandler;
+    
+    console.log('✅ ResizeObserver fallback initialized');
   }
   
   /**
    * Setup media query listeners for breakpoint detection
    */
   setupMediaQueryListeners() {
-    Object.entries(this.breakpoints).forEach(([name, width]) => {
+    // Use modern addEventListener instead of deprecated addListener
+    const breakpoints = this.options.enableLegacyFeatures ? 
+      this.legacyBreakpoints : 
+      { mobile: 768, tablet: 1024 };
+    
+    Object.entries(breakpoints).forEach(([breakpointName, width]) => {
       const mediaQuery = window.matchMedia(`(min-width: ${width}px)`);
       
-      mediaQuery.addListener((mq) => {
+      // Use modern addEventListener
+      mediaQuery.addEventListener('change', () => {
         this.detectBreakpoint();
       });
     });
@@ -211,14 +590,22 @@ class ResponsiveLayoutManager {
     console.log('📱 Window resized:', window.innerWidth, 'x', window.innerHeight);
     
     this.detectBreakpoint();
-    this.updateDynamicSizing();
-    this.adjustLayoutForSize();
+    
+    // Calculate and apply board size (Requirement 8.6)
+    const boardSize = this.calculateBoardSize();
+    this.applyBoardSize(boardSize);
+    
+    if (this.options.enableLegacyFeatures) {
+      this.updateDynamicSizing();
+      this.adjustLayoutForSize();
+    }
     
     // Trigger custom resize event
     this.dispatchLayoutEvent('resize', {
       width: window.innerWidth,
       height: window.innerHeight,
-      breakpoint: this.currentBreakpoint
+      breakpoint: this.currentBreakpoint,
+      boardSize
     });
   }
   
@@ -236,10 +623,15 @@ class ResponsiveLayoutManager {
     // Apply orientation-specific layouts
     this.applyOrientationLayout(newOrientation);
     
+    // Recalculate and apply board size for new orientation (Requirement 8.6)
+    const boardSize = this.calculateBoardSize();
+    this.applyBoardSize(boardSize);
+    
     // Trigger custom orientation event
     this.dispatchLayoutEvent('orientationchange', {
       orientation: newOrientation,
-      previous: previousOrientation
+      previous: previousOrientation,
+      boardSize
     });
   }
   
@@ -252,19 +644,31 @@ class ResponsiveLayoutManager {
     // Update layout
     this.applyResponsiveLayout();
     
-    // Update collapsible palette state
-    this.updateCollapsiblePalette();
+    // Legacy features
+    if (this.options.enableLegacyFeatures) {
+      this.updateCollapsiblePalette();
+      this.updateDynamicSizing();
+      this.applyBreakpointOptimizations(current);
+    }
     
-    // Update dynamic sizing
-    this.updateDynamicSizing();
+    // Calculate and apply board size
+    const boardSize = this.calculateBoardSize();
+    this.applyBoardSize(boardSize);
     
-    // Apply breakpoint-specific optimizations
-    this.applyBreakpointOptimizations(current);
+    // Call registered callbacks
+    this.breakpointCallbacks.forEach(callback => {
+      try {
+        callback(current, previous);
+      } catch (error) {
+        console.error('Error in breakpoint callback:', error);
+      }
+    });
     
     // Trigger custom breakpoint event
     this.dispatchLayoutEvent('breakpointchange', {
       current: current,
-      previous: previous
+      previous: previous,
+      boardSize
     });
   }
   
@@ -276,20 +680,18 @@ class ResponsiveLayoutManager {
     
     console.log(`📱 Applying responsive layout for: ${breakpoint}`);
     
+    // Apply layout classes to root element (requirement from design doc)
+    this.applyLayoutClasses(breakpoint);
+    
     // Update CSS custom properties
     this.updateCSSProperties(breakpoint);
     
-    // Apply layout classes
-    this.applyLayoutClasses(breakpoint);
-    
-    // Configure palette layout
-    this.configurePaletteLayout(breakpoint);
-    
-    // Update modal sizing
-    this.updateModalSizing(breakpoint);
-    
-    // Update grid system
-    this.updateGridSystem(breakpoint);
+    // Legacy features
+    if (this.options.enableLegacyFeatures) {
+      this.configurePaletteLayout(breakpoint);
+      this.updateModalSizing(breakpoint);
+      this.updateGridSystem(breakpoint);
+    }
   }
   
   /**
@@ -321,29 +723,37 @@ class ResponsiveLayoutManager {
    * Apply layout classes based on breakpoint
    */
   applyLayoutClasses(breakpoint) {
+    const root = document.documentElement; // Apply to root element as per design
     const body = document.body;
     
-    // Remove existing breakpoint classes
-    body.classList.remove('layout-mobile', 'layout-tablet', 'layout-desktop', 'layout-large');
+    // Remove existing breakpoint classes from both root and body
+    const breakpointClasses = ['layout-mobile', 'layout-tablet', 'layout-desktop', 'layout-large'];
+    root.classList.remove(...breakpointClasses);
+    body.classList.remove(...breakpointClasses);
     
-    // Add current breakpoint class
+    // Add current breakpoint class to root element (primary)
+    root.classList.add(`layout-${breakpoint}`);
+    
+    // Also add to body for backward compatibility
     body.classList.add(`layout-${breakpoint}`);
     
-    // Add responsive layout class
+    // Add responsive layout active class
+    root.classList.add('responsive-layout-active');
     body.classList.add('responsive-layout-active');
     
     console.log(`📱 Applied layout class: layout-${breakpoint}`);
   }
   
   /**
-   * Configure palette layout for current breakpoint
+   * Configure palette layout for current breakpoint (legacy feature)
    */
   configurePaletteLayout(breakpoint) {
+    if (!this.options.enableLegacyFeatures) return;
+    
     const config = this.responsiveSettings.paletteConfig[breakpoint];
     if (!config) return;
     
     const palette = document.querySelector('.piece-palette');
-    const paletteContainer = document.querySelector('.palette-container');
     
     if (palette) {
       // Update palette columns
@@ -364,9 +774,11 @@ class ResponsiveLayoutManager {
   }
   
   /**
-   * Update modal sizing for current breakpoint
+   * Update modal sizing for current breakpoint (legacy feature)
    */
   updateModalSizing(breakpoint) {
+    if (!this.options.enableLegacyFeatures) return;
+    
     const modalSizes = this.responsiveSettings.modalSizes[breakpoint];
     if (!modalSizes) return;
     
@@ -380,9 +792,11 @@ class ResponsiveLayoutManager {
   }
   
   /**
-   * Update grid system for current breakpoint
+   * Update grid system for current breakpoint (legacy feature)
    */
   updateGridSystem(breakpoint) {
+    if (!this.options.enableLegacyFeatures) return;
+    
     const columns = this.responsiveSettings.gridColumns[breakpoint];
     
     const grids = document.querySelectorAll('.responsive-grid');
@@ -597,11 +1011,14 @@ class ResponsiveLayoutManager {
   }
   
   /**
-   * Calculate optimal sizes based on viewport
+   * Calculate optimal sizes based on viewport (legacy feature)
    */
   calculateOptimalSizes(viewport) {
+    if (!this.options.enableLegacyFeatures) {
+      return null;
+    }
+    
     const breakpoint = this.currentBreakpoint;
-    const baseSizes = this.responsiveSettings;
     
     // Calculate piece size based on available space
     const availableWidth = viewport.width * 0.8; // 80% of viewport
@@ -887,16 +1304,13 @@ class ResponsiveLayoutManager {
   }
   
   /**
-   * Adjust modal positioning
+   * Adjust modal positioning (legacy feature)
    */
   adjustModalPositioning() {
+    if (!this.options.enableLegacyFeatures) return;
+    
     const modal = document.querySelector('.piece-setup-modal');
     if (!modal) return;
-    
-    const viewport = {
-      width: window.innerWidth,
-      height: window.innerHeight
-    };
     
     // Center modal properly
     modal.style.display = 'flex';
@@ -969,19 +1383,11 @@ class ResponsiveLayoutManager {
   }
   
   /**
-   * Force layout update
+   * Force layout update (legacy method - redirects to recalculateLayout)
    */
   forceLayoutUpdate() {
-    console.log('📱 Forcing layout update');
-    
-    this.detectBreakpoint();
-    this.applyResponsiveLayout();
-    this.updateDynamicSizing();
-    
-    // Trigger update event
-    this.dispatchLayoutEvent('forceupdate', {
-      reason: 'manual'
-    });
+    console.log('📱 Forcing layout update (legacy method)');
+    this.recalculateLayout();
   }
   
   /**

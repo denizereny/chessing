@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property 7: Menu Overlay Positioning Test</title>
+    <link rel="stylesheet" href="css/responsive-settings-menu.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+        .test-result.pass {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .test-result.fail {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .test-summary {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 4px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .content-area {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .board-container {
+            width: 400px;
+            height: 400px;
+            background: #ddd;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Property 7: Menu Overlay Positioning</h1>
+            <p><strong>Task:</strong> 4.4 Write property test for menu overlay positioning</p>
+            <p><strong>Validates:</strong> Requirements 2.6</p>
+        </div>
+
+        <div class="content-area">
+            <h3>Test Content Area</h3>
+            <p>This content should not shift when the menu opens or closes.</p>
+            <div class="board-container">
+                <strong>Chess Board Area</strong>
+            </div>
+            <p>The menu should use overlay positioning (fixed or absolute) that doesn't affect document flow.</p>
+        </div>
+
+        <div>
+            <button class="btn" onclick="runTests()">▶️ Run Property 7 Tests</button>
+            <button class="btn" onclick="toggleMenu()">🔄 Toggle Menu</button>
+        </div>
+
+        <div id="testResults"></div>
+        <div id="testSummary" class="test-summary" style="display: none;"></div>
+    </div>
+
+    <!-- Settings Menu Structure -->
+    <button class="settings-menu-toggle" id="settingsMenuToggle" 
+            aria-label="Open settings menu" 
+            aria-expanded="false" 
+            aria-controls="settingsMenuPanel">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="5" r="1"/>
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="12" cy="19" r="1"/>
+        </svg>
+    </button>
+
+    <div class="settings-menu-backdrop" id="settingsMenuBackdrop" aria-hidden="true"></div>
+
+    <div class="settings-menu-panel" id="settingsMenuPanel" aria-hidden="true">
+        <div class="settings-menu-header">
+            <h2 class="settings-menu-title">⚙️ Settings</h2>
+            <button class="settings-menu-close" id="settingsMenuClose" aria-label="Close settings menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="settings-menu-content">
+            <p>Settings menu content goes here...</p>
+            <button class="btn">Theme Toggle</button>
+            <button class="btn">Language Selector</button>
+            <button class="btn">Piece Setup</button>
+        </div>
+    </div>
+
+    <script src="js/settings-menu-manager.js"></script>
+    <script>
+        // Initialize settings menu
+        const menuManager = new SettingsMenuManager();
+        menuManager.initialize();
+
+        let testResults = [];
+
+        function toggleMenu() {
+            menuManager.toggle();
+        }
+
+        function addTestResult(name, passed, details = '') {
+            testResults.push({ name, passed, details });
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            resultDiv.innerHTML = `
+                <strong>${passed ? '✅' : '❌'} ${name}</strong>
+                ${details ? `<div style="margin-top: 5px; font-size: 0.9em;">${details}</div>` : ''}
+            `;
+            
+            document.getElementById('testResults').appendChild(resultDiv);
+        }
+
+        function runTests() {
+            // Clear previous results
+            document.getElementById('testResults').innerHTML = '<h3>Test Results:</h3>';
+            testResults = [];
+
+            console.log('🧪 Running Property 7: Menu overlay positioning tests...\n');
+
+            // Test 1: Menu uses overlay positioning
+            const panel = document.querySelector('.settings-menu-panel');
+            const panelStyles = window.getComputedStyle(panel);
+            const position = panelStyles.position;
+            const usesOverlay = position === 'absolute' || position === 'fixed';
+            
+            addTestResult(
+                'Menu uses overlay positioning (absolute or fixed)',
+                usesOverlay,
+                `Position: ${position}`
+            );
+            console.log(`Test 1: ${usesOverlay ? '✅ PASS' : '❌ FAIL'} - Position: ${position}`);
+
+            // Test 2: Menu uses transform for positioning
+            const transform = panelStyles.transform;
+            const usesTransform = transform && transform !== 'none';
+            
+            addTestResult(
+                'Menu uses CSS transform for positioning',
+                usesTransform,
+                `Transform: ${transform}`
+            );
+            console.log(`Test 2: ${usesTransform ? '✅ PASS' : '❌ FAIL'} - Transform: ${transform}`);
+
+            // Test 3: Backdrop uses overlay positioning
+            const backdrop = document.querySelector('.settings-menu-backdrop');
+            const backdropStyles = window.getComputedStyle(backdrop);
+            const backdropPosition = backdropStyles.position;
+            const backdropUsesOverlay = backdropPosition === 'fixed' || backdropPosition === 'absolute';
+            
+            addTestResult(
+                'Backdrop uses overlay positioning',
+                backdropUsesOverlay,
+                `Position: ${backdropPosition}`
+            );
+            console.log(`Test 3: ${backdropUsesOverlay ? '✅ PASS' : '❌ FAIL'} - Position: ${backdropPosition}`);
+
+            // Test 4: Menu doesn't affect document flow
+            const display = panelStyles.display;
+            const removedFromFlow = usesOverlay && (display !== 'inline' && display !== 'inline-block');
+            
+            addTestResult(
+                'Menu is removed from document flow',
+                removedFromFlow,
+                `Position: ${position}, Display: ${display}`
+            );
+            console.log(`Test 4: ${removedFromFlow ? '✅ PASS' : '❌ FAIL'} - Removed from flow: ${removedFromFlow}`);
+
+            // Test 5: Opening menu doesn't shift content
+            const contentArea = document.querySelector('.content-area');
+            const beforeRect = contentArea.getBoundingClientRect();
+            const beforeTop = beforeRect.top;
+            const beforeLeft = beforeRect.left;
+
+            // Open menu
+            menuManager.open();
+
+            setTimeout(() => {
+                const afterRect = contentArea.getBoundingClientRect();
+                const afterTop = afterRect.top;
+                const afterLeft = afterRect.left;
+
+                const tolerance = 1; // 1px tolerance for rounding
+                const noShift = Math.abs(afterTop - beforeTop) <= tolerance && 
+                               Math.abs(afterLeft - beforeLeft) <= tolerance;
+
+                addTestResult(
+                    'Opening menu does not shift other content',
+                    noShift,
+                    `Before: (${beforeLeft.toFixed(1)}, ${beforeTop.toFixed(1)}), After: (${afterLeft.toFixed(1)}, ${afterTop.toFixed(1)})`
+                );
+                console.log(`Test 5: ${noShift ? '✅ PASS' : '❌ FAIL'} - No content shift: ${noShift}`);
+
+                // Close menu and test again
+                menuManager.close();
+
+                setTimeout(() => {
+                    const finalRect = contentArea.getBoundingClientRect();
+                    const finalTop = finalRect.top;
+                    const finalLeft = finalRect.left;
+
+                    const noShiftOnClose = Math.abs(finalTop - beforeTop) <= tolerance && 
+                                          Math.abs(finalLeft - beforeLeft) <= tolerance;
+
+                    addTestResult(
+                        'Closing menu does not shift other content',
+                        noShiftOnClose,
+                        `Before: (${beforeLeft.toFixed(1)}, ${beforeTop.toFixed(1)}), After: (${finalLeft.toFixed(1)}, ${finalTop.toFixed(1)})`
+                    );
+                    console.log(`Test 6: ${noShiftOnClose ? '✅ PASS' : '❌ FAIL'} - No content shift on close: ${noShiftOnClose}`);
+
+                    // Test 7: Document dimensions don't change
+                    const docWidth = document.documentElement.scrollWidth;
+                    const docHeight = document.documentElement.scrollHeight;
+
+                    menuManager.open();
+
+                    setTimeout(() => {
+                        const openDocWidth = document.documentElement.scrollWidth;
+                        const openDocHeight = document.documentElement.scrollHeight;
+
+                        const noReflow = docWidth === openDocWidth && docHeight === openDocHeight;
+
+                        addTestResult(
+                            'Menu does not cause document reflow',
+                            noReflow,
+                            `Closed: ${docWidth}x${docHeight}, Open: ${openDocWidth}x${openDocHeight}`
+                        );
+                        console.log(`Test 7: ${noReflow ? '✅ PASS' : '❌ FAIL'} - No reflow: ${noReflow}`);
+
+                        menuManager.close();
+
+                        // Show summary
+                        showSummary();
+                    }, 350);
+                }, 350);
+            }, 350);
+        }
+
+        function showSummary() {
+            const total = testResults.length;
+            const passed = testResults.filter(t => t.passed).length;
+            const failed = total - passed;
+
+            const summaryDiv = document.getElementById('testSummary');
+            summaryDiv.style.display = 'block';
+            summaryDiv.innerHTML = `
+                <h3>📊 Test Summary</h3>
+                <p><strong>Total Tests:</strong> ${total}</p>
+                <p><strong>Passed:</strong> ${passed} ✅</p>
+                <p><strong>Failed:</strong> ${failed} ❌</p>
+                <p style="margin-top: 15px;">
+                    ${failed === 0 
+                        ? '✅ <strong>All tests passed!</strong> Menu overlay positioning is correctly implemented.' 
+                        : '❌ <strong>Some tests failed.</strong> Please review the implementation.'}
+                </p>
+            `;
+
+            console.log('\n📊 Test Summary:');
+            console.log(`Total: ${total}, Passed: ${passed}, Failed: ${failed}`);
+            console.log(failed === 0 ? '✅ All tests passed!' : '❌ Some tests failed.');
+        }
+    </script>
+</body>
+</html>

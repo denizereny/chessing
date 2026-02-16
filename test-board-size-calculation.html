@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Board Size Calculation Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .info-panel {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-family: monospace;
+    }
+    
+    .info-panel div {
+      margin: 5px 0;
+    }
+    
+    .board-container {
+      background: #f0f0f0;
+      border: 2px solid #333;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #666;
+    }
+    
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 10px 20px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    button:hover {
+      background: #1976D2;
+    }
+    
+    .log {
+      background: #263238;
+      color: #aed581;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .log div {
+      margin: 3px 0;
+    }
+    
+    .success {
+      color: #4caf50;
+    }
+    
+    .error {
+      color: #f44336;
+    }
+    
+    .warning {
+      color: #ff9800;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>📐 Board Size Calculation Test</h1>
+    <p>This test verifies that the board size calculation logic works correctly across different viewport sizes and breakpoints.</p>
+    
+    <div class="info-panel" id="infoPanel">
+      <div><strong>Viewport:</strong> <span id="viewportInfo">-</span></div>
+      <div><strong>Breakpoint:</strong> <span id="breakpointInfo">-</span></div>
+      <div><strong>Board Size:</strong> <span id="boardSizeInfo">-</span></div>
+      <div><strong>Size Percent:</strong> <span id="sizePercentInfo">-</span></div>
+      <div><strong>UI Overhead:</strong> <span id="overheadInfo">-</span></div>
+    </div>
+    
+    <div class="board-container" id="boardContainer">
+      Chess Board
+    </div>
+    
+    <div class="controls">
+      <button onclick="recalculateSize()">🔄 Recalculate Size</button>
+      <button onclick="simulateMobile()">📱 Simulate Mobile (375x667)</button>
+      <button onclick="simulateTablet()">📱 Simulate Tablet (768x1024)</button>
+      <button onclick="simulateDesktop()">🖥️ Simulate Desktop (1920x1080)</button>
+      <button onclick="clearLog()">🗑️ Clear Log</button>
+    </div>
+    
+    <div class="log" id="log"></div>
+  </div>
+  
+  <!-- Settings Menu Toggle (for UI overhead calculation) -->
+  <button id="settingsMenuToggle" style="position: fixed; top: 20px; right: 20px; width: 44px; height: 44px;">⚙️</button>
+  
+  <script src="js/responsive-layout-manager.js"></script>
+  <script>
+    let layoutManager;
+    
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = type;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    
+    function clearLog() {
+      document.getElementById('log').innerHTML = '';
+    }
+    
+    function updateInfo() {
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+      
+      const breakpoint = layoutManager.getCurrentBreakpoint();
+      const boardSize = layoutManager.calculateBoardSize();
+      
+      document.getElementById('viewportInfo').textContent = `${viewport.width}x${viewport.height}`;
+      document.getElementById('breakpointInfo').textContent = breakpoint;
+      document.getElementById('boardSizeInfo').textContent = `${boardSize.width}x${boardSize.height}`;
+      
+      // Calculate size percent
+      let sizePercent;
+      switch (breakpoint) {
+        case 'mobile': sizePercent = '95%'; break;
+        case 'tablet': sizePercent = '80%'; break;
+        case 'desktop': sizePercent = '70%'; break;
+        default: sizePercent = '80%';
+      }
+      document.getElementById('sizePercentInfo').textContent = sizePercent;
+      
+      // Get UI overhead
+      const overhead = layoutManager.calculateUIOverhead();
+      document.getElementById('overheadInfo').textContent = `H: ${overhead.horizontal}px, V: ${overhead.vertical}px`;
+    }
+    
+    function recalculateSize() {
+      log('🔄 Recalculating board size...', 'info');
+      layoutManager.recalculateLayout();
+      updateInfo();
+      log('✅ Board size recalculated', 'success');
+    }
+    
+    function simulateMobile() {
+      log('📱 Simulating mobile viewport (375x667)', 'info');
+      // Note: This won't actually resize the window, but we can test the calculation
+      log('⚠️ Note: Actual window resize requires manual browser resize', 'warning');
+      log('Current viewport: ' + window.innerWidth + 'x' + window.innerHeight, 'info');
+    }
+    
+    function simulateTablet() {
+      log('📱 Simulating tablet viewport (768x1024)', 'info');
+      log('⚠️ Note: Actual window resize requires manual browser resize', 'warning');
+      log('Current viewport: ' + window.innerWidth + 'x' + window.innerHeight, 'info');
+    }
+    
+    function simulateDesktop() {
+      log('🖥️ Simulating desktop viewport (1920x1080)', 'info');
+      log('⚠️ Note: Actual window resize requires manual browser resize', 'warning');
+      log('Current viewport: ' + window.innerWidth + 'x' + window.innerHeight, 'info');
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      log('🚀 Initializing Board Size Calculation Test...', 'info');
+      
+      try {
+        // Create layout manager
+        layoutManager = new ResponsiveLayoutManager();
+        log('✅ ResponsiveLayoutManager initialized', 'success');
+        
+        // Update info panel
+        updateInfo();
+        
+        // Listen for layout events
+        document.addEventListener('responsive-layout-resize', (e) => {
+          log(`📐 Layout resized: ${e.detail.width}x${e.detail.height}`, 'info');
+          log(`   Breakpoint: ${e.detail.breakpoint}`, 'info');
+          log(`   Board size: ${e.detail.boardSize.width}x${e.detail.boardSize.height}`, 'info');
+          updateInfo();
+        });
+        
+        document.addEventListener('responsive-layout-breakpointchange', (e) => {
+          log(`📱 Breakpoint changed: ${e.detail.previous} → ${e.detail.current}`, 'warning');
+          log(`   Board size: ${e.detail.boardSize.width}x${e.detail.boardSize.height}`, 'info');
+          updateInfo();
+        });
+        
+        document.addEventListener('responsive-layout-boardresize', (e) => {
+          log(`📐 Board resized: ${e.detail.boardSize.width}x${e.detail.boardSize.height}`, 'success');
+        });
+        
+        document.addEventListener('responsive-layout-orientationchange', (e) => {
+          log(`🔄 Orientation changed: ${e.detail.previous} → ${e.detail.orientation}`, 'warning');
+          log(`   Board size: ${e.detail.boardSize.width}x${e.detail.boardSize.height}`, 'info');
+          updateInfo();
+        });
+        
+        log('✅ Test initialized successfully', 'success');
+        log('📏 Resize the browser window to test responsive behavior', 'info');
+        
+      } catch (error) {
+        log('❌ Error initializing test: ' + error.message, 'error');
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>

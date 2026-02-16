@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property 9: Touch Target Minimum Size Tests</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  
+  <!-- Testing Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/fast-check/lib/bundle.js"></script>
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      margin: 0;
+    }
+    
+    .test-header {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .test-header h1 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+    
+    .test-info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #2196f3;
+      margin-top: 15px;
+    }
+    
+    .test-results {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .test-status {
+      padding: 15px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-weight: 500;
+    }
+    
+    .test-status.running {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+    }
+    
+    .test-status.passed {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+    }
+    
+    .test-status.failed {
+      background: #f8d7da;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .test-log {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    
+    .test-log-entry {
+      margin: 5px 0;
+      padding: 5px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .test-log-entry.error {
+      color: #dc3545;
+    }
+    
+    .test-log-entry.success {
+      color: #28a745;
+    }
+    
+    .test-log-entry.info {
+      color: #2196f3;
+    }
+    
+    button {
+      background: #2196f3;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    button:hover {
+      background: #1976d2;
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .stat {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2196f3;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-header">
+    <h1>🎯 Property 9: Touch Target Minimum Size Tests</h1>
+    <p><strong>Feature:</strong> responsive-settings-menu</p>
+    <p><strong>Validates:</strong> Requirements 4.1, 4.2</p>
+    
+    <div class="test-info">
+      <strong>Property 9:</strong> For any interactive element in the settings menu on touch devices, 
+      the touch target size should be at least 44x44 pixels.
+    </div>
+    
+    <button id="runTestsBtn" onclick="runTests()">Run Property Tests</button>
+  </div>
+  
+  <div class="test-results">
+    <h2>Test Results</h2>
+    <div id="testStatus" class="test-status running">
+      ⏳ Ready to run tests...
+    </div>
+    
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value" id="totalTests">0</div>
+        <div class="stat-label">Total Tests</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="passedTests">0</div>
+        <div class="stat-label">Passed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="failedTests">0</div>
+        <div class="stat-label">Failed</div>
+      </div>
+    </div>
+    
+    <div class="test-log" id="testLog"></div>
+  </div>
+  
+  <!-- Settings Menu Structure for Testing -->
+  <button id="settingsMenuToggle" class="settings-menu-toggle" aria-label="Open settings menu" aria-expanded="false" aria-controls="settingsMenuPanel">
+    ⋮
+  </button>
+  
+  <div id="settingsMenuBackdrop" class="settings-menu-backdrop" aria-hidden="true"></div>
+  
+  <div id="settingsMenuPanel" class="settings-menu-panel" aria-hidden="true">
+    <div class="settings-menu-header">
+      <h2>Settings</h2>
+      <button class="settings-menu-close" aria-label="Close settings menu">×</button>
+    </div>
+    
+    <div class="settings-menu-content">
+      <div class="menu-control-group">
+        <label class="menu-control-label">Theme</label>
+        <button class="menu-control-btn" id="themeToggle">Toggle Theme</button>
+      </div>
+      
+      <div class="menu-control-group">
+        <label class="menu-control-label">Language</label>
+        <select class="menu-control-select" id="languageSelector">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+        </select>
+      </div>
+      
+      <div class="menu-control-group">
+        <button class="menu-control-btn" id="pieceSetupBtn">Piece Setup</button>
+      </div>
+      
+      <div class="menu-control-group">
+        <button class="menu-control-btn" id="sharePositionBtn">Share Position</button>
+      </div>
+      
+      <div class="menu-control-group">
+        <label class="menu-control-label">Analysis Depth</label>
+        <input type="number" class="menu-control-input" id="analysisDepth" min="1" max="20" value="10">
+      </div>
+      
+      <div class="menu-control-group">
+        <a href="#" class="menu-control-link">Help & Documentation</a>
+      </div>
+      
+      <div class="menu-control-group">
+        <div role="button" class="menu-control-custom" tabindex="0">Custom Control</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Test Scripts -->
+  <script src="js/responsive-layout-manager.js"></script>
+  <script src="js/settings-menu-manager.js"></script>
+  <script src="test/responsive-settings-menu-properties.test.js"></script>
+  
+  <script>
+    let testLog = [];
+    let totalTests = 0;
+    let passedTests = 0;
+    let failedTests = 0;
+    
+    function logTest(message, type = 'info') {
+      const entry = { message, type, timestamp: new Date().toISOString() };
+      testLog.push(entry);
+      
+      const logContainer = document.getElementById('testLog');
+      const logEntry = document.createElement('div');
+      logEntry.className = `test-log-entry ${type}`;
+      logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logContainer.appendChild(logEntry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+    
+    function updateStats() {
+      document.getElementById('totalTests').textContent = totalTests;
+      document.getElementById('passedTests').textContent = passedTests;
+      document.getElementById('failedTests').textContent = failedTests;
+    }
+    
+    function updateStatus(message, status) {
+      const statusEl = document.getElementById('testStatus');
+      statusEl.textContent = message;
+      statusEl.className = `test-status ${status}`;
+    }
+    
+    async function runTests() {
+      const runBtn = document.getElementById('runTestsBtn');
+      runBtn.disabled = true;
+      
+      testLog = [];
+      totalTests = 0;
+      passedTests = 0;
+      failedTests = 0;
+      
+      document.getElementById('testLog').innerHTML = '';
+      
+      updateStatus('⏳ Running Property 9 tests...', 'running');
+      logTest('Starting Property 9: Touch Target Minimum Size tests', 'info');
+      
+      try {
+        // Initialize responsive system
+        if (typeof ResponsiveLayoutManager !== 'undefined') {
+          window.responsiveLayoutManager = new ResponsiveLayoutManager();
+          window.responsiveLayoutManager.initialize();
+          logTest('✓ Responsive Layout Manager initialized', 'success');
+        }
+        
+        // Initialize settings menu
+        if (typeof SettingsMenuManager !== 'undefined') {
+          window.settingsMenuManager = new SettingsMenuManager({
+            toggleButtonId: 'settingsMenuToggle',
+            menuPanelId: 'settingsMenuPanel',
+            backdropId: 'settingsMenuBackdrop'
+          });
+          window.settingsMenuManager.initialize();
+          logTest('✓ Settings Menu Manager initialized', 'success');
+        }
+        
+        // Run Property 9 tests
+        logTest('Running property-based tests with fast-check...', 'info');
+        
+        // We'll run a simplified version here since we can't easily run Jest tests in browser
+        // The actual tests are in the test file and should be run with Jest
+        
+        const MIN_TOUCH_TARGET_SIZE = 44;
+        
+        // Test 1: Check toggle button
+        const toggleButton = document.getElementById('settingsMenuToggle');
+        if (toggleButton) {
+          const rect = toggleButton.getBoundingClientRect();
+          const passed = rect.width >= MIN_TOUCH_TARGET_SIZE && rect.height >= MIN_TOUCH_TARGET_SIZE;
+          totalTests++;
+          if (passed) {
+            passedTests++;
+            logTest(`✓ Toggle button size: ${rect.width.toFixed(1)}x${rect.height.toFixed(1)}px (≥44x44px)`, 'success');
+          } else {
+            failedTests++;
+            logTest(`✗ Toggle button size: ${rect.width.toFixed(1)}x${rect.height.toFixed(1)}px (required ≥44x44px)`, 'error');
+          }
+        }
+        
+        // Test 2: Check all menu buttons
+        const menuButtons = document.querySelectorAll('.settings-menu-panel button');
+        menuButtons.forEach((button, index) => {
+          const rect = button.getBoundingClientRect();
+          const passed = rect.width >= MIN_TOUCH_TARGET_SIZE && rect.height >= MIN_TOUCH_TARGET_SIZE;
+          totalTests++;
+          if (passed) {
+            passedTests++;
+            logTest(`✓ Menu button ${index + 1} size: ${rect.width.toFixed(1)}x${rect.height.toFixed(1)}px`, 'success');
+          } else {
+            failedTests++;
+            logTest(`✗ Menu button ${index + 1} size: ${rect.width.toFixed(1)}x${rect.height.toFixed(1)}px (required ≥44x44px)`, 'error');
+          }
+        });
+        
+        // Test 3: Check select dropdown
+        const select = document.getElementById('languageSelector');
+        if (select) {
+          const rect = select.getBoundingClientRect();
+          const passed = rect.height >= MIN_TOUCH_TARGET_SIZE;
+          totalTests++;
+          if (passed) {
+            passedTests++;
+            logTest(`✓ Select dropdown height: ${rect.height.toFixed(1)}px`, 'success');
+          } else {
+            failedTests++;
+            logTest(`✗ Select dropdown height: ${rect.height.toFixed(1)}px (required ≥44px)`, 'error');
+          }
+        }
+        
+        // Test 4: Check input field
+        const input = document.getElementById('analysisDepth');
+        if (input) {
+          const rect = input.getBoundingClientRect();
+          const passed = rect.height >= MIN_TOUCH_TARGET_SIZE;
+          totalTests++;
+          if (passed) {
+            passedTests++;
+            logTest(`✓ Input field height: ${rect.height.toFixed(1)}px`, 'success');
+          } else {
+            failedTests++;
+            logTest(`✗ Input field height: ${rect.height.toFixed(1)}px (required ≥44px)`, 'error');
+          }
+        }
+        
+        // Test 5: Check link
+        const link = document.querySelector('.menu-control-link');
+        if (link) {
+          const rect = link.getBoundingClientRect();
+          const passed = rect.height >= MIN_TOUCH_TARGET_SIZE;
+          totalTests++;
+          if (passed) {
+            passedTests++;
+            logTest(`✓ Link height: ${rect.height.toFixed(1)}px`, 'success');
+          } else {
+            failedTests++;
+            logTest(`✗ Link height: ${rect.height.toFixed(1)}px (required ≥44px)`, 'error');
+          }
+        }
+        
+        // Test 6: Check custom control
+        const customControl = document.querySelector('.menu-control-custom');
+        if (customControl) {
+          const rect = customControl.getBoundingClientRect();
+          const passed = rect.height >= MIN_TOUCH_TARGET_SIZE;
+          totalTests++;
+          if (passed) {
+            passedTests++;
+            logTest(`✓ Custom control height: ${rect.height.toFixed(1)}px`, 'success');
+          } else {
+            failedTests++;
+            logTest(`✗ Custom control height: ${rect.height.toFixed(1)}px (required ≥44px)`, 'error');
+          }
+        }
+        
+        updateStats();
+        
+        if (failedTests === 0) {
+          updateStatus(`✅ All ${totalTests} tests passed!`, 'passed');
+          logTest(`All Property 9 tests passed successfully!`, 'success');
+        } else {
+          updateStatus(`❌ ${failedTests} of ${totalTests} tests failed`, 'failed');
+          logTest(`${failedTests} tests failed. See details above.`, 'error');
+        }
+        
+      } catch (error) {
+        updateStatus('❌ Test execution failed', 'failed');
+        logTest(`Error: ${error.message}`, 'error');
+        console.error('Test error:', error);
+      } finally {
+        runBtn.disabled = false;
+      }
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      logTest('Page loaded. Click "Run Property Tests" to start.', 'info');
+    });
+  </script>
+</body>
+</html>

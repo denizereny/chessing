@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test: Language Selector in Settings Menu</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    
+    .test-section h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    
+    .test-result {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    
+    .test-result.pass {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .test-result.fail {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .test-info {
+      padding: 10px;
+      margin: 10px 0;
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      color: #333;
+    }
+    
+    .test-button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 4px;
+      background: #4a90e2;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .test-button:hover {
+      background: #357abd;
+    }
+    
+    #currentLanguageDisplay {
+      font-size: 18px;
+      font-weight: bold;
+      color: #4a90e2;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Settings Menu Toggle Button -->
+  <button 
+    id="settingsMenuToggle" 
+    class="settings-menu-toggle"
+    aria-label="Open settings menu"
+    aria-expanded="false"
+    aria-controls="settingsMenuPanel"
+    aria-haspopup="true"
+    type="button">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="12" cy="5" r="2" fill="currentColor"/>
+      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      <circle cx="12" cy="19" r="2" fill="currentColor"/>
+    </svg>
+    <span class="visually-hidden">Settings Menu</span>
+  </button>
+
+  <!-- Settings Menu Backdrop -->
+  <div 
+    id="settingsMenuBackdrop" 
+    class="settings-menu-backdrop"
+    aria-hidden="true"
+    role="presentation"></div>
+
+  <!-- Settings Menu Panel -->
+  <aside 
+    id="settingsMenuPanel" 
+    class="settings-menu-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settingsMenuTitle"
+    aria-hidden="true">
+    <div class="settings-menu-header">
+      <h2 id="settingsMenuTitle" class="settings-menu-title">
+        <span class="icon" aria-hidden="true">⚙️</span>
+        <span>Settings</span>
+      </h2>
+      <button 
+        id="settingsMenuClose" 
+        class="settings-menu-close"
+        aria-label="Close settings menu"
+        type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="visually-hidden">Close</span>
+      </button>
+    </div>
+    
+    <div class="settings-menu-content" role="group" aria-label="Settings controls">
+      <!-- Language Selector -->
+      <div class="menu-control-group">
+        <label for="languageSelect" class="menu-control-label">
+          <span class="icon">🌐</span>
+          <span id="lblLanguage">Language</span>
+        </label>
+        <select id="languageSelect" class="menu-control-select" onchange="handleLanguageChange(this.value)">
+          <option value="en">🇬🇧 English</option>
+          <option value="tr">🇹🇷 Türkçe</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="it">🇮🇹 Italiano</option>
+          <option value="ru">🇷🇺 Русский</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="ja">🇯🇵 日本語</option>
+          <option value="pt">🇵🇹 Português</option>
+          <option value="ar">🇸🇦 العربية</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <div class="test-container">
+    <h1>🧪 Language Selector in Settings Menu - Test Suite</h1>
+    
+    <div class="test-section">
+      <h2>Test 1: Language Selector Presence</h2>
+      <div class="test-info">
+        Verifies that the language selector exists in the settings menu content.
+      </div>
+      <button class="test-button" onclick="runTest1()">Run Test 1</button>
+      <div id="test1Result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 2: Language Selector Accessibility</h2>
+      <div class="test-info">
+        Verifies that the language selector has proper label and ARIA attributes.
+      </div>
+      <button class="test-button" onclick="runTest2()">Run Test 2</button>
+      <div id="test2Result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 3: Language Change Functionality</h2>
+      <div class="test-info">
+        Verifies that changing the language selector triggers the change event.
+      </div>
+      <button class="test-button" onclick="runTest3()">Run Test 3</button>
+      <div id="test3Result"></div>
+      <div id="currentLanguageDisplay"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 4: All Language Options Present</h2>
+      <div class="test-info">
+        Verifies that all 11 language options are available in the selector.
+      </div>
+      <button class="test-button" onclick="runTest4()">Run Test 4</button>
+      <div id="test4Result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 5: Language Selector Styling</h2>
+      <div class="test-info">
+        Verifies that the language selector has proper CSS classes and styling.
+      </div>
+      <button class="test-button" onclick="runTest5()">Run Test 5</button>
+      <div id="test5Result"></div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Interactive Test: Manual Verification</h2>
+      <div class="test-info">
+        <strong>Manual Steps:</strong>
+        <ol>
+          <li>Click the settings menu toggle button (3-dot icon in top-right)</li>
+          <li>Verify the menu opens smoothly</li>
+          <li>Locate the language selector with 🌐 icon</li>
+          <li>Change the language and verify the selection updates</li>
+          <li>Close the menu and reopen to verify selection persists</li>
+        </ol>
+      </div>
+      <button class="test-button" onclick="openMenu()">Open Settings Menu</button>
+      <button class="test-button" onclick="closeMenu()">Close Settings Menu</button>
+    </div>
+    
+    <div class="test-section">
+      <h2>Run All Tests</h2>
+      <button class="test-button" onclick="runAllTests()" style="background: #28a745; font-size: 16px; padding: 12px 24px;">
+        ▶️ Run All Automated Tests
+      </button>
+    </div>
+  </div>
+
+  <script src="js/settings-menu-manager.js"></script>
+  <script>
+    // Initialize settings menu
+    let settingsMenuManager;
+    let currentLanguage = 'en';
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      settingsMenuManager = new SettingsMenuManager({
+        toggleButtonSelector: '#settingsMenuToggle',
+        backdropSelector: '#settingsMenuBackdrop',
+        panelSelector: '#settingsMenuPanel',
+        closeButtonSelector: '#settingsMenuClose',
+        contentSelector: '.settings-menu-content',
+        animationDuration: 300
+      });
+      
+      settingsMenuManager.initialize();
+    });
+    
+    function handleLanguageChange(lang) {
+      currentLanguage = lang;
+      console.log('Language changed to:', lang);
+      document.getElementById('currentLanguageDisplay').textContent = `Current Language: ${lang}`;
+    }
+    
+    function openMenu() {
+      if (settingsMenuManager) {
+        settingsMenuManager.open();
+      }
+    }
+    
+    function closeMenu() {
+      if (settingsMenuManager) {
+        settingsMenuManager.close();
+      }
+    }
+    
+    function showResult(testId, passed, message) {
+      const resultDiv = document.getElementById(testId + 'Result');
+      resultDiv.className = 'test-result ' + (passed ? 'pass' : 'fail');
+      resultDiv.textContent = (passed ? '✅ PASS: ' : '❌ FAIL: ') + message;
+    }
+    
+    function runTest1() {
+      const languageSelect = document.getElementById('languageSelect');
+      const menuContent = document.querySelector('.settings-menu-content');
+      
+      const exists = languageSelect !== null;
+      const inMenu = menuContent && menuContent.contains(languageSelect);
+      
+      const passed = exists && inMenu;
+      showResult('test1', passed, 
+        passed ? 'Language selector found in settings menu content' 
+               : 'Language selector not found in settings menu content');
+    }
+    
+    function runTest2() {
+      const languageSelect = document.getElementById('languageSelect');
+      const label = document.querySelector('label[for="languageSelect"]');
+      
+      const hasLabel = label !== null;
+      const hasClass = languageSelect && languageSelect.classList.contains('menu-control-select');
+      const labelHasClass = label && label.classList.contains('menu-control-label');
+      
+      const passed = hasLabel && hasClass && labelHasClass;
+      showResult('test2', passed, 
+        passed ? 'Language selector has proper label and CSS classes' 
+               : 'Language selector missing proper label or CSS classes');
+    }
+    
+    function runTest3() {
+      const languageSelect = document.getElementById('languageSelect');
+      
+      if (!languageSelect) {
+        showResult('test3', false, 'Language selector not found');
+        return;
+      }
+      
+      // Test changing language
+      const originalValue = languageSelect.value;
+      languageSelect.value = 'es';
+      
+      // Trigger change event
+      const event = new Event('change', { bubbles: true });
+      languageSelect.dispatchEvent(event);
+      
+      // Check if language changed
+      const passed = currentLanguage === 'es';
+      
+      // Reset to original
+      languageSelect.value = originalValue;
+      languageSelect.dispatchEvent(event);
+      
+      showResult('test3', passed, 
+        passed ? 'Language change event handler works correctly' 
+               : 'Language change event handler not working');
+    }
+    
+    function runTest4() {
+      const languageSelect = document.getElementById('languageSelect');
+      
+      if (!languageSelect) {
+        showResult('test4', false, 'Language selector not found');
+        return;
+      }
+      
+      const options = languageSelect.querySelectorAll('option');
+      const expectedLanguages = ['en', 'tr', 'es', 'fr', 'de', 'it', 'ru', 'zh', 'ja', 'pt', 'ar'];
+      
+      const hasAllLanguages = expectedLanguages.every(lang => 
+        Array.from(options).some(opt => opt.value === lang)
+      );
+      
+      const passed = options.length === 11 && hasAllLanguages;
+      showResult('test4', passed, 
+        passed ? `All 11 language options present (${options.length} found)` 
+               : `Missing language options (${options.length} found, expected 11)`);
+    }
+    
+    function runTest5() {
+      const languageSelect = document.getElementById('languageSelect');
+      const label = document.querySelector('label[for="languageSelect"]');
+      const controlGroup = languageSelect ? languageSelect.closest('.menu-control-group') : null;
+      
+      const hasSelectClass = languageSelect && languageSelect.classList.contains('menu-control-select');
+      const hasLabelClass = label && label.classList.contains('menu-control-label');
+      const hasGroupClass = controlGroup && controlGroup.classList.contains('menu-control-group');
+      
+      const passed = hasSelectClass && hasLabelClass && hasGroupClass;
+      showResult('test5', passed, 
+        passed ? 'Language selector has all required CSS classes' 
+               : 'Language selector missing required CSS classes');
+    }
+    
+    function runAllTests() {
+      console.log('Running all automated tests...');
+      runTest1();
+      setTimeout(() => runTest2(), 100);
+      setTimeout(() => runTest3(), 200);
+      setTimeout(() => runTest4(), 300);
+      setTimeout(() => runTest5(), 400);
+    }
+  </script>
+</body>
+</html>

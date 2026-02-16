@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Board Size Calculation Tests</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .test-results {
+      margin-top: 20px;
+    }
+    
+    .test-suite {
+      margin: 15px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #2196F3;
+      border-radius: 4px;
+    }
+    
+    .test-case {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+    }
+    
+    .test-case.pass {
+      border-left: 4px solid #4caf50;
+    }
+    
+    .test-case.fail {
+      border-left: 4px solid #f44336;
+    }
+    
+    .test-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .test-error {
+      color: #f44336;
+      font-family: monospace;
+      font-size: 12px;
+      margin-top: 5px;
+      padding: 10px;
+      background: #ffebee;
+      border-radius: 4px;
+    }
+    
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    
+    .summary.pass {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .summary.fail {
+      background: #ffebee;
+      color: #c62828;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>📐 Board Size Calculation Tests</h1>
+    <p>Task 12.1: Implement board size calculation logic</p>
+    <p>Requirement 8.6: Prioritize board visibility at all breakpoints</p>
+    
+    <div id="testResults" class="test-results"></div>
+    <div id="summary" class="summary"></div>
+  </div>
+  
+  <script src="js/responsive-layout-manager.js"></script>
+  <script>
+    // Simple test framework
+    class TestRunner {
+      constructor() {
+        this.suites = [];
+        this.currentSuite = null;
+        this.results = {
+          passed: 0,
+          failed: 0,
+          total: 0
+        };
+      }
+      
+      describe(name, fn) {
+        this.currentSuite = {
+          name: name,
+          tests: []
+        };
+        this.suites.push(this.currentSuite);
+        fn();
+        this.currentSuite = null;
+      }
+      
+      it(name, fn) {
+        if (!this.currentSuite) {
+          throw new Error('it() must be called inside describe()');
+        }
+        
+        this.currentSuite.tests.push({
+          name: name,
+          fn: fn
+        });
+      }
+      
+      async run() {
+        const resultsDiv = document.getElementById('testResults');
+        resultsDiv.innerHTML = '';
+        
+        for (const suite of this.suites) {
+          const suiteDiv = document.createElement('div');
+          suiteDiv.className = 'test-suite';
+          suiteDiv.innerHTML = `<h3>${suite.name}</h3>`;
+          
+          for (const test of suite.tests) {
+            this.results.total++;
+            const testDiv = document.createElement('div');
+            testDiv.className = 'test-case';
+            
+            try {
+              await test.fn();
+              testDiv.classList.add('pass');
+              testDiv.innerHTML = `<div class="test-name">✓ ${test.name}</div>`;
+              this.results.passed++;
+            } catch (error) {
+              testDiv.classList.add('fail');
+              testDiv.innerHTML = `
+                <div class="test-name">✗ ${test.name}</div>
+                <div class="test-error">${error.message}</div>
+              `;
+              this.results.failed++;
+            }
+            
+            suiteDiv.appendChild(testDiv);
+          }
+          
+          resultsDiv.appendChild(suiteDiv);
+        }
+        
+        this.showSummary();
+      }
+      
+      showSummary() {
+        const summaryDiv = document.getElementById('summary');
+        const allPassed = this.results.failed === 0;
+        
+        summaryDiv.className = 'summary ' + (allPassed ? 'pass' : 'fail');
+        summaryDiv.innerHTML = `
+          <div>Tests: ${this.results.total}</div>
+          <div>Passed: ${this.results.passed}</div>
+          <div>Failed: ${this.results.failed}</div>
+          <div>${allPassed ? '✅ All tests passed!' : '❌ Some tests failed'}</div>
+        `;
+      }
+    }
+    
+    // Assertion helpers
+    const expect = (actual) => ({
+      toBe: (expected) => {
+        if (actual !== expected) {
+          throw new Error(`Expected ${actual} to be ${expected}`);
+        }
+      },
+      toEqual: (expected) => {
+        if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+          throw new Error(`Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}`);
+        }
+      },
+      toBeDefined: () => {
+        if (actual === undefined) {
+          throw new Error('Expected value to be defined');
+        }
+      },
+      toHaveProperty: (prop) => {
+        if (!(prop in actual)) {
+          throw new Error(`Expected object to have property ${prop}`);
+        }
+      },
+      toBeGreaterThan: (expected) => {
+        if (actual <= expected) {
+          throw new Error(`Expected ${actual} to be greater than ${expected}`);
+        }
+      },
+      toBeGreaterThanOrEqual: (expected) => {
+        if (actual < expected) {
+          throw new Error(`Expected ${actual} to be greater than or equal to ${expected}`);
+        }
+      },
+      toBeLessThan: (expected) => {
+        if (actual >= expected) {
+          throw new Error(`Expected ${actual} to be less than ${expected}`);
+        }
+      },
+      toBeLessThanOrEqual: (expected) => {
+        if (actual > expected) {
+          throw new Error(`Expected ${actual} to be less than or equal to ${expected}`);
+        }
+      }
+    });
+    
+    // Run tests
+    const runner = new TestRunner();
+    let layoutManager;
+    let boardContainer;
+    
+    // Setup
+    function beforeEach() {
+      // Create a mock board container
+      boardContainer = document.createElement('div');
+      boardContainer.className = 'board-container';
+      boardContainer.id = 'testBoard';
+      document.body.appendChild(boardContainer);
+      
+      // Create a mock settings menu toggle
+      const toggleButton = document.createElement('button');
+      toggleButton.id = 'settingsMenuToggle';
+      toggleButton.style.width = '44px';
+      toggleButton.style.height = '44px';
+      document.body.appendChild(toggleButton);
+      
+      // Initialize layout manager
+      layoutManager = new ResponsiveLayoutManager();
+    }
+    
+    function afterEach() {
+      // Cleanup
+      if (layoutManager) {
+        layoutManager.destroy();
+      }
+      
+      // Remove mock elements
+      const testBoard = document.getElementById('testBoard');
+      if (testBoard) {
+        testBoard.remove();
+      }
+      
+      const toggleButton = document.getElementById('settingsMenuToggle');
+      if (toggleButton) {
+        toggleButton.remove();
+      }
+    }
+    
+    // Tests
+    runner.describe('calculateBoardSize()', () => {
+      runner.it('should return an object with width and height properties', () => {
+        beforeEach();
+        const size = layoutManager.calculateBoardSize();
+        expect(size).toBeDefined();
+        expect(size).toHaveProperty('width');
+        expect(size).toHaveProperty('height');
+        afterEach();
+      });
+      
+      runner.it('should return a square board (width === height)', () => {
+        beforeEach();
+        const size = layoutManager.calculateBoardSize();
+        expect(size.width).toBe(size.height);
+        afterEach();
+      });
+      
+      runner.it('should respect minimum size constraint (280px)', () => {
+        beforeEach();
+        const size = layoutManager.calculateBoardSize();
+        expect(size.width).toBeGreaterThanOrEqual(280);
+        expect(size.height).toBeGreaterThanOrEqual(280);
+        afterEach();
+      });
+      
+      runner.it('should respect maximum size constraint (800px)', () => {
+        beforeEach();
+        const size = layoutManager.calculateBoardSize();
+        expect(size.width).toBeLessThanOrEqual(800);
+        expect(size.height).toBeLessThanOrEqual(800);
+        afterEach();
+      });
+    });
+    
+    runner.describe('calculateUIOverhead()', () => {
+      runner.it('should return an object with horizontal and vertical properties', () => {
+        beforeEach();
+        const overhead = layoutManager.calculateUIOverhead();
+        expect(overhead).toBeDefined();
+        expect(overhead).toHaveProperty('horizontal');
+        expect(overhead).toHaveProperty('vertical');
+        afterEach();
+      });
+      
+      runner.it('should return non-negative values', () => {
+        beforeEach();
+        const overhead = layoutManager.calculateUIOverhead();
+        expect(overhead.horizontal).toBeGreaterThanOrEqual(0);
+        expect(overhead.vertical).toBeGreaterThanOrEqual(0);
+        afterEach();
+      });
+      
+      runner.it('should account for settings menu toggle button', () => {
+        beforeEach();
+        const overhead = layoutManager.calculateUIOverhead();
+        expect(overhead.horizontal).toBeGreaterThan(44);
+        afterEach();
+      });
+    });
+    
+    runner.describe('applyBoardSize()', () => {
+      runner.it('should apply width and height to board container', () => {
+        beforeEach();
+        const size = { width: 500, height: 500 };
+        layoutManager.applyBoardSize(size);
+        const computedStyle = window.getComputedStyle(boardContainer);
+        expect(parseInt(computedStyle.width)).toBe(500);
+        expect(parseInt(computedStyle.height)).toBe(500);
+        afterEach();
+      });
+      
+      runner.it('should update CSS custom properties', () => {
+        beforeEach();
+        const size = { width: 500, height: 500 };
+        layoutManager.applyBoardSize(size);
+        const rootStyle = getComputedStyle(document.documentElement);
+        expect(rootStyle.getPropertyValue('--board-size').trim()).toBe('500px');
+        afterEach();
+      });
+    });
+    
+    runner.describe('Requirement 8.6: Prioritize board visibility', () => {
+      runner.it('should use high percentage of viewport on mobile (95%)', () => {
+        beforeEach();
+        layoutManager.currentBreakpoint = 'mobile';
+        const size = layoutManager.calculateBoardSize();
+        expect(size.width).toBeGreaterThan(0);
+        expect(size.width).toBeGreaterThanOrEqual(280);
+        afterEach();
+      });
+      
+      runner.it('should balance visibility with controls on tablet (80%)', () => {
+        beforeEach();
+        layoutManager.currentBreakpoint = 'tablet';
+        const size = layoutManager.calculateBoardSize();
+        expect(size.width).toBeGreaterThan(0);
+        expect(size.width).toBeLessThanOrEqual(800);
+        afterEach();
+      });
+      
+      runner.it('should provide comfortable spacing on desktop (70%)', () => {
+        beforeEach();
+        layoutManager.currentBreakpoint = 'desktop';
+        const size = layoutManager.calculateBoardSize();
+        expect(size.width).toBeGreaterThan(0);
+        expect(size.width).toBeLessThanOrEqual(800);
+        afterEach();
+      });
+    });
+    
+    // Run all tests
+    document.addEventListener('DOMContentLoaded', () => {
+      runner.run();
+    });
+  </script>
+</body>
+</html>

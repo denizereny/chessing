@@ -11,10 +11,123 @@
     <!-- Enhanced CSS System -->
     <link rel="stylesheet" href="css/enhanced-piece-setup-complete.css" />
     <link rel="stylesheet" href="css/enhanced-theme-system.css" />
+    <!-- Backend Mode CSS -->
+    <link rel="stylesheet" href="css/backend-mode.css" />
+    <!-- Responsive Settings Menu CSS -->
+    <link rel="stylesheet" href="css/responsive-settings-menu.css" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="color-scheme" content="light dark" />
   </head>
   <body class="enhanced-piece-setup enhanced-piece-setup-complete">
+    <!-- Settings Menu Toggle Button -->
+    <button 
+      id="settingsMenuToggle" 
+      class="settings-menu-toggle"
+      aria-label="Open settings menu"
+      aria-expanded="false"
+      aria-controls="settingsMenuPanel"
+      aria-haspopup="true"
+      type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="5" r="2" fill="currentColor"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        <circle cx="12" cy="19" r="2" fill="currentColor"/>
+      </svg>
+      <span class="visually-hidden">Settings Menu</span>
+    </button>
+
+    <!-- Settings Menu Backdrop -->
+    <div 
+      id="settingsMenuBackdrop" 
+      class="settings-menu-backdrop"
+      aria-hidden="true"
+      role="presentation"></div>
+
+    <!-- Settings Menu Panel -->
+    <aside 
+      id="settingsMenuPanel" 
+      class="settings-menu-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settingsMenuTitle"
+      aria-hidden="true">
+      <!-- Screen reader announcements for menu state changes -->
+      <div 
+        id="settingsMenuAnnouncer" 
+        class="visually-hidden" 
+        role="status" 
+        aria-live="polite" 
+        aria-atomic="true"></div>
+      
+      <div class="settings-menu-header">
+        <h2 id="settingsMenuTitle" class="settings-menu-title">
+          <span class="icon" aria-hidden="true">⚙️</span>
+          <span id="settingsMenuTitleText">Settings</span>
+        </h2>
+        <button 
+          id="settingsMenuClose" 
+          class="settings-menu-close"
+          aria-label="Close settings menu"
+          type="button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="visually-hidden" id="closeMenuText">Close</span>
+        </button>
+      </div>
+      
+      <div class="settings-menu-content" role="group" aria-label="Settings controls">
+        <!-- Theme Toggle -->
+        <div class="menu-control-group">
+          <button onclick="toggleTheme()" class="extra-btn menu-control-btn" id="btnTheme">
+            🌙 <span id="btnThemeText">Dark Mode</span>
+          </button>
+        </div>
+
+        <!-- Language Selector -->
+        <div class="menu-control-group">
+          <label for="languageSelect" class="menu-control-label">
+            <span class="icon">🌐</span>
+            <span id="lblLanguage">Language</span>
+          </label>
+          <select id="languageSelect" class="menu-control-select" onchange="setLanguage(this.value)">
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ar">🇸🇦 العربية</option>
+          </select>
+        </div>
+
+        <!-- Piece Setup -->
+        <div class="menu-control-group">
+          <button onclick="openPieceSetup()" class="extra-btn menu-control-btn" id="btnPieceSetup">
+            ♔ <span id="btnPieceSetupText">Piece Setup</span>
+          </button>
+        </div>
+
+        <!-- Position Analysis -->
+        <div class="menu-control-group">
+          <button onclick="analyzeCurrentPosition()" class="extra-btn menu-control-btn" id="btnAnalyzePosition">
+            🔍 <span id="btnAnalyzePositionText">Analyze Position</span>
+          </button>
+        </div>
+
+        <!-- Position Sharing -->
+        <div class="menu-control-group">
+          <button onclick="shareCurrentPosition()" class="extra-btn menu-control-btn" id="btnSharePosition">
+            🔗 <span id="btnSharePositionText">Share Position</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
     <!-- Start Screen Overlay -->
     <div id="startScreen" class="start-screen">
       <div class="start-content">
@@ -82,23 +195,6 @@
           <span class="chevron">▾</span>
         </div>
         <div id="settingsContent" class="collapsible-content">
-          <!-- Language selector -->
-          <div class="language-selector">
-            <select id="languageSelect" onchange="setLanguage(this.value)">
-              <option value="en">🇬🇧 English</option>
-              <option value="tr">🇹🇷 Türkçe</option>
-              <option value="es">🇪🇸 Español</option>
-              <option value="fr">🇫🇷 Français</option>
-              <option value="de">🇩🇪 Deutsch</option>
-              <option value="it">🇮🇹 Italiano</option>
-              <option value="ru">🇷🇺 Русский</option>
-              <option value="zh">🇨🇳 中文</option>
-              <option value="ja">🇯🇵 日本語</option>
-              <option value="pt">🇵🇹 Português</option>
-              <option value="ar">🇸🇦 العربية</option>
-            </select>
-          </div>
-
           <div class="controls">
             <button id="btnNewGame" onclick="yeniOyun()">🔄 New Game</button>
             <button id="btnSwitchSides" class="btn-secondary" onclick="tarafDegistir()">🔀 Switch Sides</button>
@@ -116,9 +212,23 @@
 
           <!-- Color Section -->
           <div class="extra-controls">
-            <button onclick="toggleTheme()" class="extra-btn" id="btnTheme">🌙 <span id="btnThemeText">Dark Mode</span></button>
             <button onclick="toggleColorPanel()" class="extra-btn" id="btnColors">🎨 <span id="btnColorsText">Colors</span></button>
-            <button onclick="openPieceSetup()" class="extra-btn" id="btnPieceSetup">♔ <span id="btnPieceSetupText">Piece Setup</span></button>
+          </div>
+
+          <!-- Backend Mode Section -->
+          <div class="backend-mode-section" style="margin-top: 1rem;">
+            <button onclick="toggleBackendMode()" class="backend-toggle-btn" id="btnBackendMode">
+              <span>🔌</span>
+              <span id="btnBackendModeText">Enable Backend Mode</span>
+            </button>
+          </div>
+
+          <!-- Auto-Scroll Mode Section -->
+          <div class="auto-scroll-section" style="margin-top: 1rem;">
+            <button onclick="toggleAutoScroll()" class="auto-scroll-toggle-btn" id="btnAutoScroll">
+              <span>📜</span>
+              <span id="btnAutoScrollText">Enable Auto-Scroll</span>
+            </button>
           </div>
         </div>
       </div>
@@ -278,13 +388,93 @@
     <script src="js/position-history-interface.js"></script>
     <script src="js/mobile-optimization-manager.js"></script>
     <script src="js/responsive-layout-manager.js"></script>
+    <script src="js/settings-menu-manager.js"></script>
     <script src="js/performance-monitor.js"></script>
+    
+    <!-- Backend Mode Integration -->
+    <script src="js/api-client.js"></script>
+    <script src="js/backend-game-mode.js"></script>
     
     <!-- Integration System - Must load before game.js -->
     <script src="js/piece-setup-integration.js"></script>
     
     <!-- Main Game Script -->
     <script src="js/game.js"></script>
+
+    <!-- Backend Integration - Must load after game.js -->
+    <script src="js/backend-integration.js"></script>
+    
+    <!-- Responsive Settings Menu Initialization -->
+    <script>
+      // Initialize responsive settings menu system on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Initializing Responsive Settings Menu System...');
+        
+        // Create ResponsiveLayoutManager instance
+        // Note: ResponsiveLayoutManager auto-initializes when not in legacy mode
+        window.responsiveLayoutManager = new ResponsiveLayoutManager();
+        
+        // Create SettingsMenuManager instance
+        window.settingsMenuManager = new SettingsMenuManager({
+          toggleButtonSelector: '#settingsMenuToggle',
+          backdropSelector: '#settingsMenuBackdrop',
+          panelSelector: '#settingsMenuPanel',
+          closeButtonSelector: '#settingsMenuClose',
+          contentSelector: '.settings-menu-content',
+          animationDuration: 300
+        });
+        
+        // Initialize settings menu
+        const menuInitialized = window.settingsMenuManager.initialize();
+        
+        if (menuInitialized) {
+          console.log('✅ Settings Menu Manager initialized successfully');
+        } else {
+          console.error('❌ Failed to initialize Settings Menu Manager');
+        }
+        
+        // Wire up event listeners and callbacks
+        // Listen for breakpoint changes and log them
+        window.responsiveLayoutManager.onBreakpointChange((current, previous) => {
+          console.log(`📱 Breakpoint changed: ${previous} → ${current}`);
+          
+          // You can add custom behavior here when breakpoint changes
+          // For example, adjust menu behavior based on breakpoint
+          if (current === 'mobile' && window.settingsMenuManager.isOpen()) {
+            // On mobile, you might want to auto-close menu on certain actions
+            console.log('📱 Mobile breakpoint detected with menu open');
+          }
+        });
+        
+        // Apply initial layout based on current viewport
+        const initialBreakpoint = window.responsiveLayoutManager.getCurrentBreakpoint();
+        const boardSize = window.responsiveLayoutManager.calculateBoardSize();
+        
+        console.log('📊 Initial responsive state:', {
+          breakpoint: initialBreakpoint,
+          boardSize: boardSize,
+          viewport: {
+            width: window.innerWidth,
+            height: window.innerHeight
+          }
+        });
+        
+        // Listen for custom responsive layout events
+        document.addEventListener('responsive-layout-breakpointchange', (event) => {
+          console.log('📱 Responsive layout event:', event.detail);
+        });
+        
+        document.addEventListener('responsive-layout-resize', (event) => {
+          console.log('📐 Viewport resized:', event.detail);
+        });
+        
+        document.addEventListener('responsive-layout-orientationchange', (event) => {
+          console.log('🔄 Orientation changed:', event.detail);
+        });
+        
+        console.log('✨ Responsive Settings Menu System initialized successfully');
+      });
+    </script>
 
     <!-- Piece Setup Modal -->
     <div id="pieceSetupModal" class="piece-setup-modal hidden">
@@ -332,7 +522,6 @@
                 <button id="btnClearBoard" onclick="clearSetupBoard()">🗑️ <span id="clearBoardText">Clear Board</span></button>
                 <button id="btnResetToDefault" onclick="resetToDefaultPosition()">🔄 <span id="resetDefaultText">Default Position</span></button>
                 <button id="btnRandomSetup" onclick="randomSetup()">🎲 <span id="randomSetupText">Random Setup</span></button>
-                <button id="btnSaveSetup" onclick="saveSetup()">💾 <span id="saveSetupText">Save Setup</span></button>
                 <button id="btnLoadSetup" onclick="loadSetup()">📂 <span id="loadSetupText">Load Setup</span></button>
                 
                 <div class="setup-presets">
@@ -366,21 +555,6 @@
                     </select>
                     
                     <button onclick="loadSelectedPreset()" id="btnLoadPreset">📂 <span id="loadPresetText">Load</span></button>
-                  </div>
-                  
-                  <!-- Create Custom Preset -->
-                  <div class="create-preset">
-                    <input type="text" id="customPresetName" placeholder="Preset name..." maxlength="50">
-                    <input type="text" id="customPresetDescription" placeholder="Description..." maxlength="100">
-                    <select id="customPresetCategory">
-                      <option value="custom">Custom</option>
-                      <option value="opening">Opening</option>
-                      <option value="middlegame">Middlegame</option>
-                      <option value="endgame">Endgame</option>
-                      <option value="puzzle">Puzzle</option>
-                      <option value="tactical">Tactical</option>
-                    </select>
-                    <button onclick="saveCurrentAsPreset()" id="btnSaveAsPreset">💾 <span id="saveAsPresetText">Save Current</span></button>
                   </div>
                   
                   <!-- Preset Management Actions -->

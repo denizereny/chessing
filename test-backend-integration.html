@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Integration Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .test-section h2 {
+            color: #495057;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .test-result {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .test-result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .test-result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .test-result.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .test-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .summary-card {
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-card h3 {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 Backend Integration Test Suite</h1>
+        
+        <div id="connectionStatus" class="status disconnected">
+            🔴 Checking backend connection...
+        </div>
+
+        <!-- Test 1: Health Check -->
+        <div class="test-section">
+            <h2>1. Health Check</h2>
+            <div class="test-controls">
+                <button onclick="testHealthCheck()">Run Health Check</button>
+            </div>
+            <div id="healthResult" class="test-result info" style="display: none;"></div>
+        </div>
+
+        <!-- Test 2: Create Game -->
+        <div class="test-section">
+            <h2>2. Create New Game</h2>
+            <div class="test-controls">
+                <button onclick="testCreateGame()">Create Game</button>
+                <button onclick="testCreateGameWithCustomPosition()">Create with Custom Position</button>
+            </div>
+            <div id="createGameResult" class="test-result info" style="display: none;"></div>
+        </div>
+
+        <!-- Test 3: Make Moves -->
+        <div class="test-section">
+            <h2>3. Make Moves</h2>
+            <div class="test-controls">
+                <button onclick="testMakeMove()" id="btnMakeMove" disabled>Make Valid Move</button>
+                <button onclick="testInvalidMove()" id="btnInvalidMove" disabled>Test Invalid Move</button>
+            </div>
+            <div id="moveResult" class="test-result info" style="display: none;"></div>
+        </div>
+
+        <!-- Test 4: AI Moves -->
+        <div class="test-section">
+            <h2>4. AI Moves</h2>
+            <div class="test-controls">
+                <button onclick="testAIMove()" id="btnAIMove" disabled>Request AI Move</button>
+            </div>
+            <div id="aiResult" class="test-result info" style="display: none;"></div>
+        </div>
+
+        <!-- Test 5: Game State -->
+        <div class="test-section">
+            <h2>5. Game State</h2>
+            <div class="test-controls">
+                <button onclick="testGetGameState()" id="btnGetState" disabled>Get Game State</button>
+            </div>
+            <div id="stateResult" class="test-result info" style="display: none;"></div>
+        </div>
+
+        <!-- Test 6: Complete Game Flow -->
+        <div class="test-section">
+            <h2>6. Complete Game Flow</h2>
+            <div class="test-controls">
+                <button onclick="testCompleteGameFlow()">Run Complete Flow Test</button>
+            </div>
+            <div id="flowResult" class="test-result info" style="display: none;"></div>
+        </div>
+
+        <!-- Test Summary -->
+        <div class="test-summary">
+            <div class="summary-card">
+                <h3>Tests Passed</h3>
+                <div class="value" id="testsPassed">0</div>
+            </div>
+            <div class="summary-card">
+                <h3>Tests Failed</h3>
+                <div class="value" id="testsFailed">0</div>
+            </div>
+            <div class="summary-card">
+                <h3>Total Tests</h3>
+                <div class="value" id="testsTotal">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api-client.js"></script>
+    <script>
+        const apiClient = new ChessAPIClient('http://localhost:5000/api');
+        let currentSessionId = null;
+        let testsPassed = 0;
+        let testsFailed = 0;
+
+        // Check backend connection on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            const health = await apiClient.checkHealth();
+            const statusEl = document.getElementById('connectionStatus');
+            
+            if (health.success) {
+                statusEl.className = 'status connected';
+                statusEl.textContent = '🟢 Backend Connected - Ready to test!';
+            } else {
+                statusEl.className = 'status disconnected';
+                statusEl.textContent = '🔴 Backend Offline - Please start the backend server';
+            }
+        });
+
+        function updateTestSummary() {
+            document.getElementById('testsPassed').textContent = testsPassed;
+            document.getElementById('testsFailed').textContent = testsFailed;
+            document.getElementById('testsTotal').textContent = testsPassed + testsFailed;
+        }
+
+        function showResult(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `test-result ${type}`;
+            el.style.display = 'block';
+        }
+
+        async function testHealthCheck() {
+            showResult('healthResult', 'Testing health check...', 'info');
+            
+            try {
+                const result = await apiClient.checkHealth();
+                
+                if (result.success) {
+                    const message = `✅ Health Check Passed\n\nResponse:\n${JSON.stringify(result.data, null, 2)}`;
+                    showResult('healthResult', message, 'success');
+                    testsPassed++;
+                } else {
+                    showResult('healthResult', `❌ Health Check Failed\n\nError: ${result.error}`, 'error');
+                    testsFailed++;
+                }
+            } catch (error) {
+                showResult('healthResult', `❌ Health Check Failed\n\nError: ${error.message}`, 'error');
+                testsFailed++;
+            }
+            
+            updateTestSummary();
+        }
+
+        async function testCreateGame() {
+            showResult('createGameResult', 'Creating new game...', 'info');
+            
+            try {
+                const result = await apiClient.createGame(2, 'white');
+                
+                if (result.success) {
+                    currentSessionId = result.data.session_id;
+                    const message = `✅ Game Created Successfully\n\nSession ID: ${currentSessionId}\nBoard State: ${JSON.stringify(result.data.board_state, null, 2)}`;
+                    showResult('createGameResult', message, 'success');
+                    testsPassed++;
+                    
+                    // Enable move buttons
+                    document.getElementById('btnMakeMove').disabled = false;
+                    document.getElementById('btnInvalidMove').disabled = false;
+                    document.getElementById('btnAIMove').disabled = false;
+                    document.getElementById('btnGetState').disabled = false;
+                } else {
+                    showResult('createGameResult', `❌ Game Creation Failed\n\nError: ${result.error}`, 'error');
+                    testsFailed++;
+                }
+            } catch (error) {
+                showResult('createGameResult', `❌ Game Creation Failed\n\nError: ${error.message}`, 'error');
+                testsFailed++;
+            }
+            
+            updateTestSummary();
+        }
+
+        async function testCreateGameWithCustomPosition() {
+            showResult('createGameResult', 'Creating game with custom position...', 'info');
+            
+            const customBoard = [
+                [null, null, 'k', null],
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, null, null, null],
+                [null, 'Q', 'K', null],
+            ];
+            
+            try {
+                const result = await apiClient.createGame(2, 'white', customBoard);
+                
+                if (result.success) {
+                    currentSessionId = result.data.session_id;
+                    const message = `✅ Custom Position Game Created\n\nSession ID: ${currentSessionId}\nCustom Board: ${JSON.stringify(result.data.board_state, null, 2)}`;
+                    showResult('createGameResult', message, 'success');
+                    testsPassed++;
+                    
+                    // Enable move buttons
+                    document.getElementById('btnMakeMove').disabled = false;
+                    document.getElementById('btnInvalidMove').disabled = false;
+                    document.getElementById('btnAIMove').disabled = false;
+                    document.getElementById('btnGetState').disabled = false;
+                } else {
+                    showResult('createGameResult', `❌ Custom Game Creation Failed\n\nError: ${result.error}`, 'error');
+                    testsFailed++;
+                }
+            } catch (error) {
+                showResult('createGameResult', `❌ Custom Game Creation Failed\n\nError: ${error.message}`, 'error');
+                testsFailed++;
+            }
+            
+            updateTestSummary();
+        }
+
+        async function testMakeMove() {
+            if (!currentSessionId) {
+                showResult('moveResult', '❌ No active game. Create a game first.', 'error');
+                return;
+            }
+            
+            showResult('moveResult', 'Making move...', 'info');
+            
+            try {
+                const result = await apiClient.makeMove([3, 0], [2, 0]);
+                
+                if (result.success) {
+                    const message = `✅ Move Successful\n\nBoard State: ${JSON.stringify(result.data.board_state, null, 2)}\nWhite to Move: ${result.data.white_to_move}`;
+                    showResult('moveResult', message, 'success');
+                    testsPassed++;
+                } else {
+                    showResult('moveResult', `❌ Move Failed\n\nError: ${result.error}`, 'error');
+                    testsFailed++;
+                }
+            } catch (error) {
+                showResult('moveResult', `❌ Move Failed\n\nError: ${error.message}`, 'error');
+                testsFailed++;
+            }
+            
+            updateTestSummary();
+        }
+
+        async function testInvalidMove() {
+            if (!currentSessionId) {
+                showResult('moveResult', '❌ No active game. Create a game first.', 'error');
+                return;
+            }
+            
+            showResult('moveResult', 'Testing invalid move...', 'info');
+            
+            try {
+                const result = await apiClient.makeMove([10, 10], [20, 20]);
+                
+                if (!result.success) {
+                    const message = `✅ Invalid Move Correctly Rejected\n\nError Message: ${result.error}`;
+                    showResult('moveResult', message, 'success');
+                    testsPassed++;
+                } else {
+                    showResult('moveResult', '❌ Invalid move was accepted (should have been rejected)', 'error');
+                    testsFailed++;
+                }
+            } catch (error) {
+                showResult('moveResult', `❌ Test Failed\n\nError: ${error.message}`, 'error');
+                testsFailed++;
+            }
+            
+            updateTestSummary();
+        }
+
+        async function testAIMove() {
+            if (!currentSessionId) {
+                showResult('aiResult', '❌ No active game. Create a game first.', 'error');
+                return;
+            }
+            
+            showResult('aiResult', 'Requesting AI move...', 'info');
+            
+            try {
+                const result = await apiClient.requestAIMove();
+                
+                if (result.success) {
+                    const message = `✅ AI Move Successful\n\nMove From: ${JSON.stringify(result.data.move_from)}\nMove To: ${JSON.stringify(result.data.move_to)}\nCalculation Time: ${result.data.calculation_time}s`;
+                    showResult('aiResult', message, 'success');
+                    testsPassed++;
+                } else {
+                    showResult('aiResult', `❌ AI Move Failed\n\nError: ${result.error}`, 'error');
+                    testsFailed++;
+                }
+            } catch (error) {
+                showResult('aiResult', `❌ AI Move Failed\n\nError: ${error.message}`, 'error');
+                testsFailed++;
+            }
+            
+            updateTestSummary();
+        }
+
+        async function testGetGameState() {
+            if (!currentSessionId) {
+                showResult('stateResult', '❌ No active game. Create a game first.', 'error');
+                return;
+            }
+            
+            showResult('stateResult', 'Getting game state...', 'info');
+            
+            try {
+                const result = await apiClient.getGameState();
+                
+                if (result.success) {
+                    const message = `✅ Game State Retrieved\n\n${JSON.stringify(result.data, null, 2)}`;
+                    showResult('stateResult', message, 'success');
+                    testsPassed++;
+                } else {
+                    showResult('stateResult', `❌ Get State Failed\n\nError: ${result.error}`, 'error');
+                    testsFailed++;
+                }
+            } catch (error) {
+                showResult('stateResult', `❌ Get State Failed\n\nError: ${error.message}`, 'error');
+                testsFailed++;
+            }
+            
+            updateTestSummary();
+        }
+
+        async function testCompleteGameFlow() {
+            showResult('flowResult', 'Running complete game flow test...\n', 'info');
+            let log = '';
+            
+            try {
+                // 1. Create game
+                log += '1. Creating game...\n';
+                const createResult = await apiClient.createGame(2, 'white');
+                if (!createResult.success) throw new Error('Game creation failed');
+                currentSessionId = createResult.data.session_id;
+                log += `   ✅ Game created: ${currentSessionId}\n\n`;
+                
+                // 2. Make player move
+                log += '2. Making player move...\n';
+                const moveResult = await apiClient.makeMove([3, 0], [2, 0]);
+                if (!moveResult.success) throw new Error('Player move failed');
+                log += `   ✅ Move successful\n\n`;
+                
+                // 3. Request AI move
+                log += '3. Requesting AI move...\n';
+                const aiResult = await apiClient.requestAIMove();
+                if (!aiResult.success) throw new Error('AI move failed');
+                log += `   ✅ AI moved from ${JSON.stringify(aiResult.data.move_from)} to ${JSON.stringify(aiResult.data.move_to)}\n\n`;
+                
+                // 4. Get game state
+                log += '4. Getting game state...\n';
+                const stateResult = await apiClient.getGameState();
+                if (!stateResult.success) throw new Error('Get state failed');
+                log += `   ✅ State retrieved: ${stateResult.data.move_count} moves made\n\n`;
+                
+                log += '✅ Complete Game Flow Test PASSED';
+                showResult('flowResult', log, 'success');
+                testsPassed++;
+                
+                // Enable buttons
+                document.getElementById('btnMakeMove').disabled = false;
+                document.getElementById('btnInvalidMove').disabled = false;
+                document.getElementById('btnAIMove').disabled = false;
+                document.getElementById('btnGetState').disabled = false;
+                
+            } catch (error) {
+                log += `\n❌ Test Failed: ${error.message}`;
+                showResult('flowResult', log, 'error');
+                testsFailed++;
+            }
+            
+            updateTestSummary();
+        }
+    </script>
+</body>
+</html>

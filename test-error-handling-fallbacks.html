@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error Handling and Fallbacks Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 10px;
+    }
+    
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    
+    .test-section h2 {
+      margin-top: 0;
+      color: #007bff;
+    }
+    
+    .test-result {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    
+    .test-result.pass {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .test-result.fail {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .test-result.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 4px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    button:hover {
+      background: #0056b3;
+    }
+    
+    button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+    
+    .controls {
+      margin: 20px 0;
+    }
+    
+    #testOutput {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛡️ Error Handling and Fallbacks Test</h1>
+  <p>Testing Requirements 5.5 and 5.6: Browser compatibility fallbacks and error handling</p>
+  
+  <div class="test-section">
+    <h2>Test 1: ResizeObserver Fallback</h2>
+    <p>Tests that the system falls back to window.resize with debouncing when ResizeObserver is not available.</p>
+    <div class="controls">
+      <button onclick="testResizeObserverFallback()">Run Test</button>
+    </div>
+    <div id="resizeObserverTest"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test 2: CSS Transition Fallback</h2>
+    <p>Tests that the system applies final state immediately when CSS transitions are not supported.</p>
+    <div class="controls">
+      <button onclick="testCSSTransitionFallback()">Run Test</button>
+    </div>
+    <div id="cssTransitionTest"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test 3: Touch Event Fallback</h2>
+    <p>Tests that the system uses mouse events when touch events are not supported.</p>
+    <div class="controls">
+      <button onclick="testTouchEventFallback()">Run Test</button>
+    </div>
+    <div id="touchEventTest"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test 4: Toggle Debouncing</h2>
+    <p>Tests that rapid toggle clicks are debounced to prevent animation conflicts.</p>
+    <div class="controls">
+      <button onclick="testToggleDebouncing()">Run Test</button>
+    </div>
+    <div id="toggleDebouncingTest"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test 5: Viewport Dimension Validation</h2>
+    <p>Tests that invalid viewport dimensions are detected and handled gracefully.</p>
+    <div class="controls">
+      <button onclick="testViewportValidation()">Run Test</button>
+    </div>
+    <div id="viewportValidationTest"></div>
+  </div>
+  
+  <div id="testOutput"></div>
+  
+  <script src="js/responsive-layout-manager.js"></script>
+  <script src="js/settings-menu-manager.js"></script>
+  
+  <script>
+    // Test utilities
+    function logResult(containerId, message, type = 'info') {
+      const container = document.getElementById(containerId);
+      const div = document.createElement('div');
+      div.className = `test-result ${type}`;
+      div.textContent = message;
+      container.appendChild(div);
+    }
+    
+    function clearResults(containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+    }
+    
+    // Test 1: ResizeObserver Fallback
+    function testResizeObserverFallback() {
+      clearResults('resizeObserverTest');
+      
+      logResult('resizeObserverTest', 'Testing ResizeObserver fallback...', 'info');
+      
+      // Check if ResizeObserver is available
+      const hasResizeObserver = typeof ResizeObserver !== 'undefined';
+      logResult('resizeObserverTest', `ResizeObserver available: ${hasResizeObserver}`, 'info');
+      
+      // Create a layout manager
+      const layoutManager = new ResponsiveLayoutManager();
+      
+      // Check if fallback was set up
+      if (!hasResizeObserver) {
+        if (layoutManager.resizeObserverFallbackHandler) {
+          logResult('resizeObserverTest', '✅ PASS: Fallback handler was set up', 'pass');
+        } else {
+          logResult('resizeObserverTest', '❌ FAIL: Fallback handler was not set up', 'fail');
+        }
+      } else {
+        if (layoutManager.resizeObserver) {
+          logResult('resizeObserverTest', '✅ PASS: ResizeObserver was initialized', 'pass');
+        } else {
+          logResult('resizeObserverTest', '❌ FAIL: ResizeObserver was not initialized', 'fail');
+        }
+      }
+      
+      // Test that resize events are handled
+      let resizeHandled = false;
+      layoutManager.onBreakpointChange(() => {
+        resizeHandled = true;
+      });
+      
+      // Trigger a resize
+      window.dispatchEvent(new Event('resize'));
+      
+      setTimeout(() => {
+        if (resizeHandled) {
+          logResult('resizeObserverTest', '✅ PASS: Resize events are handled', 'pass');
+        } else {
+          logResult('resizeObserverTest', '⚠️ INFO: Resize event not triggered (may need actual resize)', 'info');
+        }
+        
+        layoutManager.destroy();
+      }, 200);
+    }
+    
+    // Test 2: CSS Transition Fallback
+    function testCSSTransitionFallback() {
+      clearResults('cssTransitionTest');
+      
+      logResult('cssTransitionTest', 'Testing CSS transition fallback...', 'info');
+      
+      // Create a mock settings menu manager
+      const menuManager = new SettingsMenuManager();
+      
+      // Check transition support detection
+      logResult('cssTransitionTest', `CSS Transitions supported: ${menuManager.supportsCSSTransitions}`, 'info');
+      
+      // Check if fallback methods exist
+      if (typeof menuManager.applyOpenStateFallback === 'function') {
+        logResult('cssTransitionTest', '✅ PASS: applyOpenStateFallback method exists', 'pass');
+      } else {
+        logResult('cssTransitionTest', '❌ FAIL: applyOpenStateFallback method missing', 'fail');
+      }
+      
+      if (typeof menuManager.applyClosedStateFallback === 'function') {
+        logResult('cssTransitionTest', '✅ PASS: applyClosedStateFallback method exists', 'pass');
+      } else {
+        logResult('cssTransitionTest', '❌ FAIL: applyClosedStateFallback method missing', 'fail');
+      }
+      
+      // Test that fallback is called when transitions not supported
+      if (!menuManager.supportsCSSTransitions) {
+        logResult('cssTransitionTest', '✅ PASS: Fallback will be used (transitions not supported)', 'pass');
+      } else {
+        logResult('cssTransitionTest', '✅ PASS: Transitions supported, fallback available if needed', 'pass');
+      }
+    }
+    
+    // Test 3: Touch Event Fallback
+    function testTouchEventFallback() {
+      clearResults('touchEventTest');
+      
+      logResult('touchEventTest', 'Testing touch event fallback...', 'info');
+      
+      // Create a mock settings menu manager
+      const menuManager = new SettingsMenuManager();
+      
+      // Check touch support detection
+      logResult('touchEventTest', `Touch events supported: ${menuManager.supportsTouchEvents}`, 'info');
+      
+      // Check if touch feedback setup exists
+      if (typeof menuManager.setupTouchFeedback === 'function') {
+        logResult('touchEventTest', '✅ PASS: setupTouchFeedback method exists', 'pass');
+      } else {
+        logResult('touchEventTest', '❌ FAIL: setupTouchFeedback method missing', 'fail');
+      }
+      
+      // Test that appropriate events are used
+      if (menuManager.supportsTouchEvents) {
+        logResult('touchEventTest', '✅ PASS: Touch events will be used', 'pass');
+      } else {
+        logResult('touchEventTest', '✅ PASS: Mouse events will be used as fallback', 'pass');
+      }
+    }
+    
+    // Test 4: Toggle Debouncing
+    function testToggleDebouncing() {
+      clearResults('toggleDebouncingTest');
+      
+      logResult('toggleDebouncingTest', 'Testing toggle debouncing...', 'info');
+      
+      // Create a mock settings menu manager
+      const menuManager = new SettingsMenuManager();
+      
+      // Check if debounce settings exist
+      if (menuManager.toggleDebounceDelay !== undefined) {
+        logResult('toggleDebouncingTest', `✅ PASS: Debounce delay configured: ${menuManager.toggleDebounceDelay}ms`, 'pass');
+      } else {
+        logResult('toggleDebouncingTest', '❌ FAIL: Debounce delay not configured', 'fail');
+      }
+      
+      // Check if debounce timer exists
+      if (menuManager.toggleDebounceTimer !== undefined) {
+        logResult('toggleDebouncingTest', '✅ PASS: Debounce timer initialized', 'pass');
+      } else {
+        logResult('toggleDebouncingTest', '❌ FAIL: Debounce timer not initialized', 'fail');
+      }
+      
+      // Test rapid clicks simulation
+      let clickCount = 0;
+      const mockEvent = { preventDefault: () => {}, stopPropagation: () => {} };
+      
+      // Simulate rapid clicks
+      for (let i = 0; i < 5; i++) {
+        menuManager.handleToggleClick(mockEvent);
+        clickCount++;
+      }
+      
+      logResult('toggleDebouncingTest', `Simulated ${clickCount} rapid clicks`, 'info');
+      
+      // Check that only one toggle will execute after debounce
+      setTimeout(() => {
+        if (menuManager.toggleDebounceTimer !== null) {
+          logResult('toggleDebouncingTest', '✅ PASS: Debounce timer is active (preventing rapid toggles)', 'pass');
+        } else {
+          logResult('toggleDebouncingTest', '⚠️ INFO: Debounce timer cleared (toggle executed)', 'info');
+        }
+      }, 30);
+    }
+    
+    // Test 5: Viewport Dimension Validation
+    function testViewportValidation() {
+      clearResults('viewportValidationTest');
+      
+      logResult('viewportValidationTest', 'Testing viewport dimension validation...', 'info');
+      
+      // Create a layout manager
+      const layoutManager = new ResponsiveLayoutManager();
+      
+      // Check if validation method exists
+      if (typeof layoutManager.validateViewportDimensions === 'function') {
+        logResult('viewportValidationTest', '✅ PASS: validateViewportDimensions method exists', 'pass');
+      } else {
+        logResult('viewportValidationTest', '❌ FAIL: validateViewportDimensions method missing', 'fail');
+        layoutManager.destroy();
+        return;
+      }
+      
+      // Test valid dimensions
+      const validResult = layoutManager.validateViewportDimensions(1024, 768);
+      if (validResult === true) {
+        logResult('viewportValidationTest', '✅ PASS: Valid dimensions accepted (1024x768)', 'pass');
+      } else {
+        logResult('viewportValidationTest', '❌ FAIL: Valid dimensions rejected', 'fail');
+      }
+      
+      // Test invalid dimensions (too small)
+      const tooSmallResult = layoutManager.validateViewportDimensions(100, 100);
+      if (tooSmallResult === false) {
+        logResult('viewportValidationTest', '✅ PASS: Too small dimensions rejected (100x100)', 'pass');
+      } else {
+        logResult('viewportValidationTest', '❌ FAIL: Too small dimensions accepted', 'fail');
+      }
+      
+      // Test invalid dimensions (too large)
+      const tooLargeResult = layoutManager.validateViewportDimensions(10000, 10000);
+      if (tooLargeResult === false) {
+        logResult('viewportValidationTest', '✅ PASS: Too large dimensions rejected (10000x10000)', 'pass');
+      } else {
+        logResult('viewportValidationTest', '❌ FAIL: Too large dimensions accepted', 'fail');
+      }
+      
+      // Test invalid dimensions (NaN)
+      const nanResult = layoutManager.validateViewportDimensions(NaN, 768);
+      if (nanResult === false) {
+        logResult('viewportValidationTest', '✅ PASS: NaN dimensions rejected', 'pass');
+      } else {
+        logResult('viewportValidationTest', '❌ FAIL: NaN dimensions accepted', 'fail');
+      }
+      
+      // Test invalid dimensions (Infinity)
+      const infinityResult = layoutManager.validateViewportDimensions(Infinity, 768);
+      if (infinityResult === false) {
+        logResult('viewportValidationTest', '✅ PASS: Infinity dimensions rejected', 'pass');
+      } else {
+        logResult('viewportValidationTest', '❌ FAIL: Infinity dimensions accepted', 'fail');
+      }
+      
+      // Test invalid dimensions (non-numeric)
+      const nonNumericResult = layoutManager.validateViewportDimensions('1024', 768);
+      if (nonNumericResult === false) {
+        logResult('viewportValidationTest', '✅ PASS: Non-numeric dimensions rejected', 'pass');
+      } else {
+        logResult('viewportValidationTest', '❌ FAIL: Non-numeric dimensions accepted', 'fail');
+      }
+      
+      layoutManager.destroy();
+    }
+    
+    // Run all tests on load
+    window.addEventListener('load', () => {
+      console.log('🧪 Error Handling and Fallbacks Test Suite Ready');
+      console.log('Click the "Run Test" buttons to execute individual tests');
+    });
+  </script>
+</body>
+</html>

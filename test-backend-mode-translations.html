@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Mode Translations Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .language-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .language-buttons button {
+      padding: 10px 20px;
+      border: 2px solid #4f46e5;
+      background: white;
+      color: #4f46e5;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .language-buttons button:hover {
+      background: #4f46e5;
+      color: white;
+    }
+    
+    .language-buttons button.active {
+      background: #4f46e5;
+      color: white;
+    }
+    
+    .translation-test {
+      margin: 15px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-left: 4px solid #4f46e5;
+      border-radius: 4px;
+    }
+    
+    .translation-test h3 {
+      margin: 0 0 10px 0;
+      color: #4f46e5;
+      font-size: 16px;
+    }
+    
+    .translation-result {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      padding: 8px;
+      background: white;
+      border-radius: 4px;
+    }
+    
+    .translation-key {
+      font-weight: 600;
+      color: #666;
+    }
+    
+    .translation-value {
+      color: #333;
+      font-weight: 500;
+    }
+    
+    .status {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .status.pass {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status.fail {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .backend-mode-demo {
+      margin: 20px 0;
+      padding: 20px;
+      background: #f0f9ff;
+      border-radius: 8px;
+      border: 2px solid #0ea5e9;
+    }
+    
+    .backend-status-indicator {
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .status-badge.connected {
+      color: #059669;
+    }
+    
+    .status-badge.disconnected {
+      color: #dc2626;
+    }
+    
+    .mode-text {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    .button-demo {
+      margin: 15px 0;
+    }
+    
+    .backend-toggle-btn,
+    .auto-scroll-toggle-btn {
+      padding: 12px 20px;
+      border: 2px solid #4f46e5;
+      background: white;
+      color: #4f46e5;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+    
+    .backend-toggle-btn:hover,
+    .auto-scroll-toggle-btn:hover {
+      background: #4f46e5;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔌 Backend Mode & Auto-Scroll Translations Test</h1>
+  
+  <div class="test-section">
+    <h2>Select Language / Dil Seçin</h2>
+    <div class="language-buttons">
+      <button onclick="testLanguage('en')" class="active" id="btn-en">🇬🇧 English</button>
+      <button onclick="testLanguage('tr')" id="btn-tr">🇹🇷 Türkçe</button>
+      <button onclick="testLanguage('es')" id="btn-es">🇪🇸 Español</button>
+      <button onclick="testLanguage('fr')" id="btn-fr">🇫🇷 Français</button>
+      <button onclick="testLanguage('de')" id="btn-de">🇩🇪 Deutsch</button>
+      <button onclick="testLanguage('it')" id="btn-it">🇮🇹 Italiano</button>
+      <button onclick="testLanguage('ru')" id="btn-ru">🇷🇺 Русский</button>
+      <button onclick="testLanguage('zh')" id="btn-zh">🇨🇳 中文</button>
+      <button onclick="testLanguage('ja')" id="btn-ja">🇯🇵 日本語</button>
+      <button onclick="testLanguage('pt')" id="btn-pt">🇵🇹 Português</button>
+      <button onclick="testLanguage('ar')" id="btn-ar">🇸🇦 العربية</button>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Translation Test Results</h2>
+    <div id="translationResults"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Backend Mode Demo</h2>
+    <div class="backend-mode-demo">
+      <h3>Backend Status Indicator</h3>
+      <div id="backendStatusDemo"></div>
+      
+      <h3 style="margin-top: 20px;">Control Buttons</h3>
+      <div class="button-demo">
+        <button class="backend-toggle-btn" id="btnBackendMode" onclick="toggleBackendDemo()">
+          <span>🔌</span>
+          <span id="btnBackendModeText">Enable Backend Mode</span>
+        </button>
+      </div>
+      
+      <div class="button-demo">
+        <button class="auto-scroll-toggle-btn" id="btnAutoScroll" onclick="toggleAutoScrollDemo()">
+          <span>📜</span>
+          <span id="btnAutoScrollText">Enable Auto-Scroll</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/translations.js"></script>
+  <script>
+    let backendEnabled = false;
+    let autoScrollEnabled = false;
+    
+    function testLanguage(lang) {
+      // Update active button
+      document.querySelectorAll('.language-buttons button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(`btn-${lang}`).classList.add('active');
+      
+      // Set language
+      setLanguage(lang);
+      
+      // Run tests
+      runTranslationTests(lang);
+      
+      // Update demo
+      updateBackendDemo();
+    }
+    
+    function runTranslationTests(lang) {
+      const keys = [
+        'enableBackendMode',
+        'disableBackendMode',
+        'backendOnline',
+        'backendOffline',
+        'backendConnected',
+        'usingFlaskBackend',
+        'usingLocalMode',
+        'enableAutoScroll',
+        'disableAutoScroll',
+        'autoScrollEnabled',
+        'autoScrollDisabled'
+      ];
+      
+      let html = `<div class="translation-test">
+        <h3>Language: ${lang.toUpperCase()}</h3>`;
+      
+      keys.forEach(key => {
+        const value = t(key);
+        const hasTranslation = value !== key && value !== translations.en[key];
+        const status = hasTranslation || lang === 'en' ? 'pass' : 'fail';
+        
+        html += `
+          <div class="translation-result">
+            <span class="translation-key">${key}:</span>
+            <span class="translation-value">${value}</span>
+            <span class="status ${status}">${status === 'pass' ? '✅ PASS' : '❌ FAIL'}</span>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      document.getElementById('translationResults').innerHTML = html;
+    }
+    
+    function updateBackendDemo() {
+      const statusClass = backendEnabled ? 'connected' : 'disconnected';
+      const statusText = backendEnabled ? `🟢 ${t('backendConnected')}` : `🔴🔴 ${t('backendOffline')}`;
+      const modeText = backendEnabled ? t('usingFlaskBackend') : t('usingLocalMode');
+      
+      document.getElementById('backendStatusDemo').innerHTML = `
+        <div class="backend-status-indicator">
+          <div class="status-badge ${statusClass}">
+            <span class="status-icon">${backendEnabled ? '🟢' : '🔴🔴'}</span>
+            <span class="status-text">${statusText}</span>
+          </div>
+          <div class="mode-text">${modeText}</div>
+        </div>
+      `;
+      
+      // Update button text
+      document.getElementById('btnBackendModeText').textContent = 
+        backendEnabled ? t('disableBackendMode') : t('enableBackendMode');
+      
+      document.getElementById('btnAutoScrollText').textContent = 
+        autoScrollEnabled ? t('disableAutoScroll') : t('enableAutoScroll');
+    }
+    
+    function toggleBackendDemo() {
+      backendEnabled = !backendEnabled;
+      updateBackendDemo();
+    }
+    
+    function toggleAutoScrollDemo() {
+      autoScrollEnabled = !autoScrollEnabled;
+      updateBackendDemo();
+    }
+    
+    // Initialize with English
+    testLanguage('en');
+  </script>
+</body>
+</html>

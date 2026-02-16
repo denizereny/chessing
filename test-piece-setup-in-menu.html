@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test: Piece Setup in Settings Menu</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive-settings-menu.css" />
+  <link rel="stylesheet" href="css/piece-setup-integration.css" />
+  <link rel="stylesheet" href="css/enhanced-piece-setup-complete.css" />
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    .test-result {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .test-pass {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .test-fail {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .test-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .test-actions {
+      margin: 15px 0;
+    }
+    .test-btn {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background: #007bff;
+      color: white;
+    }
+    .test-btn:hover {
+      background: #0056b3;
+    }
+    #testResults {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Settings Menu Toggle Button -->
+  <button 
+    id="settingsMenuToggle" 
+    class="settings-menu-toggle"
+    aria-label="Open settings menu"
+    aria-expanded="false"
+    aria-controls="settingsMenuPanel"
+    type="button">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="5" r="2" fill="currentColor"/>
+      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      <circle cx="12" cy="19" r="2" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <!-- Settings Menu Backdrop -->
+  <div 
+    id="settingsMenuBackdrop" 
+    class="settings-menu-backdrop"
+    aria-hidden="true"></div>
+
+  <!-- Settings Menu Panel -->
+  <aside 
+    id="settingsMenuPanel" 
+    class="settings-menu-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true">
+    <div class="settings-menu-header">
+      <h2 class="settings-menu-title">Settings</h2>
+      <button 
+        id="settingsMenuClose" 
+        class="settings-menu-close"
+        aria-label="Close settings menu"
+        type="button">×</button>
+    </div>
+    
+    <div class="settings-menu-content">
+      <!-- Theme Toggle -->
+      <div class="menu-control-group">
+        <button onclick="toggleTheme()" class="extra-btn menu-control-btn" id="btnTheme">
+          🌙 <span>Dark Mode</span>
+        </button>
+      </div>
+
+      <!-- Language Selector -->
+      <div class="menu-control-group">
+        <label for="languageSelect" class="menu-control-label">
+          <span>🌐</span>
+          <span>Language</span>
+        </label>
+        <select id="languageSelect" class="menu-control-select">
+          <option value="en">🇬🇧 English</option>
+          <option value="tr">🇹🇷 Türkçe</option>
+        </select>
+      </div>
+
+      <!-- Piece Setup -->
+      <div class="menu-control-group">
+        <button onclick="openPieceSetup()" class="extra-btn menu-control-btn" id="btnPieceSetup">
+          ♔ <span id="btnPieceSetupText">Piece Setup</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Piece Setup Modal -->
+  <div id="pieceSetupModal" class="piece-setup-modal hidden">
+    <div class="piece-setup-content">
+      <div class="modal-header">
+        <h2>♔ Piece Setup</h2>
+        <button class="close-modal" onclick="closePieceSetup()">✖</button>
+      </div>
+      <div class="piece-setup-body">
+        <p>Piece setup modal opened successfully!</p>
+        <button onclick="closePieceSetup()" class="btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-container">
+    <h1>🧪 Piece Setup in Settings Menu - Integration Test</h1>
+    
+    <div class="test-section">
+      <h2>Test Objective</h2>
+      <p>Verify that the piece setup button has been successfully moved into the settings menu and that all functionality is preserved.</p>
+    </div>
+
+    <div class="test-section">
+      <h2>Manual Test Steps</h2>
+      <ol>
+        <li>Click the settings menu toggle button (3-dot icon in top-right)</li>
+        <li>Verify the settings menu opens</li>
+        <li>Verify the "Piece Setup" button is visible in the menu</li>
+        <li>Click the "Piece Setup" button</li>
+        <li>Verify the piece setup modal opens</li>
+        <li>Close the modal</li>
+        <li>Verify the settings menu is still accessible</li>
+      </ol>
+    </div>
+
+    <div class="test-section">
+      <h2>Automated Tests</h2>
+      <div class="test-actions">
+        <button class="test-btn" onclick="runAllTests()">Run All Tests</button>
+        <button class="test-btn" onclick="testPieceSetupButtonExists()">Test 1: Button Exists</button>
+        <button class="test-btn" onclick="testPieceSetupButtonInMenu()">Test 2: Button in Menu</button>
+        <button class="test-btn" onclick="testPieceSetupButtonClickable()">Test 3: Button Clickable</button>
+        <button class="test-btn" onclick="testEventHandlerPreserved()">Test 4: Event Handler</button>
+      </div>
+      <div id="testResults"></div>
+    </div>
+  </div>
+
+  <script src="js/settings-menu-manager.js"></script>
+  <script>
+    // Mock functions for testing
+    function toggleTheme() {
+      console.log('Theme toggled');
+    }
+
+    function openPieceSetup() {
+      console.log('Opening piece setup...');
+      const modal = document.getElementById('pieceSetupModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        logTestResult('Piece setup modal opened', true);
+      }
+    }
+
+    function closePieceSetup() {
+      console.log('Closing piece setup...');
+      const modal = document.getElementById('pieceSetupModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    }
+
+    // Initialize settings menu
+    let settingsMenuManager;
+    document.addEventListener('DOMContentLoaded', function() {
+      settingsMenuManager = new SettingsMenuManager({
+        toggleButtonSelector: '#settingsMenuToggle',
+        backdropSelector: '#settingsMenuBackdrop',
+        panelSelector: '#settingsMenuPanel',
+        closeButtonSelector: '#settingsMenuClose',
+        contentSelector: '.settings-menu-content'
+      });
+      
+      settingsMenuManager.initialize();
+      console.log('Settings menu initialized');
+    });
+
+    // Test utilities
+    function logTestResult(testName, passed, details = '') {
+      const resultsDiv = document.getElementById('testResults');
+      const resultDiv = document.createElement('div');
+      resultDiv.className = passed ? 'test-result test-pass' : 'test-result test-fail';
+      resultDiv.innerHTML = `
+        <strong>${passed ? '✓' : '✗'} ${testName}</strong>
+        ${details ? `<br><small>${details}</small>` : ''}
+      `;
+      resultsDiv.appendChild(resultDiv);
+    }
+
+    function logTestInfo(message) {
+      const resultsDiv = document.getElementById('testResults');
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'test-result test-info';
+      resultDiv.innerHTML = `<strong>ℹ ${message}</strong>`;
+      resultsDiv.appendChild(resultDiv);
+    }
+
+    // Test 1: Piece setup button exists
+    function testPieceSetupButtonExists() {
+      const button = document.getElementById('btnPieceSetup');
+      const exists = button !== null;
+      logTestResult(
+        'Test 1: Piece Setup Button Exists',
+        exists,
+        exists ? 'Button found with ID "btnPieceSetup"' : 'Button not found'
+      );
+      return exists;
+    }
+
+    // Test 2: Piece setup button is in the settings menu
+    function testPieceSetupButtonInMenu() {
+      const button = document.getElementById('btnPieceSetup');
+      const menuContent = document.querySelector('.settings-menu-content');
+      
+      if (!button || !menuContent) {
+        logTestResult('Test 2: Button in Settings Menu', false, 'Button or menu content not found');
+        return false;
+      }
+
+      const isInMenu = menuContent.contains(button);
+      logTestResult(
+        'Test 2: Button in Settings Menu',
+        isInMenu,
+        isInMenu ? 'Button is correctly placed in settings menu content' : 'Button is not in settings menu'
+      );
+      return isInMenu;
+    }
+
+    // Test 3: Piece setup button is clickable
+    function testPieceSetupButtonClickable() {
+      const button = document.getElementById('btnPieceSetup');
+      
+      if (!button) {
+        logTestResult('Test 3: Button Clickable', false, 'Button not found');
+        return false;
+      }
+
+      const isClickable = !button.disabled && button.onclick !== null;
+      logTestResult(
+        'Test 3: Button Clickable',
+        isClickable,
+        isClickable ? 'Button is enabled and has click handler' : 'Button is not clickable'
+      );
+      return isClickable;
+    }
+
+    // Test 4: Event handler is preserved
+    function testEventHandlerPreserved() {
+      const button = document.getElementById('btnPieceSetup');
+      
+      if (!button) {
+        logTestResult('Test 4: Event Handler Preserved', false, 'Button not found');
+        return false;
+      }
+
+      // Check if onclick attribute exists
+      const hasOnclick = button.hasAttribute('onclick');
+      const onclickValue = button.getAttribute('onclick');
+      const isCorrectHandler = onclickValue === 'openPieceSetup()';
+
+      logTestResult(
+        'Test 4: Event Handler Preserved',
+        hasOnclick && isCorrectHandler,
+        hasOnclick ? `Handler: ${onclickValue}` : 'No onclick handler found'
+      );
+      return hasOnclick && isCorrectHandler;
+    }
+
+    // Run all tests
+    function runAllTests() {
+      document.getElementById('testResults').innerHTML = '';
+      logTestInfo('Running all tests...');
+      
+      const test1 = testPieceSetupButtonExists();
+      const test2 = testPieceSetupButtonInMenu();
+      const test3 = testPieceSetupButtonClickable();
+      const test4 = testEventHandlerPreserved();
+      
+      const allPassed = test1 && test2 && test3 && test4;
+      
+      setTimeout(() => {
+        logTestInfo(
+          allPassed 
+            ? '✓ All tests passed! Piece setup integration successful.' 
+            : '✗ Some tests failed. Please review the results above.'
+        );
+      }, 100);
+    }
+  </script>
+</body>
+</html>

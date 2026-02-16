@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Contrast Audit - Responsive Settings Menu</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4a90e2;
+      padding-bottom: 10px;
+    }
+    
+    .theme-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .theme-section h2 {
+      color: #4a90e2;
+      margin-top: 0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      background: #4a90e2;
+      color: white;
+      font-weight: 600;
+    }
+    
+    tr:hover {
+      background: #f9f9f9;
+    }
+    
+    .pass {
+      color: #10b981;
+      font-weight: bold;
+    }
+    
+    .fail {
+      color: #ef4444;
+      font-weight: bold;
+    }
+    
+    .color-swatch {
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    
+    .summary {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #4a90e2;
+    }
+    
+    .summary h3 {
+      margin-top: 0;
+      color: #1976d2;
+    }
+    
+    .recommendations {
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #f59e0b;
+    }
+    
+    .recommendations h3 {
+      margin-top: 0;
+      color: #d97706;
+    }
+    
+    .recommendation-item {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .stat-value {
+      font-size: 2em;
+      font-weight: bold;
+      color: #4a90e2;
+    }
+    
+    .stat-label {
+      color: #666;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+    
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+    }
+    
+    button {
+      padding: 10px 20px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    button:hover {
+      background: #3a7bc8;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Color Contrast Audit Report</h1>
+  <p><strong>Task:</strong> 10.1 Audit color contrast ratios<br>
+  <strong>Requirement:</strong> 6.6 - WCAG AA Compliance (4.5:1 for normal text, 3:1 for large text)</p>
+  
+  <div class="controls">
+    <button onclick="runAudit()">Run Audit</button>
+    <button onclick="exportReport()">Export Report</button>
+  </div>
+  
+  <div id="results"></div>
+  
+  <script src="audit-color-contrast.js"></script>
+  <script>
+    function runAudit() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '<p>Running audit...</p>';
+      
+      // Import audit functions
+      const { auditResults, getContrastRatio, meetsWCAG_AA } = window;
+      
+      // Color Definitions
+      const colorPalette = {
+        light: {
+          primary: '#4a90e2',
+          primaryHover: '#4338ca',
+          accentGold: '#d4af37',
+          accentBlue: '#5c85d6',
+          accentRed: '#d65c5c',
+          bgMain: '#f8fafc',
+          bgCard: '#ffffff',
+          bgPanel: '#f1f5f9',
+          bgSecondary: '#f8fafc',
+          bgTertiary: '#f1f5f9',
+          textPrimary: '#1e293b',
+          textSecondary: '#64748b',
+          textTertiary: '#94a3b8',
+          textInverse: '#ffffff',
+          borderPrimary: '#e2e8f0',
+          borderSecondary: '#cbd5e1',
+          enhancedPrimary: '#4f46e5',
+          enhancedSuccess: '#10b981',
+          enhancedWarning: '#f59e0b',
+          enhancedError: '#ef4444',
+          enhancedInfo: '#3b82f6'
+        },
+        dark: {
+          primary: '#6366f1',
+          primaryHover: '#4f46e5',
+          accentGold: '#fbbf24',
+          accentBlue: '#60a5fa',
+          accentRed: '#f87171',
+          bgMain: '#0f172a',
+          bgCard: '#1e293b',
+          bgPanel: '#334155',
+          bgSecondary: '#1e293b',
+          bgTertiary: '#334155',
+          textPrimary: '#f8fafc',
+          textSecondary: '#cbd5e1',
+          textTertiary: '#94a3b8',
+          textInverse: '#0f172a',
+          borderPrimary: '#334155',
+          borderSecondary: '#475569',
+          enhancedPrimary: '#6366f1',
+          enhancedSuccess: '#10b981',
+          enhancedWarning: '#f59e0b',
+          enhancedError: '#ef4444',
+          enhancedInfo: '#3b82f6'
+        }
+      };
+      
+      // Color combinations to test
+      const colorCombinations = [
+        { name: 'Toggle Button', fg: 'white', bg: 'primary', element: 'Button', size: 'normal' },
+        { name: 'Toggle Button Hover', fg: 'white', bg: 'primaryHover', element: 'Button', size: 'normal' },
+        { name: 'Menu Panel Background', fg: 'textPrimary', bg: 'bgCard', element: 'Text', size: 'normal' },
+        { name: 'Menu Header', fg: 'textPrimary', bg: 'bgPanel', element: 'Text', size: 'normal' },
+        { name: 'Menu Title', fg: 'accentGold', bg: 'bgPanel', element: 'Heading', size: 'large' },
+        { name: 'Control Label', fg: 'textPrimary', bg: 'bgCard', element: 'Label', size: 'normal' },
+        { name: 'Control Secondary Text', fg: 'textSecondary', bg: 'bgCard', element: 'Text', size: 'normal' },
+        { name: 'Control Group Background', fg: 'textPrimary', bg: 'bgSecondary', element: 'Text', size: 'normal' },
+        { name: 'Primary Button', fg: 'white', bg: 'enhancedPrimary', element: 'Button', size: 'normal' },
+        { name: 'Success Button', fg: 'white', bg: 'enhancedSuccess', element: 'Button', size: 'normal' },
+        { name: 'Warning Button', fg: 'white', bg: 'enhancedWarning', element: 'Button', size: 'normal' },
+        { name: 'Error Button', fg: 'white', bg: 'enhancedError', element: 'Button', size: 'normal' },
+        { name: 'Info Button', fg: 'white', bg: 'enhancedInfo', element: 'Button', size: 'normal' },
+        { name: 'Secondary Button', fg: 'textPrimary', bg: 'bgTertiary', element: 'Button', size: 'normal' },
+        { name: 'Select Dropdown', fg: 'textPrimary', bg: 'bgCard', element: 'Input', size: 'normal' },
+        { name: 'Select Dropdown Hover', fg: 'textPrimary', bg: 'bgPanel', element: 'Input', size: 'normal' },
+        { name: 'Link Text', fg: 'primary', bg: 'bgCard', element: 'Link', size: 'normal' },
+        { name: 'Link Hover', fg: 'primaryHover', bg: 'bgCard', element: 'Link', size: 'normal' },
+        { name: 'Accent Gold Text', fg: 'accentGold', bg: 'bgCard', element: 'Text', size: 'normal' },
+        { name: 'Accent Gold on Panel', fg: 'accentGold', bg: 'bgPanel', element: 'Text', size: 'normal' },
+        { name: 'Success Text', fg: 'enhancedSuccess', bg: 'bgCard', element: 'Text', size: 'normal' },
+        { name: 'Warning Text', fg: 'enhancedWarning', bg: 'bgCard', element: 'Text', size: 'normal' },
+        { name: 'Error Text', fg: 'enhancedError', bg: 'bgCard', element: 'Text', size: 'normal' },
+        { name: 'Info Text', fg: 'enhancedInfo', bg: 'bgCard', element: 'Text', size: 'normal' }
+      ];
+      
+      // Helper functions
+      function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null;
+      }
+      
+      function getLuminance(r, g, b) {
+        const [rs, gs, bs] = [r, g, b].map(c => {
+          c = c / 255;
+          return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+      }
+      
+      function getContrastRatio(color1, color2) {
+        const rgb1 = hexToRgb(color1);
+        const rgb2 = hexToRgb(color2);
+        
+        if (!rgb1 || !rgb2) return null;
+        
+        const lum1 = getLuminance(rgb1.r, rgb1.g, rgb1.b);
+        const lum2 = getLuminance(rgb2.r, rgb2.g, rgb2.b);
+        
+        const lighter = Math.max(lum1, lum2);
+        const darker = Math.min(lum1, lum2);
+        
+        return (lighter + 0.05) / (darker + 0.05);
+      }
+      
+      function meetsWCAG_AA(ratio, isLargeText = false) {
+        const threshold = isLargeText ? 3.0 : 4.5;
+        return ratio >= threshold;
+      }
+      
+      // Run audit
+      const results = { light: [], dark: [], summary: { light: { total: 0, passed: 0, failed: 0 }, dark: { total: 0, passed: 0, failed: 0 } } };
+      
+      ['light', 'dark'].forEach(theme => {
+        colorCombinations.forEach(combo => {
+          const fgColor = combo.fg === 'white' ? '#ffffff' : colorPalette[theme][combo.fg];
+          const bgColor = combo.bg === 'white' ? '#ffffff' : colorPalette[theme][combo.bg];
+          
+          if (!fgColor || !bgColor) return;
+          
+          const ratio = getContrastRatio(fgColor, bgColor);
+          const isLargeText = combo.size === 'large';
+          const passes = meetsWCAG_AA(ratio, isLargeText);
+          const threshold = isLargeText ? '3:1' : '4.5:1';
+          
+          results[theme].push({
+            name: combo.name,
+            element: combo.element,
+            foreground: fgColor,
+            background: bgColor,
+            ratio: ratio.toFixed(2),
+            threshold: threshold,
+            passes: passes,
+            isLargeText: isLargeText
+          });
+          
+          results.summary[theme].total++;
+          if (passes) results.summary[theme].passed++;
+          else results.summary[theme].failed++;
+        });
+      });
+      
+      // Display results
+      displayResults(results);
+    }
+    
+    function displayResults(results) {
+      const resultsDiv = document.getElementById('results');
+      let html = '';
+      
+      // Overall stats
+      const totalTests = results.summary.light.total + results.summary.dark.total;
+      const totalPassed = results.summary.light.passed + results.summary.dark.passed;
+      const totalFailed = results.summary.light.failed + results.summary.dark.failed;
+      const passRate = ((totalPassed / totalTests) * 100).toFixed(1);
+      
+      html += `
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-value">${totalTests}</div>
+            <div class="stat-label">Total Tests</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" style="color: #10b981;">${totalPassed}</div>
+            <div class="stat-label">Passed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" style="color: #ef4444;">${totalFailed}</div>
+            <div class="stat-label">Failed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${passRate}%</div>
+            <div class="stat-label">Pass Rate</div>
+          </div>
+        </div>
+      `;
+      
+      // Theme sections
+      ['light', 'dark'].forEach(theme => {
+        const themeResults = results[theme];
+        const summary = results.summary[theme];
+        const themePassRate = ((summary.passed / summary.total) * 100).toFixed(1);
+        
+        html += `
+          <div class="theme-section">
+            <h2>${theme.charAt(0).toUpperCase() + theme.slice(1)} Theme</h2>
+            <div class="summary">
+              <h3>Summary</h3>
+              <p><strong>Total:</strong> ${summary.total} | <strong>Passed:</strong> ${summary.passed} (${themePassRate}%) | <strong>Failed:</strong> ${summary.failed}</p>
+            </div>
+            
+            <table>
+              <thead>
+                <tr>
+                  <th>Element</th>
+                  <th>Foreground</th>
+                  <th>Background</th>
+                  <th>Ratio</th>
+                  <th>Required</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+        
+        themeResults.forEach(result => {
+          const statusClass = result.passes ? 'pass' : 'fail';
+          const statusText = result.passes ? '✅ PASS' : '❌ FAIL';
+          
+          html += `
+            <tr>
+              <td><strong>${result.name}</strong><br><small>${result.element}</small></td>
+              <td>
+                <span class="color-swatch" style="background: ${result.foreground};"></span>
+                ${result.foreground}
+              </td>
+              <td>
+                <span class="color-swatch" style="background: ${result.background};"></span>
+                ${result.background}
+              </td>
+              <td><strong>${result.ratio}:1</strong></td>
+              <td>${result.threshold}</td>
+              <td class="${statusClass}">${statusText}</td>
+            </tr>
+          `;
+        });
+        
+        html += `
+              </tbody>
+            </table>
+          </div>
+        `;
+      });
+      
+      // Recommendations
+      const allFailed = [...results.light, ...results.dark].filter(r => !r.passes);
+      
+      if (allFailed.length > 0) {
+        html += `
+          <div class="recommendations">
+            <h3>⚠️ Recommendations</h3>
+            <p>The following color combinations need adjustment to meet WCAG AA standards:</p>
+        `;
+        
+        const uniqueFailed = [...new Set(allFailed.map(r => r.name))];
+        uniqueFailed.forEach(name => {
+          const lightFail = results.light.find(r => r.name === name && !r.passes);
+          const darkFail = results.dark.find(r => r.name === name && !r.passes);
+          
+          html += `<div class="recommendation-item"><strong>${name}:</strong><br>`;
+          if (lightFail) {
+            html += `Light theme: Increase contrast between ${lightFail.foreground} and ${lightFail.background} (current: ${lightFail.ratio}:1, need: ${lightFail.threshold})<br>`;
+          }
+          if (darkFail) {
+            html += `Dark theme: Increase contrast between ${darkFail.foreground} and ${darkFail.background} (current: ${darkFail.ratio}:1, need: ${darkFail.threshold})`;
+          }
+          html += `</div>`;
+        });
+        
+        html += `</div>`;
+      } else {
+        html += `
+          <div class="summary" style="background: #d1fae5; border-left-color: #10b981;">
+            <h3 style="color: #059669;">✅ All Tests Passed!</h3>
+            <p>All color combinations meet WCAG AA accessibility standards.</p>
+          </div>
+        `;
+      }
+      
+      resultsDiv.innerHTML = html;
+      
+      // Store results globally for export
+      window.auditResults = results;
+    }
+    
+    function exportReport() {
+      if (!window.auditResults) {
+        alert('Please run the audit first!');
+        return;
+      }
+      
+      const results = window.auditResults;
+      let report = 'COLOR CONTRAST AUDIT REPORT\n';
+      report += 'Responsive Settings Menu\n';
+      report += '='.repeat(80) + '\n\n';
+      report += `Date: ${new Date().toLocaleString()}\n`;
+      report += `Task: 10.1 Audit color contrast ratios\n`;
+      report += `Requirement: 6.6 - WCAG AA Compliance\n\n`;
+      
+      ['light', 'dark'].forEach(theme => {
+        report += `\n${theme.toUpperCase()} THEME\n`;
+        report += '-'.repeat(80) + '\n';
+        
+        results[theme].forEach(r => {
+          report += `${r.name}: ${r.ratio}:1 (${r.threshold} required) - ${r.passes ? 'PASS' : 'FAIL'}\n`;
+          report += `  FG: ${r.foreground} on BG: ${r.background}\n`;
+        });
+        
+        const summary = results.summary[theme];
+        report += `\nSummary: ${summary.passed}/${summary.total} passed (${((summary.passed/summary.total)*100).toFixed(1)}%)\n`;
+      });
+      
+      // Download as text file
+      const blob = new Blob([report], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'color-contrast-audit-report.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    
+    // Run audit on page load
+    window.addEventListener('load', runAudit);
+  </script>
+</body>
+</html>

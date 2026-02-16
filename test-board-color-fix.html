@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Color Fix Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        
+        .test-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 0;
+            margin: 20px 0;
+            border: 2px solid #333;
+        }
+        
+        .test-square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .color-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .color-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .preview-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .color-preview-board {
+            display: grid;
+            grid-template-columns: repeat(2, 40px);
+            grid-template-rows: repeat(2, 40px);
+            gap: 0;
+            border: 2px solid #333;
+        }
+        
+        .preview-square {
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Board Color System Test</h1>
+    
+    <div class="test-section">
+        <h2>Color Controls</h2>
+        <div class="color-controls">
+            <div class="color-input-group">
+                <label>Light Squares</label>
+                <input type="color" id="lightSquareColor" value="#f0d9b5" onchange="updateBoardColors()">
+                <input type="text" id="lightSquareHex" value="#f0d9b5" onchange="updateBoardColorsFromHex('light')">
+            </div>
+            
+            <div class="color-input-group">
+                <label>Dark Squares</label>
+                <input type="color" id="darkSquareColor" value="#b58863" onchange="updateBoardColors()">
+                <input type="text" id="darkSquareHex" value="#b58863" onchange="updateBoardColorsFromHex('dark')">
+            </div>
+            
+            <button onclick="resetColors()">Reset Colors</button>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Preview Squares</h2>
+        <div class="preview-section">
+            <div class="color-preview-board">
+                <div class="preview-square light-preview"></div>
+                <div class="preview-square dark-preview"></div>
+                <div class="preview-square dark-preview"></div>
+                <div class="preview-square light-preview"></div>
+            </div>
+            <p>Preview squares should change when you adjust colors above</p>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Board</h2>
+        <div class="test-board">
+            <div class="test-square light">♜</div>
+            <div class="test-square dark">♞</div>
+            <div class="test-square light">♝</div>
+            <div class="test-square dark">♛</div>
+            
+            <div class="test-square dark">♚</div>
+            <div class="test-square light">♝</div>
+            <div class="test-square dark">♞</div>
+            <div class="test-square light">♜</div>
+            
+            <div class="test-square light">♟</div>
+            <div class="test-square dark">♟</div>
+            <div class="test-square light">♟</div>
+            <div class="test-square dark">♟</div>
+            
+            <div class="test-square dark"></div>
+            <div class="test-square light"></div>
+            <div class="test-square dark"></div>
+            <div class="test-square light"></div>
+            
+            <div class="test-square light">♙</div>
+            <div class="test-square dark">♙</div>
+            <div class="test-square light">♙</div>
+            <div class="test-square dark">♙</div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Preset Test</h2>
+        <button onclick="applyTestPreset('classic')">Classic Colors</button>
+        <button onclick="applyTestPreset('modern')">Modern Colors</button>
+        <button onclick="applyTestPreset('dark')">Dark Theme</button>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        // Include necessary functions from game.js
+        function updateBoardColors() {
+            const lightColor = document.getElementById('lightSquareColor').value;
+            const darkColor = document.getElementById('darkSquareColor').value;
+            
+            // Update hex inputs
+            document.getElementById('lightSquareHex').value = lightColor;
+            document.getElementById('darkSquareHex').value = darkColor;
+            
+            // Update CSS variables
+            document.documentElement.style.setProperty('--board-light', lightColor);
+            document.documentElement.style.setProperty('--board-dark', darkColor);
+            
+            // Update preview squares
+            updateColorPreviews();
+            
+            console.log('Board colors updated:', { light: lightColor, dark: darkColor });
+        }
+
+        function updateBoardColorsFromHex(type) {
+            const hexInput = document.getElementById(type + 'SquareHex');
+            const colorInput = document.getElementById(type + 'SquareColor');
+            
+            let hexValue = hexInput.value;
+            
+            // Validate hex color
+            if (!hexValue.startsWith('#')) {
+                hexValue = '#' + hexValue;
+            }
+            
+            if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+                colorInput.value = hexValue;
+                hexInput.value = hexValue;
+                
+                // Update CSS
+                if (type === 'light') {
+                    document.documentElement.style.setProperty('--board-light', hexValue);
+                } else {
+                    document.documentElement.style.setProperty('--board-dark', hexValue);
+                }
+                
+                // Update preview squares
+                updateColorPreviews();
+                
+                console.log(`${type} square color updated:`, hexValue);
+            } else {
+                alert('Invalid hex color format!');
+                // Reset to previous valid value
+                hexInput.value = colorInput.value;
+            }
+        }
+
+        function updateColorPreviews() {
+            // Update preview squares with current CSS variable values
+            const lightColor = getComputedStyle(document.documentElement).getPropertyValue('--board-light').trim();
+            const darkColor = getComputedStyle(document.documentElement).getPropertyValue('--board-dark').trim();
+            
+            console.log('Updating previews:', { light: lightColor, dark: darkColor });
+            
+            // Update all light preview squares
+            const lightPreviews = document.querySelectorAll('.light-preview, .preview-square.light-preview');
+            lightPreviews.forEach(preview => {
+                if (lightColor) {
+                    preview.style.backgroundColor = lightColor;
+                }
+            });
+            
+            // Update all dark preview squares
+            const darkPreviews = document.querySelectorAll('.dark-preview, .preview-square.dark-preview');
+            darkPreviews.forEach(preview => {
+                if (darkColor) {
+                    preview.style.backgroundColor = darkColor;
+                }
+            });
+        }
+
+        function resetColors() {
+            // Reset to default colors
+            const defaultColors = {
+                lightSquare: '#f0d9b5',
+                darkSquare: '#b58863'
+            };
+            
+            // Update inputs
+            document.getElementById('lightSquareColor').value = defaultColors.lightSquare;
+            document.getElementById('lightSquareHex').value = defaultColors.lightSquare;
+            document.getElementById('darkSquareColor').value = defaultColors.darkSquare;
+            document.getElementById('darkSquareHex').value = defaultColors.darkSquare;
+            
+            // Reset CSS
+            document.documentElement.style.setProperty('--board-light', defaultColors.lightSquare);
+            document.documentElement.style.setProperty('--board-dark', defaultColors.darkSquare);
+            
+            updateColorPreviews();
+            
+            console.log('Colors reset to defaults');
+        }
+
+        function applyTestPreset(presetName) {
+            const presets = {
+                classic: {
+                    lightSquare: '#f0d9b5',
+                    darkSquare: '#b58863'
+                },
+                modern: {
+                    lightSquare: '#e8e8e8',
+                    darkSquare: '#4a4a4a'
+                },
+                dark: {
+                    lightSquare: '#9ca3af',
+                    darkSquare: '#4b5563'
+                }
+            };
+            
+            const preset = presets[presetName];
+            if (!preset) return;
+            
+            // Update inputs
+            document.getElementById('lightSquareColor').value = preset.lightSquare;
+            document.getElementById('lightSquareHex').value = preset.lightSquare;
+            document.getElementById('darkSquareColor').value = preset.darkSquare;
+            document.getElementById('darkSquareHex').value = preset.darkSquare;
+            
+            // Apply colors
+            document.documentElement.style.setProperty('--board-light', preset.lightSquare);
+            document.documentElement.style.setProperty('--board-dark', preset.darkSquare);
+            
+            updateColorPreviews();
+            
+            console.log(`Applied ${presetName} preset:`, preset);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateColorPreviews();
+            console.log('Board color test initialized');
+        });
+    </script>
+</body>
+</html>

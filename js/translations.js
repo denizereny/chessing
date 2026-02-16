@@ -46,6 +46,8 @@ const translations = {
     colorsReset: "Colors reset to default!",
     // Piece setup
     pieceSetup: "Piece Setup",
+    analyzePosition: "Analyze Position",
+    sharePosition: "Share Position",
     needBothKings: "Both kings are required!",
     customGameStarted: "Custom game started!",
     squareOccupied: "Square is already occupied!",
@@ -112,12 +114,10 @@ const translations = {
     clearBoardText: "Clear Board",
     resetDefaultText: "Default Position",
     randomSetupText: "Random Setup",
-    saveSetupText: "Save Setup",
     loadSetupText: "Load Setup",
     presetsTitle: "Quick Setups:",
     userPresetsTitle: "My Presets:",
     loadPresetText: "Load",
-    saveAsPresetText: "Save Current",
     deletePresetText: "Delete",
     exportPresetsText: "Export",
     importPresetsText: "Import",
@@ -209,6 +209,27 @@ const translations = {
     themeChanged: "Theme changed successfully",
     darkMode: "Dark Mode",
     lightMode: "Light Mode",
+    autoScroll: "Auto-Scroll",
+    enableAutoScroll: "Enable Auto-Scroll",
+    disableAutoScroll: "Disable Auto-Scroll",
+    autoScrollEnabled: "Auto-scroll enabled",
+    autoScrollDisabled: "Auto-scroll disabled",
+    
+    // Backend Mode
+    enableBackendMode: "Enable Backend Mode",
+    disableBackendMode: "Disable Backend Mode",
+    backendOnline: "Backend Online",
+    backendOffline: "Backend Offline",
+    backendConnected: "Backend Connected",
+    usingFlaskBackend: "Using Flask Backend",
+    usingLocalMode: "Using Local Mode",
+    
+    // Settings Menu
+    settingsMenu: "Settings",
+    closeMenu: "Close",
+    openSettingsMenu: "Open settings menu",
+    closeSettingsMenu: "Close settings menu",
+    settingsControls: "Settings controls",
     
     // Enhanced Drag & Drop
     dragToMove: "Drag to move piece",
@@ -380,6 +401,8 @@ const translations = {
     colorsReset: "Renkler varsayılana sıfırlandı!",
     // Piece setup
     pieceSetup: "Taş Düzeni",
+    analyzePosition: "Pozisyonu Analiz Et",
+    sharePosition: "Pozisyonu Paylaş",
     needBothKings: "Her iki kral da gerekli!",
     customGameStarted: "Özel oyun başlatıldı!",
     squareOccupied: "Kare zaten dolu!",
@@ -446,12 +469,10 @@ const translations = {
     clearBoardText: "Tahtayı Temizle",
     resetDefaultText: "Varsayılan Pozisyon",
     randomSetupText: "Rastgele Düzen",
-    saveSetupText: "Düzeni Kaydet",
     loadSetupText: "Düzen Yükle",
     presetsTitle: "Hızlı Düzenler:",
     userPresetsTitle: "Benim Şablonlarım:",
     loadPresetText: "Yükle",
-    saveAsPresetText: "Mevcut Kaydet",
     deletePresetText: "Sil",
     exportPresetsText: "Dışa Aktar",
     importPresetsText: "İçe Aktar",
@@ -543,6 +564,27 @@ const translations = {
     themeChanged: "Tema başarıyla değiştirildi",
     darkMode: "Koyu Mod",
     lightMode: "Açık Mod",
+    autoScroll: "Otomatik Kaydırma",
+    enableAutoScroll: "Otomatik Kaydırmayı Aç",
+    disableAutoScroll: "Otomatik Kaydırmayı Kapat",
+    autoScrollEnabled: "Otomatik kaydırma açıldı",
+    autoScrollDisabled: "Otomatik kaydırma kapatıldı",
+    
+    // Backend Mode
+    enableBackendMode: "Backend Modunu Aç",
+    disableBackendMode: "Backend Modunu Kapat",
+    backendOnline: "Backend Çevrimiçi",
+    backendOffline: "Backend Çevrimdışı",
+    backendConnected: "Backend Bağlandı",
+    usingFlaskBackend: "Flask Backend Kullanılıyor",
+    usingLocalMode: "Yerel Mod Kullanılıyor",
+    
+    // Settings Menu
+    settingsMenu: "Ayarlar",
+    closeMenu: "Kapat",
+    openSettingsMenu: "Ayarlar menüsünü aç",
+    closeSettingsMenu: "Ayarlar menüsünü kapat",
+    settingsControls: "Ayar kontrolleri",
     
     // Enhanced Drag & Drop
     dragToMove: "Taşı hareket ettirmek için sürükle",
@@ -712,6 +754,8 @@ const translations = {
     presetApplied: "¡Plantilla aplicada!",
     colorsReset: "¡Colores restablecidos por defecto!",
     pieceSetup: "Configuración de Piezas",
+    analyzePosition: "Analizar Posición",
+    sharePosition: "Compartir Posición",
     needBothKings: "¡Se requieren ambos reyes!",
     customGameStarted: "¡Juego personalizado iniciado!",
     squareOccupied: "¡La casilla ya está ocupada!",
@@ -768,6 +812,21 @@ const translations = {
     themeChanged: "Tema cambiado exitosamente",
     darkMode: "Modo Oscuro",
     lightMode: "Modo Claro",
+    autoScroll: "Desplazamiento Automático",
+    enableAutoScroll: "Activar Desplazamiento Automático",
+    disableAutoScroll: "Desactivar Desplazamiento Automático",
+    autoScrollEnabled: "Desplazamiento automático activado",
+    autoScrollDisabled: "Desplazamiento automático desactivado",
+    
+    // Backend Mode
+    enableBackendMode: "Activar Modo Backend",
+    disableBackendMode: "Desactivar Modo Backend",
+    backendOnline: "Backend En Línea",
+    backendOffline: "Backend Fuera de Línea",
+    backendConnected: "Backend Conectado",
+    usingFlaskBackend: "Usando Flask Backend",
+    usingLocalMode: "Usando Modo Local",
+    
     lightTheme: "Claro",
     darkTheme: "Oscuro",
     systemTheme: "Sistema",
@@ -941,6 +1000,8 @@ const translations = {
     presetApplied: "Modèle appliqué!",
     colorsReset: "Couleurs remises par défaut!",
     pieceSetup: "Configuration des Pièces",
+    analyzePosition: "Analyser la Position",
+    sharePosition: "Partager la Position",
     needBothKings: "Les deux rois sont requis!",
     customGameStarted: "Jeu personnalisé commencé!",
     squareOccupied: "La case est déjà occupée!",
@@ -969,6 +1030,20 @@ const translations = {
     themeChanged: "Thème changé avec succès",
     darkMode: "Mode Sombre",
     lightMode: "Mode Clair",
+    autoScroll: "Défilement Automatique",
+    enableAutoScroll: "Activer le Défilement Automatique",
+    disableAutoScroll: "Désactiver le Défilement Automatique",
+    autoScrollEnabled: "Défilement automatique activé",
+    autoScrollDisabled: "Défilement automatique désactivé",
+    
+    // Backend Mode
+    enableBackendMode: "Activer le Mode Backend",
+    disableBackendMode: "Désactiver le Mode Backend",
+    backendOnline: "Backend En Ligne",
+    backendOffline: "Backend Hors Ligne",
+    backendConnected: "Backend Connecté",
+    usingFlaskBackend: "Utilisation de Flask Backend",
+    usingLocalMode: "Utilisation du Mode Local",
     
     // Enhanced Drag & Drop
     dragToMove: "Glisser pour déplacer la pièce",
@@ -1138,6 +1213,8 @@ const translations = {
     presetApplied: "Vorlage angewendet!",
     colorsReset: "Farben zurückgesetzt!",
     pieceSetup: "Figurenaufstellung",
+    analyzePosition: "Position Analysieren",
+    sharePosition: "Position Teilen",
     needBothKings: "Beide Könige sind erforderlich!",
     customGameStarted: "Benutzerdefiniertes Spiel gestartet!",
     squareOccupied: "Das Feld ist bereits besetzt!",
@@ -1166,6 +1243,20 @@ const translations = {
     themeChanged: "Thema erfolgreich geändert",
     darkMode: "Dunkler Modus",
     lightMode: "Heller Modus",
+    autoScroll: "Automatisches Scrollen",
+    enableAutoScroll: "Automatisches Scrollen Aktivieren",
+    disableAutoScroll: "Automatisches Scrollen Deaktivieren",
+    autoScrollEnabled: "Automatisches Scrollen aktiviert",
+    autoScrollDisabled: "Automatisches Scrollen deaktiviert",
+    
+    // Backend Mode
+    enableBackendMode: "Backend-Modus Aktivieren",
+    disableBackendMode: "Backend-Modus Deaktivieren",
+    backendOnline: "Backend Online",
+    backendOffline: "Backend Offline",
+    backendConnected: "Backend Verbunden",
+    usingFlaskBackend: "Flask Backend Wird Verwendet",
+    usingLocalMode: "Lokaler Modus Wird Verwendet",
     
     // Enhanced Drag & Drop
     dragToMove: "Ziehen um Figur zu bewegen",
@@ -1335,6 +1426,8 @@ const translations = {
     presetApplied: "Modello applicato!",
     colorsReset: "Colori ripristinati!",
     pieceSetup: "Configurazione Pezzi",
+    analyzePosition: "Analizza Posizione",
+    sharePosition: "Condividi Posizione",
     needBothKings: "Entrambi i re sono richiesti!",
     customGameStarted: "Gioco personalizzato iniziato!",
     squareOccupied: "La casella è già occupata!",
@@ -1363,6 +1456,20 @@ const translations = {
     themeChanged: "Tema cambiato con successo",
     darkMode: "Modalità Scura",
     lightMode: "Modalità Chiara",
+    autoScroll: "Scorrimento Automatico",
+    enableAutoScroll: "Attiva Scorrimento Automatico",
+    disableAutoScroll: "Disattiva Scorrimento Automatico",
+    autoScrollEnabled: "Scorrimento automatico attivato",
+    autoScrollDisabled: "Scorrimento automatico disattivato",
+    
+    // Backend Mode
+    enableBackendMode: "Attiva Modalità Backend",
+    disableBackendMode: "Disattiva Modalità Backend",
+    backendOnline: "Backend Online",
+    backendOffline: "Backend Offline",
+    backendConnected: "Backend Connesso",
+    usingFlaskBackend: "Utilizzo Flask Backend",
+    usingLocalMode: "Utilizzo Modalità Locale",
     
     // Enhanced Drag & Drop
     dragToMove: "Trascina per muovere il pezzo",
@@ -1524,6 +1631,20 @@ const translations = {
     themeChanged: "Тема успешно изменена",
     darkMode: "Темный Режим",
     lightMode: "Светлый Режим",
+    autoScroll: "Автопрокрутка",
+    enableAutoScroll: "Включить Автопрокрутку",
+    disableAutoScroll: "Отключить Автопрокрутку",
+    autoScrollEnabled: "Автопрокрутка включена",
+    autoScrollDisabled: "Автопрокрутка отключена",
+    
+    // Backend Mode
+    enableBackendMode: "Включить Режим Backend",
+    disableBackendMode: "Отключить Режим Backend",
+    backendOnline: "Backend Онлайн",
+    backendOffline: "Backend Оффлайн",
+    backendConnected: "Backend Подключен",
+    usingFlaskBackend: "Использование Flask Backend",
+    usingLocalMode: "Использование Локального Режима",
     
     // Enhanced Drag & Drop
     dragToMove: "Перетащите для перемещения фигуры",
@@ -1685,6 +1806,20 @@ const translations = {
     themeChanged: "主题切换成功",
     darkMode: "深色模式",
     lightMode: "浅色模式",
+    autoScroll: "自动滚动",
+    enableAutoScroll: "启用自动滚动",
+    disableAutoScroll: "禁用自动滚动",
+    autoScrollEnabled: "自动滚动已启用",
+    autoScrollDisabled: "自动滚动已禁用",
+    
+    // Backend Mode
+    enableBackendMode: "启用后端模式",
+    disableBackendMode: "禁用后端模式",
+    backendOnline: "后端在线",
+    backendOffline: "后端离线",
+    backendConnected: "后端已连接",
+    usingFlaskBackend: "使用Flask后端",
+    usingLocalMode: "使用本地模式",
     
     // Enhanced Drag & Drop
     dragToMove: "拖拽移动棋子",
@@ -1846,6 +1981,20 @@ const translations = {
     themeChanged: "テーマが正常に変更されました",
     darkMode: "ダークモード",
     lightMode: "ライトモード",
+    autoScroll: "自動スクロール",
+    enableAutoScroll: "自動スクロールを有効にする",
+    disableAutoScroll: "自動スクロールを無効にする",
+    autoScrollEnabled: "自動スクロールが有効になりました",
+    autoScrollDisabled: "自動スクロールが無効になりました",
+    
+    // Backend Mode
+    enableBackendMode: "バックエンドモードを有効にする",
+    disableBackendMode: "バックエンドモードを無効にする",
+    backendOnline: "バックエンドオンライン",
+    backendOffline: "バックエンドオフライン",
+    backendConnected: "バックエンド接続済み",
+    usingFlaskBackend: "Flaskバックエンドを使用",
+    usingLocalMode: "ローカルモードを使用",
     
     // Enhanced Drag & Drop
     dragToMove: "ドラッグして駒を移動",
@@ -2007,6 +2156,20 @@ const translations = {
     themeChanged: "Tema alterado com sucesso",
     darkMode: "Modo Escuro",
     lightMode: "Modo Claro",
+    autoScroll: "Rolagem Automática",
+    enableAutoScroll: "Ativar Rolagem Automática",
+    disableAutoScroll: "Desativar Rolagem Automática",
+    autoScrollEnabled: "Rolagem automática ativada",
+    autoScrollDisabled: "Rolagem automática desativada",
+    
+    // Backend Mode
+    enableBackendMode: "Ativar Modo Backend",
+    disableBackendMode: "Desativar Modo Backend",
+    backendOnline: "Backend Online",
+    backendOffline: "Backend Offline",
+    backendConnected: "Backend Conectado",
+    usingFlaskBackend: "Usando Flask Backend",
+    usingLocalMode: "Usando Modo Local",
     
     // Enhanced Drag & Drop
     dragToMove: "Arraste para mover peça",
@@ -2168,6 +2331,20 @@ const translations = {
     themeChanged: "تم تغيير المظهر بنجاح",
     darkMode: "الوضع الداكن",
     lightMode: "الوضع الفاتح",
+    autoScroll: "التمرير التلقائي",
+    enableAutoScroll: "تفعيل التمرير التلقائي",
+    disableAutoScroll: "تعطيل التمرير التلقائي",
+    autoScrollEnabled: "تم تفعيل التمرير التلقائي",
+    autoScrollDisabled: "تم تعطيل التمرير التلقائي",
+    
+    // Backend Mode
+    enableBackendMode: "تفعيل وضع الخادم",
+    disableBackendMode: "تعطيل وضع الخادم",
+    backendOnline: "الخادم متصل",
+    backendOffline: "الخادم غير متصل",
+    backendConnected: "تم الاتصال بالخادم",
+    usingFlaskBackend: "استخدام Flask Backend",
+    usingLocalMode: "استخدام الوضع المحلي",
     
     // Enhanced Drag & Drop
     dragToMove: "اسحب لتحريك القطعة",
@@ -2461,6 +2638,12 @@ function updateUIText() {
   const btnPieceSetupText = document.getElementById("btnPieceSetupText");
   if (btnPieceSetupText) btnPieceSetupText.textContent = t("pieceSetup");
 
+  const btnAnalyzePositionText = document.getElementById("btnAnalyzePositionText");
+  if (btnAnalyzePositionText) btnAnalyzePositionText.textContent = t("analyzePosition");
+
+  const btnSharePositionText = document.getElementById("btnSharePositionText");
+  if (btnSharePositionText) btnSharePositionText.textContent = t("sharePosition");
+
   // Update theme button text
   const btnThemeText = document.getElementById("btnThemeText");
   if (btnThemeText) {
@@ -2468,6 +2651,29 @@ function updateUIText() {
     const currentTheme = localStorage.getItem('4x5-chess-theme') || 'light';
     btnThemeText.textContent = currentTheme === 'dark' ? t("lightMode") : t("darkMode");
   }
+
+  // Update language label in settings menu
+  const lblLanguage = document.getElementById("lblLanguage");
+  if (lblLanguage) lblLanguage.textContent = t("language");
+
+  // Update settings menu elements
+  const settingsMenuTitleText = document.getElementById("settingsMenuTitleText");
+  if (settingsMenuTitleText) settingsMenuTitleText.textContent = t("settingsMenu");
+
+  const closeMenuText = document.getElementById("closeMenuText");
+  if (closeMenuText) closeMenuText.textContent = t("closeMenu");
+
+  // Update settings menu toggle button aria-label
+  const settingsMenuToggle = document.getElementById("settingsMenuToggle");
+  if (settingsMenuToggle) settingsMenuToggle.setAttribute('aria-label', t("openSettingsMenu"));
+
+  // Update settings menu close button aria-label
+  const settingsMenuClose = document.getElementById("settingsMenuClose");
+  if (settingsMenuClose) settingsMenuClose.setAttribute('aria-label', t("closeSettingsMenu"));
+
+  // Update settings menu content aria-label
+  const settingsMenuContent = document.querySelector('.settings-menu-content');
+  if (settingsMenuContent) settingsMenuContent.setAttribute('aria-label', t("settingsControls"));
 
   // Update piece setup modal elements
   const setupInstructions = document.getElementById("setupInstructions");
@@ -2500,9 +2706,6 @@ function updateUIText() {
   
   const loadPresetText = document.getElementById("loadPresetText");
   if (loadPresetText) loadPresetText.textContent = t("loadPresetText");
-  
-  const saveAsPresetText = document.getElementById("saveAsPresetText");
-  if (saveAsPresetText) saveAsPresetText.textContent = t("saveAsPresetText");
   
   const deletePresetText = document.getElementById("deletePresetText");
   if (deletePresetText) deletePresetText.textContent = t("deletePresetText");
@@ -2618,6 +2821,22 @@ function updateUIText() {
   
   const reducedMotionToggle = document.getElementById("reducedMotionToggle");
   if (reducedMotionToggle) reducedMotionToggle.textContent = t("reducedMotion");
+
+  // Update backend mode button
+  const btnBackendModeText = document.getElementById("btnBackendModeText");
+  if (btnBackendModeText) {
+    // Check if backend mode is enabled
+    const isBackendEnabled = localStorage.getItem('backendModeEnabled') === 'true';
+    btnBackendModeText.textContent = isBackendEnabled ? t("disableBackendMode") : t("enableBackendMode");
+  }
+
+  // Update auto-scroll button
+  const btnAutoScrollText = document.getElementById("btnAutoScrollText");
+  if (btnAutoScrollText) {
+    // Check if auto-scroll is enabled
+    const isAutoScrollEnabled = localStorage.getItem('autoScrollEnabled') === 'true';
+    btnAutoScrollText.textContent = isAutoScrollEnabled ? t("disableAutoScroll") : t("enableAutoScroll");
+  }
 
   // Update game status if game is active
   if (typeof bilgiGuncelle === "function") {

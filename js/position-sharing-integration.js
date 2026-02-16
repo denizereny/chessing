@@ -79,7 +79,7 @@ function loadPositionFromURL() {
 }
 
 /**
- * Add sharing UI elements to the piece setup modal
+ * Add sharing UI elements to the settings menu
  */
 function addSharingUI() {
   // Check if sharing UI already exists
@@ -87,60 +87,52 @@ function addSharingUI() {
     return;
   }
   
-  // Find the piece setup modal
-  const modal = document.getElementById('pieceSetupModal');
-  if (!modal) {
-    console.warn('🔗 Piece setup modal not found, sharing UI not added');
+  // Find the settings menu content container
+  const settingsMenuContent = document.querySelector('.settings-menu-content');
+  if (!settingsMenuContent) {
+    console.warn('🔗 Settings menu content not found, sharing UI not added');
     return;
   }
   
-  // Find a good place to insert the sharing panel
-  const setupControls = modal.querySelector('.setup-controls') || 
-                       modal.querySelector('.piece-setup-content');
-  
-  if (!setupControls) {
-    console.warn('🔗 Setup controls not found, sharing UI not added');
-    return;
-  }
-  
-  // Create sharing panel
+  // Create sharing panel as a menu control group
   const sharingPanel = document.createElement('div');
   sharingPanel.id = 'positionSharingPanel';
-  sharingPanel.className = 'sharing-panel';
+  sharingPanel.className = 'menu-control-group position-sharing-group';
   sharingPanel.innerHTML = `
-    <div class="sharing-header">
-      <h3>🔗 Position Sharing</h3>
+    <div class="menu-control-header">
+      <span class="icon">🔗</span>
+      <span id="positionSharingTitle">Position Sharing</span>
     </div>
     <div class="sharing-content">
       <div class="sharing-row">
-        <button onclick="generateSharingCode()" class="btn-primary" id="btnGenerateCode">
-          📋 Generate Code
+        <button onclick="generateSharingCode()" class="menu-control-btn" id="btnGenerateCode">
+          📋 <span id="btnGenerateCodeText">Generate Code</span>
         </button>
-        <button onclick="copyPositionCode()" class="btn-secondary" id="btnCopyCode" disabled>
-          📄 Copy Code
+        <button onclick="copyPositionCode()" class="menu-control-btn" id="btnCopyCode" disabled>
+          📄 <span id="btnCopyCodeText">Copy Code</span>
         </button>
       </div>
       <div class="sharing-row">
         <input type="text" id="sharingCodeInput" placeholder="Enter sharing code..." 
                class="sharing-input" maxlength="12">
-        <button onclick="loadFromSharingCode()" class="btn-secondary" id="btnLoadCode">
-          📥 Load
+        <button onclick="loadFromSharingCode()" class="menu-control-btn" id="btnLoadCode">
+          📥 <span id="btnLoadCodeText">Load</span>
         </button>
       </div>
       <div class="sharing-row">
-        <button onclick="shareViaURL()" class="btn-secondary" id="btnShareURL" disabled>
-          🔗 Share URL
+        <button onclick="shareViaURL()" class="menu-control-btn" id="btnShareURL" disabled>
+          🔗 <span id="btnShareURLText">Share URL</span>
         </button>
-        <button onclick="generateQRCode()" class="btn-secondary" id="btnQRCode" disabled>
-          📱 QR Code
+        <button onclick="generateQRCode()" class="menu-control-btn" id="btnQRCode" disabled>
+          📱 <span id="btnQRCodeText">QR Code</span>
         </button>
       </div>
       <div class="sharing-row">
-        <button onclick="startQRReader()" class="btn-secondary" id="btnQRReader">
-          📷 Scan QR
+        <button onclick="startQRReader()" class="menu-control-btn" id="btnQRReader">
+          📷 <span id="btnQRReaderText">Scan QR</span>
         </button>
-        <button onclick="stopQRReader()" class="btn-secondary" id="btnStopQR" disabled style="display: none;">
-          ⏹ Stop Scan
+        <button onclick="stopQRReader()" class="menu-control-btn" id="btnStopQR" disabled style="display: none;">
+          ⏹ <span id="btnStopQRText">Stop Scan</span>
         </button>
       </div>
       <div id="sharingCodeDisplay" class="code-display" style="display: none;">
@@ -159,112 +151,136 @@ function addSharingUI() {
     </div>
   `;
   
-  // Add CSS styles
+  // Add CSS styles for position sharing in settings menu
   const style = document.createElement('style');
   style.textContent = `
-    .sharing-panel {
-      margin: 20px 0;
-      padding: 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      background: #f8f9fa;
+    .position-sharing-group {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1rem;
+      margin-top: 1rem;
     }
     
-    .sharing-header h3 {
-      margin: 0 0 15px 0;
-      color: #495057;
-      font-size: 16px;
+    .menu-control-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--menu-text-color, #333);
+    }
+    
+    .menu-control-header .icon {
+      font-size: 1.1rem;
+    }
+    
+    .sharing-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
     
     .sharing-row {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 0.5rem;
       align-items: center;
+    }
+    
+    .sharing-row .menu-control-btn {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.85rem;
+      padding: 0.5rem 0.75rem;
     }
     
     .sharing-input {
       flex: 1;
-      padding: 8px 12px;
-      border: 1px solid #ced4da;
-      border-radius: 5px;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
       font-family: 'Courier New', monospace;
-      font-size: 14px;
+      font-size: 0.85rem;
+      background: var(--menu-input-bg, #fff);
+      color: var(--menu-text-color, #333);
     }
     
     .code-display {
-      margin-top: 15px;
-      padding: 10px;
-      background: white;
-      border: 1px solid #dee2e6;
-      border-radius: 5px;
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
     }
     
     .code-text {
       font-family: 'Courier New', monospace;
-      font-size: 18px;
+      font-size: 1rem;
       font-weight: bold;
       color: #d63384;
       text-align: center;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 3px;
+      padding: 0.5rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 4px;
       word-break: break-all;
     }
     
     .code-info {
-      font-size: 12px;
-      color: #6c757d;
+      font-size: 0.75rem;
+      color: var(--menu-text-secondary, #666);
       text-align: center;
-      margin-top: 5px;
+      margin-top: 0.25rem;
     }
     
     .qr-display {
-      margin-top: 15px;
+      margin-top: 0.75rem;
       text-align: center;
-      padding: 15px;
-      background: white;
-      border: 1px solid #dee2e6;
-      border-radius: 5px;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
     }
     
     .qr-info {
-      font-size: 12px;
-      color: #6c757d;
-      margin-top: 10px;
+      font-size: 0.75rem;
+      color: var(--menu-text-secondary, #666);
+      margin-top: 0.5rem;
     }
     
     #qrCanvas {
-      border: 1px solid #dee2e6;
-      border-radius: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      max-width: 100%;
+      height: auto;
     }
     
     .qr-reader-display {
-      margin-top: 15px;
+      margin-top: 0.75rem;
       text-align: center;
-      padding: 15px;
-      background: white;
-      border: 1px solid #dee2e6;
-      border-radius: 5px;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
     }
     
     #qrVideo {
       border: 2px solid #007bff;
-      border-radius: 5px;
+      border-radius: 4px;
       background: #000;
+      max-width: 100%;
+      height: auto;
     }
     
     .qr-reader-info {
-      font-size: 14px;
-      color: #495057;
-      margin: 10px 0 5px 0;
-      font-weight: bold;
+      font-size: 0.85rem;
+      color: var(--menu-text-color, #333);
+      margin: 0.5rem 0 0.25rem 0;
+      font-weight: 600;
     }
     
     .qr-reader-status {
-      font-size: 12px;
-      color: #6c757d;
-      margin-top: 5px;
+      font-size: 0.75rem;
+      color: var(--menu-text-secondary, #666);
+      margin-top: 0.25rem;
     }
   `;
   
@@ -273,10 +289,10 @@ function addSharingUI() {
     document.head.appendChild(style);
   }
   
-  // Insert the sharing panel
-  setupControls.appendChild(sharingPanel);
+  // Insert the sharing panel into settings menu
+  settingsMenuContent.appendChild(sharingPanel);
   
-  console.log('🔗 Position sharing UI added to piece setup modal');
+  console.log('🔗 Position sharing UI added to settings menu');
 }
 
 /**

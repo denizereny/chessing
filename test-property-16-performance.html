@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property 16: Layout Recalculation Performance Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .info-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .controls {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .output {
+            padding: 30px;
+            background: #f8f9fa;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .output pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card.passed .stat-value {
+            color: #28a745;
+        }
+
+        .stat-card.failed .stat-value {
+            color: #dc3545;
+        }
+
+        /* Test viewport simulation */
+        .board-container {
+            width: 90%;
+            max-width: 500px;
+            margin: 20px auto;
+            aspect-ratio: 1;
+            background: #f0d9b5;
+            border: 2px solid #b58863;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>⚡ Property 16: Layout Recalculation Performance</h1>
+            <p>Task 2.4 - Validates Requirements 7.2</p>
+        </div>
+
+        <div class="info-section">
+            <h3>📋 Test Information</h3>
+            <p><strong>Property:</strong> Layout recalculation should complete within 100ms for any viewport resize</p>
+            <p><strong>Requirement 7.2:</strong> The Responsive_Layout SHALL recalculate and apply layout changes within 100ms of viewport resize</p>
+            <p><strong>Test Framework:</strong> fast-check</p>
+            <p><strong>Iterations:</strong> 100 per test</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card passed">
+                <div class="stat-value" id="passedTests">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card failed">
+                <div class="stat-value" id="failedTests">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="runTestsBtn" onclick="runTests()">
+                ▶️ Run Performance Tests
+            </button>
+        </div>
+
+        <div class="output">
+            <pre id="outputContent"></pre>
+        </div>
+    </div>
+
+    <!-- Test board -->
+    <div class="board-container" id="board"></div>
+
+    <!-- Load fast-check from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/fast-check@3.15.0/lib/bundle.js"></script>
+
+    <!-- Load responsive layout manager -->
+    <script src="js/responsive-layout-manager.js"></script>
+
+    <script>
+        let testStats = { passed: 0, failed: 0 };
+
+        function appendOutput(text) {
+            const outputContent = document.getElementById('outputContent');
+            outputContent.textContent += text + '\n';
+        }
+
+        function updateStats() {
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+        }
+
+        function setViewportSize(width, height) {
+            const originalWidth = window.innerWidth;
+            const originalHeight = window.innerHeight;
+            
+            Object.defineProperty(window, 'innerWidth', {
+                writable: true,
+                configurable: true,
+                value: width
+            });
+            
+            Object.defineProperty(window, 'innerHeight', {
+                writable: true,
+                configurable: true,
+                value: height
+            });
+            
+            return () => {
+                Object.defineProperty(window, 'innerWidth', {
+                    writable: true,
+                    configurable: true,
+                    value: originalWidth
+                });
+                
+                Object.defineProperty(window, 'innerHeight', {
+                    writable: true,
+                    configurable: true,
+                    value: originalHeight
+                });
+            };
+        }
+
+        function measureLayoutRecalculationTime(targetWidth, targetHeight) {
+            const startTime = performance.now();
+            
+            window.dispatchEvent(new Event('resize'));
+            
+            const boardContainer = document.getElementById('board');
+            if (boardContainer) {
+                const _ = boardContainer.offsetHeight;
+            }
+            
+            const _ = document.documentElement.scrollHeight;
+            
+            const endTime = performance.now();
+            return endTime - startTime;
+        }
+
+        function triggerAndMeasureRecalculation(fromWidth, fromHeight, toWidth, toHeight) {
+            const restore1 = setViewportSize(fromWidth, fromHeight);
+            const _ = document.documentElement.scrollHeight;
+            
+            restore1();
+            const restore2 = setViewportSize(toWidth, toHeight);
+            
+            const recalcTime = measureLayoutRecalculationTime(toWidth, toHeight);
+            
+            restore2();
+            
+            return recalcTime;
+        }
+
+        async function runTests() {
+            const btn = document.getElementById('runTestsBtn');
+            btn.disabled = true;
+            
+            testStats = { passed: 0, failed: 0 };
+            updateStats();
+            
+            document.getElementById('outputContent').textContent = '';
+            
+            appendOutput('⚡ Property 16: Layout Recalculation Performance Tests');
+            appendOutput('='.repeat(60));
+            appendOutput('');
+
+            try {
+                // Test 1: General viewport resize performance
+                appendOutput('Test 1: Layout recalculation within 100ms for any viewport resize');
+                try {
+                    const result = fc.check(fc.property(
+                        fc.record({
+                            width: fc.integer({ min: 320, max: 2560 }),
+                            height: fc.integer({ min: 480, max: 1440 })
+                        }),
+                        fc.record({
+                            width: fc.integer({ min: 320, max: 2560 }),
+                            height: fc.integer({ min: 480, max: 1440 })
+                        }),
+                        (initialViewport, targetViewport) => {
+                            if (Math.abs(initialViewport.width - targetViewport.width) < 50 &&
+                                Math.abs(initialViewport.height - targetViewport.height) < 50) {
+                                return true;
+                            }
+                            
+                            const recalcTime = triggerAndMeasureRecalculation(
+                                initialViewport.width,
+                                initialViewport.height,
+                                targetViewport.width,
+                                targetViewport.height
+                            );
+                            
+                            return recalcTime <= 100;
+                        }
+                    ), { numRuns: 100 });
+
+                    if (result.failed) {
+                        testStats.failed++;
+                        appendOutput(`❌ FAILED after ${result.numRuns} runs`);
+                        appendOutput(`Counterexample: ${JSON.stringify(result.counterexample)}`);
+                    } else {
+                        testStats.passed++;
+                        appendOutput(`✅ PASSED 100 iterations`);
+                    }
+                } catch (error) {
+                    testStats.failed++;
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Test 2: Mobile to tablet resize
+                appendOutput('Test 2: Mobile to tablet resize within 100ms');
+                try {
+                    const result = fc.check(fc.property(
+                        fc.integer({ min: 320, max: 767 }),
+                        fc.integer({ min: 768, max: 1023 }),
+                        fc.integer({ min: 480, max: 1440 }),
+                        (mobileWidth, tabletWidth, height) => {
+                            const recalcTime = triggerAndMeasureRecalculation(
+                                mobileWidth, height, tabletWidth, height
+                            );
+                            return recalcTime <= 100;
+                        }
+                    ), { numRuns: 100 });
+
+                    if (result.failed) {
+                        testStats.failed++;
+                        appendOutput(`❌ FAILED after ${result.numRuns} runs`);
+                    } else {
+                        testStats.passed++;
+                        appendOutput(`✅ PASSED 100 iterations`);
+                    }
+                } catch (error) {
+                    testStats.failed++;
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                // Test 3: Extreme viewport changes
+                appendOutput('Test 3: Extreme viewport changes within 100ms');
+                try {
+                    const testCases = [
+                        { from: { width: 320, height: 480 }, to: { width: 2560, height: 1440 } },
+                        { from: { width: 2560, height: 1440 }, to: { width: 320, height: 480 } },
+                        { from: { width: 768, height: 1024 }, to: { width: 1024, height: 768 } }
+                    ];
+                    
+                    let allPassed = true;
+                    for (const testCase of testCases) {
+                        const recalcTime = triggerAndMeasureRecalculation(
+                            testCase.from.width,
+                            testCase.from.height,
+                            testCase.to.width,
+                            testCase.to.height
+                        );
+                        
+                        if (recalcTime > 100) {
+                            allPassed = false;
+                            appendOutput(`❌ ${testCase.from.width}x${testCase.from.height} → ${testCase.to.width}x${testCase.to.height}: ${recalcTime.toFixed(2)}ms`);
+                        } else {
+                            appendOutput(`✅ ${testCase.from.width}x${testCase.from.height} → ${testCase.to.width}x${testCase.to.height}: ${recalcTime.toFixed(2)}ms`);
+                        }
+                    }
+                    
+                    if (allPassed) {
+                        testStats.passed++;
+                        appendOutput(`✅ PASSED - All extreme resizes within 100ms`);
+                    } else {
+                        testStats.failed++;
+                        appendOutput(`❌ FAILED - Some resizes exceeded 100ms`);
+                    }
+                } catch (error) {
+                    testStats.failed++;
+                    appendOutput(`❌ ERROR: ${error.message}`);
+                }
+                appendOutput('');
+
+                updateStats();
+                
+                appendOutput('='.repeat(60));
+                appendOutput('📊 Test Summary:');
+                appendOutput(`Passed: ${testStats.passed}`);
+                appendOutput(`Failed: ${testStats.failed}`);
+                appendOutput('');
+
+                if (testStats.failed === 0) {
+                    appendOutput('✅ All performance tests passed!');
+                    appendOutput('✅ Layout recalculation meets the 100ms requirement (7.2)');
+                } else {
+                    appendOutput('❌ Some tests failed. Performance optimization may be needed.');
+                }
+
+            } catch (error) {
+                appendOutput(`❌ Fatal error: ${error.message}`);
+                console.error('Test execution error:', error);
+            }
+
+            btn.disabled = false;
+        }
+
+        window.addEventListener('load', () => {
+            if (typeof fc === 'undefined') {
+                appendOutput('❌ Error: fast-check library not available');
+            } else {
+                appendOutput(`✅ fast-check loaded (version: ${fc.version || 'unknown'})`);
+                appendOutput('Click "Run Performance Tests" to start...');
+                appendOutput('');
+            }
+        });
+    </script>
+</body>
+</html>

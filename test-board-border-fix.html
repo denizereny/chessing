@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Border Test - Tahta Çerçeve Testi</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .test-section {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 2px solid var(--accent-gold);
+        }
+        
+        .test-title {
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .test-description {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .board-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .size-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .size-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .size-control label {
+            min-width: 150px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .size-control input {
+            flex: 1;
+        }
+        
+        .size-control span {
+            min-width: 60px;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+        
+        .info-box {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .info-box h4 {
+            color: var(--accent-gold);
+            margin: 0 0 10px 0;
+        }
+        
+        .info-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--text-primary);
+        }
+        
+        .info-box li {
+            margin: 5px 0;
+        }
+        
+        .test-board {
+            display: grid;
+            grid-template-columns: repeat(4, var(--test-square-size, 60px));
+            grid-template-rows: repeat(5, var(--test-square-size, 60px));
+            border-width: calc(var(--test-square-size, 60px) * 0.08);
+            border-style: solid;
+            border-color: var(--border-color);
+            border-radius: calc(var(--test-square-size, 60px) * 0.05);
+            box-shadow: var(--shadow-soft);
+            margin: 0 auto;
+            width: fit-content;
+        }
+        
+        .test-square {
+            width: var(--test-square-size, 60px);
+            height: var(--test-square-size, 60px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: calc(var(--test-square-size, 60px) * 0.7);
+        }
+        
+        .test-square.light {
+            background-color: var(--board-light);
+        }
+        
+        .test-square.dark {
+            background-color: var(--board-dark);
+        }
+        
+        .viewport-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--bg-card);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid var(--accent-gold);
+            font-size: 0.85rem;
+            z-index: 1000;
+        }
+        
+        .viewport-info div {
+            color: var(--text-primary);
+            margin: 3px 0;
+        }
+        
+        .viewport-info strong {
+            color: var(--accent-gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport-info">
+        <div><strong>Ekran:</strong> <span id="viewportWidth">-</span> x <span id="viewportHeight">-</span></div>
+        <div><strong>Kare:</strong> <span id="squareSize">-</span>px</div>
+        <div><strong>Çerçeve:</strong> <span id="borderSize">-</span>px</div>
+    </div>
+
+    <div class="test-section">
+        <h2 class="test-title">🎯 Tahta Çerçeve Testi / Board Border Test</h2>
+        <p class="test-description">
+            Oyun tahtasının çerçevesi artık kare boyutuna göre orantılı olarak ölçekleniyor.<br>
+            The game board border now scales proportionally with the square size.
+        </p>
+        
+        <div class="board-wrapper">
+            <div class="test-board" id="testBoard">
+                <div class="test-square light">♔</div>
+                <div class="test-square dark">♕</div>
+                <div class="test-square light">♖</div>
+                <div class="test-square dark">♗</div>
+                
+                <div class="test-square dark">♘</div>
+                <div class="test-square light">♙</div>
+                <div class="test-square dark"></div>
+                <div class="test-square light"></div>
+                
+                <div class="test-square light"></div>
+                <div class="test-square dark"></div>
+                <div class="test-square light"></div>
+                <div class="test-square dark"></div>
+                
+                <div class="test-square dark"></div>
+                <div class="test-square light"></div>
+                <div class="test-square dark"></div>
+                <div class="test-square light"></div>
+                
+                <div class="test-square light">♟</div>
+                <div class="test-square dark">♞</div>
+                <div class="test-square light">♜</div>
+                <div class="test-square dark">♛</div>
+            </div>
+        </div>
+        
+        <div class="size-controls">
+            <div class="size-control">
+                <label for="squareSizeSlider">Kare Boyutu / Square Size:</label>
+                <input type="range" id="squareSizeSlider" min="20" max="120" value="60" step="5">
+                <span id="squareSizeValue">60px</span>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h4>✅ Düzeltmeler / Fixes:</h4>
+            <ul>
+                <li><strong>Orantılı Çerçeve:</strong> Çerçeve kalınlığı = Kare boyutu × 0.08 (8%)</li>
+                <li><strong>Proportional Border:</strong> Border width = Square size × 0.08 (8%)</li>
+                <li><strong>Orantılı Köşe:</strong> Köşe yuvarlaklığı = Kare boyutu × 0.05 (5%)</li>
+                <li><strong>Proportional Radius:</strong> Border radius = Square size × 0.05 (5%)</li>
+                <li><strong>Tüm Ekranlar:</strong> Apple Watch'tan masaüstüne kadar tutarlı görünüm</li>
+                <li><strong>All Screens:</strong> Consistent appearance from Apple Watch to desktop</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('squareSizeSlider');
+        const valueDisplay = document.getElementById('squareSizeValue');
+        const testBoard = document.getElementById('testBoard');
+        const viewportWidth = document.getElementById('viewportWidth');
+        const viewportHeight = document.getElementById('viewportHeight');
+        const squareSizeDisplay = document.getElementById('squareSize');
+        const borderSizeDisplay = document.getElementById('borderSize');
+        
+        function updateBoardSize() {
+            const size = slider.value;
+            testBoard.style.setProperty('--test-square-size', `${size}px`);
+            valueDisplay.textContent = `${size}px`;
+            
+            // Calculate border size
+            const borderSize = (size * 0.08).toFixed(2);
+            borderSizeDisplay.textContent = borderSize;
+            squareSizeDisplay.textContent = size;
+        }
+        
+        function updateViewportInfo() {
+            viewportWidth.textContent = window.innerWidth;
+            viewportHeight.textContent = window.innerHeight;
+        }
+        
+        slider.addEventListener('input', updateBoardSize);
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // Initial update
+        updateBoardSize();
+        updateViewportInfo();
+        
+        // Test different screen sizes
+        console.log('🎯 Board Border Test');
+        console.log('===================');
+        console.log('Testing proportional border scaling:');
+        
+        const testSizes = [30, 40, 50, 60, 80, 100];
+        testSizes.forEach(size => {
+            const borderWidth = size * 0.08;
+            const borderRadius = size * 0.05;
+            console.log(`Square: ${size}px → Border: ${borderWidth.toFixed(2)}px, Radius: ${borderRadius.toFixed(2)}px`);
+        });
+    </script>
+</body>
+</html>

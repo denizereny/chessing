@@ -1,0 +1,269 @@
+/**
+ * Backend Mode Styles
+ * Visual indicators for backend integration
+ */
+
+/* Loading Indicator */
+.backend-loading-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.loading-content {
+  background: var(--card-bg, #2c2c2c);
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 200px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--primary-color, #4fc3f7);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: var(--text-color, #ffffff);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Status Indicator */
+.backend-status-indicator {
+  background: var(--card-bg, #2c2c2c);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.status-badge.connected {
+  color: #4caf50;
+}
+
+.status-badge.disconnected {
+  color: #f44336;
+}
+
+.status-icon {
+  font-size: 0.875rem;
+}
+
+.status-text {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.mode-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  margin-left: 1.375rem;
+}
+
+/* Backend Toggle Button */
+.backend-toggle-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.backend-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.backend-toggle-btn:active {
+  transform: translateY(0);
+}
+
+.backend-toggle-btn.disabled {
+  background: linear-gradient(135deg, #666 0%, #888 100%);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.backend-toggle-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Backend Mode Badge */
+.backend-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #667eea;
+  margin-left: 0.5rem;
+}
+
+/* Error Toast Enhancement */
+.toast.error {
+  background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+  border-left: 4px solid #c62828;
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+  border-left: 4px solid #2e7d32;
+}
+
+/* Performance Metrics Display */
+.backend-metrics {
+  background: var(--card-bg, #2c2c2c);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.backend-metrics h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metric-row:last-child {
+  border-bottom: none;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.metric-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-color, #ffffff);
+}
+
+.metric-value.good {
+  color: #4caf50;
+}
+
+.metric-value.warning {
+  color: #ff9800;
+}
+
+.metric-value.bad {
+  color: #f44336;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .backend-loading-indicator {
+    padding: 1rem;
+  }
+
+  .loading-content {
+    padding: 1.5rem;
+    min-width: 150px;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+  }
+
+  .backend-status-indicator {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .backend-toggle-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Dark Theme Adjustments */
+[data-theme="dark"] .backend-status-indicator {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .loading-content {
+  background: #1a1a1a;
+}
+
+/* Light Theme Adjustments */
+[data-theme="light"] .backend-status-indicator {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .loading-content {
+  background: #ffffff;
+}
+
+[data-theme="light"] .loading-text {
+  color: #333333;
+}
+
+[data-theme="light"] .status-text {
+  color: inherit;
+}
+
+[data-theme="light"] .mode-text {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] .metric-label {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] .metric-value {
+  color: #333333;
+}
