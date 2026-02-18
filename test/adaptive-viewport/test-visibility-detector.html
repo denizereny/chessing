@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisibilityDetector Tests</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .test-controls {
+      margin: 20px 0;
+    }
+    
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    
+    button:hover {
+      background: #45a049;
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .test-element {
+      width: 200px;
+      height: 100px;
+      background: #2196F3;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    
+    .test-element.visible {
+      border: 3px solid #4CAF50;
+    }
+    
+    .test-element.invisible {
+      border: 3px solid #f44336;
+    }
+    
+    .test-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .status-display {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    
+    .status-display h3 {
+      margin-top: 0;
+      color: #666;
+    }
+    
+    .status-item {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .status-item:last-child {
+      border-bottom: none;
+    }
+    
+    .visible-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    .visible-badge.yes {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .visible-badge.no {
+      background: #f44336;
+      color: white;
+    }
+    
+    #console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .console-line {
+      margin: 2px 0;
+    }
+    
+    .console-line.pass {
+      color: #4CAF50;
+    }
+    
+    .console-line.fail {
+      color: #f44336;
+    }
+    
+    .console-line.info {
+      color: #2196F3;
+    }
+    
+    .scroll-container {
+      height: 300px;
+      overflow-y: auto;
+      border: 2px solid #ddd;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    
+    .far-element {
+      margin-top: 1000px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 VisibilityDetector Tests</h1>
+  
+  <div class="test-section">
+    <h2>Unit Tests</h2>
+    <div class="test-controls">
+      <button id="run-unit-tests">Run Unit Tests</button>
+    </div>
+    <div id="console-output"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Interactive Visibility Test</h2>
+    <p>The elements below are monitored by VisibilityDetector. Scroll to see visibility changes.</p>
+    
+    <div class="test-controls">
+      <button id="start-detector">Start Detector</button>
+      <button id="stop-detector" disabled>Stop Detector</button>
+      <button id="refresh-detector" disabled>Refresh</button>
+      <button id="add-element">Add Element</button>
+    </div>
+    
+    <div class="test-container" id="test-container">
+      <div class="test-element" data-id="1">Element 1</div>
+      <div class="test-element" data-id="2">Element 2</div>
+      <div class="test-element" data-id="3">Element 3</div>
+    </div>
+    
+    <div class="status-display">
+      <h3>Visibility Status</h3>
+      <div id="visibility-status">No detector running</div>
+    </div>
+    
+    <div class="scroll-container">
+      <p>Scroll down to see elements outside viewport...</p>
+      <div class="test-element far-element" data-id="4">Far Element (scroll to see)</div>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Callback Test</h2>
+    <p>Visibility changes are logged below:</p>
+    <div class="status-display">
+      <div id="callback-log">No callbacks yet...</div>
+    </div>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="visibility-detector.test.js"></script>
+  
+  <script>
+    // Console output capture
+    const consoleOutput = document.getElementById('console-output');
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    
+    function addConsoleLine(text, type = 'log') {
+      const line = document.createElement('div');
+      line.className = `console-line ${type}`;
+      line.textContent = text;
+      consoleOutput.appendChild(line);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const text = args.join(' ');
+      const type = text.includes('✓') ? 'pass' : text.includes('✗') ? 'fail' : 'info';
+      addConsoleLine(text, type);
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      addConsoleLine('[WARN] ' + args.join(' '), 'info');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      addConsoleLine('[ERROR] ' + args.join(' '), 'fail');
+    };
+    
+    // Run unit tests
+    document.getElementById('run-unit-tests').addEventListener('click', () => {
+      consoleOutput.innerHTML = '';
+      runVisibilityDetectorTests();
+    });
+    
+    // Interactive test
+    let detector = null;
+    let elementCounter = 4;
+    
+    function updateVisibilityDisplay() {
+      if (!detector) return;
+      
+      const statusDiv = document.getElementById('visibility-status');
+      const visibilityMap = detector.getVisibilityMap();
+      
+      let html = '';
+      visibilityMap.forEach((status, element) => {
+        const id = element.getAttribute('data-id') || 'unknown';
+        const badge = status.isVisible ? 
+          '<span class="visible-badge yes">VISIBLE</span>' : 
+          '<span class="visible-badge no">INVISIBLE</span>';
+        
+        html += `<div class="status-item">
+          Element ${id}: ${badge} 
+          (ratio: ${status.intersectionRatio.toFixed(2)}, 
+          reason: ${status.reason})
+        </div>`;
+        
+        // Update element styling
+        element.classList.remove('visible', 'invisible');
+        element.classList.add(status.isVisible ? 'visible' : 'invisible');
+      });
+      
+      statusDiv.innerHTML = html || 'No elements observed';
+    }
+    
+    function logCallback(element, isVisible, status) {
+      const logDiv = document.getElementById('callback-log');
+      const id = element.getAttribute('data-id') || 'unknown';
+      const timestamp = new Date().toLocaleTimeString();
+      const badge = isVisible ? 
+        '<span class="visible-badge yes">VISIBLE</span>' : 
+        '<span class="visible-badge no">INVISIBLE</span>';
+      
+      const entry = `<div class="status-item">
+        [${timestamp}] Element ${id}: ${badge} (${status.reason})
+      </div>`;
+      
+      logDiv.innerHTML = entry + logDiv.innerHTML;
+      
+      // Update display
+      updateVisibilityDisplay();
+    }
+    
+    document.getElementById('start-detector').addEventListener('click', () => {
+      if (detector) {
+        detector.destroy();
+      }
+      
+      // Get all test elements
+      const elements = Array.from(document.querySelectorAll('.test-element'));
+      
+      // Create detector
+      detector = new VisibilityDetector(elements, {
+        threshold: 0.1,
+        rootMargin: '0px'
+      });
+      
+      // Register callback
+      detector.onVisibilityChange(logCallback);
+      
+      // Update display
+      setTimeout(updateVisibilityDisplay, 100);
+      
+      // Update buttons
+      document.getElementById('start-detector').disabled = true;
+      document.getElementById('stop-detector').disabled = false;
+      document.getElementById('refresh-detector').disabled = false;
+      
+      addConsoleLine('Detector started', 'info');
+    });
+    
+    document.getElementById('stop-detector').addEventListener('click', () => {
+      if (detector) {
+        detector.destroy();
+        detector = null;
+      }
+      
+      document.getElementById('visibility-status').textContent = 'Detector stopped';
+      
+      // Update buttons
+      document.getElementById('start-detector').disabled = false;
+      document.getElementById('stop-detector').disabled = true;
+      document.getElementById('refresh-detector').disabled = true;
+      
+      addConsoleLine('Detector stopped', 'info');
+    });
+    
+    document.getElementById('refresh-detector').addEventListener('click', () => {
+      if (detector) {
+        detector.refresh();
+        setTimeout(updateVisibilityDisplay, 100);
+        addConsoleLine('Detector refreshed', 'info');
+      }
+    });
+    
+    document.getElementById('add-element').addEventListener('click', () => {
+      elementCounter++;
+      const container = document.getElementById('test-container');
+      const newElement = document.createElement('div');
+      newElement.className = 'test-element';
+      newElement.setAttribute('data-id', elementCounter);
+      newElement.textContent = `Element ${elementCounter}`;
+      container.appendChild(newElement);
+      
+      if (detector) {
+        detector.observe(newElement);
+        setTimeout(updateVisibilityDisplay, 100);
+      }
+      
+      addConsoleLine(`Added Element ${elementCounter}`, 'info');
+    });
+    
+    // Auto-start detector on load
+    window.addEventListener('load', () => {
+      document.getElementById('start-detector').click();
+    });
+  </script>
+</body>
+</html>

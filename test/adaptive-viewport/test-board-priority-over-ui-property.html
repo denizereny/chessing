@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Board Priority Over UI Elements</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+    }
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .test-controls button:hover {
+      background: #5568d3;
+    }
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      min-height: 400px;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .status.running {
+      background: #ffd700;
+      color: #333;
+    }
+    .status.passed {
+      background: #4caf50;
+      color: white;
+    }
+    .status.failed {
+      background: #f44336;
+      color: white;
+    }
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #1976d2;
+    }
+    .info-box ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎯 Property Test: Board Priority Over UI Elements</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 24:</strong> Board Priority Over UI Elements</p>
+    <p><strong>Validates:</strong> Requirements 6.4, 7.2, 7.4</p>
+  </div>
+
+  <div class="info-box">
+    <h3>Test Description</h3>
+    <p>This property-based test verifies that the chess board is always prioritized over UI elements when layout conflicts occur.</p>
+    <ul>
+      <li><strong>Requirement 6.4:</strong> Layout optimizer prioritizes chess board visibility over UI element positioning</li>
+      <li><strong>Requirement 7.2:</strong> Layout optimizer allocates space to chess board before positioning UI elements</li>
+      <li><strong>Requirement 7.4:</strong> When UI elements conflict with board space, UI elements are repositioned rather than shrinking the board</li>
+    </ul>
+    <p><strong>Test Configuration:</strong> 100 iterations per property with randomized viewport dimensions and UI element counts</p>
+  </div>
+
+  <div class="test-controls">
+    <button id="runTests" onclick="runTests()">Run Property Tests</button>
+    <span id="status"></span>
+  </div>
+
+  <div id="output">Click "Run Property Tests" to start testing...</div>
+
+  <!-- Load fast-check library -->
+  <script src="../setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+
+  <!-- Load test file -->
+  <script src="./board-priority-over-ui-property.test.js"></script>
+
+  <script>
+    const outputDiv = document.getElementById('output');
+    const statusSpan = document.getElementById('status');
+    const runButton = document.getElementById('runTests');
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    function captureOutput(message) {
+      outputDiv.textContent += message + '\n';
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      captureOutput(args.join(' '));
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      captureOutput('ERROR: ' + args.join(' '));
+    };
+
+    async function runTests() {
+      // Clear output
+      outputDiv.textContent = '';
+      runButton.disabled = true;
+      statusSpan.innerHTML = '<span class="status running">RUNNING</span>';
+
+      try {
+        console.log('Starting Property-Based Tests for Board Priority Over UI Elements...\n');
+        console.log('Using fast-check library for property-based testing');
+        console.log('Running 100 iterations per property\n');
+        console.log('='.repeat(70) + '\n');
+
+        // Check if fast-check is loaded
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded. Please ensure setup-fast-check.js is available.');
+        }
+
+        // Check if LayoutOptimizer is loaded
+        if (typeof LayoutOptimizer === 'undefined') {
+          throw new Error('LayoutOptimizer not loaded. Please ensure layout-optimizer.js is available.');
+        }
+
+        // Run the property tests
+        const results = await runBoardPriorityOverUIPropertyTest(fc);
+
+        console.log('\n' + '='.repeat(70));
+        console.log('\n🎉 PROPERTY TESTS COMPLETED\n');
+        console.log(`Total Properties Tested: ${results.passed + results.failed}`);
+        console.log(`✓ Passed: ${results.passed}`);
+        console.log(`✗ Failed: ${results.failed}`);
+        console.log(`Success Rate: ${((results.passed / (results.passed + results.failed)) * 100).toFixed(1)}%`);
+        console.log(`Total Iterations: ${(results.passed + results.failed) * 100}`);
+
+        if (results.failed === 0) {
+          statusSpan.innerHTML = '<span class="status passed">ALL TESTS PASSED ✓</span>';
+          console.log('\n✅ All property tests passed successfully!');
+        } else {
+          statusSpan.innerHTML = '<span class="status failed">SOME TESTS FAILED ✗</span>';
+          console.log('\n❌ Some property tests failed. See details above.');
+        }
+
+      } catch (error) {
+        console.error('\n❌ Test execution failed:', error.message);
+        console.error(error.stack);
+        statusSpan.innerHTML = '<span class="status failed">ERROR</span>';
+      } finally {
+        runButton.disabled = false;
+      }
+    }
+
+    // Auto-run tests on page load (optional)
+    // window.addEventListener('load', () => {
+    //   setTimeout(runTests, 500);
+    // });
+  </script>
+</body>
+</html>

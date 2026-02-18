@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive Viewport Infrastructure Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    .pass {
+      color: green;
+      font-weight: bold;
+    }
+    .fail {
+      color: red;
+      font-weight: bold;
+    }
+    .test-result {
+      margin: 10px 0;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 3px;
+    }
+    pre {
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 3px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Adaptive Viewport Optimizer - Infrastructure Test</h1>
+  
+  <div class="test-section">
+    <h2>1. Constants Test</h2>
+    <div id="constants-results"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>2. Error Handler Test</h2>
+    <div id="error-handler-results"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>3. Validation Utils Test</h2>
+    <div id="validation-results"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>4. Base Component Test</h2>
+    <div id="base-component-results"></div>
+  </div>
+
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+
+  <script>
+    // Test utilities
+    function displayResult(containerId, testName, passed, details = '') {
+      const container = document.getElementById(containerId);
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'test-result';
+      resultDiv.innerHTML = `
+        <span class="${passed ? 'pass' : 'fail'}">${passed ? '✓' : '✗'}</span>
+        <strong>${testName}</strong>
+        ${details ? `<br><small>${details}</small>` : ''}
+      `;
+      container.appendChild(resultDiv);
+    }
+
+    // Test 1: Constants
+    function testConstants() {
+      try {
+        displayResult('constants-results', 'Constants loaded', 
+          typeof AdaptiveViewportConstants !== 'undefined',
+          'AdaptiveViewportConstants object is available');
+        
+        displayResult('constants-results', 'Viewport constraints', 
+          AdaptiveViewportConstants.VIEWPORT.MIN_WIDTH === 320 &&
+          AdaptiveViewportConstants.VIEWPORT.MAX_WIDTH === 3840,
+          `MIN_WIDTH: ${AdaptiveViewportConstants.VIEWPORT.MIN_WIDTH}, MAX_WIDTH: ${AdaptiveViewportConstants.VIEWPORT.MAX_WIDTH}`);
+        
+        displayResult('constants-results', 'Board constraints', 
+          AdaptiveViewportConstants.BOARD.MIN_SIZE === 280,
+          `MIN_SIZE: ${AdaptiveViewportConstants.BOARD.MIN_SIZE}`);
+        
+        displayResult('constants-results', 'Layout constraints', 
+          AdaptiveViewportConstants.LAYOUT.MIN_SPACING === 16,
+          `MIN_SPACING: ${AdaptiveViewportConstants.LAYOUT.MIN_SPACING}`);
+        
+        displayResult('constants-results', 'Performance constraints', 
+          AdaptiveViewportConstants.PERFORMANCE.DEBOUNCE_DELAY === 150,
+          `DEBOUNCE_DELAY: ${AdaptiveViewportConstants.PERFORMANCE.DEBOUNCE_DELAY}ms`);
+        
+        // Test immutability
+        try {
+          AdaptiveViewportConstants.VIEWPORT.MIN_WIDTH = 999;
+          displayResult('constants-results', 'Constants are immutable', 
+            AdaptiveViewportConstants.VIEWPORT.MIN_WIDTH === 320,
+            'Constants cannot be modified');
+        } catch (e) {
+          displayResult('constants-results', 'Constants are immutable', true,
+            'Constants are frozen');
+        }
+      } catch (error) {
+        displayResult('constants-results', 'Constants test', false, error.message);
+      }
+    }
+
+    // Test 2: Error Handler
+    function testErrorHandler() {
+      try {
+        const handler = new ErrorHandler();
+        
+        displayResult('error-handler-results', 'ErrorHandler instantiation', 
+          handler instanceof ErrorHandler,
+          'ErrorHandler created successfully');
+        
+        // Test API unavailable error
+        const apiError = new Error('IntersectionObserver is not supported');
+        const apiFallback = handler.handleError(apiError, 'test-context');
+        displayResult('error-handler-results', 'API unavailable fallback', 
+          apiFallback.usePolyfill === true,
+          `Fallback: ${apiFallback.message}`);
+        
+        // Test calculation error
+        const calcError = new Error('Invalid calculation: NaN detected');
+        const calcFallback = handler.handleError(calcError, 'calculation');
+        displayResult('error-handler-results', 'Calculation error fallback', 
+          calcFallback.layoutStrategy === 'horizontal',
+          `Fallback: ${calcFallback.message}`);
+        
+        // Test error logging
+        const errorLog = handler.getErrorLog();
+        displayResult('error-handler-results', 'Error logging', 
+          errorLog.length === 2,
+          `Logged ${errorLog.length} errors`);
+        
+        // Test error stats
+        const stats = handler.getErrorStats();
+        displayResult('error-handler-results', 'Error statistics', 
+          stats.total === 2,
+          `Total errors: ${stats.total}, By type: ${JSON.stringify(stats.byType)}`);
+      } catch (error) {
+        displayResult('error-handler-results', 'Error handler test', false, error.message);
+      }
+    }
+
+    // Test 3: Validation Utils
+    function testValidationUtils() {
+      try {
+        displayResult('validation-results', 'ValidationUtils loaded', 
+          typeof ValidationUtils !== 'undefined',
+          'ValidationUtils object is available');
+        
+        // Test valid position
+        const validPos = { x: 10, y: 20, width: 100, height: 50, transform: '', zIndex: 1 };
+        displayResult('validation-results', 'Valid position check', 
+          ValidationUtils.isValidPosition(validPos),
+          `Position: ${JSON.stringify(validPos)}`);
+        
+        // Test invalid position (negative coordinates)
+        const invalidPos1 = { x: -10, y: 20, width: 100, height: 50 };
+        displayResult('validation-results', 'Invalid position (negative) check', 
+          !ValidationUtils.isValidPosition(invalidPos1),
+          'Correctly rejects negative coordinates');
+        
+        // Test invalid position (NaN)
+        const invalidPos2 = { x: NaN, y: 20, width: 100, height: 50 };
+        displayResult('validation-results', 'Invalid position (NaN) check', 
+          !ValidationUtils.isValidPosition(invalidPos2),
+          'Correctly rejects NaN values');
+        
+        // Test within viewport
+        const viewport = { width: 1920, height: 1080 };
+        const posInViewport = { x: 100, y: 100, width: 200, height: 150 };
+        displayResult('validation-results', 'Position within viewport', 
+          ValidationUtils.isWithinViewport(posInViewport, viewport),
+          'Position is within viewport bounds');
+        
+        // Test outside viewport
+        const posOutsideViewport = { x: 1900, y: 100, width: 200, height: 150 };
+        displayResult('validation-results', 'Position outside viewport', 
+          !ValidationUtils.isWithinViewport(posOutsideViewport, viewport),
+          'Correctly detects position outside viewport');
+        
+        // Test valid dimensions
+        const validDims = { width: 400, height: 400 };
+        displayResult('validation-results', 'Valid dimensions check', 
+          ValidationUtils.isValidDimensions(validDims),
+          `Dimensions: ${JSON.stringify(validDims)}`);
+      } catch (error) {
+        displayResult('validation-results', 'Validation utils test', false, error.message);
+      }
+    }
+
+    // Test 4: Base Component
+    function testBaseComponent() {
+      try {
+        // Create test component
+        class TestComponent extends BaseComponent {
+          constructor(config) {
+            super(config);
+          }
+        }
+        
+        const component = new TestComponent({ testKey: 'testValue' });
+        
+        displayResult('base-component-results', 'BaseComponent instantiation', 
+          component instanceof BaseComponent,
+          'Component created successfully');
+        
+        // Test initialization
+        component.initialize();
+        displayResult('base-component-results', 'Component initialization', 
+          component.isInitialized(),
+          'Component initialized successfully');
+        
+        // Test configuration
+        displayResult('base-component-results', 'Configuration access', 
+          component.getConfig('testKey') === 'testValue',
+          `Config value: ${component.getConfig('testKey')}`);
+        
+        // Test configuration merge
+        component.mergeConfig({ newKey: 'newValue' });
+        displayResult('base-component-results', 'Configuration merge', 
+          component.getConfig('newKey') === 'newValue' && 
+          component.getConfig('testKey') === 'testValue',
+          'Configuration merged successfully');
+        
+        // Test event listener tracking
+        const mockTarget = document.createElement('div');
+        const mockHandler = () => {};
+        component.addEventListener(mockTarget, 'click', mockHandler);
+        displayResult('base-component-results', 'Event listener tracking', 
+          component.eventListeners.size === 1,
+          'Event listener tracked');
+        
+        // Test destruction
+        component.destroy();
+        displayResult('base-component-results', 'Component destruction', 
+          component.isDestroyed() && !component.isInitialized(),
+          'Component destroyed and cleaned up');
+        
+        displayResult('base-component-results', 'Event listeners cleaned up', 
+          component.eventListeners.size === 0,
+          'All event listeners removed');
+      } catch (error) {
+        displayResult('base-component-results', 'Base component test', false, error.message);
+      }
+    }
+
+    // Run all tests
+    window.addEventListener('DOMContentLoaded', () => {
+      testConstants();
+      testErrorHandler();
+      testValidationUtils();
+      testBaseComponent();
+    });
+  </script>
+</body>
+</html>

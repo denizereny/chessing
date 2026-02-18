@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Visibility Classification Accuracy</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .test-info {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .test-info h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 20px;
+    }
+    
+    .test-info ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .test-info li {
+      margin: 5px 0;
+      color: #666;
+    }
+    
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-right: 10px;
+    }
+    
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #ffd700;
+      color: #333;
+    }
+    
+    .status.passed {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .status.failed {
+      background: #f44336;
+      color: white;
+    }
+    
+    .viewport-info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border-left: 4px solid #2196f3;
+    }
+    
+    .viewport-info strong {
+      color: #1976d2;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔍 Property Test: Visibility Classification Accuracy</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 1:</strong> Visibility Classification Accuracy</p>
+    <p><strong>Validates:</strong> Requirements 1.1, 1.2</p>
+  </div>
+
+  <div class="test-info">
+    <h2>Test Description</h2>
+    <p>
+      This property-based test verifies that the VisibilityDetector correctly classifies 
+      UI elements as visible or invisible based on their intersection with the viewport.
+    </p>
+    <h3>Properties Being Tested:</h3>
+    <ul>
+      <li><strong>Property 1:</strong> Elements intersecting viewport are classified as visible</li>
+      <li><strong>Property 2:</strong> Elements completely outside viewport are invisible</li>
+      <li><strong>Property 3:</strong> Elements fully within viewport are visible</li>
+      <li><strong>Property 4:</strong> Partially visible elements are classified as visible</li>
+    </ul>
+    <p><strong>Test Configuration:</strong> 100 iterations per property (400 total test cases)</p>
+  </div>
+
+  <div class="viewport-info">
+    <strong>Current Viewport:</strong> <span id="viewport-size"></span>
+  </div>
+
+  <div class="controls">
+    <button id="runTests" onclick="runTests()">▶ Run Property Tests</button>
+    <button id="clearOutput" onclick="clearOutput()">🗑 Clear Output</button>
+    <span id="status"></span>
+  </div>
+
+  <div id="output">Waiting to run tests... Click "Run Property Tests" to begin.</div>
+
+  <!-- Load dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/fast-check@3.13.0/lib/bundle.js"></script>
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="./visibility-classification-property.test.js"></script>
+
+  <script>
+    // Display viewport size
+    function updateViewportInfo() {
+      document.getElementById('viewport-size').textContent = 
+        `${window.innerWidth}px × ${window.innerHeight}px`;
+    }
+    
+    updateViewportInfo();
+    window.addEventListener('resize', updateViewportInfo);
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    function captureOutput(message) {
+      const output = document.getElementById('output');
+      output.textContent += message + '\n';
+      output.scrollTop = output.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      captureOutput(args.join(' '));
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      captureOutput('ERROR: ' + args.join(' '));
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      captureOutput('WARNING: ' + args.join(' '));
+    };
+
+    // Run tests
+    async function runTests() {
+      const runButton = document.getElementById('runTests');
+      const statusSpan = document.getElementById('status');
+      const output = document.getElementById('output');
+      
+      // Disable button
+      runButton.disabled = true;
+      statusSpan.innerHTML = '<span class="status running">RUNNING</span>';
+      output.textContent = '';
+      
+      try {
+        console.log('Starting property-based tests...');
+        console.log(`Viewport: ${window.innerWidth}px × ${window.innerHeight}px`);
+        console.log('Using fast-check library for property-based testing\n');
+        
+        // Run the property tests
+        const results = await runVisibilityClassificationPropertyTest(fc);
+        
+        // Update status
+        if (results.failed === 0) {
+          statusSpan.innerHTML = '<span class="status passed">ALL TESTS PASSED ✓</span>';
+          console.log('\n🎉 All property tests passed!');
+        } else {
+          statusSpan.innerHTML = '<span class="status failed">SOME TESTS FAILED ✗</span>';
+          console.log('\n❌ Some property tests failed. See details above.');
+        }
+        
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        statusSpan.innerHTML = '<span class="status failed">ERROR</span>';
+      } finally {
+        runButton.disabled = false;
+      }
+    }
+
+    function clearOutput() {
+      document.getElementById('output').textContent = 'Output cleared. Click "Run Property Tests" to begin.';
+      document.getElementById('status').innerHTML = '';
+    }
+  </script>
+</body>
+</html>

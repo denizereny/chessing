@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Board Visibility and Minimum Size Invariant</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .info-box {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .info-box h3 {
+      margin-top: 0;
+      color: #667eea;
+    }
+    
+    .info-box ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .info-box li {
+      margin: 5px 0;
+    }
+    
+    .controls {
+      margin: 20px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-weight: 600;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+      margin-top: 20px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status.passed {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status.failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .progress {
+      margin: 20px 0;
+      height: 30px;
+      background: #e9ecef;
+      border-radius: 15px;
+      overflow: hidden;
+      display: none;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .test-element {
+      position: absolute;
+      background: rgba(0, 100, 255, 0.2);
+      border: 1px solid blue;
+      pointer-events: none;
+    }
+    
+    .summary {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .summary h3 {
+      margin-top: 0;
+      color: #667eea;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .summary-item {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .summary-item .label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .summary-item .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      Property Test: Board Visibility and Minimum Size Invariant
+      <span id="status" class="status"></span>
+    </h1>
+    
+    <div class="info-box">
+      <h3>Property 23: Board Visibility and Minimum Size Invariant</h3>
+      <p><strong>Validates: Requirements 7.1, 7.3</strong></p>
+      <p>
+        For any layout configuration, the chess board should be fully visible within 
+        the viewport and have dimensions of at least 280px × 280px.
+      </p>
+      <ul>
+        <li><strong>Requirement 7.1:</strong> THE Layout_Optimizer SHALL ensure the chess board is always fully visible within the viewport</li>
+        <li><strong>Requirement 7.3:</strong> THE Layout_Optimizer SHALL maintain a minimum chess board size of 280px × 280px</li>
+      </ul>
+    </div>
+    
+    <div class="info-box">
+      <h3>Test Configuration</h3>
+      <ul>
+        <li><strong>Testing Library:</strong> fast-check</li>
+        <li><strong>Iterations per Property:</strong> 100</li>
+        <li><strong>Viewport Width Range:</strong> 320px - 3840px</li>
+        <li><strong>Viewport Height Range:</strong> 480px - 2160px</li>
+        <li><strong>Properties Tested:</strong> 7</li>
+      </ul>
+    </div>
+    
+    <div class="controls">
+      <button id="runTests" onclick="runTests()">Run Property Tests</button>
+      <button id="clearOutput" onclick="clearOutput()">Clear Output</button>
+    </div>
+    
+    <div class="progress" id="progress">
+      <div class="progress-bar" id="progressBar">0%</div>
+    </div>
+    
+    <div class="summary" id="summary">
+      <h3>Test Results Summary</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="label">Total Properties</div>
+          <div class="value" id="totalProperties">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Passed</div>
+          <div class="value" id="passedProperties" style="color: #28a745;">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Failed</div>
+          <div class="value" id="failedProperties" style="color: #dc3545;">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Total Iterations</div>
+          <div class="value" id="totalIterations">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Success Rate</div>
+          <div class="value" id="successRate">0%</div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="output"></div>
+  </div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+  
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+  
+  <!-- Load test file -->
+  <script src="board-visibility-minimum-size-property.test.js"></script>
+  
+  <script>
+    const output = document.getElementById('output');
+    const statusEl = document.getElementById('status');
+    const runButton = document.getElementById('runTests');
+    const progressEl = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const summaryEl = document.getElementById('summary');
+    
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    function appendOutput(message, type = 'log') {
+      const span = document.createElement('span');
+      span.textContent = message + '\n';
+      
+      if (type === 'error') {
+        span.style.color = '#f48771';
+      } else if (type === 'warn') {
+        span.style.color = '#dcdcaa';
+      } else if (message.includes('✓')) {
+        span.style.color = '#4ec9b0';
+      } else if (message.includes('✗')) {
+        span.style.color = '#f48771';
+      } else if (message.includes('===')) {
+        span.style.color = '#569cd6';
+        span.style.fontWeight = 'bold';
+      }
+      
+      output.appendChild(span);
+      output.scrollTop = output.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      appendOutput(args.join(' '), 'log');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      appendOutput(args.join(' '), 'error');
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      appendOutput(args.join(' '), 'warn');
+    };
+    
+    function updateStatus(text, className) {
+      statusEl.textContent = text;
+      statusEl.className = 'status ' + className;
+    }
+    
+    function updateProgress(percent) {
+      progressBar.style.width = percent + '%';
+      progressBar.textContent = Math.round(percent) + '%';
+    }
+    
+    function showSummary(results) {
+      const total = results.passed + results.failed;
+      const successRate = total > 0 ? ((results.passed / total) * 100).toFixed(1) : 0;
+      const totalIterations = total * 100;
+      
+      document.getElementById('totalProperties').textContent = total;
+      document.getElementById('passedProperties').textContent = results.passed;
+      document.getElementById('failedProperties').textContent = results.failed;
+      document.getElementById('totalIterations').textContent = totalIterations;
+      document.getElementById('successRate').textContent = successRate + '%';
+      
+      summaryEl.style.display = 'block';
+    }
+    
+    async function runTests() {
+      output.innerHTML = '';
+      summaryEl.style.display = 'none';
+      runButton.disabled = true;
+      updateStatus('Running...', 'running');
+      progressEl.style.display = 'block';
+      updateProgress(0);
+      
+      try {
+        console.log('Starting Property-Based Tests for Board Visibility and Minimum Size Invariant...\n');
+        console.log('Feature: adaptive-viewport-optimizer');
+        console.log('Property 23: Board Visibility and Minimum Size Invariant');
+        console.log('Validates: Requirements 7.1, 7.3\n');
+        
+        // Simulate progress updates
+        const progressInterval = setInterval(() => {
+          const currentWidth = parseFloat(progressBar.style.width) || 0;
+          if (currentWidth < 90) {
+            updateProgress(currentWidth + 10);
+          }
+        }, 1000);
+        
+        // Run the property tests
+        const results = await runBoardVisibilityMinimumSizePropertyTest(fc);
+        
+        clearInterval(progressInterval);
+        updateProgress(100);
+        
+        // Update status based on results
+        if (results.failed === 0) {
+          updateStatus('All Tests Passed', 'passed');
+          console.log('\n🎉 All property tests passed successfully!');
+        } else {
+          updateStatus('Some Tests Failed', 'failed');
+          console.log(`\n⚠️ ${results.failed} property test(s) failed.`);
+        }
+        
+        showSummary(results);
+        
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        updateStatus('Test Failed', 'failed');
+      } finally {
+        runButton.disabled = false;
+        setTimeout(() => {
+          progressEl.style.display = 'none';
+        }, 2000);
+      }
+    }
+    
+    function clearOutput() {
+      output.innerHTML = '';
+      summaryEl.style.display = 'none';
+      updateStatus('', '');
+      progressEl.style.display = 'none';
+    }
+    
+    // Display initial message
+    console.log('Property Test: Board Visibility and Minimum Size Invariant');
+    console.log('Click "Run Property Tests" to start testing...\n');
+  </script>
+</body>
+</html>

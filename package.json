@@ -1,0 +1,16 @@
+{
+  "name": "chessing",
+  "version": "1.0.0",
+  "description": "Chess application with adaptive viewport optimization",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test command specified\" && exit 1"
+  },
+  "keywords": ["chess", "viewport", "adaptive"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "fast-check": "^3.13.0",
+    "jsdom": "^22.1.0"
+  }
+}

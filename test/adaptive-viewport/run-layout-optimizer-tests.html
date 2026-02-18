@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LayoutOptimizer - Complete Test Suite</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1400px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #555;
+      margin-top: 30px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 5px;
+    }
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    .test-item {
+      padding: 10px;
+      margin: 5px 0;
+      border-left: 4px solid #ddd;
+      background: #fafafa;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    .test-item.pass {
+      border-left-color: #4CAF50;
+      background: #f1f8f4;
+    }
+    .test-item.fail {
+      border-left-color: #f44336;
+      background: #fef1f0;
+    }
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .summary.all-pass {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .summary.has-fail {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .info-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .code-block {
+      background: #263238;
+      color: #aed581;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin: 10px 0;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h1>LayoutOptimizer - Complete Test Suite</h1>
+  
+  <div class="info-box">
+    <strong>Task 3.1:</strong> Create LayoutOptimizer class with calculation logic<br>
+    <strong>Requirements:</strong> 2.1, 6.1, 7.1, 7.2<br>
+    <strong>Methods Tested:</strong> constructor, calculateOptimalLayout, calculateBoardSize, 
+    determineLayoutStrategy, calculateElementPositions, validateLayout
+  </div>
+
+  <div class="section">
+    <h2>Validation Checks</h2>
+    <div id="validation-results"></div>
+  </div>
+
+  <div class="section">
+    <h2>Unit Tests</h2>
+    <div id="unit-test-results"></div>
+  </div>
+
+  <div class="section">
+    <h2>Integration Examples</h2>
+    <button onclick="runExample1()">Example 1: Desktop Layout (1920x1080)</button>
+    <button onclick="runExample2()">Example 2: Mobile Layout (400x800)</button>
+    <button onclick="runExample3()">Example 3: Ultra-wide Layout (3840x1080)</button>
+    <div id="example-results"></div>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+
+  <script>
+    // ===== VALIDATION CHECKS =====
+    function runValidation() {
+      const checks = [];
+      
+      function validate(condition, description) {
+        checks.push({ condition, description });
+      }
+
+      // Check 1: LayoutOptimizer class exists
+      validate(
+        typeof LayoutOptimizer === 'function',
+        'LayoutOptimizer class is defined'
+      );
+
+      // Check 2: Can instantiate LayoutOptimizer
+      let optimizer;
+      try {
+        optimizer = new LayoutOptimizer();
+        validate(true, 'LayoutOptimizer can be instantiated');
+      } catch (error) {
+        validate(false, `LayoutOptimizer instantiation failed: ${error.message}`);
+      }
+
+      // Check 3: Required methods exist
+      const requiredMethods = [
+        'calculateOptimalLayout',
+        'calculateBoardSize',
+        'determineLayoutStrategy',
+        'calculateElementPositions',
+        'validateLayout'
+      ];
+      
+      requiredMethods.forEach(method => {
+        validate(
+          typeof optimizer[method] === 'function',
+          `${method} method exists`
+        );
+      });
+
+      // Check 4: Inherits from BaseComponent
+      validate(
+        optimizer instanceof BaseComponent,
+        'LayoutOptimizer extends BaseComponent'
+      );
+
+      // Check 5: Configuration works
+      try {
+        const customOptimizer = new LayoutOptimizer({
+          minBoardSize: 300,
+          spacing: 20,
+          prioritizeBoard: false
+        });
+        validate(
+          customOptimizer.getConfig('minBoardSize') === 300,
+          'Constructor accepts custom configuration'
+        );
+      } catch (error) {
+        validate(false, `Constructor configuration failed: ${error.message}`);
+      }
+
+      return checks;
+    }
+
+    // ===== UNIT TESTS =====
+    function runUnitTests() {
+      const results = [];
+      
+      function assert(condition, testName) {
+        results.push({ name: testName, passed: condition });
+      }
+
+      function assertThrows(fn, testName) {
+        try {
+          fn();
+          results.push({ name: testName, passed: false, error: 'Expected error but none thrown' });
+        } catch (error) {
+          results.push({ name: testName, passed: true });
+        }
+      }
+
+      // Test: Constructor defaults
+      const optimizer = new LayoutOptimizer();
+      assert(
+        optimizer.getConfig('minBoardSize') === 280,
+        'Constructor sets default minBoardSize to 280'
+      );
+      assert(
+        optimizer.getConfig('spacing') === 16,
+        'Constructor sets default spacing to 16'
+      );
+      assert(
+        optimizer.getConfig('prioritizeBoard') === true,
+        'Constructor sets default prioritizeBoard to true'
+      );
+
+      // Test: calculateBoardSize
+      const boardSize = optimizer.calculateBoardSize({ width: 1920, height: 1080 }, []);
+      assert(
+        boardSize.width >= 280 && boardSize.height >= 280,
+        'calculateBoardSize returns minimum board size'
+      );
+      assert(
+        boardSize.width === boardSize.height,
+        'calculateBoardSize maintains square aspect ratio'
+      );
+
+      // Test: determineLayoutStrategy
+      const strategy1 = optimizer.determineLayoutStrategy({ width: 1920, height: 1080 }, 3);
+      assert(
+        strategy1 === 'horizontal',
+        'determineLayoutStrategy returns horizontal for wide viewport'
+      );
+
+      const strategy2 = optimizer.determineLayoutStrategy({ width: 400, height: 800 }, 3);
+      assert(
+        strategy2 === 'vertical',
+        'determineLayoutStrategy returns vertical for narrow viewport'
+      );
+
+      // Test: calculateElementPositions
+      const positions = optimizer.calculateElementPositions(
+        [],
+        'horizontal',
+        { x: 0, y: 0, width: 500, height: 500 }
+      );
+      assert(
+        positions instanceof Map && positions.size === 0,
+        'calculateElementPositions returns empty Map for empty array'
+      );
+
+      // Test: validateLayout
+      const validConfig = {
+        boardSize: { width: 400, height: 400 },
+        boardPosition: { x: 10, y: 10, width: 400, height: 400, transform: '', zIndex: 1 },
+        elementPositions: new Map(),
+        layoutStrategy: 'horizontal',
+        requiresScrolling: false,
+        scrollContainers: []
+      };
+      const validation = optimizer.validateLayout(validConfig);
+      assert(
+        validation.valid === true && validation.errors.length === 0,
+        'validateLayout returns valid for correct configuration'
+      );
+
+      // Test: Invalid board size
+      const invalidConfig = {
+        boardSize: { width: 200, height: 200 },
+        boardPosition: { x: 10, y: 10, width: 200, height: 200, transform: '', zIndex: 1 },
+        elementPositions: new Map(),
+        layoutStrategy: 'horizontal',
+        requiresScrolling: false,
+        scrollContainers: []
+      };
+      const invalidValidation = optimizer.validateLayout(invalidConfig);
+      assert(
+        invalidValidation.valid === false && invalidValidation.errors.length > 0,
+        'validateLayout returns invalid for board below minimum size'
+      );
+
+      // Test: calculateOptimalLayout
+      const analysisResult = {
+        viewportWidth: 1920,
+        viewportHeight: 1080,
+        invisibleElements: []
+      };
+      const layout = optimizer.calculateOptimalLayout(analysisResult);
+      assert(
+        layout && layout.boardSize && layout.boardPosition && layout.layoutStrategy,
+        'calculateOptimalLayout returns complete configuration'
+      );
+
+      // Test: Error handling
+      assertThrows(
+        () => optimizer.calculateOptimalLayout(null),
+        'calculateOptimalLayout throws error for null analysis'
+      );
+
+      assertThrows(
+        () => optimizer.calculateBoardSize({ width: -100, height: 500 }, []),
+        'calculateBoardSize throws error for negative dimensions'
+      );
+
+      return results;
+    }
+
+    // ===== INTEGRATION EXAMPLES =====
+    function runExample1() {
+      const optimizer = new LayoutOptimizer();
+      const analysisResult = {
+        viewportWidth: 1920,
+        viewportHeight: 1080,
+        invisibleElements: []
+      };
+      const layout = optimizer.calculateOptimalLayout(analysisResult);
+      displayExample('Desktop Layout (1920x1080)', layout);
+    }
+
+    function runExample2() {
+      const optimizer = new LayoutOptimizer();
+      const analysisResult = {
+        viewportWidth: 400,
+        viewportHeight: 800,
+        invisibleElements: []
+      };
+      const layout = optimizer.calculateOptimalLayout(analysisResult);
+      displayExample('Mobile Layout (400x800)', layout);
+    }
+
+    function runExample3() {
+      const optimizer = new LayoutOptimizer();
+      const analysisResult = {
+        viewportWidth: 3840,
+        viewportHeight: 1080,
+        invisibleElements: []
+      };
+      const layout = optimizer.calculateOptimalLayout(analysisResult);
+      displayExample('Ultra-wide Layout (3840x1080)', layout);
+    }
+
+    function displayExample(title, layout) {
+      const exampleDiv = document.getElementById('example-results');
+      let html = `<h3>${title}</h3>`;
+      html += '<div class="code-block">';
+      html += `Board Size: ${layout.boardSize.width}x${layout.boardSize.height}<br>`;
+      html += `Board Position: (${layout.boardPosition.x}, ${layout.boardPosition.y})<br>`;
+      html += `Layout Strategy: ${layout.layoutStrategy}<br>`;
+      html += `Requires Scrolling: ${layout.requiresScrolling}<br>`;
+      html += `Element Positions: ${layout.elementPositions.size} elements<br>`;
+      html += `Scroll Containers: ${layout.scrollContainers.length}`;
+      html += '</div>';
+      exampleDiv.innerHTML = html;
+    }
+
+    // ===== DISPLAY RESULTS =====
+    function displayResults() {
+      // Display validation results
+      const validationChecks = runValidation();
+      const validationDiv = document.getElementById('validation-results');
+      let validationHtml = '';
+      let validationPass = 0;
+      let validationFail = 0;
+
+      validationChecks.forEach(check => {
+        const className = check.condition ? 'pass' : 'fail';
+        const icon = check.condition ? '✓' : '✗';
+        validationHtml += `<div class="test-item ${className}">${icon} ${check.description}</div>`;
+        if (check.condition) validationPass++;
+        else validationFail++;
+      });
+
+      const validationSummaryClass = validationFail === 0 ? 'all-pass' : 'has-fail';
+      validationHtml += `<div class="summary ${validationSummaryClass}">`;
+      validationHtml += `Validation: ${validationPass} passed, ${validationFail} failed`;
+      validationHtml += `</div>`;
+      validationDiv.innerHTML = validationHtml;
+
+      // Display unit test results
+      const unitTests = runUnitTests();
+      const unitTestDiv = document.getElementById('unit-test-results');
+      let unitTestHtml = '';
+      let unitTestPass = 0;
+      let unitTestFail = 0;
+
+      unitTests.forEach(test => {
+        const className = test.passed ? 'pass' : 'fail';
+        const icon = test.passed ? '✓' : '✗';
+        const errorMsg = test.error ? ` - ${test.error}` : '';
+        unitTestHtml += `<div class="test-item ${className}">${icon} ${test.name}${errorMsg}</div>`;
+        if (test.passed) unitTestPass++;
+        else unitTestFail++;
+      });
+
+      const unitTestSummaryClass = unitTestFail === 0 ? 'all-pass' : 'has-fail';
+      unitTestHtml += `<div class="summary ${unitTestSummaryClass}">`;
+      unitTestHtml += `Unit Tests: ${unitTestPass} passed, ${unitTestFail} failed`;
+      unitTestHtml += `</div>`;
+      unitTestDiv.innerHTML = unitTestHtml;
+
+      // Overall summary
+      console.log('=== LayoutOptimizer Test Suite Complete ===');
+      console.log(`Validation: ${validationPass}/${validationChecks.length} passed`);
+      console.log(`Unit Tests: ${unitTestPass}/${unitTests.length} passed`);
+      
+      if (validationFail === 0 && unitTestFail === 0) {
+        console.log('\n✓ All tests passed! Task 3.1 is complete.');
+      } else {
+        console.log('\n✗ Some tests failed. Please review the implementation.');
+      }
+    }
+
+    // Run tests on page load
+    window.addEventListener('DOMContentLoaded', displayResults);
+  </script>
+</body>
+</html>

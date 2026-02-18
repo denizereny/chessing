@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Board Priority Tests - Adaptive Viewport Optimizer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    .test-info {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border-left: 4px solid #2196F3;
+    }
+    #test-output {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .success {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    .error {
+      color: #f44336;
+      font-weight: bold;
+    }
+    .summary {
+      background-color: #fff3cd;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      border-left: 4px solid #ffc107;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Board Priority and Conflict Resolution Tests</h1>
+  
+  <div class="test-info">
+    <strong>Task 4.1:</strong> Create board size calculation with priority handling<br>
+    <strong>Validates:</strong> Requirements 7.1, 7.2, 7.3, 7.4, 7.5<br>
+    <strong>Features Tested:</strong>
+    <ul>
+      <li>Board space allocation before UI elements</li>
+      <li>Minimum board size enforcement (280px × 280px)</li>
+      <li>Board size maximization algorithm</li>
+      <li>Aspect ratio preservation (square board)</li>
+      <li>Conflict resolution that prioritizes board over UI</li>
+    </ul>
+  </div>
+
+  <button onclick="runTests()">Run Tests</button>
+
+  <div id="test-output">Click "Run Tests" to start...</div>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+
+  <script>
+    function runTests() {
+      const output = document.getElementById('test-output');
+      output.innerHTML = '';
+      
+      let passCount = 0;
+      let failCount = 0;
+      const results = [];
+
+      function log(message, isError = false) {
+        const className = isError ? 'error' : '';
+        results.push(`<span class="${className}">${message}</span>`);
+      }
+
+      function assert(condition, testName) {
+        if (condition) {
+          log(`✓ ${testName}`, false);
+          passCount++;
+        } else {
+          log(`✗ ${testName}`, true);
+          failCount++;
+        }
+      }
+
+      log('=== Board Priority and Conflict Resolution Tests ===\n');
+
+      // Test 1: Board space allocated before UI elements
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true });
+        const analysisResult = {
+          viewportWidth: 800,
+          viewportHeight: 600,
+          invisibleElements: []
+        };
+        const layout = optimizer.calculateOptimalLayout(analysisResult);
+        
+        assert(
+          layout.boardSize.width >= 280 && layout.boardSize.height >= 280,
+          'Test 1: Board space allocated before UI elements with minimum size enforced'
+        );
+      } catch (error) {
+        log(`✗ Test 1 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 2: Minimum board size enforcement
+      try {
+        const optimizer = new LayoutOptimizer({ minBoardSize: 280 });
+        const boardSize = optimizer.calculateBoardSize(
+          { width: 320, height: 480 },
+          []
+        );
+        
+        assert(
+          boardSize.width >= 280 && boardSize.height >= 280,
+          'Test 2: Minimum board size of 280px × 280px is enforced'
+        );
+      } catch (error) {
+        log(`✗ Test 2 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 3: Board size maximization
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true });
+        const boardSize1 = optimizer.calculateBoardSize({ width: 1920, height: 1080 }, []);
+        const boardSize2 = optimizer.calculateBoardSize({ width: 800, height: 600 }, []);
+        
+        assert(
+          boardSize1.width > boardSize2.width,
+          'Test 3: Board size is maximized based on available space'
+        );
+      } catch (error) {
+        log(`✗ Test 3 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 4: Aspect ratio preservation
+      try {
+        const optimizer = new LayoutOptimizer();
+        const boardSize = optimizer.calculateBoardSize({ width: 1920, height: 1080 }, []);
+        
+        assert(
+          boardSize.width === boardSize.height,
+          'Test 4: Board maintains square aspect ratio'
+        );
+      } catch (error) {
+        log(`✗ Test 4 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 5: Conflict resolution
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true, minBoardSize: 280 });
+        const boardSize = optimizer.calculateBoardSize(
+          { width: 400, height: 500 },
+          [{}, {}, {}]
+        );
+        
+        assert(
+          boardSize.width >= 280 && boardSize.height >= 280,
+          'Test 5: Board size preserved when UI elements conflict'
+        );
+      } catch (error) {
+        log(`✗ Test 5 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 6: resolveLayoutConflicts - no conflict
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true });
+        const result = optimizer.resolveLayoutConflicts(
+          { width: 400, height: 400 },
+          [],
+          { width: 1920, height: 1080 }
+        );
+        
+        assert(
+          result.conflictResolved === false && result.requiresScrolling === false,
+          'Test 6: No conflict detected when space is ample'
+        );
+      } catch (error) {
+        log(`✗ Test 6 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 7: resolveLayoutConflicts - with conflict
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true, minBoardSize: 280 });
+        const result = optimizer.resolveLayoutConflicts(
+          { width: 280, height: 280 },
+          [{}, {}, {}],
+          { width: 400, height: 500 }
+        );
+        
+        assert(
+          result.conflictResolved === true && result.boardSize.width >= 280,
+          'Test 7: Conflict resolved with board size preserved'
+        );
+      } catch (error) {
+        log(`✗ Test 7 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 8: Board priority in calculateOptimalLayout
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true });
+        const layout = optimizer.calculateOptimalLayout({
+          viewportWidth: 600,
+          viewportHeight: 700,
+          invisibleElements: []
+        });
+        
+        assert(
+          layout.boardPosition !== undefined && layout.boardSize.width >= 280,
+          'Test 8: Board position calculated with priority in optimal layout'
+        );
+      } catch (error) {
+        log(`✗ Test 8 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 9: UI scrolling with board priority
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true, minBoardSize: 280 });
+        const layout = optimizer.calculateOptimalLayout({
+          viewportWidth: 400,
+          viewportHeight: 500,
+          invisibleElements: []
+        });
+        
+        assert(
+          layout.requiresScrolling !== undefined && layout.boardSize.width >= 280,
+          'Test 9: UI scrolling determined while maintaining board minimum'
+        );
+      } catch (error) {
+        log(`✗ Test 9 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 10: Board maximization comparison
+      try {
+        const optimizerPriority = new LayoutOptimizer({ prioritizeBoard: true });
+        const optimizerNoPriority = new LayoutOptimizer({ prioritizeBoard: false });
+        
+        const boardSizePriority = optimizerPriority.calculateBoardSize(
+          { width: 1000, height: 1000 },
+          [{}, {}, {}]
+        );
+        const boardSizeNoPriority = optimizerNoPriority.calculateBoardSize(
+          { width: 1000, height: 1000 },
+          [{}, {}, {}]
+        );
+        
+        assert(
+          boardSizePriority.width >= boardSizeNoPriority.width,
+          'Test 10: Board larger when prioritizeBoard=true'
+        );
+      } catch (error) {
+        log(`✗ Test 10 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 11: Minimum size in conflict resolution
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true, minBoardSize: 280 });
+        const result = optimizer.resolveLayoutConflicts(
+          { width: 250, height: 250 },
+          [{}, {}, {}],
+          { width: 400, height: 500 }
+        );
+        
+        assert(
+          result.boardSize.width >= 280,
+          'Test 11: Conflict resolution enforces minimum board size'
+        );
+      } catch (error) {
+        log(`✗ Test 11 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 12: Board position validity
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true });
+        const layout = optimizer.calculateOptimalLayout({
+          viewportWidth: 1920,
+          viewportHeight: 1080,
+          invisibleElements: []
+        });
+        
+        assert(
+          layout.boardPosition.x >= 0 && layout.boardPosition.y >= 0 &&
+          layout.boardPosition.width === layout.boardSize.width,
+          'Test 12: Board position is valid and matches board size'
+        );
+      } catch (error) {
+        log(`✗ Test 12 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 13: Element positions after board allocation
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true });
+        const layout = optimizer.calculateOptimalLayout({
+          viewportWidth: 1000,
+          viewportHeight: 800,
+          invisibleElements: []
+        });
+        
+        assert(
+          layout.elementPositions !== undefined,
+          'Test 13: Element positions calculated after board allocation'
+        );
+      } catch (error) {
+        log(`✗ Test 13 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 14: Minimal viewport
+      try {
+        const optimizer = new LayoutOptimizer({ minBoardSize: 280 });
+        const boardSize = optimizer.calculateBoardSize({ width: 300, height: 300 }, []);
+        
+        assert(
+          boardSize.width >= 280 && boardSize.width <= 300,
+          'Test 14: Board fits in minimal viewport'
+        );
+      } catch (error) {
+        log(`✗ Test 14 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Test 15: Multiple UI elements
+      try {
+        const optimizer = new LayoutOptimizer({ prioritizeBoard: true });
+        const mockElements = [{}, {}, {}, {}, {}];
+        const boardSize = optimizer.calculateBoardSize(
+          { width: 800, height: 600 },
+          mockElements
+        );
+        
+        assert(
+          boardSize.width >= 280,
+          'Test 15: Board maintains minimum with many UI elements'
+        );
+      } catch (error) {
+        log(`✗ Test 15 failed: ${error.message}`, true);
+        failCount++;
+      }
+
+      // Display results
+      log('\n=== Test Summary ===');
+      log(`Passed: ${passCount}`, passCount === 15);
+      log(`Failed: ${failCount}`, failCount > 0);
+      log(`Total: ${passCount + failCount}`);
+
+      if (failCount === 0) {
+        log('\n<span class="success">✓ All tests passed!</span>');
+        log('Task 4.1 implementation is complete and correct.');
+      } else {
+        log('\n<span class="error">✗ Some tests failed.</span>');
+        log('Please review the implementation.');
+      }
+
+      output.innerHTML = results.join('\n');
+    }
+  </script>
+</body>
+</html>

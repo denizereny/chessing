@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Horizontal Overflow Repositioning</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.95;
+      font-size: 14px;
+    }
+    
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background 0.3s;
+    }
+    
+    .test-controls button:hover {
+      background: #5568d3;
+    }
+    
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    #output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #ffd700;
+      color: #333;
+    }
+    
+    .status.passed {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .status.failed {
+      background: #f44336;
+      color: white;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #1976d2;
+      font-size: 16px;
+    }
+    
+    .info-box p {
+      margin: 5px 0;
+      color: #333;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔄 Property Test: Horizontal Overflow Repositioning</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 4:</strong> Horizontal Overflow Triggers Vertical Repositioning</p>
+    <p><strong>Validates:</strong> Requirements 2.1</p>
+  </div>
+
+  <div class="info-box">
+    <h3>Test Description</h3>
+    <p>This property-based test verifies that when a UI element is invisible due to horizontal overflow, 
+    the Layout_Optimizer repositions it to a vertical layout where it becomes visible.</p>
+    <p><strong>Test Configuration:</strong> 100 iterations per property using fast-check</p>
+  </div>
+
+  <div class="test-controls">
+    <button id="runTests" onclick="runTests()">▶ Run Property Tests</button>
+    <button id="clearOutput" onclick="clearOutput()">🗑 Clear Output</button>
+    <span id="status"></span>
+  </div>
+
+  <div id="output">Click "Run Property Tests" to start testing...</div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+
+  <!-- Load property test -->
+  <script src="horizontal-overflow-repositioning-property.test.js"></script>
+
+  <script>
+    const outputDiv = document.getElementById('output');
+    const statusSpan = document.getElementById('status');
+    const runButton = document.getElementById('runTests');
+
+    // Override console.log to capture output
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+
+    function captureOutput(message, type = 'log') {
+      const timestamp = new Date().toLocaleTimeString();
+      let color = '#333';
+      let prefix = '';
+      
+      if (type === 'error') {
+        color = '#d32f2f';
+        prefix = '❌ ';
+      } else if (type === 'warn') {
+        color = '#f57c00';
+        prefix = '⚠️ ';
+      } else if (message.includes('✓')) {
+        color = '#388e3c';
+      } else if (message.includes('✗')) {
+        color = '#d32f2f';
+      } else if (message.includes('===')) {
+        color = '#1976d2';
+      }
+      
+      const line = document.createElement('div');
+      line.style.color = color;
+      line.textContent = `[${timestamp}] ${prefix}${message}`;
+      outputDiv.appendChild(line);
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      captureOutput(args.join(' '), 'log');
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      captureOutput(args.join(' '), 'error');
+    };
+
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      captureOutput(args.join(' '), 'warn');
+    };
+
+    async function runTests() {
+      runButton.disabled = true;
+      statusSpan.innerHTML = '<span class="status running">RUNNING</span>';
+      outputDiv.innerHTML = '';
+
+      console.log('Starting property-based tests...\n');
+      console.log('Loading fast-check library...');
+
+      try {
+        // Wait for fast-check to load
+        await waitForFastCheck();
+        console.log('✓ fast-check loaded successfully\n');
+
+        // Run the property tests
+        const results = await runHorizontalOverflowRepositioningPropertyTest(fc);
+
+        // Display final results
+        console.log('\n' + '='.repeat(60));
+        console.log('FINAL RESULTS');
+        console.log('='.repeat(60));
+        console.log(`Total Properties Tested: ${results.passed + results.failed}`);
+        console.log(`Passed: ${results.passed}`);
+        console.log(`Failed: ${results.failed}`);
+        console.log(`Success Rate: ${((results.passed / (results.passed + results.failed)) * 100).toFixed(1)}%`);
+        console.log(`Total Iterations: ${(results.passed + results.failed) * 100}`);
+
+        if (results.failed === 0) {
+          statusSpan.innerHTML = '<span class="status passed">ALL TESTS PASSED ✓</span>';
+          console.log('\n🎉 All property tests passed!');
+        } else {
+          statusSpan.innerHTML = '<span class="status failed">SOME TESTS FAILED ✗</span>';
+          console.error('\n⚠️ Some property tests failed. See details above.');
+        }
+
+      } catch (error) {
+        console.error('Test execution failed:', error.message);
+        console.error(error.stack);
+        statusSpan.innerHTML = '<span class="status failed">ERROR</span>';
+      } finally {
+        runButton.disabled = false;
+      }
+    }
+
+    function clearOutput() {
+      outputDiv.innerHTML = 'Output cleared. Click "Run Property Tests" to start testing...';
+      statusSpan.innerHTML = '';
+    }
+
+    async function waitForFastCheck() {
+      let attempts = 0;
+      while (typeof fc === 'undefined' && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      if (typeof fc === 'undefined') {
+        throw new Error('fast-check library failed to load');
+      }
+    }
+
+    // Auto-run tests on page load (optional)
+    // window.addEventListener('load', () => {
+    //   setTimeout(runTests, 500);
+    // });
+  </script>
+</body>
+</html>

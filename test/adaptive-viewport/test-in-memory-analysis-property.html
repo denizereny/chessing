@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: In-Memory Analysis Only</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .test-controls button:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      min-height: 400px;
+    }
+    
+    #output pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status.passed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status.failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .info-box {
+      background: #e0e7ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #3730a3;
+      font-size: 16px;
+    }
+    
+    .info-box p {
+      margin: 5px 0;
+      color: #4338ca;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧪 Property Test: In-Memory Analysis Only</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 3:</strong> In-Memory Analysis Only</p>
+    <p><strong>Validates:</strong> Requirements 1.5</p>
+  </div>
+
+  <div class="info-box">
+    <h3>Test Description</h3>
+    <p>This property-based test verifies that the VisibilityDetector performs all viewport analysis in-memory without creating files or using persistent storage (localStorage, sessionStorage, IndexedDB).</p>
+    <p><strong>Test Properties:</strong></p>
+    <ul>
+      <li>No storage operations during detector initialization</li>
+      <li>No storage operations during visibility detection</li>
+      <li>No storage operations during visibility refresh</li>
+      <li>No storage operations during observe/unobserve</li>
+      <li>Visibility data accessible in-memory without storage</li>
+    </ul>
+    <p><strong>Iterations:</strong> 100 per property (500 total)</p>
+  </div>
+
+  <div class="test-controls">
+    <button id="runTestBtn" onclick="runTest()">Run Property Test</button>
+    <span id="statusIndicator"></span>
+  </div>
+
+  <div id="output">
+    <pre id="outputText">Click "Run Property Test" to start testing...</pre>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="in-memory-analysis-property.test.js"></script>
+
+  <script>
+    let isRunning = false;
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    let outputBuffer = [];
+
+    function captureOutput() {
+      outputBuffer = [];
+      
+      console.log = function(...args) {
+        outputBuffer.push(args.join(' '));
+        originalLog.apply(console, args);
+        updateOutput();
+      };
+      
+      console.error = function(...args) {
+        outputBuffer.push('ERROR: ' + args.join(' '));
+        originalError.apply(console, args);
+        updateOutput();
+      };
+      
+      console.warn = function(...args) {
+        outputBuffer.push('WARN: ' + args.join(' '));
+        originalWarn.apply(console, args);
+        updateOutput();
+      };
+    }
+
+    function restoreOutput() {
+      console.log = originalLog;
+      console.error = originalError;
+      console.warn = originalWarn;
+    }
+
+    function updateOutput() {
+      document.getElementById('outputText').textContent = outputBuffer.join('\n');
+    }
+
+    function setStatus(status, text) {
+      const indicator = document.getElementById('statusIndicator');
+      
+      if (status === 'running') {
+        indicator.innerHTML = `<span class="status running">${text}</span><span class="loading"></span>`;
+      } else if (status === 'passed') {
+        indicator.innerHTML = `<span class="status passed">${text}</span>`;
+      } else if (status === 'failed') {
+        indicator.innerHTML = `<span class="status failed">${text}</span>`;
+      } else {
+        indicator.innerHTML = '';
+      }
+    }
+
+    async function runTest() {
+      if (isRunning) {
+        alert('Test is already running!');
+        return;
+      }
+
+      const btn = document.getElementById('runTestBtn');
+      btn.disabled = true;
+      isRunning = true;
+
+      setStatus('running', 'Running...');
+      captureOutput();
+
+      try {
+        console.log('Starting In-Memory Analysis Property Test...\n');
+        console.log('Loading fast-check library...');
+
+        // Wait for fast-check to load
+        await waitForFastCheck();
+
+        console.log('fast-check loaded successfully\n');
+
+        // Run the property test
+        const results = await runInMemoryAnalysisPropertyTest(fc);
+
+        // Display results
+        console.log('\n' + '='.repeat(60));
+        console.log('TEST EXECUTION COMPLETE');
+        console.log('='.repeat(60));
+
+        if (results.failed === 0) {
+          console.log('\n✅ ALL PROPERTIES PASSED!');
+          setStatus('passed', `All ${results.passed} properties passed`);
+        } else {
+          console.log('\n❌ SOME PROPERTIES FAILED');
+          setStatus('failed', `${results.failed} of ${results.passed + results.failed} properties failed`);
+        }
+
+        console.log('\nDetailed Results:');
+        results.tests.forEach(test => {
+          const icon = test.status === 'PASS' ? '✓' : '✗';
+          console.log(`${icon} ${test.name}: ${test.status}`);
+          if (test.error) {
+            console.log(`  Error: ${test.error}`);
+          }
+        });
+
+      } catch (error) {
+        console.error('\n❌ TEST EXECUTION FAILED');
+        console.error('Error:', error.message);
+        console.error('Stack:', error.stack);
+        setStatus('failed', 'Test execution failed');
+      } finally {
+        restoreOutput();
+        btn.disabled = false;
+        isRunning = false;
+      }
+    }
+
+    function waitForFastCheck() {
+      return new Promise((resolve, reject) => {
+        let attempts = 0;
+        const maxAttempts = 50;
+
+        const checkInterval = setInterval(() => {
+          attempts++;
+
+          if (typeof fc !== 'undefined') {
+            clearInterval(checkInterval);
+            resolve();
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            reject(new Error('fast-check library failed to load'));
+          }
+        }, 100);
+      });
+    }
+
+    // Auto-run on load if requested
+    window.addEventListener('load', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('autorun') === 'true') {
+        setTimeout(runTest, 1000);
+      }
+    });
+  </script>
+</body>
+</html>
