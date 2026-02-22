@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix English Translation Issue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); border-left: 4px solid #4CAF50; }
+        .error { background: rgba(244, 67, 54, 0.3); border-left: 4px solid #f44336; }
+        .info { background: rgba(33, 150, 243, 0.3); border-left: 4px solid #2196F3; }
+        .warning { background: rgba(255, 152, 0, 0.3); border-left: 4px solid #FF9800; }
+        .test-elements {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .test-element {
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .element-label {
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .element-value {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 İngilizce Çeviri Düzeltme Aracı</h1>
+        
+        <div class="section">
+            <h2>🎯 Hızlı Düzeltme</h2>
+            <div class="button-group">
+                <button onclick="quickFix()">⚡ Hızlı Düzelt</button>
+                <button onclick="forceEnglish()">🇬🇧 İngilizce'ye Zorla</button>
+                <button onclick="forceTurkish()">🇹🇷 Türkçe'ye Zorla</button>
+                <button onclick="clearAll()">🗑️ Tümünü Temizle</button>
+            </div>
+            <div id="quickFixStatus"></div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Mevcut Durum</h2>
+            <div id="currentStatus" class="status info">Yükleniyor...</div>
+        </div>
+
+        <div class="section">
+            <h2>🧪 Test Elementleri</h2>
+            <div class="test-elements" id="testElements">
+                <div class="test-element">
+                    <span class="element-label">New Game:</span>
+                    <span class="element-value" id="testNewGame">-</span>
+                </div>
+                <div class="test-element">
+                    <span class="element-label">White Playing:</span>
+                    <span class="element-value" id="testWhitePlaying">-</span>
+                </div>
+                <div class="test-element">
+                    <span class="element-label">Black Playing:</span>
+                    <span class="element-value" id="testBlackPlaying">-</span>
+                </div>
+                <div class="test-element">
+                    <span class="element-label">Move History:</span>
+                    <span class="element-value" id="testMoveHistory">-</span>
+                </div>
+                <div class="test-element">
+                    <span class="element-label">Board Colors:</span>
+                    <span class="element-value" id="testBoardColors">-</span>
+                </div>
+                <div class="test-element">
+                    <span class="element-label">Light Squares:</span>
+                    <span class="element-value" id="testLightSquares">-</span>
+                </div>
+                <div class="test-element">
+                    <span class="element-label">Dark Squares:</span>
+                    <span class="element-value" id="testDarkSquares">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Detaylı Analiz</h2>
+            <div class="button-group">
+                <button onclick="analyzeTranslations()">🔬 Çevirileri Analiz Et</button>
+                <button onclick="testSetLanguage()">🧪 setLanguage() Test Et</button>
+                <button onclick="testUpdateUIText()">🔄 updateUIText() Test Et</button>
+            </div>
+            <div id="analysisResults"></div>
+        </div>
+
+        <div class="section">
+            <h2>💡 Çözüm Önerileri</h2>
+            <div class="status warning">
+                <strong>Eğer İngilizce çalışmıyorsa:</strong><br>
+                1. <code>⚡ Hızlı Düzelt</code> butonuna tıklayın<br>
+                2. Ana sayfayı yenileyin (F5)<br>
+                3. Dil seçiciyi İngilizce'ye ayarlayın<br>
+                4. Hala çalışmıyorsa tarayıcı önbelleğini temizleyin (Ctrl+Shift+Delete)
+            </div>
+        </div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('quickFixStatus');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+
+        function updateCurrentStatus() {
+            const savedLang = localStorage.getItem('4x5_lang');
+            const statusDiv = document.getElementById('currentStatus');
+            
+            statusDiv.innerHTML = `
+                <strong>📦 LocalStorage Dil:</strong> <code>${savedLang || 'ayarlanmamış'}</code><br>
+                <strong>🌐 Tarayıcı Dili:</strong> <code>${navigator.language}</code><br>
+                <strong>⚙️ Varsayılan Dil:</strong> <code>en (English)</code>
+            `;
+        }
+
+        function updateTestElements() {
+            if (typeof t === 'function') {
+                document.getElementById('testNewGame').textContent = t('newGame');
+                document.getElementById('testWhitePlaying').textContent = t('whitePlaying');
+                document.getElementById('testBlackPlaying').textContent = t('blackPlaying');
+                document.getElementById('testMoveHistory').textContent = t('moveHistory');
+                document.getElementById('testBoardColors').textContent = t('boardColors');
+                document.getElementById('testLightSquares').textContent = t('lightSquares');
+                document.getElementById('testDarkSquares').textContent = t('darkSquares');
+            }
+        }
+
+        function quickFix() {
+            showStatus('🔧 Hızlı düzeltme başlatılıyor...', 'info');
+            
+            // Clear localStorage
+            localStorage.removeItem('4x5_lang');
+            
+            // Set to English
+            if (typeof setLanguage === 'function') {
+                setLanguage('en');
+                showStatus('✅ Başarılı! Dil İngilizce olarak ayarlandı. Ana sayfayı yenileyin (F5).', 'success');
+            } else {
+                showStatus('❌ Hata: setLanguage fonksiyonu bulunamadı!', 'error');
+            }
+            
+            updateCurrentStatus();
+            updateTestElements();
+        }
+
+        function forceEnglish() {
+            if (typeof setLanguage === 'function') {
+                setLanguage('en');
+                showStatus('🇬🇧 İngilizce zorlandı!', 'success');
+            } else {
+                showStatus('❌ setLanguage fonksiyonu bulunamadı!', 'error');
+            }
+            updateCurrentStatus();
+            updateTestElements();
+        }
+
+        function forceTurkish() {
+            if (typeof setLanguage === 'function') {
+                setLanguage('tr');
+                showStatus('🇹🇷 Türkçe zorlandı!', 'success');
+            } else {
+                showStatus('❌ setLanguage fonksiyonu bulunamadı!', 'error');
+            }
+            updateCurrentStatus();
+            updateTestElements();
+        }
+
+        function clearAll() {
+            localStorage.clear();
+            showStatus('🗑️ Tüm localStorage temizlendi! Sayfayı yenileyin.', 'warning');
+            updateCurrentStatus();
+        }
+
+        function analyzeTranslations() {
+            const resultsDiv = document.getElementById('analysisResults');
+            let html = '<div class="status info">';
+            
+            html += '<strong>🔍 Fonksiyon Kontrolü:</strong><br>';
+            html += `setLanguage: ${typeof setLanguage === 'function' ? '✅ Mevcut' : '❌ Yok'}<br>`;
+            html += `updateUIText: ${typeof updateUIText === 'function' ? '✅ Mevcut' : '❌ Yok'}<br>`;
+            html += `t: ${typeof t === 'function' ? '✅ Mevcut' : '❌ Yok'}<br><br>`;
+            
+            if (typeof t === 'function') {
+                html += '<strong>🧪 Çeviri Testleri:</strong><br>';
+                html += `İngilizce "newGame": <code>${t('newGame')}</code><br>`;
+                html += `Türkçe beklenen: <code>Yeni Oyun</code><br>`;
+                html += `İngilizce beklenen: <code>New Game</code><br>`;
+            }
+            
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        function testSetLanguage() {
+            const resultsDiv = document.getElementById('analysisResults');
+            
+            if (typeof setLanguage !== 'function') {
+                resultsDiv.innerHTML = '<div class="status error">❌ setLanguage fonksiyonu bulunamadı!</div>';
+                return;
+            }
+            
+            let html = '<div class="status success">';
+            html += '<strong>🧪 setLanguage() Test Sonuçları:</strong><br><br>';
+            
+            // Test English
+            setLanguage('en');
+            html += `İngilizce ayarlandı: <code>${t('newGame')}</code> (beklenen: "New Game")<br>`;
+            
+            // Test Turkish
+            setLanguage('tr');
+            html += `Türkçe ayarlandı: <code>${t('newGame')}</code> (beklenen: "Yeni Oyun")<br>`;
+            
+            // Back to English
+            setLanguage('en');
+            html += `Tekrar İngilizce: <code>${t('newGame')}</code> (beklenen: "New Game")<br>`;
+            
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+            
+            updateTestElements();
+        }
+
+        function testUpdateUIText() {
+            const resultsDiv = document.getElementById('analysisResults');
+            
+            if (typeof updateUIText !== 'function') {
+                resultsDiv.innerHTML = '<div class="status error">❌ updateUIText fonksiyonu bulunamadı!</div>';
+                return;
+            }
+            
+            updateUIText();
+            updateTestElements();
+            
+            resultsDiv.innerHTML = '<div class="status success">✅ updateUIText() çağrıldı! Test elementleri güncellendi.</div>';
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateCurrentStatus();
+            updateTestElements();
+            
+            // Check if there's an issue
+            const savedLang = localStorage.getItem('4x5_lang');
+            if (savedLang === 'tr') {
+                showStatus('⚠️ Dil Türkçe olarak ayarlı. İngilizce için "🇬🇧 İngilizce\'ye Zorla" butonuna tıklayın.', 'warning');
+            } else if (!savedLang) {
+                showStatus('ℹ️ Dil ayarlanmamış. Varsayılan olarak İngilizce kullanılacak.', 'info');
+            } else {
+                showStatus(`✅ Dil ${savedLang} olarak ayarlı.`, 'success');
+            }
+        });
+    </script>
+</body>
+</html>

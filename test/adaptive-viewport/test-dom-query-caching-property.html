@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: DOM Query Caching</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+    }
+    
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background 0.3s;
+    }
+    
+    .btn:hover {
+      background: #5568d3;
+    }
+    
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .status {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .status-item:last-child {
+      border-bottom: none;
+    }
+    
+    .status-label {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .status-value {
+      color: #667eea;
+      font-weight: 500;
+    }
+    
+    .results {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .result-item {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border-left: 4px solid #ccc;
+    }
+    
+    .result-item.pass {
+      background: #f0fdf4;
+      border-left-color: #22c55e;
+    }
+    
+    .result-item.fail {
+      background: #fef2f2;
+      border-left-color: #ef4444;
+    }
+    
+    .result-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .result-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .result-status.pass {
+      background: #22c55e;
+      color: white;
+    }
+    
+    .result-status.fail {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .result-error {
+      margin-top: 10px;
+      padding: 10px;
+      background: #fee;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #c00;
+    }
+    
+    .console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .console-output pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .summary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .summary h3 {
+      margin: 0 0 15px 0;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    
+    .summary-item {
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .summary-value {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .summary-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧪 Property Test: DOM Query Caching</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 26:</strong> DOM Query Caching</p>
+    <p><strong>Validates:</strong> Requirements 8.4</p>
+    <p><strong>Description:</strong> Verifies that dimension caching achieves >80% cache hit rate after initial queries</p>
+  </div>
+
+  <div class="controls">
+    <button id="runTestBtn" class="btn">▶ Run Property Tests</button>
+    <button id="clearBtn" class="btn">🗑 Clear Results</button>
+    <span id="loadingIndicator" style="display: none;">
+      <span class="loading"></span>
+      <span style="margin-left: 10px; color: #667eea; font-weight: 500;">Running tests...</span>
+    </span>
+  </div>
+
+  <div class="status" id="statusPanel" style="display: none;">
+    <h3 style="margin-top: 0;">Test Status</h3>
+    <div class="status-item">
+      <span class="status-label">Current Test:</span>
+      <span class="status-value" id="currentTest">-</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Progress:</span>
+      <span class="status-value" id="progress">-</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Elapsed Time:</span>
+      <span class="status-value" id="elapsedTime">-</span>
+    </div>
+  </div>
+
+  <div class="results" id="resultsPanel" style="display: none;">
+    <h3 style="margin-top: 0;">Test Results</h3>
+    <div id="resultsList"></div>
+  </div>
+
+  <div class="summary" id="summaryPanel" style="display: none;">
+    <h3>Test Summary</h3>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="summary-value" id="totalTests">0</div>
+        <div class="summary-label">Total Properties</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="passedTests">0</div>
+        <div class="summary-label">Passed</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="failedTests">0</div>
+        <div class="summary-label">Failed</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="successRate">0%</div>
+        <div class="summary-label">Success Rate</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="totalIterations">0</div>
+        <div class="summary-label">Total Iterations</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="console-output" id="consoleOutput">
+    <pre id="consoleText">Console output will appear here...</pre>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="../setup-fast-check.js"></script>
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/layout-state-manager.js"></script>
+  <script src="dom-query-caching-property.test.js"></script>
+
+  <script>
+    // Capture console output
+    const consoleText = document.getElementById('consoleText');
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    function appendToConsole(message, type = 'log') {
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌' : '📝';
+      consoleText.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+      consoleText.parentElement.scrollTop = consoleText.parentElement.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      appendToConsole(args.join(' '), 'log');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      appendToConsole(args.join(' '), 'error');
+    };
+
+    // Test execution
+    let startTime;
+    let timerInterval;
+
+    document.getElementById('runTestBtn').addEventListener('click', async () => {
+      const runBtn = document.getElementById('runTestBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const statusPanel = document.getElementById('statusPanel');
+      const resultsPanel = document.getElementById('resultsPanel');
+      const summaryPanel = document.getElementById('summaryPanel');
+      
+      // Disable buttons
+      runBtn.disabled = true;
+      clearBtn.disabled = true;
+      loadingIndicator.style.display = 'inline';
+      
+      // Show status panel
+      statusPanel.style.display = 'block';
+      resultsPanel.style.display = 'none';
+      summaryPanel.style.display = 'none';
+      
+      // Clear console
+      consoleText.textContent = 'Starting property tests...\n\n';
+      
+      // Start timer
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        document.getElementById('elapsedTime').textContent = `${elapsed}s`;
+      }, 1000);
+      
+      try {
+        // Check if fast-check is loaded
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded');
+        }
+        
+        // Check if LayoutStateManager is loaded
+        if (typeof LayoutStateManager === 'undefined') {
+          throw new Error('LayoutStateManager not loaded');
+        }
+        
+        document.getElementById('currentTest').textContent = 'Running DOM Query Caching tests...';
+        document.getElementById('progress').textContent = 'In progress...';
+        
+        // Run tests
+        const results = await runDOMQueryCachingPropertyTest(fc);
+        
+        // Clear timer
+        clearInterval(timerInterval);
+        
+        // Display results
+        displayResults(results);
+        
+        console.log('\n✅ All tests completed successfully!');
+        
+      } catch (error) {
+        clearInterval(timerInterval);
+        console.error('Test execution failed:', error.message);
+        console.error(error.stack);
+        
+        resultsPanel.style.display = 'block';
+        document.getElementById('resultsList').innerHTML = `
+          <div class="result-item fail">
+            <div class="result-name">
+              Test Execution Error
+              <span class="result-status fail">ERROR</span>
+            </div>
+            <div class="result-error">${error.message}</div>
+          </div>
+        `;
+      } finally {
+        // Re-enable buttons
+        runBtn.disabled = false;
+        clearBtn.disabled = false;
+        loadingIndicator.style.display = 'none';
+        statusPanel.style.display = 'none';
+      }
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      consoleText.textContent = 'Console cleared.\n';
+      document.getElementById('resultsPanel').style.display = 'none';
+      document.getElementById('summaryPanel').style.display = 'none';
+    });
+
+    function displayResults(results) {
+      const resultsPanel = document.getElementById('resultsPanel');
+      const summaryPanel = document.getElementById('summaryPanel');
+      const resultsList = document.getElementById('resultsList');
+      
+      // Show panels
+      resultsPanel.style.display = 'block';
+      summaryPanel.style.display = 'block';
+      
+      // Display individual results
+      resultsList.innerHTML = '';
+      results.tests.forEach(test => {
+        const resultItem = document.createElement('div');
+        resultItem.className = `result-item ${test.status.toLowerCase()}`;
+        
+        let html = `
+          <div class="result-name">
+            ${test.name}
+            <span class="result-status ${test.status.toLowerCase()}">${test.status}</span>
+          </div>
+        `;
+        
+        if (test.error) {
+          html += `<div class="result-error">${test.error}</div>`;
+        }
+        
+        resultItem.innerHTML = html;
+        resultsList.appendChild(resultItem);
+      });
+      
+      // Display summary
+      const total = results.passed + results.failed;
+      const successRate = total > 0 ? ((results.passed / total) * 100).toFixed(1) : 0;
+      
+      // Calculate total iterations (Property 2 has 50, others have 100)
+      const totalIterations = results.tests.reduce((sum, test) => {
+        if (test.name.includes('Property 2')) return sum + 50;
+        return sum + 100;
+      }, 0);
+      
+      document.getElementById('totalTests').textContent = total;
+      document.getElementById('passedTests').textContent = results.passed;
+      document.getElementById('failedTests').textContent = results.failed;
+      document.getElementById('successRate').textContent = `${successRate}%`;
+      document.getElementById('totalIterations').textContent = totalIterations;
+    }
+
+    // Initial message
+    console.log('Property Test: DOM Query Caching');
+    console.log('Click "Run Property Tests" to start testing...\n');
+  </script>
+</body>
+</html>

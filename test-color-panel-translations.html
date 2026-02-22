@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Panel Translation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .language-selector {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        .language-selector select {
+            padding: 8px;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        .color-panel {
+            padding: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .color-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .color-section h4 {
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px 0;
+            font-weight: bold;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background: #4CAF50;
+            color: white;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .piece-setup-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f5e9;
+            border-radius: 8px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .stat-item {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+        }
+        .success {
+            background: #e8f5e9;
+            border-left-color: #4CAF50;
+        }
+        .error {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Color Panel & Piece Setup Translation Test</h1>
+    
+    <div class="language-selector">
+        <strong>Select Language / Dil Seçin:</strong>
+        <select id="languageSelect" onchange="setLanguage(this.value)">
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ar">🇸🇦 العربية</option>
+        </select>
+    </div>
+
+    <div class="test-section">
+        <h2>Color Panel Elements</h2>
+        <div class="color-panel">
+            <h3 id="colorPanelTitle">🎨 Color Settings</h3>
+            
+            <div class="color-section">
+                <h4 id="lblBoardColors">📋 Board Colors</h4>
+                <label id="lblLightSquares">Light Squares</label>
+                <input type="color" value="#f0d9b5">
+                
+                <label id="lblDarkSquares">Dark Squares</label>
+                <input type="color" value="#b58863">
+            </div>
+            
+            <div class="color-section">
+                <h4 id="lblPieceColors">♔ Piece Colors</h4>
+                <label id="lblWhitePieces">White Pieces</label>
+                <input type="color" value="#ffffff">
+                
+                <label id="lblBlackPieces">Black Pieces</label>
+                <input type="color" value="#2c2c2c">
+                
+                <div style="margin-top: 10px;">
+                    <span id="lblWhitePiecesPreview">White</span> | 
+                    <span id="lblBlackPiecesPreview">Black</span>
+                </div>
+            </div>
+            
+            <div class="color-section">
+                <h4 id="lblColorPresets">🎯 Color Presets</h4>
+                <button id="btnClassicColors">Classic</button>
+                <button id="btnWoodColors">Wood</button>
+                <button id="btnMarbleColors">Marble</button>
+                <button id="btnNeonColors">Neon</button>
+                <button id="btnOceanColors">Ocean</button>
+                <button id="btnResetColors">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section piece-setup-section">
+        <h2>Piece Setup Modal Elements</h2>
+        
+        <h3 id="pieceSetupTitle">♔ Piece Setup</h3>
+        <p id="setupInstructions">Drag pieces from the palette to the board...</p>
+        
+        <div class="color-section">
+            <h4 id="piecePaletteTitle">Piece Palette</h4>
+            <h5 id="whitePiecesTitle">White Pieces</h5>
+            <h5 id="blackPiecesTitle">Black Pieces</h5>
+        </div>
+        
+        <div class="color-section">
+            <h4>Tool Buttons</h4>
+            <button><span id="clearBoardText">Clear Board</span></button>
+            <button><span id="resetDefaultText">Default Position</span></button>
+            <button><span id="randomSetupText">Random Setup</span></button>
+            <button><span id="loadSetupText">Load Setup</span></button>
+        </div>
+        
+        <div class="color-section">
+            <h4 id="presetsTitle">Quick Setups:</h4>
+            <button><span id="endgameText">Endgame</span></button>
+            <button><span id="middlegameText">Middlegame</span></button>
+            <button><span id="puzzleText">Puzzle</span></button>
+        </div>
+        
+        <div class="color-section">
+            <h4 id="userPresetsTitle">My Presets:</h4>
+            <button><span id="loadPresetText">Load</span></button>
+            <button><span id="deletePresetText">Delete</span></button>
+            <button><span id="exportPresetsText">Export</span></button>
+            <button><span id="importPresetsText">Import</span></button>
+        </div>
+        
+        <div class="color-section">
+            <h4>Position Stats</h4>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span id="whiteKingsLabel">White Kings:</span> <span>1</span>
+                </div>
+                <div class="stat-item">
+                    <span id="blackKingsLabel">Black Kings:</span> <span>1</span>
+                </div>
+                <div class="stat-item">
+                    <span id="totalPiecesLabel">Total Pieces:</span> <span>10</span>
+                </div>
+                <div class="stat-item">
+                    <span id="materialBalanceLabel">Material Balance:</span> <span>0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="color-section">
+            <h4>Game Settings</h4>
+            <label id="lblFirstMove">First Move:</label>
+            <select>
+                <option id="whiteFirstOption">White</option>
+                <option id="blackFirstOption">Black</option>
+            </select>
+            
+            <label style="margin-top: 10px;">AI Difficulty:</label>
+            <select>
+                <option id="easyOption">🟢 Easy</option>
+                <option id="mediumOption">🟡 Medium</option>
+                <option id="hardOption">🔴 Hard</option>
+                <option id="expertOption">💀 Expert</option>
+            </select>
+        </div>
+        
+        <div class="color-section">
+            <h4 id="analysisTitle">Position Analysis:</h4>
+            <p>Analysis content here...</p>
+        </div>
+        
+        <div class="color-section">
+            <h4>Action Buttons</h4>
+            <button><span id="startGameText">Start Game</span></button>
+            <button><span id="analyzeText">Analyze</span></button>
+            <button><span id="cancelText">Cancel</span></button>
+        </div>
+        
+        <div class="color-section">
+            <p id="trashText">🗑️ Drop here to delete</p>
+        </div>
+    </div>
+
+    <div class="result" id="testResult">
+        <strong>Test Status:</strong> Select a language to test translations
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        // Test function to verify all translations are working
+        function testTranslations() {
+            const elementsToTest = [
+                'colorPanelTitle', 'lblBoardColors', 'lblLightSquares', 'lblDarkSquares',
+                'lblPieceColors', 'lblWhitePieces', 'lblBlackPieces', 'lblColorPresets',
+                'btnClassicColors', 'btnWoodColors', 'btnMarbleColors', 'btnNeonColors',
+                'btnOceanColors', 'btnResetColors', 'lblWhitePiecesPreview', 'lblBlackPiecesPreview',
+                'pieceSetupTitle', 'setupInstructions', 'piecePaletteTitle', 'whitePiecesTitle',
+                'blackPiecesTitle', 'clearBoardText', 'resetDefaultText', 'randomSetupText',
+                'loadSetupText', 'presetsTitle', 'endgameText', 'middlegameText', 'puzzleText',
+                'userPresetsTitle', 'loadPresetText', 'deletePresetText', 'exportPresetsText',
+                'importPresetsText', 'whiteKingsLabel', 'blackKingsLabel', 'totalPiecesLabel',
+                'materialBalanceLabel', 'lblFirstMove', 'whiteFirstOption', 'blackFirstOption',
+                'easyOption', 'mediumOption', 'hardOption', 'expertOption', 'analysisTitle',
+                'startGameText', 'analyzeText', 'cancelText', 'trashText'
+            ];
+            
+            let allTranslated = true;
+            let missingElements = [];
+            
+            elementsToTest.forEach(id => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    missingElements.push(id);
+                    allTranslated = false;
+                } else if (element.textContent.trim() === '') {
+                    missingElements.push(id + ' (empty)');
+                    allTranslated = false;
+                }
+            });
+            
+            const resultDiv = document.getElementById('testResult');
+            if (allTranslated) {
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `<strong>✅ Test Passed!</strong><br>All ${elementsToTest.length} elements are translated correctly in ${currentLanguage.toUpperCase()}`;
+            } else {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Test Failed!</strong><br>Missing or empty elements: ${missingElements.join(', ')}`;
+            }
+        }
+        
+        // Override setLanguage to include test
+        const originalSetLanguage = setLanguage;
+        setLanguage = function(lang) {
+            originalSetLanguage(lang);
+            setTimeout(testTranslations, 100);
+        };
+        
+        // Run initial test
+        setTimeout(testTranslations, 500);
+    </script>
+</body>
+</html>

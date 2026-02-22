@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation Runner: Scroll Removal When Unnecessary Test</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .validation-section {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .validation-section h2 {
+      margin: 0 0 20px 0;
+      color: #333;
+      font-size: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    
+    .check-item {
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    
+    .check-item:hover {
+      background: #f9fafb;
+    }
+    
+    .check-item.pass {
+      background: #d1fae5;
+      border-left: 4px solid #10b981;
+    }
+    
+    .check-item.fail {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+    }
+    
+    .check-icon {
+      font-size: 20px;
+      margin-right: 12px;
+      min-width: 24px;
+    }
+    
+    .check-text {
+      flex: 1;
+      font-size: 14px;
+      color: #374151;
+    }
+    
+    .summary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 8px;
+      margin-top: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .summary h2 {
+      margin: 0 0 15px 0;
+      font-size: 22px;
+    }
+    
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .stat-box {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .final-status {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .final-status.success {
+      background: #10b981;
+    }
+    
+    .final-status.failure {
+      background: #ef4444;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔍 Validation Runner: Scroll Removal When Unnecessary Test</h1>
+    <p><strong>Task:</strong> 5.5 Write property test for scroll removal when unnecessary</p>
+    <p><strong>Property 11:</strong> Scroll Removal When Unnecessary</p>
+    <p><strong>Validates:</strong> Requirements 3.5</p>
+  </div>
+
+  <div id="validation-results">
+    <div class="loading">Running validations...</div>
+  </div>
+
+  <script>
+    // Validation checks for test file
+    const testFileChecks = [
+      {
+        description: "Contains Property 11 header comment",
+        test: (content) => content.includes("Property 11: Scroll Removal When Unnecessary")
+      },
+      {
+        description: "Validates Requirements 3.5",
+        test: (content) => content.includes("**Validates: Requirements 3.5**")
+      },
+      {
+        description: "Imports OverflowHandler",
+        test: (content) => content.includes("OverflowHandler")
+      },
+      {
+        description: "Exports test function",
+        test: (content) => content.includes("runScrollRemovalUnnecessaryPropertyTest")
+      },
+      {
+        description: "Uses fast-check library",
+        test: (content) => content.includes("fc.assert") && content.includes("fc.asyncProperty")
+      },
+      {
+        description: "Tests 100 iterations (numRuns: 100)",
+        test: (content) => content.includes("numRuns: 100")
+      },
+      {
+        description: "Property 1: Scrolling removed when maxHeight increases",
+        test: (content) => content.includes("Property 1: Scrolling removed when maxHeight increases to fit content")
+      },
+      {
+        description: "Property 2: Event listeners removed",
+        test: (content) => content.includes("Property 2: Event listeners removed when scrolling removed")
+      },
+      {
+        description: "Property 3: Container no longer tracked",
+        test: (content) => content.includes("Property 3: Container no longer tracked after scroll removal")
+      },
+      {
+        description: "Property 4: Scroll removal is idempotent",
+        test: (content) => content.includes("Property 4: Scroll removal is idempotent")
+      },
+      {
+        description: "Property 5: Elements remain in container",
+        test: (content) => content.includes("Property 5: Elements remain in container after scroll removal")
+      },
+      {
+        description: "Property 6: needsScrolling returns false",
+        test: (content) => content.includes("Property 6: needsScrolling returns false when content fits")
+      },
+      {
+        description: "Tests removeScrolling method",
+        test: (content) => content.includes("handler.removeScrolling(container)")
+      },
+      {
+        description: "Verifies overflow styles are cleared",
+        test: (content) => content.includes("overflowY") && content.includes("maxHeight")
+      },
+      {
+        description: "Verifies scroll indicators are removed",
+        test: (content) => content.includes("scroll-indicator")
+      },
+      {
+        description: "Verifies event handlers are removed",
+        test: (content) => content.includes("_scrollHandler") && content.includes("_touchStartHandler")
+      },
+      {
+        description: "Uses createTestElements helper",
+        test: (content) => content.includes("function createTestElements")
+      },
+      {
+        description: "Uses calculateTotalHeight helper",
+        test: (content) => content.includes("function calculateTotalHeight")
+      },
+      {
+        description: "Includes proper cleanup (destroy and removeChild)",
+        test: (content) => content.includes("destroy()") && content.includes("removeChild")
+      },
+      {
+        description: "Returns test results object",
+        test: (content) => content.includes("return results")
+      }
+    ];
+
+    // Validation checks for HTML file
+    const htmlFileChecks = [
+      {
+        description: "Contains proper title",
+        test: (content) => content.includes("Property Test: Scroll Removal When Unnecessary")
+      },
+      {
+        description: "References Property 11",
+        test: (content) => content.includes("Property 11")
+      },
+      {
+        description: "Validates Requirements 3.5",
+        test: (content) => content.includes("Requirements 3.5")
+      },
+      {
+        description: "Loads fast-check library",
+        test: (content) => content.includes("setup-fast-check.js")
+      },
+      {
+        description: "Loads OverflowHandler",
+        test: (content) => content.includes("overflow-handler.js")
+      },
+      {
+        description: "Loads property test file",
+        test: (content) => content.includes("scroll-removal-unnecessary-property.test.js")
+      },
+      {
+        description: "Has run test button",
+        test: (content) => content.includes("run-test-btn") && content.includes("runTest()")
+      },
+      {
+        description: "Has test output area",
+        test: (content) => content.includes("test-output")
+      },
+      {
+        description: "Calls runScrollRemovalUnnecessaryPropertyTest",
+        test: (content) => content.includes("runScrollRemovalUnnecessaryPropertyTest")
+      },
+      {
+        description: "Displays test results",
+        test: (content) => content.includes("results.passed") && content.includes("results.failed")
+      }
+    ];
+
+    async function loadFile(url) {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to load ${url}: ${response.statusText}`);
+      }
+      return await response.text();
+    }
+
+    function runChecks(content, checks) {
+      const results = [];
+      checks.forEach(check => {
+        const passed = check.test(content);
+        results.push({
+          description: check.description,
+          passed: passed
+        });
+      });
+      return results;
+    }
+
+    function renderResults(testResults, htmlResults) {
+      const totalPassed = testResults.filter(r => r.passed).length + htmlResults.filter(r => r.passed).length;
+      const totalFailed = testResults.filter(r => !r.passed).length + htmlResults.filter(r => !r.passed).length;
+      const totalChecks = totalPassed + totalFailed;
+      const successRate = (totalPassed / totalChecks * 100).toFixed(1);
+
+      const html = `
+        <div class="validation-section">
+          <h2>📄 Test File Validation (scroll-removal-unnecessary-property.test.js)</h2>
+          ${testResults.map(result => `
+            <div class="check-item ${result.passed ? 'pass' : 'fail'}">
+              <span class="check-icon">${result.passed ? '✓' : '✗'}</span>
+              <span class="check-text">${result.description}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="validation-section">
+          <h2>🌐 HTML Test Runner Validation (test-scroll-removal-unnecessary-property.html)</h2>
+          ${htmlResults.map(result => `
+            <div class="check-item ${result.passed ? 'pass' : 'fail'}">
+              <span class="check-icon">${result.passed ? '✓' : '✗'}</span>
+              <span class="check-text">${result.description}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="summary">
+          <h2>📊 Validation Summary</h2>
+          <div class="summary-stats">
+            <div class="stat-box">
+              <div class="stat-value">${totalChecks}</div>
+              <div class="stat-label">Total Checks</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">${totalPassed}</div>
+              <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">${totalFailed}</div>
+              <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">${successRate}%</div>
+              <div class="stat-label">Success Rate</div>
+            </div>
+          </div>
+          <div class="final-status ${totalFailed === 0 ? 'success' : 'failure'}">
+            ${totalFailed === 0 
+              ? '✅ All validations passed! Test implementation is correct.' 
+              : '❌ Some validations failed. Please review the implementation.'}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('validation-results').innerHTML = html;
+    }
+
+    async function runValidation() {
+      try {
+        // Load files
+        const testFileContent = await loadFile('scroll-removal-unnecessary-property.test.js');
+        const htmlFileContent = await loadFile('test-scroll-removal-unnecessary-property.html');
+
+        // Run checks
+        const testResults = runChecks(testFileContent, testFileChecks);
+        const htmlResults = runChecks(htmlFileContent, htmlFileChecks);
+
+        // Render results
+        renderResults(testResults, htmlResults);
+
+      } catch (error) {
+        document.getElementById('validation-results').innerHTML = `
+          <div class="validation-section">
+            <h2>❌ Error</h2>
+            <p style="color: #ef4444; padding: 20px;">
+              Failed to run validation: ${error.message}
+            </p>
+          </div>
+        `;
+      }
+    }
+
+    // Run validation on page load
+    window.addEventListener('load', runValidation);
+  </script>
+</body>
+</html>

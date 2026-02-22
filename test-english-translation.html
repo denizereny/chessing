@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Translation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 English Translation Test</h1>
+    
+    <div class="test-section">
+        <h2>Language Controls</h2>
+        <button onclick="testSetLanguage('en')">Set to English</button>
+        <button onclick="testSetLanguage('tr')">Set to Turkish</button>
+        <button onclick="clearStorage()">Clear LocalStorage</button>
+        <button onclick="checkStorage()">Check Storage</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Current State</h2>
+        <div id="currentState" class="info"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Elements</h2>
+        <div id="testElements">
+            <p id="lblNewGame">New Game</p>
+            <p id="lblSwitchSides">Switch Sides</p>
+            <p id="lblUndo">Undo</p>
+            <p id="lblSettings">Settings</p>
+            <p id="lblBoardColors">Board Colors</p>
+            <p id="lblLightSquares">Light Squares</p>
+            <p id="lblDarkSquares">Dark Squares</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="results"></div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        function log(message, isPass = null) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = 'test-result ' + (isPass === true ? 'pass' : isPass === false ? 'fail' : '');
+            div.textContent = message;
+            results.appendChild(div);
+        }
+
+        function updateCurrentState() {
+            const stateDiv = document.getElementById('currentState');
+            const savedLang = localStorage.getItem('4x5_lang');
+            const currentLangValue = window.currentLang || 'undefined';
+            
+            stateDiv.innerHTML = `
+                <strong>LocalStorage '4x5_lang':</strong> ${savedLang || 'not set'}<br>
+                <strong>Current Language Variable:</strong> ${currentLangValue}<br>
+                <strong>Sample Translation (newGame):</strong> ${t('newGame')}
+            `;
+        }
+
+        function testSetLanguage(lang) {
+            document.getElementById('results').innerHTML = '';
+            log(`Testing setLanguage('${lang}')...`);
+            
+            setLanguage(lang);
+            updateCurrentState();
+            
+            // Check if translations are applied
+            const newGameText = document.getElementById('lblNewGame').textContent;
+            const expectedText = lang === 'en' ? 'New Game' : 'Yeni Oyun';
+            
+            if (newGameText === expectedText) {
+                log(`✓ Translation applied correctly: "${newGameText}"`, true);
+            } else {
+                log(`✗ Translation failed. Expected: "${expectedText}", Got: "${newGameText}"`, false);
+            }
+            
+            // Check localStorage
+            const savedLang = localStorage.getItem('4x5_lang');
+            if (savedLang === lang) {
+                log(`✓ LocalStorage updated correctly: "${savedLang}"`, true);
+            } else {
+                log(`✗ LocalStorage not updated. Expected: "${lang}", Got: "${savedLang}"`, false);
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('4x5_lang');
+            document.getElementById('results').innerHTML = '';
+            log('LocalStorage cleared');
+            updateCurrentState();
+        }
+
+        function checkStorage() {
+            document.getElementById('results').innerHTML = '';
+            const savedLang = localStorage.getItem('4x5_lang');
+            log(`LocalStorage '4x5_lang': ${savedLang || 'not set'}`);
+            updateCurrentState();
+        }
+
+        // Initial state check
+        window.addEventListener('load', () => {
+            updateCurrentState();
+            log('Page loaded. Check current state above.');
+        });
+    </script>
+</body>
+</html>

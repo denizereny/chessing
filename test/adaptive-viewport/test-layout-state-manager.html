@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LayoutStateManager Tests</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .test-case {
+      margin: 15px 0;
+      padding: 15px;
+      border-left: 4px solid #2196F3;
+      background: #f9f9f9;
+    }
+
+    .test-case.pass {
+      border-left-color: #4CAF50;
+      background: #f1f8f4;
+    }
+
+    .test-case.fail {
+      border-left-color: #f44336;
+      background: #fef1f0;
+    }
+
+    .test-name {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .test-result {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .test-error {
+      color: #d32f2f;
+      font-family: monospace;
+      font-size: 12px;
+      margin-top: 8px;
+      padding: 8px;
+      background: #ffebee;
+      border-radius: 4px;
+    }
+
+    .summary {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #2196F3;
+    }
+
+    .summary.all-pass {
+      background: #e8f5e9;
+      border-left-color: #4CAF50;
+    }
+
+    .summary.has-failures {
+      background: #ffebee;
+      border-left-color: #f44336;
+    }
+
+    .stats {
+      display: flex;
+      gap: 30px;
+      margin-top: 10px;
+    }
+
+    .stat {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .stat.pass { color: #4CAF50; }
+    .stat.fail { color: #f44336; }
+    .stat.total { color: #2196F3; }
+
+    .cache-demo {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+
+    .cache-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .cache-stat {
+      background: white;
+      padding: 10px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .cache-stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2196F3;
+    }
+
+    .cache-stat-label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    button {
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #1976D2;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 LayoutStateManager Component Tests</h1>
+
+  <div class="summary" id="summary">
+    <h2>Test Summary</h2>
+    <div class="stats">
+      <div class="stat total">Total: <span id="total-tests">0</span></div>
+      <div class="stat pass">Passed: <span id="passed-tests">0</span></div>
+      <div class="stat fail">Failed: <span id="failed-tests">0</span></div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Cache Performance Demo</h2>
+    <div class="cache-demo">
+      <button onclick="runCacheDemo()">Run Cache Performance Test</button>
+      <button onclick="resetCacheDemo()">Reset</button>
+      <div class="cache-stats" id="cache-stats"></div>
+    </div>
+  </div>
+
+  <div id="test-results"></div>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/layout-state-manager.js"></script>
+
+  <script>
+    // Simple test framework
+    const testResults = [];
+    let currentSuite = '';
+
+    function describe(name, fn) {
+      currentSuite = name;
+      fn();
+    }
+
+    function test(name, fn) {
+      try {
+        fn();
+        testResults.push({ suite: currentSuite, name, passed: true });
+      } catch (error) {
+        testResults.push({ suite: currentSuite, name, passed: false, error: error.message });
+      }
+    }
+
+    function expect(value) {
+      return {
+        toBe(expected) {
+          if (value !== expected) {
+            throw new Error(`Expected ${expected} but got ${value}`);
+          }
+        },
+        toBeDefined() {
+          if (value === undefined) {
+            throw new Error('Expected value to be defined');
+          }
+        },
+        toBeNull() {
+          if (value !== null) {
+            throw new Error(`Expected null but got ${value}`);
+          }
+        },
+        toBeGreaterThan(expected) {
+          if (value <= expected) {
+            throw new Error(`Expected ${value} to be greater than ${expected}`);
+          }
+        },
+        toBeGreaterThanOrEqual(expected) {
+          if (value < expected) {
+            throw new Error(`Expected ${value} to be >= ${expected}`);
+          }
+        },
+        toBeLessThanOrEqual(expected) {
+          if (value > expected) {
+            throw new Error(`Expected ${value} to be <= ${expected}`);
+          }
+        },
+        toEqual(expected) {
+          if (JSON.stringify(value) !== JSON.stringify(expected)) {
+            throw new Error(`Expected ${JSON.stringify(expected)} but got ${JSON.stringify(value)}`);
+          }
+        }
+      };
+    }
+
+    // Helper to create mock state
+    function createMockState(timestamp = Date.now(), isValid = true) {
+      return {
+        timestamp,
+        viewportDimensions: {
+          width: 1024,
+          height: 768
+        },
+        configuration: {
+          boardSize: { width: 400, height: 400 },
+          boardPosition: { x: 0, y: 0, width: 400, height: 400, transform: '', zIndex: 1 },
+          elementPositions: new Map(),
+          layoutStrategy: 'horizontal',
+          requiresScrolling: false,
+          scrollContainers: []
+        },
+        elementDimensions: new Map(),
+        isValid
+      };
+    }
+
+    // Run tests
+    function runTests() {
+      testResults.length = 0;
+
+      // Test 1: Constructor
+      describe('LayoutStateManager Constructor', () => {
+        test('should create instance with default configuration', () => {
+          const manager = new LayoutStateManager();
+          expect(manager).toBeDefined();
+          expect(manager.currentState).toBeNull();
+          expect(manager.previousState).toBeNull();
+          manager.destroy();
+        });
+
+        test('should initialize with cache enabled', () => {
+          const manager = new LayoutStateManager();
+          expect(manager.cacheEnabled).toBe(true);
+          manager.destroy();
+        });
+
+        test('should initialize cache statistics to zero', () => {
+          const manager = new LayoutStateManager();
+          expect(manager.cacheHits).toBe(0);
+          expect(manager.cacheMisses).toBe(0);
+          manager.destroy();
+        });
+      });
+
+      // Test 2: State Management
+      describe('State Management', () => {
+        test('should save valid state', () => {
+          const manager = new LayoutStateManager();
+          const state = createMockState(1000);
+          manager.saveState(state);
+          
+          expect(manager.currentState).toBeDefined();
+          expect(manager.currentState.timestamp).toBe(1000);
+          manager.destroy();
+        });
+
+        test('should not save null state', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(null);
+          expect(manager.currentState).toBeNull();
+          manager.destroy();
+        });
+
+        test('should move current to previous on new save', () => {
+          const manager = new LayoutStateManager();
+          const state1 = createMockState(1000);
+          const state2 = createMockState(2000);
+          
+          manager.saveState(state1);
+          manager.saveState(state2);
+          
+          expect(manager.currentState.timestamp).toBe(2000);
+          expect(manager.previousState.timestamp).toBe(1000);
+          manager.destroy();
+        });
+
+        test('should add to history', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(createMockState(1000));
+          manager.saveState(createMockState(2000));
+          
+          expect(manager.stateHistory.length).toBe(1);
+          manager.destroy();
+        });
+      });
+
+      // Test 3: Get State
+      describe('Get State', () => {
+        test('should return null when no state', () => {
+          const manager = new LayoutStateManager();
+          expect(manager.getState()).toBeNull();
+          manager.destroy();
+        });
+
+        test('should return current state', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(createMockState(1000));
+          
+          const state = manager.getState();
+          expect(state).toBeDefined();
+          expect(state.timestamp).toBe(1000);
+          manager.destroy();
+        });
+
+        test('should return copy not reference', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(createMockState(1000));
+          
+          const state = manager.getState();
+          state.timestamp = 9999;
+          
+          expect(manager.currentState.timestamp).toBe(1000);
+          manager.destroy();
+        });
+      });
+
+      // Test 4: Previous State
+      describe('Previous State', () => {
+        test('should return null when no previous', () => {
+          const manager = new LayoutStateManager();
+          expect(manager.getPreviousState()).toBeNull();
+          manager.destroy();
+        });
+
+        test('should return previous valid state', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(createMockState(1000, true));
+          manager.saveState(createMockState(2000, true));
+          
+          const prev = manager.getPreviousState();
+          expect(prev).toBeDefined();
+          expect(prev.timestamp).toBe(1000);
+          manager.destroy();
+        });
+
+        test('should skip invalid previous state', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(createMockState(1000, true));
+          manager.saveState(createMockState(2000, false));
+          manager.saveState(createMockState(3000, true));
+          
+          const prev = manager.getPreviousState();
+          expect(prev.timestamp).toBe(1000);
+          manager.destroy();
+        });
+      });
+
+      // Test 5: Dimension Caching
+      describe('Dimension Caching', () => {
+        test('should cache element dimensions', () => {
+          const manager = new LayoutStateManager();
+          const element = document.createElement('div');
+          document.body.appendChild(element);
+          
+          const rect = manager.cacheElementDimensions(element);
+          
+          expect(rect).toBeDefined();
+          expect(manager.dimensionCache.size).toBe(1);
+          
+          document.body.removeChild(element);
+          manager.destroy();
+        });
+
+        test('should return cached dimensions', () => {
+          const manager = new LayoutStateManager();
+          const element = document.createElement('div');
+          document.body.appendChild(element);
+          
+          manager.cacheElementDimensions(element);
+          const cached = manager.getCachedDimensions(element);
+          
+          expect(cached).toBeDefined();
+          expect(manager.cacheHits).toBe(1);
+          
+          document.body.removeChild(element);
+          manager.destroy();
+        });
+
+        test('should return null for uncached element', () => {
+          const manager = new LayoutStateManager();
+          const element = document.createElement('div');
+          
+          const cached = manager.getCachedDimensions(element);
+          
+          expect(cached).toBeNull();
+          expect(manager.cacheMisses).toBe(1);
+          manager.destroy();
+        });
+
+        test('should track cache hits and misses', () => {
+          const manager = new LayoutStateManager();
+          const element = document.createElement('div');
+          document.body.appendChild(element);
+          
+          manager.cacheElementDimensions(element);
+          manager.getCachedDimensions(element); // Hit
+          manager.getCachedDimensions(document.createElement('div')); // Miss
+          
+          expect(manager.cacheHits).toBe(1);
+          expect(manager.cacheMisses).toBe(1);
+          
+          document.body.removeChild(element);
+          manager.destroy();
+        });
+      });
+
+      // Test 6: Cache Invalidation
+      describe('Cache Invalidation', () => {
+        test('should invalidate entire cache', () => {
+          const manager = new LayoutStateManager();
+          const el1 = document.createElement('div');
+          const el2 = document.createElement('div');
+          document.body.appendChild(el1);
+          document.body.appendChild(el2);
+          
+          manager.cacheElementDimensions(el1);
+          manager.cacheElementDimensions(el2);
+          
+          manager.invalidateCache();
+          
+          expect(manager.dimensionCache.size).toBe(0);
+          
+          document.body.removeChild(el1);
+          document.body.removeChild(el2);
+          manager.destroy();
+        });
+
+        test('should invalidate specific element', () => {
+          const manager = new LayoutStateManager();
+          const el1 = document.createElement('div');
+          const el2 = document.createElement('div');
+          document.body.appendChild(el1);
+          document.body.appendChild(el2);
+          
+          manager.cacheElementDimensions(el1);
+          manager.cacheElementDimensions(el2);
+          
+          manager.invalidateCache(el1);
+          
+          expect(manager.dimensionCache.size).toBe(1);
+          expect(manager.getCachedDimensions(el2)).toBeDefined();
+          
+          document.body.removeChild(el1);
+          document.body.removeChild(el2);
+          manager.destroy();
+        });
+      });
+
+      // Test 7: Cache Statistics
+      describe('Cache Statistics', () => {
+        test('should calculate hit rate correctly', () => {
+          const manager = new LayoutStateManager();
+          const element = document.createElement('div');
+          document.body.appendChild(element);
+          
+          manager.cacheElementDimensions(element);
+          manager.getCachedDimensions(element); // Hit
+          manager.getCachedDimensions(element); // Hit
+          
+          const hitRate = manager.getCacheHitRate();
+          expect(hitRate).toBe(100);
+          
+          document.body.removeChild(element);
+          manager.destroy();
+        });
+
+        test('should return cache stats', () => {
+          const manager = new LayoutStateManager();
+          const element = document.createElement('div');
+          document.body.appendChild(element);
+          
+          manager.cacheElementDimensions(element);
+          manager.getCachedDimensions(element);
+          
+          const stats = manager.getCacheStats();
+          expect(stats.size).toBe(1);
+          expect(stats.hits).toBe(1);
+          expect(stats.enabled).toBe(true);
+          
+          document.body.removeChild(element);
+          manager.destroy();
+        });
+      });
+
+      // Test 8: Cache Performance (Property 26)
+      describe('Cache Performance (Property 26)', () => {
+        test('should achieve >80% hit rate after initial caching', () => {
+          const manager = new LayoutStateManager();
+          const elements = [];
+          
+          // Create and cache 10 elements
+          for (let i = 0; i < 10; i++) {
+            const el = document.createElement('div');
+            document.body.appendChild(el);
+            elements.push(el);
+            manager.cacheElementDimensions(el);
+          }
+          
+          // Query each element 10 times
+          for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+              manager.getCachedDimensions(elements[i]);
+            }
+          }
+          
+          const hitRate = manager.getCacheHitRate();
+          expect(hitRate).toBeGreaterThan(80);
+          
+          elements.forEach(el => document.body.removeChild(el));
+          manager.destroy();
+        });
+      });
+
+      // Test 9: State History
+      describe('State History', () => {
+        test('should maintain history', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(createMockState(1000));
+          manager.saveState(createMockState(2000));
+          manager.saveState(createMockState(3000));
+          
+          const history = manager.getStateHistory();
+          expect(history.length).toBe(2);
+          manager.destroy();
+        });
+
+        test('should clear history', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(createMockState(1000));
+          manager.saveState(createMockState(2000));
+          
+          manager.clearStateHistory();
+          
+          expect(manager.stateHistory.length).toBe(0);
+          manager.destroy();
+        });
+      });
+
+      // Test 10: Export/Import
+      describe('Export/Import State', () => {
+        test('should export state', () => {
+          const manager = new LayoutStateManager();
+          manager.saveState(createMockState(1000));
+          
+          const exported = manager.exportState();
+          
+          expect(exported.current).toBeDefined();
+          expect(exported.cacheStats).toBeDefined();
+          manager.destroy();
+        });
+
+        test('should import state', () => {
+          const manager = new LayoutStateManager();
+          const data = {
+            current: createMockState(1000),
+            previous: null,
+            history: []
+          };
+          
+          manager.importState(data);
+          
+          expect(manager.currentState.timestamp).toBe(1000);
+          manager.destroy();
+        });
+      });
+
+      // Display results
+      displayResults();
+    }
+
+    function displayResults() {
+      const resultsDiv = document.getElementById('test-results');
+      const summaryDiv = document.getElementById('summary');
+      
+      const passed = testResults.filter(r => r.passed).length;
+      const failed = testResults.filter(r => !r.passed).length;
+      const total = testResults.length;
+
+      document.getElementById('total-tests').textContent = total;
+      document.getElementById('passed-tests').textContent = passed;
+      document.getElementById('failed-tests').textContent = failed;
+
+      if (failed === 0) {
+        summaryDiv.className = 'summary all-pass';
+      } else {
+        summaryDiv.className = 'summary has-failures';
+      }
+
+      let html = '';
+      const suites = [...new Set(testResults.map(r => r.suite))];
+
+      suites.forEach(suite => {
+        html += `<div class="test-section"><h2>${suite}</h2>`;
+        
+        const suiteTests = testResults.filter(r => r.suite === suite);
+        suiteTests.forEach(result => {
+          html += `
+            <div class="test-case ${result.passed ? 'pass' : 'fail'}">
+              <div class="test-name">${result.passed ? '✓' : '✗'} ${result.name}</div>
+              <div class="test-result">${result.passed ? 'Passed' : 'Failed'}</div>
+              ${result.error ? `<div class="test-error">${result.error}</div>` : ''}
+            </div>
+          `;
+        });
+
+        html += '</div>';
+      });
+
+      resultsDiv.innerHTML = html;
+    }
+
+    // Cache demo
+    let demoManager = null;
+
+    function runCacheDemo() {
+      if (demoManager) {
+        demoManager.destroy();
+      }
+      
+      demoManager = new LayoutStateManager();
+      const elements = [];
+      
+      // Create 20 elements
+      for (let i = 0; i < 20; i++) {
+        const el = document.createElement('div');
+        el.style.width = `${100 + i * 10}px`;
+        el.style.height = `${100 + i * 10}px`;
+        document.body.appendChild(el);
+        elements.push(el);
+      }
+      
+      // Cache all elements
+      elements.forEach(el => demoManager.cacheElementDimensions(el));
+      
+      // Perform 100 random queries
+      for (let i = 0; i < 100; i++) {
+        const randomEl = elements[Math.floor(Math.random() * elements.length)];
+        demoManager.getElementDimensions(randomEl);
+      }
+      
+      // Display stats
+      const stats = demoManager.getCacheStats();
+      const statsDiv = document.getElementById('cache-stats');
+      statsDiv.innerHTML = `
+        <div class="cache-stat">
+          <div class="cache-stat-value">${stats.size}</div>
+          <div class="cache-stat-label">Cache Size</div>
+        </div>
+        <div class="cache-stat">
+          <div class="cache-stat-value">${stats.hits}</div>
+          <div class="cache-stat-label">Cache Hits</div>
+        </div>
+        <div class="cache-stat">
+          <div class="cache-stat-value">${stats.misses}</div>
+          <div class="cache-stat-label">Cache Misses</div>
+        </div>
+        <div class="cache-stat">
+          <div class="cache-stat-value">${stats.hitRate.toFixed(1)}%</div>
+          <div class="cache-stat-label">Hit Rate</div>
+        </div>
+      `;
+      
+      // Cleanup
+      elements.forEach(el => document.body.removeChild(el));
+    }
+
+    function resetCacheDemo() {
+      if (demoManager) {
+        demoManager.destroy();
+        demoManager = null;
+      }
+      document.getElementById('cache-stats').innerHTML = '';
+    }
+
+    // Run tests on load
+    window.addEventListener('load', () => {
+      runTests();
+    });
+  </script>
+</body>
+</html>
+

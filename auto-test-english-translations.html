@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Otomatik İngilizce Çeviri Test Sistemi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .status-box {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            border-left: 5px solid #0c5460;
+            color: #0c5460;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            border-left: 5px solid #155724;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            border-left: 5px solid #721c24;
+            color: #721c24;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            border-left: 5px solid #856404;
+            color: #856404;
+        }
+        
+        .results-container {
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #6c757d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .result-item.pass {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .result-item.fail {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        .result-label {
+            font-weight: bold;
+            flex: 1;
+        }
+        
+        .result-value {
+            font-family: 'Courier New', monospace;
+            background: rgba(0,0,0,0.1);
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 0 10px;
+            flex: 2;
+        }
+        
+        .result-expected {
+            font-family: 'Courier New', monospace;
+            color: #666;
+            font-size: 0.9em;
+            flex: 2;
+        }
+        
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary-card h3 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Otomatik İngilizce Çeviri Test Sistemi</h1>
+            <p>Tüm çevirileri otomatik olarak test eder ve rapor oluşturur</p>
+        </div>
+        
+        <div class="content">
+            <div class="test-controls">
+                <button class="btn btn-primary" onclick="runFullTest()">
+                    <span>🚀</span>
+                    <span>Tam Test Başlat</span>
+                </button>
+                <button class="btn btn-success" onclick="testEnglish()">
+                    <span>🇬🇧</span>
+                    <span>Sadece İngilizce Test Et</span>
+                </button>
+                <button class="btn btn-warning" onclick="testTurkish()">
+                    <span>🇹🇷</span>
+                    <span>Sadece Türkçe Test Et</span>
+                </button>
+                <button class="btn btn-danger" onclick="clearResults()">
+                    <span>🗑️</span>
+                    <span>Sonuçları Temizle</span>
+                </button>
+            </div>
+            
+            <div id="statusBox" class="status-box status-info">
+                <strong>📋 Hazır:</strong> Test başlatmak için yukarıdaki butonlardan birini tıklayın.
+            </div>
+            
+            <div id="progressContainer" class="hidden">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%">0%</div>
+                </div>
+            </div>
+            
+            <div id="summaryContainer" class="hidden">
+                <div class="summary">
+                    <div class="summary-card">
+                        <h3 id="totalTests">0</h3>
+                        <p>Toplam Test</p>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                        <h3 id="passedTests">0</h3>
+                        <p>Başarılı</p>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+                        <h3 id="failedTests">0</h3>
+                        <p>Başarısız</p>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #ffc107, #ff9800);">
+                        <h3 id="successRate">0%</h3>
+                        <p>Başarı Oranı</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="resultsContainer" class="results-container hidden">
+                <h2>📊 Test Sonuçları</h2>
+                <div id="results"></div>
+            </div>
+            
+            <div id="reportContainer" class="hidden">
+                <h2>📝 Detaylı Rapor</h2>
+                <div id="report" class="code-block"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        // Test verileri
+        const testCases = {
+            english: {
+                newGame: "New Game",
+                switchSides: "Switch Sides",
+                whitePlaying: "White Playing",
+                blackPlaying: "Black Playing",
+                moveHistory: "Move History",
+                boardColors: "Board Colors",
+                lightSquares: "Light Squares",
+                darkSquares: "Dark Squares",
+                whitePieces: "White Pieces",
+                blackPieces: "Black Pieces",
+                classic: "Classic",
+                wood: "Wood",
+                marble: "Marble",
+                neon: "Neon",
+                ocean: "Ocean",
+                reset: "Reset",
+                settings: "Settings",
+                aiDifficulty: "AI Difficulty:",
+                easy: "🟢 Easy (Level 1)",
+                medium: "🟡 Medium (Level 2)",
+                hard: "🔴 Hard (Level 3)",
+                expert: "💀 Expert (Level 4)",
+                pieceSetup: "Piece Setup",
+                analyzePosition: "Analyze Position",
+                sharePosition: "Share Position"
+            },
+            turkish: {
+                newGame: "Yeni Oyun",
+                switchSides: "Taraf Değiştir",
+                whitePlaying: "Beyaz Oynuyor",
+                blackPlaying: "Siyah Oynuyor",
+                moveHistory: "Hamle Geçmişi",
+                boardColors: "Tahta Renkleri",
+                lightSquares: "Açık Kareler",
+                darkSquares: "Koyu Kareler",
+                whitePieces: "Beyaz Taşlar",
+                blackPieces: "Siyah Taşlar",
+                classic: "Klasik",
+                wood: "Ahşap",
+                marble: "Mermer",
+                neon: "Neon",
+                ocean: "Okyanus",
+                reset: "Sıfırla",
+                settings: "Ayarlar",
+                aiDifficulty: "AI Zorluğu:",
+                easy: "🟢 Kolay (Seviye 1)",
+                medium: "🟡 Orta (Seviye 2)",
+                hard: "🔴 Zor (Seviye 3)",
+                expert: "💀 Uzman (Seviye 4)",
+                pieceSetup: "Taş Düzeni",
+                analyzePosition: "Pozisyonu Analiz Et",
+                sharePosition: "Pozisyonu Paylaş"
+            }
+        };
+
+        let testResults = [];
+        let totalTests = 0;
+        let passedTests = 0;
+        let failedTests = 0;
+
+        function showStatus(message, type = 'info') {
+            const statusBox = document.getElementById('statusBox');
+            statusBox.className = `status-box status-${type}`;
+            statusBox.innerHTML = message;
+        }
+
+        function updateProgress(current, total) {
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const percentage = Math.round((current / total) * 100);
+            
+            progressContainer.classList.remove('hidden');
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = percentage + '%';
+        }
+
+        function updateSummary() {
+            const summaryContainer = document.getElementById('summaryContainer');
+            summaryContainer.classList.remove('hidden');
+            
+            document.getElementById('totalTests').textContent = totalTests;
+            document.getElementById('passedTests').textContent = passedTests;
+            document.getElementById('failedTests').textContent = failedTests;
+            
+            const successRate = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0;
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+
+        function addResult(key, actual, expected, passed) {
+            testResults.push({ key, actual, expected, passed });
+            
+            const resultsDiv = document.getElementById('results');
+            const resultItem = document.createElement('div');
+            resultItem.className = `result-item ${passed ? 'pass' : 'fail'}`;
+            
+            resultItem.innerHTML = `
+                <span class="result-label">${passed ? '✅' : '❌'} ${key}</span>
+                <span class="result-value">${actual}</span>
+                <span class="result-expected">Beklenen: ${expected}</span>
+            `;
+            
+            resultsDiv.appendChild(resultItem);
+        }
+
+        function generateReport() {
+            const reportContainer = document.getElementById('reportContainer');
+            const reportDiv = document.getElementById('report');
+            
+            reportContainer.classList.remove('hidden');
+            
+            let report = `
+=================================================
+   İNGİLİZCE ÇEVİRİ TEST RAPORU
+=================================================
+
+Tarih: ${new Date().toLocaleString('tr-TR')}
+Toplam Test: ${totalTests}
+Başarılı: ${passedTests}
+Başarısız: ${failedTests}
+Başarı Oranı: ${Math.round((passedTests / totalTests) * 100)}%
+
+=================================================
+   BAŞARISIZ TESTLER
+=================================================
+
+`;
+
+            const failedResults = testResults.filter(r => !r.passed);
+            
+            if (failedResults.length === 0) {
+                report += "✅ Tüm testler başarılı!\n\n";
+            } else {
+                failedResults.forEach(result => {
+                    report += `❌ ${result.key}\n`;
+                    report += `   Mevcut: "${result.actual}"\n`;
+                    report += `   Beklenen: "${result.expected}"\n\n`;
+                });
+            }
+
+            report += `
+=================================================
+   ÖNERİLER
+=================================================
+
+`;
+
+            if (failedResults.length > 0) {
+                report += `1. localStorage'ı temizleyin: localStorage.clear()\n`;
+                report += `2. Sayfayı yenileyin (F5)\n`;
+                report += `3. Dil seçiciyi İngilizce'ye ayarlayın\n`;
+                report += `4. Tarayıcı önbelleğini temizleyin (Ctrl+Shift+Delete)\n\n`;
+                report += `Sorun devam ediyorsa:\n`;
+                report += `- Console'da (F12) şu komutu çalıştırın: setLanguage('en')\n`;
+                report += `- updateUIText() fonksiyonunu manuel çağırın\n`;
+            } else {
+                report += `✅ Tüm çeviriler doğru çalışıyor!\n`;
+                report += `İngilizce dil desteği tam olarak aktif.\n`;
+            }
+
+            report += `\n=================================================\n`;
+            
+            reportDiv.textContent = report;
+        }
+
+        async function testLanguage(lang) {
+            const testData = lang === 'en' ? testCases.english : testCases.turkish;
+            const langName = lang === 'en' ? 'İngilizce' : 'Türkçe';
+            
+            showStatus(`🔄 ${langName} çevirileri test ediliyor...`, 'info');
+            
+            // Dili ayarla
+            if (typeof setLanguage === 'function') {
+                setLanguage(lang);
+            } else {
+                showStatus(`❌ setLanguage fonksiyonu bulunamadı!`, 'error');
+                return;
+            }
+            
+            // Kısa bir bekleme
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Testleri çalıştır
+            const keys = Object.keys(testData);
+            totalTests = keys.length;
+            passedTests = 0;
+            failedTests = 0;
+            testResults = [];
+            
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('resultsContainer').classList.remove('hidden');
+            
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i];
+                const expected = testData[key];
+                const actual = t(key);
+                const passed = actual === expected;
+                
+                if (passed) {
+                    passedTests++;
+                } else {
+                    failedTests++;
+                }
+                
+                addResult(key, actual, expected, passed);
+                updateProgress(i + 1, keys.length);
+                updateSummary();
+                
+                // UI'ın güncellenmesi için kısa bekleme
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            
+            generateReport();
+            
+            if (failedTests === 0) {
+                showStatus(`✅ Tüm ${langName} çevirileri başarılı! (${passedTests}/${totalTests})`, 'success');
+            } else {
+                showStatus(`⚠️ ${failedTests} test başarısız oldu. Detaylar için aşağıya bakın.`, 'warning');
+            }
+        }
+
+        async function testEnglish() {
+            await testLanguage('en');
+        }
+
+        async function testTurkish() {
+            await testLanguage('tr');
+        }
+
+        async function runFullTest() {
+            showStatus('🚀 Tam test başlatılıyor...', 'info');
+            
+            // Önce İngilizce test et
+            await testEnglish();
+            
+            // Kısa bekleme
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Sonra Türkçe test et
+            await testTurkish();
+            
+            showStatus('✅ Tam test tamamlandı!', 'success');
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('summaryContainer').classList.add('hidden');
+            document.getElementById('progressContainer').classList.add('hidden');
+            document.getElementById('reportContainer').classList.add('hidden');
+            
+            testResults = [];
+            totalTests = 0;
+            passedTests = 0;
+            failedTests = 0;
+            
+            showStatus('📋 Hazır: Test başlatmak için yukarıdaki butonlardan birini tıklayın.', 'info');
+        }
+
+        // Sayfa yüklendiğinde kontrol
+        window.addEventListener('load', () => {
+            if (typeof setLanguage !== 'function') {
+                showStatus('❌ HATA: translations.js yüklenemedi! Lütfen ana sayfada bu testi çalıştırın.', 'error');
+            } else {
+                showStatus('✅ Sistem hazır! Test başlatmak için yukarıdaki butonlardan birini tıklayın.', 'success');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translation Fix Test - Simple</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .test-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    button {
+      padding: 12px 24px;
+      margin: 5px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .lang-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .lang-btn:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+    }
+    
+    .action-btn {
+      background: #2196F3;
+      color: white;
+    }
+    
+    .action-btn:hover {
+      background: #0b7dda;
+      transform: translateY(-2px);
+    }
+    
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    
+    .color-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 1000;
+      min-width: 400px;
+    }
+    
+    .color-panel.hidden {
+      display: none;
+    }
+    
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .close-panel {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+    }
+    
+    .color-section {
+      margin: 15px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 6px;
+    }
+    
+    .preset-buttons button {
+      margin: 5px;
+      padding: 8px 16px;
+      background: #9C27B0;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .preset-buttons button:hover {
+      background: #7B1FA2;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-box">
+    <h1>🎨 Çeviri Düzeltme Testi</h1>
+    <p class="subtitle">Board Colors panelinin çevirilerini test edin</p>
+    
+    <div>
+      <h3>1. Dil Seçin:</h3>
+      <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 English</button>
+      <button class="lang-btn" onclick="setLanguage('tr')">🇹🇷 Türkçe</button>
+      <button class="lang-btn" onclick="setLanguage('es')">🇪🇸 Español</button>
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <h3>2. Paneli Açın:</h3>
+      <button class="action-btn" onclick="toggleColorPanel()">🎨 Board Colors Aç</button>
+    </div>
+    
+    <div class="status">
+      <strong>Mevcut Dil:</strong> <span id="currentLang">English</span><br>
+      <strong>Test:</strong> Dil değiştirin, sonra "Board Colors Aç" butonuna tıklayın. Panel içindeki tüm yazılar seçili dilde olmalı!
+    </div>
+  </div>
+  
+  <!-- Color Panel -->
+  <div id="colorPanel" class="color-panel hidden">
+    <div class="panel-header">
+      <h3 id="colorPanelTitle">🎨 Color Settings</h3>
+      <button onclick="toggleColorPanel()" class="close-panel">✖</button>
+    </div>
+    
+    <div class="color-section">
+      <h4 id="lblBoardColors">📋 Board Colors</h4>
+      <p>Light Squares / Dark Squares</p>
+    </div>
+    
+    <div class="color-section">
+      <h4 id="lblPieceColors">♔ Piece Colors</h4>
+      <div>
+        <span id="lblWhitePiecesPreview">White</span> | 
+        <span id="lblBlackPiecesPreview">Black</span>
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <h4 id="lblColorPresets">🎯 Color Presets</h4>
+      <div class="preset-buttons">
+        <button id="btnClassicColors">Classic</button>
+        <button id="btnWoodColors">Wood</button>
+        <button id="btnMarbleColors">Marble</button>
+        <button id="btnNeonColors">Neon</button>
+        <button id="btnOceanColors">Ocean</button>
+        <button id="btnResetColors">Reset</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/translations.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    // Initialize
+    setLanguage('tr');
+    document.getElementById('currentLang').textContent = 'Türkçe';
+    
+    // Override setLanguage to update display
+    const originalSetLanguage = setLanguage;
+    setLanguage = function(lang) {
+      originalSetLanguage(lang);
+      const langNames = { en: 'English', tr: 'Türkçe', es: 'Español' };
+      document.getElementById('currentLang').textContent = langNames[lang] || lang;
+    };
+    
+    console.log('✅ Test sayfası hazır!');
+    console.log('📝 Adımlar:');
+    console.log('1. Bir dil seçin (örn: Türkçe)');
+    console.log('2. "Board Colors Aç" butonuna tıklayın');
+    console.log('3. Paneldeki tüm yazıların Türkçe olduğunu doğrulayın');
+  </script>
+</body>
+</html>

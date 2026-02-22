@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .element {
+            padding: 10px;
+            margin: 8px 0;
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            border-radius: 4px;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .lang-btn {
+            background: #2196F3;
+        }
+        .lang-btn:hover {
+            background: #0b7dda;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #2196F3;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        .error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Translation Debug Test</h1>
+    
+    <div class="test-box">
+        <h2>Language Selection</h2>
+        <button class="lang-btn" onclick="testLanguage('en')">🇬🇧 English</button>
+        <button class="lang-btn" onclick="testLanguage('tr')">🇹🇷 Türkçe</button>
+        <button class="lang-btn" onclick="testLanguage('es')">🇪🇸 Español</button>
+        <div id="langStatus" class="status success" style="margin-top: 15px;">
+            Current: <strong id="currentLang">en</strong>
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test Elements (Like in Main App)</h2>
+        
+        <div class="element">
+            <strong>lblWhiteCaptured:</strong>
+            <h3 id="lblWhiteCaptured"><span class="icon">⚪</span> White Captured</h3>
+        </div>
+        
+        <div class="element">
+            <strong>lblBlackCaptured:</strong>
+            <h3 id="lblBlackCaptured"><span class="icon">⚫</span> Black Captured</h3>
+        </div>
+        
+        <div class="element">
+            <strong>historyTitle:</strong>
+            <h3 id="historyTitle"><span class="icon">📜</span> Move History</h3>
+        </div>
+        
+        <div class="element">
+            <strong>statusText:</strong>
+            <div id="statusText" style="font-size: 20px; padding: 10px;">White Playing 👤</div>
+        </div>
+        
+        <div class="element">
+            <strong>Color Panel Buttons:</strong>
+            <div style="margin-top: 10px;">
+                <button id="btnClassicColors">Classic</button>
+                <button id="btnWoodColors">Wood</button>
+                <button id="btnMarbleColors">Marble</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h2>Translation Keys Test</h2>
+        <button onclick="testAllKeys()">Test All Translation Keys</button>
+        <div id="keysResult" style="margin-top: 15px;"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Manual Update Test</h2>
+        <button onclick="manualUpdate()">Manually Call updateUIText()</button>
+        <button onclick="manualBilgiGuncelle()">Manually Call bilgiGuncelle()</button>
+        <div id="manualResult" style="margin-top: 15px;"></div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script src="js/game.js"></script>
+    <script>
+        let beyazSirasi = true;
+        let oyunBitti = false;
+        let bilgisayarRengi = "siyah";
+
+        function testLanguage(lang) {
+            console.log(`🌍 Changing language to: ${lang}`);
+            window.setLanguage(lang);
+            document.getElementById('currentLang').textContent = lang;
+            
+            // Log what t() returns for key translations
+            console.log('Translation test:');
+            console.log('  whiteCaptured:', t('whiteCaptured'));
+            console.log('  blackCaptured:', t('blackCaptured'));
+            console.log('  moveHistory:', t('moveHistory'));
+            console.log('  whitePlaying:', t('whitePlaying'));
+            console.log('  classic:', t('classic'));
+            
+            showStatus('langStatus', `✅ Language changed to ${lang.toUpperCase()}`, 'success');
+        }
+
+        function testAllKeys() {
+            const keys = [
+                'whiteCaptured', 'blackCaptured', 'moveHistory',
+                'whitePlaying', 'blackPlaying', 'whiteWon', 'blackWon',
+                'classic', 'wood', 'marble', 'neon', 'ocean'
+            ];
+            
+            let html = '<div style="background: #f5f5f5; padding: 15px; border-radius: 6px;">';
+            keys.forEach(key => {
+                const value = t(key);
+                const isValid = value && value !== key;
+                html += `<div style="padding: 5px; border-bottom: 1px solid #ddd;">
+                    <strong>${key}:</strong> ${value} 
+                    ${isValid ? '✅' : '❌'}
+                </div>`;
+            });
+            html += '</div>';
+            
+            document.getElementById('keysResult').innerHTML = html;
+        }
+
+        function manualUpdate() {
+            console.log('📝 Manually calling updateUIText()');
+            if (typeof window.updateUIText === 'function') {
+                window.updateUIText();
+                showStatus('manualResult', '✅ updateUIText() called successfully', 'success');
+            } else {
+                showStatus('manualResult', '❌ updateUIText() not found!', 'error');
+            }
+        }
+
+        function manualBilgiGuncelle() {
+            console.log('📝 Manually calling bilgiGuncelle()');
+            if (typeof window.bilgiGuncelle === 'function') {
+                window.bilgiGuncelle();
+                showStatus('manualResult', '✅ bilgiGuncelle() called successfully', 'success');
+            } else {
+                showStatus('manualResult', '❌ bilgiGuncelle() not found!', 'error');
+            }
+        }
+
+        function showStatus(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.className = `status ${type}`;
+            el.innerHTML = message;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page loaded');
+            console.log('window.setLanguage:', typeof window.setLanguage);
+            console.log('window.updateUIText:', typeof window.updateUIText);
+            console.log('window.t:', typeof window.t);
+            console.log('window.bilgiGuncelle:', typeof window.bilgiGuncelle);
+            
+            testAllKeys();
+        });
+    </script>
+</body>
+</html>

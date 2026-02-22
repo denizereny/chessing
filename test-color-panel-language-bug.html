@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renk Paneli Dil Sorunu Testi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .test-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #d32f2f;
+      border-bottom: 3px solid #d32f2f;
+      padding-bottom: 10px;
+    }
+    
+    .bug-description {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    .steps {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    
+    .steps ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .steps li {
+      margin: 8px 0;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .control-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .control-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555;
+    }
+    
+    select, button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    button {
+      background: #2196F3;
+      color: white;
+      border-color: #2196F3;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: #1976D2;
+      border-color: #1976D2;
+    }
+    
+    .color-panel {
+      background: white;
+      padding: 20px;
+      border: 3px solid #4CAF50;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .color-panel.hidden {
+      display: none;
+    }
+    
+    .preset-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .preset-buttons button {
+      padding: 12px;
+      background: white;
+      color: #333;
+      border: 2px solid #4CAF50;
+    }
+    
+    .preset-buttons button:hover {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .status {
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    
+    .status.info {
+      background: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      color: #1976D2;
+    }
+    
+    .status.success {
+      background: #e8f5e9;
+      border-left: 4px solid #4CAF50;
+      color: #2e7d32;
+    }
+    
+    .status.error {
+      background: #ffebee;
+      border-left: 4px solid #f44336;
+      color: #c62828;
+    }
+    
+    .debug-info {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    
+    .debug-info pre {
+      margin: 5px 0;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🐛 Renk Paneli Dil Sorunu - Reprodüksiyon Testi</h1>
+    
+    <div class="bug-description">
+      <h3>🔴 Sorun:</h3>
+      <p>Oyundaki 3 nokta menüsündeki tahta renk ayarlarında, İngilizce'ye geçince butonlar çevrilmiyor, Türkçe'de kalıyor.</p>
+    </div>
+    
+    <div class="steps">
+      <h3>📋 Test Adımları:</h3>
+      <ol>
+        <li>Dil seçiciyi kullanarak dili değiştirin</li>
+        <li>"Renk Panelini Aç" butonuna tıklayın</li>
+        <li>Renk preset butonlarının dilini kontrol edin</li>
+        <li>Beklenen: Butonlar seçilen dilde olmalı</li>
+        <li>Gerçek: Butonlar Türkçe'de kalıyor (BUG)</li>
+      </ol>
+    </div>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label for="languageSelect">🌍 Dil Seçin:</label>
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+          <option value="en">🇬🇧 English</option>
+          <option value="tr" selected>🇹🇷 Türkçe</option>
+          <option value="es">🇪🇸 Español</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label>&nbsp;</label>
+        <button onclick="toggleColorPanel()">🎨 Renk Panelini Aç/Kapat</button>
+      </div>
+    </div>
+    
+    <div id="statusMessage" class="status info">
+      ℹ️ Başlangıç dili: Türkçe. Dili değiştirin ve renk panelini açın.
+    </div>
+    
+    <div class="color-panel hidden" id="colorPanel">
+      <h3 id="colorPanelTitle">🎨 Renk Ayarları</h3>
+      <h4 id="lblColorPresets">🎯 Renk Şablonları</h4>
+      <div class="preset-buttons">
+        <button id="btnClassicColors">Klasik</button>
+        <button id="btnWoodColors">Ahşap</button>
+        <button id="btnMarbleColors">Mermer</button>
+        <button id="btnNeonColors">Neon</button>
+        <button id="btnOceanColors">Okyanus</button>
+        <button id="btnResetColors">Sıfırla</button>
+      </div>
+    </div>
+    
+    <div class="debug-info">
+      <h3>🔍 Debug Bilgisi:</h3>
+      <div id="debugInfo"></div>
+    </div>
+  </div>
+
+  <script src="js/translations.js"></script>
+  <script>
+    let panelOpenCount = 0;
+    let languageChangeCount = 0;
+    
+    function changeLanguage(lang) {
+      languageChangeCount++;
+      console.log(`\n=== Dil Değişikliği #${languageChangeCount}: ${lang} ===`);
+      
+      // Call the global setLanguage function from translations.js
+      if (typeof window.setLanguage === 'function') {
+        window.setLanguage(lang);
+        updateStatus(`✓ Dil değiştirildi: ${lang}`, 'success');
+        updateDebugInfo();
+      } else {
+        updateStatus('✗ setLanguage fonksiyonu bulunamadı!', 'error');
+      }
+    }
+    
+    function toggleColorPanel() {
+      const panel = document.getElementById('colorPanel');
+      if (panel) {
+        const wasHidden = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden');
+        panelOpenCount++;
+        
+        console.log(`\n=== Panel Toggle #${panelOpenCount} ===`);
+        console.log(`Panel durumu: ${wasHidden ? 'Açılıyor' : 'Kapanıyor'}`);
+        
+        // If we're showing the panel, update translations
+        if (wasHidden) {
+          console.log('Panel açıldı, çeviriler güncelleniyor...');
+          
+          if (typeof window.updateUIText === 'function') {
+            setTimeout(() => {
+              window.updateUIText();
+              updateStatus('✓ Panel açıldı ve çeviriler güncellendi', 'success');
+              updateDebugInfo();
+            }, 0);
+          } else {
+            updateStatus('⚠️ Panel açıldı ama updateUIText fonksiyonu bulunamadı!', 'error');
+          }
+        } else {
+          updateStatus('ℹ️ Panel kapatıldı', 'info');
+        }
+      }
+    }
+    
+    function updateStatus(message, type = 'info') {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+    }
+    
+    function updateDebugInfo() {
+      const debugEl = document.getElementById('debugInfo');
+      const currentLang = window.currentLang || 'unknown';
+      
+      const buttonValues = {
+        colorPanelTitle: document.getElementById('colorPanelTitle')?.textContent,
+        lblColorPresets: document.getElementById('lblColorPresets')?.textContent,
+        btnClassicColors: document.getElementById('btnClassicColors')?.textContent,
+        btnWoodColors: document.getElementById('btnWoodColors')?.textContent,
+        btnMarbleColors: document.getElementById('btnMarbleColors')?.textContent,
+        btnNeonColors: document.getElementById('btnNeonColors')?.textContent,
+        btnOceanColors: document.getElementById('btnOceanColors')?.textContent,
+        btnResetColors: document.getElementById('btnResetColors')?.textContent
+      };
+      
+      const expectedValues = {
+        en: {
+          colorPanelTitle: '🎨 Color Settings',
+          lblColorPresets: '🎯 Color Presets',
+          btnClassicColors: 'Classic',
+          btnWoodColors: 'Wood',
+          btnMarbleColors: 'Marble',
+          btnNeonColors: 'Neon',
+          btnOceanColors: 'Ocean',
+          btnResetColors: 'Reset'
+        },
+        tr: {
+          colorPanelTitle: '🎨 Renk Ayarları',
+          lblColorPresets: '🎯 Renk Şablonları',
+          btnClassicColors: 'Klasik',
+          btnWoodColors: 'Ahşap',
+          btnMarbleColors: 'Mermer',
+          btnNeonColors: 'Neon',
+          btnOceanColors: 'Okyanus',
+          btnResetColors: 'Sıfırla'
+        }
+      };
+      
+      let html = `<pre>Mevcut Dil: <strong>${currentLang}</strong>\n`;
+      html += `Dil Değişikliği Sayısı: ${languageChangeCount}\n`;
+      html += `Panel Açılma Sayısı: ${panelOpenCount}\n\n`;
+      html += `<strong>Buton Değerleri:</strong>\n`;
+      
+      Object.keys(buttonValues).forEach(key => {
+        const actual = buttonValues[key];
+        const expected = expectedValues[currentLang]?.[key];
+        const match = actual === expected;
+        const status = match ? '✓' : '✗';
+        const color = match ? 'green' : 'red';
+        
+        html += `${status} <span style="color: ${color}">${key}: "${actual}"</span>\n`;
+        if (!match && expected) {
+          html += `  Beklenen: "${expected}"\n`;
+        }
+      });
+      
+      html += `</pre>`;
+      debugEl.innerHTML = html;
+      
+      console.log('Button Values:', buttonValues);
+      console.log('Expected Values:', expectedValues[currentLang]);
+    }
+    
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('=== Sayfa Yüklendi ===');
+      setTimeout(() => {
+        updateDebugInfo();
+      }, 500);
+    });
+  </script>
+</body>
+</html>

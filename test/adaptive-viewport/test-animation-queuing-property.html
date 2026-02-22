@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Animation Queuing</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .subtitle {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .test-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .status {
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    
+    .status.running {
+      background: #fff3cd;
+      color: #856404;
+      border-left: 4px solid #ffc107;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .status.hidden {
+      display: none;
+    }
+    
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #1976D2;
+      font-size: 16px;
+    }
+    
+    .info-box ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .info-box li {
+      margin: 5px 0;
+      color: #555;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎬 Property Test: Animation Queuing</h1>
+    <div class="subtitle">Feature: adaptive-viewport-optimizer</div>
+    <div class="subtitle">Property 27: Animation Queuing</div>
+    <div class="subtitle"><strong>Validates: Requirements 8.5</strong></div>
+  </div>
+
+  <div class="test-container">
+    <div class="info-box">
+      <h3>📋 Test Description</h3>
+      <p><strong>Property:</strong> For any layout request that arrives while an animation is in progress, 
+      the request should be queued and executed after the animation completes, not interrupt it.</p>
+      
+      <h3 style="margin-top: 15px;">✅ Properties Being Tested</h3>
+      <ul>
+        <li>Layout requests during animation are queued</li>
+        <li>Queued updates execute after animation completes</li>
+        <li>Animations are not interrupted by new requests</li>
+        <li>Batch updates queue correctly during animations</li>
+        <li>Layout configuration updates queue during animations</li>
+        <li>Queue processes in FIFO order</li>
+      </ul>
+      
+      <p><strong>Test Configuration:</strong> 100 iterations per property using fast-check</p>
+    </div>
+
+    <div id="status" class="status hidden"></div>
+
+    <div class="controls">
+      <button id="runTest" onclick="runTest()">▶️ Run Property Test</button>
+      <button id="clearOutput" onclick="clearOutput()">🗑️ Clear Output</button>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <!-- Load fast-check -->
+  <script src="setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+
+  <!-- Load test -->
+  <script src="animation-queuing-property.test.js"></script>
+
+  <script>
+    const outputEl = document.getElementById('output');
+    const statusEl = document.getElementById('status');
+    const runButton = document.getElementById('runTest');
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    function appendOutput(message, type = 'log') {
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : '📝';
+      outputEl.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+      outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      appendOutput(args.join(' '), 'log');
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      appendOutput(args.join(' '), 'error');
+    };
+
+    function setStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+    }
+
+    async function runTest() {
+      runButton.disabled = true;
+      outputEl.textContent = '';
+      setStatus('🔄 Running property-based tests... This may take a few minutes.', 'running');
+
+      try {
+        console.log('Starting Animation Queuing Property Test...');
+        console.log('This test validates Requirement 8.5: Animation Queuing\n');
+
+        // Check if fast-check is loaded
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded. Please ensure setup-fast-check.js is present.');
+        }
+
+        // Check if DOMUpdater is loaded
+        if (typeof DOMUpdater === 'undefined') {
+          throw new Error('DOMUpdater not loaded. Please ensure dom-updater.js is present.');
+        }
+
+        // Run the property test
+        const results = await runAnimationQueuingPropertyTest(fc);
+
+        // Display results
+        if (results.failed === 0) {
+          setStatus(`✅ All tests passed! (${results.passed}/${results.passed + results.failed})`, 'success');
+        } else {
+          setStatus(`❌ Some tests failed (${results.passed}/${results.passed + results.failed} passed)`, 'error');
+        }
+
+      } catch (error) {
+        console.error('Test execution failed:', error.message);
+        console.error(error.stack);
+        setStatus('❌ Test execution failed. See output for details.', 'error');
+      } finally {
+        runButton.disabled = false;
+      }
+    }
+
+    function clearOutput() {
+      outputEl.textContent = '';
+      statusEl.className = 'status hidden';
+    }
+
+    // Display initial message
+    appendOutput('Ready to run Animation Queuing property tests.', 'log');
+    appendOutput('Click "Run Property Test" to start testing with 100 iterations per property.', 'log');
+  </script>
+</body>
+</html>

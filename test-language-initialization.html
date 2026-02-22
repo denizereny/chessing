@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Initialization Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+        }
+        .test-section {
+            background: #16213e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #0f3460;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .info {
+            color: #2196f3;
+        }
+        h1 {
+            color: #4fc3f7;
+        }
+        h2 {
+            color: #81c784;
+        }
+        code {
+            background: #0f3460;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌍 Language Initialization Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results:</h2>
+        <div id="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Current UI Text:</h2>
+        <div id="uiText"></div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        const uiText = document.getElementById('uiText');
+
+        // Wait for DOMContentLoaded to complete
+        setTimeout(() => {
+            // Test 1: Check current language
+            const currentLang = window.currentLang || 'unknown';
+            results.innerHTML += `<p class="${currentLang === 'en' ? 'success' : 'error'}">
+                ✓ Current Language: <code>${currentLang}</code> ${currentLang === 'en' ? '(CORRECT ✓)' : '(WRONG ✗)'}
+            </p>`;
+
+            // Test 2: Check translation function
+            const gameTitle = window.t('gameTitle');
+            results.innerHTML += `<p class="info">
+                ✓ Game Title: <code>${gameTitle}</code>
+            </p>`;
+
+            // Test 3: Check if it's English
+            const isEnglish = gameTitle === '4×5 Chess';
+            results.innerHTML += `<p class="${isEnglish ? 'success' : 'error'}">
+                ${isEnglish ? '✓' : '✗'} Title is in English: ${isEnglish ? 'YES ✓' : 'NO ✗'}
+            </p>`;
+
+            // Test 4: Check various translations
+            const translations = {
+                'startGame': window.t('startGame'),
+                'whitePlaying': window.t('whitePlaying'),
+                'blackPlaying': window.t('blackPlaying'),
+                'newGame': window.t('newGame'),
+                'switchSides': window.t('switchSides')
+            };
+
+            uiText.innerHTML = '<ul>';
+            for (const [key, value] of Object.entries(translations)) {
+                uiText.innerHTML += `<li><strong>${key}:</strong> ${value}</li>`;
+            }
+            uiText.innerHTML += '</ul>';
+
+            // Test 5: Check localStorage
+            const savedLang = localStorage.getItem('4x5_lang');
+            results.innerHTML += `<p class="info">
+                ✓ LocalStorage Language: <code>${savedLang || 'not set'}</code>
+            </p>`;
+
+            // Final verdict
+            if (currentLang === 'en' && isEnglish) {
+                results.innerHTML += `<p class="success" style="font-size: 1.2em; margin-top: 20px;">
+                    <strong>✅ SUCCESS: Game is starting in English!</strong>
+                </p>`;
+            } else {
+                results.innerHTML += `<p class="error" style="font-size: 1.2em; margin-top: 20px;">
+                    <strong>❌ FAILED: Game is NOT starting in English!</strong>
+                </p>`;
+            }
+        }, 500);
+    </script>
+</body>
+</html>

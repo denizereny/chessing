@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Scroll Indicators Presence</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.95;
+      font-size: 14px;
+    }
+    
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .test-controls button:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      min-height: 200px;
+    }
+    
+    #output pre {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .info-box {
+      background: #e0e7ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #4338ca;
+      font-size: 16px;
+    }
+    
+    .info-box ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .info-box li {
+      margin: 5px 0;
+      color: #4338ca;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔍 Property Test: Scroll Indicators Presence</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 9:</strong> Scroll Indicators Presence</p>
+    <p><strong>Validates:</strong> Requirements 3.3</p>
+    <p><strong>Description:</strong> For any scrollable container with content that exceeds its visible area, visual scroll indicators should be present and visible.</p>
+  </div>
+
+  <div class="info-box">
+    <h3>Test Properties</h3>
+    <ul>
+      <li>Property 1: Scroll indicators present when configured</li>
+      <li>Property 2: Top indicator visible when scrolled down</li>
+      <li>Property 3: Bottom indicator visible when more content below</li>
+      <li>Property 4: Indicators have proper styling and accessibility</li>
+      <li>Property 5: Indicator width reflects scroll position</li>
+      <li>Property 6: Indicators removed when scrolling removed</li>
+    </ul>
+    <p><strong>Iterations per property:</strong> 100</p>
+    <p><strong>Total test cases:</strong> 600</p>
+  </div>
+
+  <div class="test-controls">
+    <button id="runButton" onclick="runTests()">
+      Run Property Tests
+    </button>
+    <span id="statusIndicator"></span>
+  </div>
+
+  <div id="output">
+    <pre id="outputText">Click "Run Property Tests" to start testing...</pre>
+  </div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+  
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+  
+  <!-- Load property test -->
+  <script src="scroll-indicators-presence-property.test.js"></script>
+
+  <script>
+    let isRunning = false;
+
+    function setStatus(text, type) {
+      const indicator = document.getElementById('statusIndicator');
+      indicator.innerHTML = text;
+      indicator.className = `status ${type}`;
+    }
+
+    function appendOutput(text) {
+      const outputText = document.getElementById('outputText');
+      outputText.textContent += text;
+      // Auto-scroll to bottom
+      outputText.parentElement.scrollTop = outputText.parentElement.scrollHeight;
+    }
+
+    function clearOutput() {
+      document.getElementById('outputText').textContent = '';
+    }
+
+    async function runTests() {
+      if (isRunning) {
+        return;
+      }
+
+      isRunning = true;
+      const button = document.getElementById('runButton');
+      button.disabled = true;
+      
+      clearOutput();
+      setStatus('Running... <span class="loading"></span>', 'running');
+
+      // Capture console output
+      const originalLog = console.log;
+      const originalError = console.error;
+      
+      console.log = function(...args) {
+        appendOutput(args.join(' ') + '\n');
+        originalLog.apply(console, args);
+      };
+      
+      console.error = function(...args) {
+        appendOutput('ERROR: ' + args.join(' ') + '\n');
+        originalError.apply(console, args);
+      };
+
+      try {
+        // Check if fast-check is loaded
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded. Please ensure setup-fast-check.js is present.');
+        }
+
+        // Check if OverflowHandler is loaded
+        if (typeof OverflowHandler === 'undefined') {
+          throw new Error('OverflowHandler not loaded. Please ensure overflow-handler.js is present.');
+        }
+
+        appendOutput('Starting property-based tests...\n');
+        appendOutput('Using fast-check version: ' + fc.version + '\n');
+        appendOutput('Test configuration: 100 iterations per property\n\n');
+
+        // Run the property tests
+        const results = await runScrollIndicatorsPresencePropertyTest(fc);
+
+        // Display results
+        appendOutput('\n' + '='.repeat(60) + '\n');
+        appendOutput('FINAL RESULTS\n');
+        appendOutput('='.repeat(60) + '\n');
+        
+        if (results.failed === 0) {
+          appendOutput(`✓ ALL TESTS PASSED!\n`);
+          appendOutput(`  Total Properties: ${results.passed}\n`);
+          appendOutput(`  Total Iterations: ${results.passed * 100}\n`);
+          setStatus('✓ All tests passed!', 'success');
+        } else {
+          appendOutput(`✗ SOME TESTS FAILED\n`);
+          appendOutput(`  Passed: ${results.passed}\n`);
+          appendOutput(`  Failed: ${results.failed}\n`);
+          appendOutput(`  Success Rate: ${((results.passed / (results.passed + results.failed)) * 100).toFixed(1)}%\n`);
+          setStatus(`✗ ${results.failed} test(s) failed`, 'error');
+        }
+
+        appendOutput('\nDetailed Results:\n');
+        results.tests.forEach((test, index) => {
+          const icon = test.status === 'PASS' ? '✓' : '✗';
+          appendOutput(`${icon} ${test.name}: ${test.status}\n`);
+          if (test.error) {
+            appendOutput(`  Error: ${test.error}\n`);
+          }
+        });
+
+      } catch (error) {
+        appendOutput('\n' + '='.repeat(60) + '\n');
+        appendOutput('TEST EXECUTION ERROR\n');
+        appendOutput('='.repeat(60) + '\n');
+        appendOutput(`Error: ${error.message}\n`);
+        appendOutput(`Stack: ${error.stack}\n`);
+        setStatus('✗ Test execution failed', 'error');
+      } finally {
+        // Restore console
+        console.log = originalLog;
+        console.error = originalError;
+        
+        button.disabled = false;
+        isRunning = false;
+      }
+    }
+
+    // Auto-run tests on load (optional)
+    // window.addEventListener('load', () => {
+    //   setTimeout(runTests, 500);
+    // });
+  </script>
+</body>
+</html>

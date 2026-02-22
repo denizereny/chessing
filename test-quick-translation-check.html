@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Translation Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .status {
+            font-size: 32px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .lang-btn {
+            background: #2196F3;
+        }
+        .lang-btn:hover {
+            background: #0b7dda;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .result {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌍 Quick Translation Check</h1>
+    
+    <div style="text-align: center;">
+        <button class="lang-btn" onclick="testLanguage('en')">🇬🇧 English</button>
+        <button class="lang-btn" onclick="testLanguage('tr')">🇹🇷 Türkçe</button>
+        <button class="lang-btn" onclick="testLanguage('es')">🇪🇸 Español</button>
+    </div>
+    
+    <div id="statusText" class="status">White Playing 👤</div>
+    
+    <div style="text-align: center;">
+        <button onclick="togglePlayer()">🔄 Switch Player</button>
+    </div>
+    
+    <div id="result" class="result success" style="display: none;"></div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        let beyazSirasi = true;
+        let oyunBitti = false;
+        let bilgisayarRengi = "siyah";
+
+        function bilgiGuncelle() {
+            const statusEl = document.getElementById("statusText");
+            if (oyunBitti) {
+                const winner = beyazSirasi ? t("blackWon") : t("whiteWon");
+                if (statusEl) statusEl.textContent = winner;
+            } else {
+                const sira = beyazSirasi ? t("whitePlaying") : t("blackPlaying");
+                const kim = (bilgisayarRengi === "beyaz" && beyazSirasi) || (bilgisayarRengi === "siyah" && !beyazSirasi) ? " 🤖" : " 👤";
+                if (statusEl) statusEl.textContent = sira + kim;
+            }
+        }
+
+        window.bilgiGuncelle = bilgiGuncelle;
+
+        function testLanguage(lang) {
+            window.setLanguage(lang);
+            const resultEl = document.getElementById('result');
+            resultEl.style.display = 'block';
+            resultEl.textContent = `✅ Language changed to ${lang.toUpperCase()} - Status should update automatically!`;
+        }
+
+        function togglePlayer() {
+            beyazSirasi = !beyazSirasi;
+            bilgiGuncelle();
+        }
+
+        // Initialize
+        bilgiGuncelle();
+    </script>
+</body>
+</html>

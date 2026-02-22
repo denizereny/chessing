@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Extreme Viewport Support Tests</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4a9eff;
+      padding-bottom: 10px;
+    }
+    
+    .test-container {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .test-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .summary {
+      background: #e8f4fd;
+      border-left: 4px solid #4a9eff;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .passed {
+      color: #4caf50;
+      font-weight: bold;
+    }
+    
+    .failed {
+      color: #f44336;
+      font-weight: bold;
+    }
+    
+    button {
+      background: #4a9eff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    
+    button:hover {
+      background: #357abd;
+    }
+  </style>
+</head>
+<body>
+  <h1>Extreme Viewport Support Tests - Task 10.1</h1>
+  
+  <div class="test-container">
+    <h2>Test Execution</h2>
+    <button onclick="runTests()">Run Tests</button>
+    
+    <div id="summary" class="summary" style="display: none;">
+      <h3>Test Summary</h3>
+      <p>Total Tests: <span id="totalTests">0</span></p>
+      <p class="passed">Passed: <span id="passedTests">0</span></p>
+      <p class="failed">Failed: <span id="failedTests">0</span></p>
+    </div>
+    
+    <h3>Test Output</h3>
+    <div id="output" class="test-output">Click "Run Tests" to start...</div>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+  <script src="../../js/adaptive-viewport/layout-state-manager.js"></script>
+  <script src="../../js/adaptive-viewport/viewport-analyzer.js"></script>
+
+  <script>
+    const outputDiv = document.getElementById('output');
+    const summaryDiv = document.getElementById('summary');
+
+    let testResults = {
+      total: 0,
+      passed: 0,
+      failed: 0
+    };
+
+    function log(message) {
+      outputDiv.textContent += message + '\n';
+      console.log(message);
+    }
+
+    function assert(condition, message) {
+      testResults.total++;
+      if (condition) {
+        testResults.passed++;
+        log(`✓ PASS: ${message}`);
+      } else {
+        testResults.failed++;
+        log(`✗ FAIL: ${message}`);
+      }
+    }
+
+    async function runTests() {
+      outputDiv.textContent = '';
+      testResults = { total: 0, passed: 0, failed: 0 };
+
+      log('=== Extreme Viewport Support Tests ===\n');
+
+      // Create a mock ViewportAnalyzer instance
+      const analyzer = new ViewportAnalyzer({
+        debounceDelay: 150,
+        minBoardSize: 280,
+        spacing: 16
+      });
+
+      // Test 1: Viewport dimension validation - minimum width
+      log('\n--- Test 1: Viewport Dimension Validation (Min Width) ---');
+      const validated1 = analyzer._validateViewportDimensions(200, 600);
+      assert(validated1.width === 320, 'Width below minimum should be clamped to 320px');
+      assert(validated1.height === 600, 'Height within range should remain unchanged');
+
+      // Test 2: Viewport dimension validation - maximum width
+      log('\n--- Test 2: Viewport Dimension Validation (Max Width) ---');
+      const validated2 = analyzer._validateViewportDimensions(4000, 1000);
+      assert(validated2.width === 3840, 'Width above maximum should be clamped to 3840px');
+      assert(validated2.height === 1000, 'Height within range should remain unchanged');
+
+      // Test 3: Viewport dimension validation - minimum height
+      log('\n--- Test 3: Viewport Dimension Validation (Min Height) ---');
+      const validated3 = analyzer._validateViewportDimensions(800, 400);
+      assert(validated3.width === 800, 'Width within range should remain unchanged');
+      assert(validated3.height === 480, 'Height below minimum should be clamped to 480px');
+
+      // Test 4: Viewport dimension validation - maximum height
+      log('\n--- Test 4: Viewport Dimension Validation (Max Height) ---');
+      const validated4 = analyzer._validateViewportDimensions(1920, 2500);
+      assert(validated4.width === 1920, 'Width within range should remain unchanged');
+      assert(validated4.height === 2160, 'Height above maximum should be clamped to 2160px');
+
+      // Test 5: Viewport dimension validation - valid dimensions
+      log('\n--- Test 5: Viewport Dimension Validation (Valid) ---');
+      const validated5 = analyzer._validateViewportDimensions(1920, 1080);
+      assert(validated5.width === 1920, 'Valid width should remain unchanged');
+      assert(validated5.height === 1080, 'Valid height should remain unchanged');
+
+      // Test 6: Extreme aspect ratio detection - ultra-wide
+      log('\n--- Test 6: Extreme Aspect Ratio Detection (Ultra-wide) ---');
+      const isExtreme1 = analyzer._isExtremeAspectRatio(3.5);
+      assert(isExtreme1 === true, 'Aspect ratio > 3 should be detected as extreme');
+      const type1 = analyzer._getExtremeAspectRatioType(3.5);
+      assert(type1 === 'ultra-wide', 'Aspect ratio > 3 should be classified as ultra-wide');
+
+      // Test 7: Extreme aspect ratio detection - very tall
+      log('\n--- Test 7: Extreme Aspect Ratio Detection (Very Tall) ---');
+      const isExtreme2 = analyzer._isExtremeAspectRatio(0.25);
+      assert(isExtreme2 === true, 'Aspect ratio < 0.33 should be detected as extreme');
+      const type2 = analyzer._getExtremeAspectRatioType(0.25);
+      assert(type2 === 'very-tall', 'Aspect ratio < 0.33 should be classified as very-tall');
+
+      // Test 8: Extreme aspect ratio detection - normal
+      log('\n--- Test 8: Extreme Aspect Ratio Detection (Normal) ---');
+      const isExtreme3 = analyzer._isExtremeAspectRatio(1.78);
+      assert(isExtreme3 === false, 'Normal aspect ratio should not be detected as extreme');
+      const type3 = analyzer._getExtremeAspectRatioType(1.78);
+      assert(type3 === null, 'Normal aspect ratio should return null type');
+
+      // Test 9: Layout strategy for ultra-wide
+      log('\n--- Test 9: Layout Strategy for Ultra-wide ---');
+      const strategy1 = analyzer._determineLayoutStrategyWithExtremeHandling(
+        { width: 3840, height: 1080 },
+        5,
+        true,
+        'ultra-wide',
+        'landscape'
+      );
+      assert(strategy1 === 'horizontal', 'Ultra-wide should use horizontal layout');
+
+      // Test 10: Layout strategy for very tall
+      log('\n--- Test 10: Layout Strategy for Very Tall ---');
+      const strategy2 = analyzer._determineLayoutStrategyWithExtremeHandling(
+        { width: 480, height: 1920 },
+        5,
+        true,
+        'very-tall',
+        'portrait'
+      );
+      assert(strategy2 === 'vertical', 'Very tall should use vertical layout');
+
+      // Test 11: Orientation detection - landscape
+      log('\n--- Test 11: Orientation Detection (Landscape) ---');
+      const aspectRatio1 = 1920 / 1080;
+      const orientation1 = aspectRatio1 > 1 ? 'landscape' : 'portrait';
+      assert(orientation1 === 'landscape', '16:9 aspect ratio should be landscape');
+
+      // Test 12: Orientation detection - portrait
+      log('\n--- Test 12: Orientation Detection (Portrait) ---');
+      const aspectRatio2 = 1080 / 1920;
+      const orientation2 = aspectRatio2 > 1 ? 'landscape' : 'portrait';
+      assert(orientation2 === 'portrait', '9:16 aspect ratio should be portrait');
+
+      // Test 13: Edge case - exactly at extreme threshold (wide)
+      log('\n--- Test 13: Edge Case - Exactly at Extreme Threshold (Wide) ---');
+      const isExtreme4 = analyzer._isExtremeAspectRatio(3.0);
+      assert(isExtreme4 === false, 'Aspect ratio exactly 3.0 should not be extreme');
+
+      // Test 14: Edge case - just above extreme threshold (wide)
+      log('\n--- Test 14: Edge Case - Just Above Extreme Threshold (Wide) ---');
+      const isExtreme5 = analyzer._isExtremeAspectRatio(3.01);
+      assert(isExtreme5 === true, 'Aspect ratio 3.01 should be extreme');
+
+      // Test 15: Edge case - exactly at extreme threshold (tall)
+      log('\n--- Test 15: Edge Case - Exactly at Extreme Threshold (Tall) ---');
+      const isExtreme6 = analyzer._isExtremeAspectRatio(0.33);
+      assert(isExtreme6 === false, 'Aspect ratio exactly 0.33 should not be extreme');
+
+      // Test 16: Edge case - just below extreme threshold (tall)
+      log('\n--- Test 16: Edge Case - Just Below Extreme Threshold (Tall) ---');
+      const isExtreme7 = analyzer._isExtremeAspectRatio(0.32);
+      assert(isExtreme7 === true, 'Aspect ratio 0.32 should be extreme');
+
+      // Display summary
+      log('\n=== Test Summary ===');
+      log(`Total Tests: ${testResults.total}`);
+      log(`Passed: ${testResults.passed}`);
+      log(`Failed: ${testResults.failed}`);
+      log(`Success Rate: ${((testResults.passed / testResults.total) * 100).toFixed(1)}%`);
+
+      document.getElementById('totalTests').textContent = testResults.total;
+      document.getElementById('passedTests').textContent = testResults.passed;
+      document.getElementById('failedTests').textContent = testResults.failed;
+      summaryDiv.style.display = 'block';
+
+      // Clean up
+      analyzer.destroy();
+    }
+
+    // Auto-run tests on page load
+    window.addEventListener('load', () => {
+      setTimeout(runTests, 500);
+    });
+  </script>
+</body>
+</html>

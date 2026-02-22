@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Extreme Viewport Dimension Support</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .test-controls button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    #output:empty::before {
+      content: 'Click "Run Tests" to start property-based testing...';
+      color: #888;
+      font-style: italic;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status.passed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status.failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .info-box {
+      background: #e0e7ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #4338ca;
+      font-size: 16px;
+    }
+    
+    .info-box p {
+      margin: 5px 0;
+      color: #4338ca;
+      font-size: 14px;
+    }
+    
+    .info-box ul {
+      margin: 10px 0;
+      padding-left: 20px;
+      color: #4338ca;
+    }
+    
+    .info-box li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔬 Property Test: Extreme Viewport Dimension Support</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 17:</strong> Extreme Viewport Dimension Support</p>
+    <p><strong>Validates:</strong> Requirements 5.1, 5.2</p>
+  </div>
+
+  <div class="info-box">
+    <h3>📋 Test Description</h3>
+    <p>This property-based test verifies that the ViewportAnalyzer produces valid layout configurations for all viewport dimensions within the supported range.</p>
+    <ul>
+      <li><strong>Width Range:</strong> 320px to 3840px</li>
+      <li><strong>Height Range:</strong> 480px to 2160px</li>
+      <li><strong>Iterations:</strong> 100 per property (500+ total)</li>
+      <li><strong>Properties Tested:</strong> 5 comprehensive properties</li>
+    </ul>
+  </div>
+
+  <div class="test-controls">
+    <button id="runButton" onclick="runTests()">▶ Run Tests</button>
+    <span id="statusBadge"></span>
+  </div>
+
+  <div id="output"></div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+  <script src="../../js/adaptive-viewport/layout-state-manager.js"></script>
+  <script src="../../js/adaptive-viewport/viewport-analyzer.js"></script>
+
+  <!-- Load test file -->
+  <script src="extreme-viewport-dimension-property.test.js"></script>
+
+  <script>
+    const output = document.getElementById('output');
+    const runButton = document.getElementById('runButton');
+    const statusBadge = document.getElementById('statusBadge');
+
+    // Override console.log to capture output
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    function appendOutput(message, isError = false) {
+      const color = isError ? '#f87171' : '#d4d4d4';
+      const span = document.createElement('span');
+      span.style.color = color;
+      span.textContent = message + '\n';
+      output.appendChild(span);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      appendOutput(args.join(' '));
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      appendOutput(args.join(' '), true);
+    };
+
+    async function runTests() {
+      // Clear output
+      output.innerHTML = '';
+      
+      // Disable button
+      runButton.disabled = true;
+      statusBadge.textContent = 'Running...';
+      statusBadge.className = 'status running';
+
+      try {
+        console.log('Starting property-based tests...');
+        console.log('This may take 30-60 seconds to complete.\n');
+
+        // Check if fast-check is loaded
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded. Please ensure setup-fast-check.js is available.');
+        }
+
+        // Run the property tests
+        const results = await runExtremeViewportDimensionPropertyTest(fc);
+
+        // Display final results
+        console.log('\n' + '='.repeat(50));
+        if (results.failed === 0) {
+          console.log('✅ ALL TESTS PASSED!');
+          statusBadge.textContent = 'All Tests Passed';
+          statusBadge.className = 'status passed';
+        } else {
+          console.log('❌ SOME TESTS FAILED');
+          statusBadge.textContent = `${results.failed} Test(s) Failed`;
+          statusBadge.className = 'status failed';
+        }
+        console.log('='.repeat(50));
+
+      } catch (error) {
+        console.error('\n❌ Test execution failed:');
+        console.error(error.message);
+        console.error(error.stack);
+        statusBadge.textContent = 'Test Failed';
+        statusBadge.className = 'status failed';
+      } finally {
+        // Re-enable button
+        runButton.disabled = false;
+      }
+    }
+
+    // Display initial message
+    console.log('Property-based test ready.');
+    console.log('Click "Run Tests" to begin testing extreme viewport dimensions.\n');
+  </script>
+</body>
+</html>

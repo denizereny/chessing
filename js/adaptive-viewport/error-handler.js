@@ -177,6 +177,168 @@ class ErrorHandler {
     
     return stats;
   }
+
+  /**
+   * Validate position before application
+   * Implements Property 30: Position Validation Before Application
+   * @param {Object} position - Position to validate
+   * @param {Object} viewportDimensions - Viewport dimensions
+   * @returns {Object} Validation result { valid: boolean, errors: string[] }
+   */
+  validatePosition(position, viewportDimensions) {
+    const errors = [];
+
+    if (!position) {
+      errors.push('Position is null or undefined');
+      return { valid: false, errors };
+    }
+
+    // Check for non-negative coordinates
+    if (position.x < 0) {
+      errors.push(`Invalid x coordinate: ${position.x} (must be >= 0)`);
+    }
+    if (position.y < 0) {
+      errors.push(`Invalid y coordinate: ${position.y} (must be >= 0)`);
+    }
+
+    // Check for positive dimensions
+    if (position.width <= 0) {
+      errors.push(`Invalid width: ${position.width} (must be > 0)`);
+    }
+    if (position.height <= 0) {
+      errors.push(`Invalid height: ${position.height} (must be > 0)`);
+    }
+
+    // Check for NaN values
+    if (isNaN(position.x) || isNaN(position.y) || isNaN(position.width) || isNaN(position.height)) {
+      errors.push('Position contains NaN values');
+    }
+
+    // Check for Infinity values
+    if (!isFinite(position.x) || !isFinite(position.y) || !isFinite(position.width) || !isFinite(position.height)) {
+      errors.push('Position contains Infinity values');
+    }
+
+    // Check if position is within viewport bounds
+    if (viewportDimensions) {
+      if (position.x + position.width > viewportDimensions.width) {
+        errors.push(`Position exceeds viewport width: ${position.x + position.width} > ${viewportDimensions.width}`);
+      }
+      if (position.y + position.height > viewportDimensions.height) {
+        errors.push(`Position exceeds viewport height: ${position.y + position.height} > ${viewportDimensions.height}`);
+      }
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Validate all positions in a layout configuration
+   * @param {LayoutConfiguration} configuration - Layout configuration to validate
+   * @param {Object} viewportDimensions - Viewport dimensions
+   * @returns {Object} Validation result { valid: boolean, invalidPositions: Array }
+   */
+  validateLayoutPositions(configuration, viewportDimensions) {
+    const invalidPositions = [];
+
+    // Validate board position
+    const boardValidation = this.validatePosition(configuration.boardPosition, viewportDimensions);
+    if (!boardValidation.valid) {
+      invalidPositions.push({
+        element: 'board',
+        position: configuration.boardPosition,
+        errors: boardValidation.errors
+      });
+    }
+
+    // Validate element positions
+    if (configuration.elementPositions) {
+      configuration.elementPositions.forEach((position, element) => {
+        const validation = this.validatePosition(position, viewportDimensions);
+        if (!validation.valid) {
+          invalidPositions.push({
+            element: element.id || element.className || 'unknown',
+            position,
+            errors: validation.errors
+          });
+        }
+      });
+    }
+
+    return {
+      valid: invalidPositions.length === 0,
+      invalidPositions
+    };
+  }
+
+  /**
+   * Attempt to recover from error and continue with partial optimization
+   * Implements Property 31: Error Logging and Continuation
+   * @param {Error} error - The error that occurred
+   * @param {string} context - Context where error occurred
+   * @param {Object} partialState - Partial state to continue with
+   * @returns {Object} Recovery result
+   */
+  recoverAndContinue(error, context, partialState) {
+    // Log the error
+    this.handleError(error, context);
+
+    // Attempt to continue with partial state
+    console.warn(`[AdaptiveViewport] Recovering from error in ${context}, continuing with partial optimization`);
+
+    return {
+      recovered: true,
+      partialState,
+      message: `Recovered from ${error.message}, continuing with partial optimization`
+    };
+  }
+
+  /**
+   * Check if Intersection Observer API is available
+   * @returns {boolean} True if available
+   */
+  isIntersectionObserverAvailable() {
+    return typeof IntersectionObserver !== 'undefined';
+  }
+
+  /**
+   * Check if ResizeObserver API is available
+   * @returns {boolean} True if available
+   */
+  isResizeObserverAvailable() {
+    return typeof ResizeObserver !== 'undefined';
+  }
+
+  /**
+   * Check if requestAnimationFrame is available
+   * @returns {boolean} True if available
+   */
+  isRequestAnimationFrameAvailable() {
+    return typeof requestAnimationFrame !== 'undefined';
+  }
+
+  /**
+   * Get fallback for requestAnimationFrame
+   * @returns {Function} Fallback function
+   */
+  getRequestAnimationFrameFallback() {
+    return (callback) => {
+      return setTimeout(callback, 16); // ~60fps
+    };
+  }
+
+  /**
+   * Get fallback for cancelAnimationFrame
+   * @returns {Function} Fallback function
+   */
+  getCancelAnimationFrameFallback() {
+    return (id) => {
+      clearTimeout(id);
+    };
+  }
 }
 
 // Export for use in other modules

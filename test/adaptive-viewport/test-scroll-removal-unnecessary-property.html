@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Scroll Removal When Unnecessary</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    
+    .test-controls button:hover {
+      background: #5568d3;
+    }
+    
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    #test-output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      min-height: 400px;
+    }
+    
+    #test-output pre {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status.passed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status.failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧪 Property Test: Scroll Removal When Unnecessary</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 11:</strong> Scroll Removal When Unnecessary</p>
+    <p><strong>Validates:</strong> Requirements 3.5</p>
+    <p><strong>Description:</strong> For any scrollable container, if the viewport height increases such that all content fits naturally, the scroll container should be removed or disabled.</p>
+  </div>
+
+  <div class="test-controls">
+    <button id="run-test-btn" onclick="runTest()">Run Property Test (100 iterations)</button>
+    <span id="test-status"></span>
+  </div>
+
+  <div id="test-output">
+    <pre id="output-text">Click "Run Property Test" to start testing...</pre>
+  </div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+
+  <!-- Load property test -->
+  <script src="scroll-removal-unnecessary-property.test.js"></script>
+
+  <script>
+    let isRunning = false;
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+    let outputBuffer = [];
+
+    function captureOutput() {
+      outputBuffer = [];
+      
+      console.log = function(...args) {
+        const message = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        outputBuffer.push(message);
+        updateOutput();
+        originalLog.apply(console, args);
+      };
+
+      console.error = function(...args) {
+        const message = '❌ ' + args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        outputBuffer.push(message);
+        updateOutput();
+        originalError.apply(console, args);
+      };
+    }
+
+    function restoreOutput() {
+      console.log = originalLog;
+      console.error = originalError;
+    }
+
+    function updateOutput() {
+      const outputText = document.getElementById('output-text');
+      outputText.textContent = outputBuffer.join('\n');
+      // Auto-scroll to bottom
+      outputText.parentElement.scrollTop = outputText.parentElement.scrollHeight;
+    }
+
+    async function runTest() {
+      if (isRunning) {
+        return;
+      }
+
+      isRunning = true;
+      const btn = document.getElementById('run-test-btn');
+      const statusEl = document.getElementById('test-status');
+      
+      btn.disabled = true;
+      statusEl.innerHTML = '<span class="status running">RUNNING</span><span class="loading"></span>';
+
+      captureOutput();
+
+      try {
+        console.log('Starting property-based test...\n');
+        console.log('Loading fast-check library...');
+        
+        // Wait for fast-check to load
+        await waitForFastCheck();
+        
+        console.log('✓ fast-check loaded successfully\n');
+        
+        // Run the property test
+        const results = await runScrollRemovalUnnecessaryPropertyTest(fc);
+        
+        // Display final results
+        console.log('\n' + '='.repeat(60));
+        console.log('FINAL RESULTS');
+        console.log('='.repeat(60));
+        
+        if (results.failed === 0) {
+          console.log('✅ ALL TESTS PASSED!');
+          statusEl.innerHTML = '<span class="status passed">ALL TESTS PASSED ✓</span>';
+        } else {
+          console.log('❌ SOME TESTS FAILED');
+          statusEl.innerHTML = '<span class="status failed">TESTS FAILED ✗</span>';
+        }
+        
+        console.log(`\nTotal Properties Tested: ${results.passed + results.failed}`);
+        console.log(`Passed: ${results.passed}`);
+        console.log(`Failed: ${results.failed}`);
+        console.log(`Success Rate: ${((results.passed / (results.passed + results.failed)) * 100).toFixed(1)}%`);
+        console.log(`Total Iterations: ${(results.passed + results.failed) * 100}`);
+        
+        console.log('\n' + '='.repeat(60));
+        
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        statusEl.innerHTML = '<span class="status failed">ERROR</span>';
+      } finally {
+        restoreOutput();
+        btn.disabled = false;
+        isRunning = false;
+      }
+    }
+
+    function waitForFastCheck() {
+      return new Promise((resolve, reject) => {
+        let attempts = 0;
+        const maxAttempts = 50;
+        
+        const checkInterval = setInterval(() => {
+          attempts++;
+          
+          if (typeof fc !== 'undefined') {
+            clearInterval(checkInterval);
+            resolve();
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            reject(new Error('fast-check library failed to load'));
+          }
+        }, 100);
+      });
+    }
+
+    // Auto-run test on load (optional)
+    window.addEventListener('load', () => {
+      console.log('Page loaded. Ready to run tests.');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validate Board Visibility Scrolling Test</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .validation-section {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .validation-section h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    
+    .validation-item {
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+    
+    .validation-item.pass {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+    
+    .validation-item.fail {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .validation-item .icon {
+      font-size: 18px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    
+    .summary {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    .summary.success {
+      border: 3px solid #28a745;
+    }
+    
+    .summary.failure {
+      border: 3px solid #dc3545;
+    }
+    
+    .summary h2 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+    
+    .summary .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+    }
+    
+    .summary .stat {
+      text-align: center;
+    }
+    
+    .summary .stat-value {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .summary .stat-label {
+      font-size: 14px;
+      color: #666;
+      text-transform: uppercase;
+    }
+    
+    .action-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    
+    .action-buttons button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔍 Test Validation: Board Visibility During Scrolling</h1>
+    <p>Validating Property 10 test implementation</p>
+  </div>
+
+  <div id="validation-results"></div>
+
+  <div id="summary" class="summary"></div>
+
+  <script>
+    const validations = [];
+    let passed = 0;
+    let failed = 0;
+
+    function validate(description, condition) {
+      validations.push({ description, passed: condition });
+      if (condition) {
+        passed++;
+      } else {
+        failed++;
+      }
+    }
+
+    async function loadFile(url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        return await response.text();
+      } catch (error) {
+        return null;
+      }
+    }
+
+    async function runValidation() {
+      // Load test file
+      const testContent = await loadFile('board-visibility-scrolling-property.test.js');
+      validate('Test file exists and is accessible', testContent !== null);
+
+      // Load HTML runner
+      const htmlContent = await loadFile('test-board-visibility-scrolling-property.html');
+      validate('HTML test runner exists and is accessible', htmlContent !== null);
+
+      if (testContent) {
+        // Validate test structure
+        validate(
+          'Test file contains property test function',
+          testContent.includes('runBoardVisibilityScrollingPropertyTest')
+        );
+
+        validate(
+          'Test validates Requirements 3.4',
+          testContent.includes('**Validates: Requirements 3.4**')
+        );
+
+        validate(
+          'Test is tagged with Property 10',
+          testContent.includes('Property 10: Board Visibility Invariant During Scrolling')
+        );
+
+        validate(
+          'Test uses fast-check library',
+          testContent.includes('fc.assert') && testContent.includes('fc.asyncProperty')
+        );
+
+        validate(
+          'Test runs 100 iterations',
+          testContent.includes('numRuns: 100')
+        );
+
+        // Check for required properties
+        const requiredProperties = [
+          'Board remains fully visible during UI scrolling',
+          'Board position remains stable during UI scrolling',
+          'Board unaffected by scroll container overflow',
+          'Board visibility maintained during rapid scrolling',
+          'Board visible when scrolling to bottom'
+        ];
+
+        requiredProperties.forEach(prop => {
+          validate(
+            `Test includes property: "${prop}"`,
+            testContent.includes(prop)
+          );
+        });
+
+        // Check for helper functions
+        validate(
+          'Test includes createMockBoard helper',
+          testContent.includes('createMockBoard')
+        );
+
+        validate(
+          'Test includes createTestUIElements helper',
+          testContent.includes('createTestUIElements')
+        );
+
+        validate(
+          'Test includes isFullyVisibleInViewport helper',
+          testContent.includes('isFullyVisibleInViewport')
+        );
+
+        validate(
+          'Test includes getViewportIntersectionRatio helper',
+          testContent.includes('getViewportIntersectionRatio')
+        );
+
+        // Check for proper cleanup
+        validate(
+          'Test includes cleanup code (handler.destroy)',
+          testContent.includes('handler.destroy()')
+        );
+
+        validate(
+          'Test includes DOM cleanup (removeChild)',
+          testContent.includes('document.body.removeChild')
+        );
+
+        // Check for async/await usage
+        validate(
+          'Test uses async/await properly',
+          testContent.includes('async (config)') && testContent.includes('await new Promise')
+        );
+
+        // Check for proper error handling
+        validate(
+          'Test includes try-catch blocks',
+          testContent.includes('try {') && testContent.includes('} catch (error) {')
+        );
+
+        // Check for result tracking
+        validate(
+          'Test tracks passed/failed results',
+          testContent.includes('results.passed++') && testContent.includes('results.failed++')
+        );
+
+        // Check for console output
+        validate(
+          'Test includes console output for progress',
+          testContent.includes('console.log') && testContent.includes('console.error')
+        );
+      }
+
+      if (htmlContent) {
+        // Validate HTML structure
+        validate(
+          'HTML includes test title',
+          htmlContent.includes('Board Visibility During Scrolling')
+        );
+
+        validate(
+          'HTML loads fast-check library',
+          htmlContent.includes('setup-fast-check.js')
+        );
+
+        validate(
+          'HTML loads OverflowHandler',
+          htmlContent.includes('overflow-handler.js')
+        );
+
+        validate(
+          'HTML loads test file',
+          htmlContent.includes('board-visibility-scrolling-property.test.js')
+        );
+
+        validate(
+          'HTML includes run button',
+          htmlContent.includes('run-test-btn') && htmlContent.includes('runTest()')
+        );
+
+        validate(
+          'HTML includes output display',
+          htmlContent.includes('test-output')
+        );
+
+        validate(
+          'HTML includes status display',
+          htmlContent.includes('status-message')
+        );
+      }
+
+      displayResults();
+    }
+
+    function displayResults() {
+      const resultsDiv = document.getElementById('validation-results');
+      
+      // Group validations by category
+      const categories = {
+        'File Existence': validations.slice(0, 2),
+        'Test Structure': validations.slice(2, 7),
+        'Test Properties': validations.slice(7, 12),
+        'Helper Functions': validations.slice(12, 16),
+        'Code Quality': validations.slice(16, 21),
+        'HTML Runner': validations.slice(21)
+      };
+
+      let html = '';
+      for (const [category, items] of Object.entries(categories)) {
+        if (items.length === 0) continue;
+        
+        html += `
+          <div class="validation-section">
+            <h2>${category}</h2>
+        `;
+        
+        items.forEach(item => {
+          const className = item.passed ? 'pass' : 'fail';
+          const icon = item.passed ? '✓' : '✗';
+          html += `
+            <div class="validation-item ${className}">
+              <span class="icon">${icon}</span>
+              <span>${item.description}</span>
+            </div>
+          `;
+        });
+        
+        html += '</div>';
+      }
+
+      resultsDiv.innerHTML = html;
+
+      // Display summary
+      const summaryDiv = document.getElementById('summary');
+      const total = passed + failed;
+      const successRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
+      const summaryClass = failed === 0 ? 'success' : 'failure';
+      const summaryTitle = failed === 0 ? '✓ All Validations Passed!' : '✗ Some Validations Failed';
+
+      summaryDiv.className = `summary ${summaryClass}`;
+      summaryDiv.innerHTML = `
+        <h2>${summaryTitle}</h2>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-value" style="color: #28a745;">${passed}</div>
+            <div class="stat-label">Passed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" style="color: #dc3545;">${failed}</div>
+            <div class="stat-label">Failed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" style="color: #667eea;">${total}</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" style="color: #667eea;">${successRate}%</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="window.location.href='test-board-visibility-scrolling-property.html'">
+            ▶ Run Property Test
+          </button>
+          <button class="btn-secondary" onclick="location.reload()">
+            🔄 Re-validate
+          </button>
+        </div>
+      `;
+    }
+
+    // Run validation on page load
+    window.addEventListener('load', runValidation);
+  </script>
+</body>
+</html>

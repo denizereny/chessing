@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property 21: Minimum Spacing Invariant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/jasmine.min.css">
+</head>
+<body>
+    <h1>Property 21: Minimum Spacing Invariant</h1>
+    <p>Testing that all UI elements maintain at least 16px spacing in all layout configurations.</p>
+
+    <div id="test-container"></div>
+
+    <!-- Jasmine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/jasmine.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/jasmine-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/boot0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/4.5.0/boot1.min.js"></script>
+
+    <!-- fast-check for property-based testing -->
+    <script src="setup-fast-check.js"></script>
+
+    <!-- Source files -->
+    <script src="../../js/adaptive-viewport/constants.js"></script>
+    <script src="../../js/adaptive-viewport/types.js"></script>
+    <script src="../../js/adaptive-viewport/base-component.js"></script>
+    <script src="../../js/adaptive-viewport/error-handler.js"></script>
+    <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+    <script src="../../js/adaptive-viewport/adaptive-breakpoint-manager.js"></script>
+
+    <!-- Test file -->
+    <script src="minimum-spacing-invariant-property.test.js"></script>
+</body>
+</html>

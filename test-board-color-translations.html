@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Board Color Translations Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .test-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    
+    h2 {
+      color: #555;
+      margin-top: 20px;
+    }
+    
+    .language-selector {
+      margin: 20px 0;
+      padding: 15px;
+      background: #e3f2fd;
+      border-radius: 5px;
+    }
+    
+    .language-selector button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: 2px solid #2196F3;
+      background: white;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+    
+    .language-selector button:hover {
+      background: #2196F3;
+      color: white;
+    }
+    
+    .language-selector button.active {
+      background: #2196F3;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .color-panel {
+      background: white;
+      padding: 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .color-section {
+      margin: 15px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 5px;
+    }
+    
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .preset-buttons button {
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 2px solid #4CAF50;
+      background: white;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+    
+    .preset-buttons button:hover {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .test-results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      border-radius: 5px;
+    }
+    
+    .success {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    .error {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    
+    .info {
+      color: #17a2b8;
+      margin: 10px 0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    
+    th {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🎨 Tahta Renk Ayarları Çeviri Testi</h1>
+    <p class="info">Bu test, renk panelindeki butonların dil değiştiğinde doğru çevrilip çevrilmediğini kontrol eder.</p>
+    
+    <div class="language-selector">
+      <h3>🌍 Dil Seçimi:</h3>
+      <button id="btnEnglish" onclick="testLanguage('en')">English</button>
+      <button id="btnTurkish" onclick="testLanguage('tr')" class="active">Türkçe</button>
+      <button id="btnSpanish" onclick="testLanguage('es')">Español</button>
+    </div>
+    
+    <div class="color-panel">
+      <h3 id="colorPanelTitle">🎨 Renk Ayarları</h3>
+      
+      <div class="color-section">
+        <h4 id="lblColorPresets">🎯 Renk Şablonları</h4>
+        <div class="preset-buttons">
+          <button id="btnClassicColors">Klasik</button>
+          <button id="btnWoodColors">Ahşap</button>
+          <button id="btnMarbleColors">Mermer</button>
+          <button id="btnNeonColors">Neon</button>
+          <button id="btnOceanColors">Okyanus</button>
+          <button id="btnResetColors">Sıfırla</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="test-results">
+      <h3>📊 Test Sonuçları:</h3>
+      <div id="testResults"></div>
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Element ID</th>
+            <th>Çeviri Anahtarı</th>
+            <th>Beklenen (TR)</th>
+            <th>Beklenen (EN)</th>
+            <th>Gerçek Değer</th>
+            <th>Durum</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="js/translations.js"></script>
+  <script>
+    const expectedTranslations = {
+      tr: {
+        colorPanelTitle: '🎨 Renk Ayarları',
+        lblColorPresets: '🎯 Renk Şablonları',
+        btnClassicColors: 'Klasik',
+        btnWoodColors: 'Ahşap',
+        btnMarbleColors: 'Mermer',
+        btnNeonColors: 'Neon',
+        btnOceanColors: 'Okyanus',
+        btnResetColors: 'Sıfırla'
+      },
+      en: {
+        colorPanelTitle: '🎨 Color Settings',
+        lblColorPresets: '🎯 Color Presets',
+        btnClassicColors: 'Classic',
+        btnWoodColors: 'Wood',
+        btnMarbleColors: 'Marble',
+        btnNeonColors: 'Neon',
+        btnOceanColors: 'Ocean',
+        btnResetColors: 'Reset'
+      },
+      es: {
+        colorPanelTitle: '🎨 Configuración de Colores',
+        lblColorPresets: '🎯 Plantillas de Color',
+        btnClassicColors: 'Clásico',
+        btnWoodColors: 'Madera',
+        btnMarbleColors: 'Mármol',
+        btnNeonColors: 'Neón',
+        btnOceanColors: 'Océano',
+        btnResetColors: 'Restablecer'
+      }
+    };
+    
+    const translationKeys = {
+      colorPanelTitle: 'colorSettings',
+      lblColorPresets: 'colorPresets',
+      btnClassicColors: 'classic',
+      btnWoodColors: 'wood',
+      btnMarbleColors: 'marble',
+      btnNeonColors: 'neon',
+      btnOceanColors: 'ocean',
+      btnResetColors: 'reset'
+    };
+    
+    let currentTestLang = 'tr';
+    
+    function testLanguage(lang) {
+      console.log(`\n=== Testing language: ${lang} ===`);
+      currentTestLang = lang;
+      
+      // Update active button
+      document.querySelectorAll('.language-selector button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(`btn${lang === 'en' ? 'English' : lang === 'tr' ? 'Turkish' : 'Spanish'}`).classList.add('active');
+      
+      // Set language
+      setLanguage(lang);
+      
+      // Wait a bit for UI to update
+      setTimeout(() => {
+        runTests(lang);
+      }, 100);
+    }
+    
+    function runTests(lang) {
+      const resultsBody = document.getElementById('resultsBody');
+      resultsBody.innerHTML = '';
+      
+      let passCount = 0;
+      let failCount = 0;
+      
+      Object.keys(expectedTranslations[lang]).forEach(elementId => {
+        const element = document.getElementById(elementId);
+        const expected = expectedTranslations[lang][elementId];
+        const actual = element ? element.textContent : 'Element not found';
+        const translationKey = translationKeys[elementId];
+        
+        const passed = actual === expected;
+        if (passed) passCount++;
+        else failCount++;
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${elementId}</td>
+          <td>${translationKey}</td>
+          <td>${expectedTranslations.tr[elementId]}</td>
+          <td>${expectedTranslations.en[elementId]}</td>
+          <td>${actual}</td>
+          <td class="${passed ? 'success' : 'error'}">${passed ? '✓ PASS' : '✗ FAIL'}</td>
+        `;
+        resultsBody.appendChild(row);
+        
+        console.log(`${elementId}: ${passed ? 'PASS' : 'FAIL'}`);
+        console.log(`  Expected: "${expected}"`);
+        console.log(`  Actual: "${actual}"`);
+      });
+      
+      const resultsDiv = document.getElementById('testResults');
+      resultsDiv.innerHTML = `
+        <p><strong>Dil:</strong> ${lang === 'en' ? 'English' : lang === 'tr' ? 'Türkçe' : 'Español'}</p>
+        <p class="success">✓ Başarılı: ${passCount}</p>
+        <p class="error">✗ Başarısız: ${failCount}</p>
+        <p><strong>Toplam:</strong> ${passCount + failCount}</p>
+      `;
+      
+      console.log(`\nTest Summary for ${lang}:`);
+      console.log(`  Passed: ${passCount}`);
+      console.log(`  Failed: ${failCount}`);
+    }
+    
+    // Initialize with Turkish
+    window.addEventListener('DOMContentLoaded', () => {
+      setLanguage('tr');
+      setTimeout(() => runTests('tr'), 100);
+    });
+  </script>
+</body>
+</html>

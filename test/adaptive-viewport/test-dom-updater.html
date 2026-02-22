@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOMUpdater Tests</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .test-case {
+      margin: 15px 0;
+      padding: 15px;
+      border-left: 4px solid #2196F3;
+      background: #f9f9f9;
+    }
+
+    .test-case.pass {
+      border-left-color: #4CAF50;
+      background: #f1f8f4;
+    }
+
+    .test-case.fail {
+      border-left-color: #f44336;
+      background: #fef1f0;
+    }
+
+    .test-name {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .test-result {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .test-error {
+      color: #d32f2f;
+      font-family: monospace;
+      font-size: 12px;
+      margin-top: 8px;
+      padding: 8px;
+      background: #ffebee;
+      border-radius: 4px;
+    }
+
+    .summary {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #2196F3;
+    }
+
+    .summary.all-pass {
+      background: #e8f5e9;
+      border-left-color: #4CAF50;
+    }
+
+    .summary.has-failures {
+      background: #ffebee;
+      border-left-color: #f44336;
+    }
+
+    .stats {
+      display: flex;
+      gap: 30px;
+      margin-top: 10px;
+    }
+
+    .stat {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .stat.pass { color: #4CAF50; }
+    .stat.fail { color: #f44336; }
+    .stat.total { color: #2196F3; }
+
+    .demo-area {
+      margin: 20px 0;
+      padding: 20px;
+      border: 2px dashed #ccc;
+      min-height: 200px;
+      position: relative;
+      background: white;
+    }
+
+    .demo-element {
+      position: absolute;
+      padding: 10px 20px;
+      background: #2196F3;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 300ms ease-in-out;
+    }
+
+    .demo-board {
+      position: absolute;
+      background: #f0d9b5;
+      border: 2px solid #b58863;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+    }
+
+    .demo-board-square {
+      aspect-ratio: 1;
+    }
+
+    .demo-board-square:nth-child(odd) {
+      background: #f0d9b5;
+    }
+
+    .demo-board-square:nth-child(even) {
+      background: #b58863;
+    }
+
+    button {
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #1976D2;
+    }
+
+    button:active {
+      background: #0D47A1;
+    }
+
+    .controls {
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 DOMUpdater Component Tests</h1>
+
+  <div class="summary" id="summary">
+    <h2>Test Summary</h2>
+    <div class="stats">
+      <div class="stat total">Total: <span id="total-tests">0</span></div>
+      <div class="stat pass">Passed: <span id="passed-tests">0</span></div>
+      <div class="stat fail">Failed: <span id="failed-tests">0</span></div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Visual Demo</h2>
+    <div class="controls">
+      <button onclick="runDemo()">Run Animation Demo</button>
+      <button onclick="testBatchUpdate()">Test Batch Update</button>
+      <button onclick="testRevert()">Test Revert</button>
+      <button onclick="resetDemo()">Reset</button>
+    </div>
+    <div class="demo-area" id="demo-area"></div>
+  </div>
+
+  <div id="test-results"></div>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+
+  <script>
+    // Simple test framework
+    const testResults = [];
+    let currentSuite = '';
+
+    function describe(name, fn) {
+      currentSuite = name;
+      fn();
+    }
+
+    function test(name, fn) {
+      try {
+        fn();
+        testResults.push({ suite: currentSuite, name, passed: true });
+      } catch (error) {
+        testResults.push({ suite: currentSuite, name, passed: false, error: error.message });
+      }
+    }
+
+    function expect(value) {
+      return {
+        toBe(expected) {
+          if (value !== expected) {
+            throw new Error(`Expected ${expected} but got ${value}`);
+          }
+        },
+        toBeDefined() {
+          if (value === undefined) {
+            throw new Error('Expected value to be defined');
+          }
+        },
+        toBeGreaterThan(expected) {
+          if (value <= expected) {
+            throw new Error(`Expected ${value} to be greater than ${expected}`);
+          }
+        },
+        toContain(expected) {
+          if (!value.includes(expected)) {
+            throw new Error(`Expected ${value} to contain ${expected}`);
+          }
+        }
+      };
+    }
+
+    // Run tests
+    function runTests() {
+      testResults.length = 0;
+
+      // Test 1: Constructor
+      describe('DOMUpdater Constructor', () => {
+        test('should create instance with default config', () => {
+          const updater = new DOMUpdater();
+          expect(updater).toBeDefined();
+          expect(updater.getConfig('transitionDuration')).toBe(300);
+          updater.destroy();
+        });
+
+        test('should accept custom configuration', () => {
+          const updater = new DOMUpdater({ transitionDuration: 500 });
+          expect(updater.getConfig('transitionDuration')).toBe(500);
+          updater.destroy();
+        });
+      });
+
+      // Test 2: Element Position Updates
+      describe('Element Position Updates', () => {
+        test('should update element position', async () => {
+          const updater = new DOMUpdater();
+          const element = document.createElement('div');
+          document.body.appendChild(element);
+
+          const position = {
+            x: 100,
+            y: 200,
+            width: 300,
+            height: 400,
+            transform: 'translate(100px, 200px)',
+            zIndex: 5
+          };
+
+          await updater.updateElementPosition(element, position);
+
+          expect(element.style.transform).toContain('100px');
+          expect(element.style.width).toBe('300px');
+
+          document.body.removeChild(element);
+          updater.destroy();
+        });
+
+        test('should store original position', async () => {
+          const updater = new DOMUpdater();
+          const element = document.createElement('div');
+          document.body.appendChild(element);
+
+          const position = {
+            x: 100,
+            y: 100,
+            width: 100,
+            height: 100,
+            transform: '',
+            zIndex: 0
+          };
+
+          await updater.updateElementPosition(element, position);
+
+          expect(updater.originalPositions.has(element)).toBe(true);
+
+          document.body.removeChild(element);
+          updater.destroy();
+        });
+      });
+
+      // Test 3: Batch Updates
+      describe('Batch Updates', () => {
+        test('should apply multiple updates', async () => {
+          const updater = new DOMUpdater();
+          const elements = [
+            document.createElement('div'),
+            document.createElement('div'),
+            document.createElement('div')
+          ];
+
+          elements.forEach(el => document.body.appendChild(el));
+
+          const updates = elements.map((element, i) => ({
+            element,
+            position: {
+              x: i * 100,
+              y: 0,
+              width: 100,
+              height: 100,
+              transform: '',
+              zIndex: i
+            }
+          }));
+
+          await updater.batchUpdate(updates);
+
+          elements.forEach(el => {
+            expect(el.style.width).toBe('100px');
+            document.body.removeChild(el);
+          });
+
+          updater.destroy();
+        });
+      });
+
+      // Test 4: Revert Functionality
+      describe('Revert Functionality', () => {
+        test('should revert to original position', async () => {
+          const updater = new DOMUpdater();
+          const element = document.createElement('div');
+          element.style.left = '50px';
+          element.style.top = '50px';
+          document.body.appendChild(element);
+
+          // Move element
+          await updater.updateElementPosition(element, {
+            x: 200,
+            y: 200,
+            width: 100,
+            height: 100,
+            transform: '',
+            zIndex: 0
+          });
+
+          // Revert
+          await updater.revertToDefault([element]);
+
+          // Should be back near original (within transform tolerance)
+          expect(element.style.transform).toBeDefined();
+
+          document.body.removeChild(element);
+          updater.destroy();
+        });
+      });
+
+      // Test 5: Animation State
+      describe('Animation State', () => {
+        test('should track animation state', async () => {
+          const updater = new DOMUpdater();
+          const element = document.createElement('div');
+          document.body.appendChild(element);
+
+          const promise = updater.updateElementPosition(element, {
+            x: 100,
+            y: 100,
+            width: 100,
+            height: 100,
+            transform: '',
+            zIndex: 0
+          });
+
+          expect(updater.isAnimating()).toBe(true);
+
+          await promise;
+
+          expect(updater.isAnimating()).toBe(false);
+
+          document.body.removeChild(element);
+          updater.destroy();
+        });
+      });
+
+      // Display results
+      displayResults();
+    }
+
+    function displayResults() {
+      const resultsDiv = document.getElementById('test-results');
+      const summaryDiv = document.getElementById('summary');
+      
+      const passed = testResults.filter(r => r.passed).length;
+      const failed = testResults.filter(r => !r.passed).length;
+      const total = testResults.length;
+
+      document.getElementById('total-tests').textContent = total;
+      document.getElementById('passed-tests').textContent = passed;
+      document.getElementById('failed-tests').textContent = failed;
+
+      if (failed === 0) {
+        summaryDiv.className = 'summary all-pass';
+      } else {
+        summaryDiv.className = 'summary has-failures';
+      }
+
+      let html = '';
+      const suites = [...new Set(testResults.map(r => r.suite))];
+
+      suites.forEach(suite => {
+        html += `<div class="test-section"><h2>${suite}</h2>`;
+        
+        const suiteTests = testResults.filter(r => r.suite === suite);
+        suiteTests.forEach(result => {
+          html += `
+            <div class="test-case ${result.passed ? 'pass' : 'fail'}">
+              <div class="test-name">${result.passed ? '✓' : '✗'} ${result.name}</div>
+              <div class="test-result">${result.passed ? 'Passed' : 'Failed'}</div>
+              ${result.error ? `<div class="test-error">${result.error}</div>` : ''}
+            </div>
+          `;
+        });
+
+        html += '</div>';
+      });
+
+      resultsDiv.innerHTML = html;
+    }
+
+    // Visual demos
+    let demoUpdater = null;
+    let demoElements = [];
+
+    function initDemo() {
+      if (!demoUpdater) {
+        demoUpdater = new DOMUpdater({ transitionDuration: 500 });
+      }
+    }
+
+    function runDemo() {
+      initDemo();
+      const demoArea = document.getElementById('demo-area');
+      demoArea.innerHTML = '';
+      demoElements = [];
+
+      // Create demo board
+      const board = document.createElement('div');
+      board.className = 'demo-board';
+      board.style.width = '200px';
+      board.style.height = '200px';
+      board.style.left = '20px';
+      board.style.top = '20px';
+      
+      for (let i = 0; i < 64; i++) {
+        const square = document.createElement('div');
+        square.className = 'demo-board-square';
+        board.appendChild(square);
+      }
+      
+      demoArea.appendChild(board);
+
+      // Create demo UI elements
+      for (let i = 0; i < 3; i++) {
+        const element = document.createElement('div');
+        element.className = 'demo-element';
+        element.textContent = `Element ${i + 1}`;
+        element.style.left = `${240 + i * 120}px`;
+        element.style.top = `${20 + i * 60}px`;
+        demoArea.appendChild(element);
+        demoElements.push(element);
+      }
+
+      // Animate after a short delay
+      setTimeout(() => {
+        demoUpdater.updateElementPosition(board, {
+          x: 20,
+          y: 20,
+          width: 250,
+          height: 250,
+          transform: 'translate(20px, 20px) scale(1.25)',
+          zIndex: 1
+        });
+
+        demoElements.forEach((el, i) => {
+          demoUpdater.updateElementPosition(el, {
+            x: 300 + i * 20,
+            y: 50 + i * 80,
+            width: 150,
+            height: 40,
+            transform: `translate(${300 + i * 20}px, ${50 + i * 80}px)`,
+            zIndex: 2 + i
+          });
+        });
+      }, 100);
+    }
+
+    function testBatchUpdate() {
+      initDemo();
+      if (demoElements.length === 0) {
+        runDemo();
+        setTimeout(testBatchUpdate, 600);
+        return;
+      }
+
+      const updates = demoElements.map((element, i) => ({
+        element,
+        position: {
+          x: 50 + i * 150,
+          y: 300,
+          width: 120,
+          height: 40,
+          transform: `translate(${50 + i * 150}px, 300px)`,
+          zIndex: 10 + i
+        }
+      }));
+
+      demoUpdater.batchUpdate(updates);
+    }
+
+    function testRevert() {
+      if (demoUpdater && demoElements.length > 0) {
+        demoUpdater.revertToDefault(demoElements);
+      }
+    }
+
+    function resetDemo() {
+      const demoArea = document.getElementById('demo-area');
+      demoArea.innerHTML = '';
+      demoElements = [];
+      if (demoUpdater) {
+        demoUpdater.destroy();
+        demoUpdater = null;
+      }
+    }
+
+    // Run tests on load
+    window.addEventListener('load', () => {
+      runTests();
+    });
+  </script>
+</body>
+</html>

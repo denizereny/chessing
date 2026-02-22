@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Analysis Before Rendering</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .status {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .status h2 {
+      margin: 0 0 15px 0;
+      color: #333;
+      font-size: 20px;
+    }
+    
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      margin: 5px 0;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .status-label {
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .status-value {
+      color: #667eea;
+      font-weight: 600;
+    }
+    
+    .results {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .results h2 {
+      margin: 0 0 15px 0;
+      color: #333;
+      font-size: 20px;
+    }
+    
+    .test-result {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border-left: 4px solid;
+      background: #f8f9fa;
+    }
+    
+    .test-result.pass {
+      border-left-color: #28a745;
+      background: #d4edda;
+    }
+    
+    .test-result.fail {
+      border-left-color: #dc3545;
+      background: #f8d7da;
+    }
+    
+    .test-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    
+    .test-status {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .test-error {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(220, 53, 69, 0.1);
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #721c24;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    .summary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .summary h2 {
+      margin: 0 0 15px 0;
+      font-size: 20px;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    
+    .summary-item {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .summary-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    
+    .summary-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .console-output pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔬 Property Test: Analysis Before Rendering</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 12:</strong> Analysis Before Rendering</p>
+    <p><strong>Validates:</strong> Requirements 4.1</p>
+    <p><strong>Description:</strong> For any page load, viewport analysis should complete and layout configuration should be calculated before UI elements are rendered to the DOM.</p>
+  </div>
+
+  <div class="controls">
+    <button id="runTestBtn" class="btn">▶ Run Property Test (100 iterations)</button>
+  </div>
+
+  <div class="status" id="statusSection" style="display: none;">
+    <h2>📊 Test Status</h2>
+    <div class="status-item">
+      <span class="status-label">Status:</span>
+      <span class="status-value" id="testStatus">Initializing...</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Progress:</span>
+      <span class="status-value" id="testProgress">0%</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Duration:</span>
+      <span class="status-value" id="testDuration">0s</span>
+    </div>
+  </div>
+
+  <div class="results" id="resultsSection" style="display: none;">
+    <h2>📋 Test Results</h2>
+    <div id="testResults"></div>
+  </div>
+
+  <div class="summary" id="summarySection" style="display: none;">
+    <h2>📈 Summary</h2>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="summary-value" id="totalTests">0</div>
+        <div class="summary-label">Total Properties</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="passedTests">0</div>
+        <div class="summary-label">Passed</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="failedTests">0</div>
+        <div class="summary-label">Failed</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="successRate">0%</div>
+        <div class="summary-label">Success Rate</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="totalIterations">0</div>
+        <div class="summary-label">Total Iterations</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="console-output" id="consoleOutput">
+    <pre id="consoleText">Console output will appear here...</pre>
+  </div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+  <script src="../../js/adaptive-viewport/layout-state-manager.js"></script>
+  <script src="../../js/adaptive-viewport/viewport-analyzer.js"></script>
+
+  <!-- Load property test -->
+  <script src="analysis-before-rendering-property.test.js"></script>
+
+  <script>
+    // Capture console output
+    const consoleText = document.getElementById('consoleText');
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+    const originalConsoleWarn = console.warn;
+
+    function appendToConsole(message, type = 'log') {
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : '📝';
+      consoleText.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+      consoleText.parentElement.scrollTop = consoleText.parentElement.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalConsoleLog.apply(console, args);
+      appendToConsole(args.join(' '), 'log');
+    };
+
+    console.error = function(...args) {
+      originalConsoleError.apply(console, args);
+      appendToConsole(args.join(' '), 'error');
+    };
+
+    console.warn = function(...args) {
+      originalConsoleWarn.apply(console, args);
+      appendToConsole(args.join(' '), 'warn');
+    };
+
+    // Run test button handler
+    document.getElementById('runTestBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('runTestBtn');
+      const statusSection = document.getElementById('statusSection');
+      const resultsSection = document.getElementById('resultsSection');
+      const summarySection = document.getElementById('summarySection');
+      const testStatus = document.getElementById('testStatus');
+      const testProgress = document.getElementById('testProgress');
+      const testDuration = document.getElementById('testDuration');
+
+      // Disable button and show status
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Running...';
+      statusSection.style.display = 'block';
+      resultsSection.style.display = 'none';
+      summarySection.style.display = 'none';
+
+      // Clear console
+      consoleText.textContent = 'Starting property test...\n';
+
+      // Track start time
+      const startTime = performance.now();
+      let progressInterval;
+
+      try {
+        // Update status
+        testStatus.textContent = 'Running property tests...';
+        
+        // Update progress periodically
+        progressInterval = setInterval(() => {
+          const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+          testDuration.textContent = `${elapsed}s`;
+        }, 100);
+
+        // Wait for fast-check to be ready
+        await waitForFastCheck();
+
+        // Run the property test
+        const results = await runAnalysisBeforeRenderingPropertyTest(fc);
+
+        // Clear progress interval
+        clearInterval(progressInterval);
+
+        // Calculate final duration
+        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+        testDuration.textContent = `${duration}s`;
+
+        // Update status
+        testStatus.textContent = results.failed === 0 ? '✅ All tests passed!' : '❌ Some tests failed';
+        testProgress.textContent = '100%';
+
+        // Display results
+        displayResults(results);
+
+        // Display summary
+        displaySummary(results, duration);
+
+      } catch (error) {
+        clearInterval(progressInterval);
+        console.error('Test execution failed:', error);
+        testStatus.textContent = '❌ Test execution failed';
+        alert('Test execution failed: ' + error.message);
+      } finally {
+        // Re-enable button
+        btn.disabled = false;
+        btn.innerHTML = '▶ Run Property Test (100 iterations)';
+      }
+    });
+
+    function displayResults(results) {
+      const resultsSection = document.getElementById('resultsSection');
+      const testResults = document.getElementById('testResults');
+
+      resultsSection.style.display = 'block';
+      testResults.innerHTML = '';
+
+      results.tests.forEach(test => {
+        const resultDiv = document.createElement('div');
+        resultDiv.className = `test-result ${test.status === 'PASS' ? 'pass' : 'fail'}`;
+
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'test-name';
+        nameDiv.textContent = test.name;
+
+        const statusDiv = document.createElement('div');
+        statusDiv.className = 'test-status';
+        statusDiv.textContent = `Status: ${test.status}`;
+
+        resultDiv.appendChild(nameDiv);
+        resultDiv.appendChild(statusDiv);
+
+        if (test.error) {
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'test-error';
+          errorDiv.textContent = `Error: ${test.error}`;
+          resultDiv.appendChild(errorDiv);
+        }
+
+        testResults.appendChild(resultDiv);
+      });
+    }
+
+    function displaySummary(results, duration) {
+      const summarySection = document.getElementById('summarySection');
+      summarySection.style.display = 'block';
+
+      const total = results.passed + results.failed;
+      const successRate = total > 0 ? ((results.passed / total) * 100).toFixed(1) : 0;
+      const totalIterations = total * 100;
+
+      document.getElementById('totalTests').textContent = total;
+      document.getElementById('passedTests').textContent = results.passed;
+      document.getElementById('failedTests').textContent = results.failed;
+      document.getElementById('successRate').textContent = `${successRate}%`;
+      document.getElementById('totalIterations').textContent = totalIterations;
+    }
+
+    async function waitForFastCheck() {
+      let attempts = 0;
+      while (typeof fc === 'undefined' && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      if (typeof fc === 'undefined') {
+        throw new Error('fast-check library failed to load');
+      }
+    }
+
+    console.log('Property test page loaded. Click "Run Property Test" to begin.');
+  </script>
+</body>
+</html>

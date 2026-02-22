@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Board Size Maximization</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+    }
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .test-controls button:hover {
+      background: #5568d3;
+    }
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .status.running {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .status.failure {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎯 Property Test: Board Size Maximization</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 22:</strong> Board Size Maximization</p>
+    <p><strong>Validates:</strong> Requirements 6.5, 7.5</p>
+    <p><strong>Description:</strong> For any set of possible layout configurations, the chosen configuration should maximize chess board size while satisfying all constraints.</p>
+  </div>
+
+  <div class="test-controls">
+    <button id="runTests" onclick="runTests()">Run Property Tests (100 iterations)</button>
+    <span id="loadingIndicator"></span>
+  </div>
+
+  <div id="statusContainer"></div>
+  <div id="output"></div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+
+  <!-- Load test file -->
+  <script src="./board-size-maximization-property.test.js"></script>
+
+  <script>
+    const outputDiv = document.getElementById('output');
+    const statusContainer = document.getElementById('statusContainer');
+    const runButton = document.getElementById('runTests');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    function captureOutput(message) {
+      outputDiv.textContent += message + '\n';
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      captureOutput(args.join(' '));
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      captureOutput('ERROR: ' + args.join(' '));
+    };
+
+    function showStatus(message, type) {
+      statusContainer.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+
+    async function runTests() {
+      outputDiv.textContent = '';
+      statusContainer.innerHTML = '';
+      runButton.disabled = true;
+      loadingIndicator.innerHTML = '<div class="loading"></div>';
+
+      showStatus('Running property tests... This may take a minute.', 'running');
+
+      try {
+        // Wait for fast-check to be available
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded. Please check setup-fast-check.js');
+        }
+
+        console.log('Starting Board Size Maximization Property Tests...');
+        console.log('Using fast-check library for property-based testing');
+        console.log('Running 100 iterations per property...\n');
+
+        const results = await runBoardSizeMaximizationPropertyTest(fc);
+
+        console.log('\n' + '='.repeat(60));
+        console.log('FINAL RESULTS');
+        console.log('='.repeat(60));
+        console.log(`Total Properties Tested: ${results.passed + results.failed}`);
+        console.log(`Passed: ${results.passed}`);
+        console.log(`Failed: ${results.failed}`);
+        console.log(`Success Rate: ${((results.passed / (results.passed + results.failed)) * 100).toFixed(1)}%`);
+        console.log(`Total Test Iterations: ${(results.passed + results.failed) * 100}`);
+
+        if (results.failed === 0) {
+          showStatus(`✓ All ${results.passed} properties passed! (${(results.passed + results.failed) * 100} total iterations)`, 'success');
+        } else {
+          showStatus(`✗ ${results.failed} properties failed out of ${results.passed + results.failed}`, 'failure');
+        }
+
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        showStatus('✗ Test execution failed: ' + error.message, 'failure');
+      } finally {
+        runButton.disabled = false;
+        loadingIndicator.innerHTML = '';
+      }
+    }
+
+    // Check if fast-check is loaded
+    window.addEventListener('load', () => {
+      if (typeof fc === 'undefined') {
+        showStatus('⚠ Warning: fast-check library not loaded. Tests cannot run.', 'failure');
+        runButton.disabled = true;
+      } else {
+        showStatus('✓ Ready to run tests. Click the button above to start.', 'success');
+      }
+    });
+  </script>
+</body>
+</html>

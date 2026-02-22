@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Accessibility Feature Preservation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+    
+    .description {
+      color: #666;
+      line-height: 1.6;
+    }
+    
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    button {
+      background: #9C27B0;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    
+    button:hover {
+      background: #7B1FA2;
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    #output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    
+    .status.running {
+      background: #FFF3E0;
+      color: #E65100;
+      border-left: 4px solid #FF9800;
+    }
+    
+    .status.success {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border-left: 4px solid #4CAF50;
+    }
+    
+    .status.failure {
+      background: #FFEBEE;
+      color: #C62828;
+      border-left: 4px solid #F44336;
+    }
+    
+    .status.hidden {
+      display: none;
+    }
+    
+    .property-info {
+      background: #E3F2FD;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border-left: 4px solid #2196F3;
+    }
+    
+    .property-info h3 {
+      margin: 0 0 10px 0;
+      color: #1565C0;
+    }
+    
+    .property-info p {
+      margin: 5px 0;
+      color: #424242;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔍 Property Test: Accessibility Feature Preservation</h1>
+    <div class="description">
+      <strong>Feature:</strong> adaptive-viewport-optimizer<br>
+      <strong>Property 28:</strong> Accessibility Feature Preservation<br>
+      <strong>Validates:</strong> Requirements 9.2, 9.3
+    </div>
+  </div>
+
+  <div class="property-info">
+    <h3>Property Statement</h3>
+    <p>
+      <em>For any</em> UI element with ARIA attributes, keyboard navigation handlers, 
+      or other accessibility features, these features should remain functional after repositioning.
+    </p>
+    <p>
+      <strong>Test Coverage:</strong>
+    </p>
+    <ul>
+      <li>ARIA attributes preservation (aria-label, role, aria-expanded, etc.)</li>
+      <li>Multiple ARIA attributes preservation</li>
+      <li>Keyboard navigation handlers (Enter, Space, Tab, Arrow keys, etc.)</li>
+      <li>Focus management (focus/blur events)</li>
+      <li>TabIndex preservation</li>
+      <li>Batch updates with accessibility features</li>
+      <li>Multiple repositionings with accessibility features</li>
+    </ul>
+  </div>
+
+  <div class="test-controls">
+    <button id="runTest" onclick="runTest()">Run Property Test</button>
+    <button id="clearOutput" onclick="clearOutput()">Clear Output</button>
+  </div>
+
+  <div id="status" class="status hidden"></div>
+
+  <div id="output"></div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+
+  <!-- Load test -->
+  <script src="accessibility-feature-preservation-property.test.js"></script>
+
+  <script>
+    const outputDiv = document.getElementById('output');
+    const statusDiv = document.getElementById('status');
+    const runButton = document.getElementById('runTest');
+
+    // Override console.log to capture output
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    function captureOutput(message, isError = false) {
+      const color = isError ? '#f48771' : '#d4d4d4';
+      const span = document.createElement('span');
+      span.style.color = color;
+      span.textContent = message + '\n';
+      outputDiv.appendChild(span);
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      captureOutput(args.join(' '));
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      captureOutput(args.join(' '), true);
+    };
+
+    function setStatus(message, type) {
+      statusDiv.textContent = message;
+      statusDiv.className = `status ${type}`;
+    }
+
+    async function runTest() {
+      runButton.disabled = true;
+      outputDiv.innerHTML = '';
+      setStatus('Running property-based tests...', 'running');
+
+      try {
+        // Wait for fast-check to be loaded
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded');
+        }
+
+        console.log('Starting Accessibility Feature Preservation Property Test...');
+        console.log('This will run 700 test iterations (7 properties × 100 iterations each)');
+        console.log('Please wait...\n');
+
+        const results = await runAccessibilityFeaturePreservationPropertyTest(fc);
+
+        if (results.failed === 0) {
+          setStatus(`✓ All tests passed! (${results.passed}/${results.passed + results.failed})`, 'success');
+        } else {
+          setStatus(`✗ Some tests failed (${results.passed}/${results.passed + results.failed} passed)`, 'failure');
+        }
+
+      } catch (error) {
+        console.error('Test execution failed:', error.message);
+        console.error(error.stack);
+        setStatus('✗ Test execution failed', 'failure');
+      } finally {
+        runButton.disabled = false;
+      }
+    }
+
+    function clearOutput() {
+      outputDiv.innerHTML = '';
+      statusDiv.className = 'status hidden';
+    }
+
+    // Display initial message
+    console.log('Property Test: Accessibility Feature Preservation');
+    console.log('Click "Run Property Test" to start testing...\n');
+  </script>
+</body>
+</html>

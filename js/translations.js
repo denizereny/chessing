@@ -19,6 +19,9 @@ const translations = {
     whitePlaying: "White Playing",
     blackPlaying: "Black Playing",
     moveHistory: "Move History",
+    whitePlayer: "White Player",
+    blackPlayer: "Black Player",
+    gameHistory: "Game History",
     switchedToBlack: "You are now playing BLACK!",
     switchedToWhite: "You are now playing WHITE!",
     aiLevelSet: "AI difficulty: Level",
@@ -48,6 +51,21 @@ const translations = {
     pieceSetup: "Piece Setup",
     analyzePosition: "Analyze Position",
     sharePosition: "Share Position",
+    // Menu sections
+    menuGameControlsTitle: "Game Controls",
+    menuAppearanceTitle: "Appearance",
+    menuPositionToolsTitle: "Position Tools",
+    menuAdvancedTitle: "Advanced Features",
+    btnNewGameMenuText: "New Game",
+    btnSwitchSidesMenuText: "Switch Sides",
+    lblAiDifficultyMenu: "AI Difficulty",
+    btnColorsMenuText: "Board Colors",
+    btnBackendModeMenuText: "Backend Mode",
+    btnAutoScrollMenuText: "Auto-Scroll",
+    btnPieceSetupText: "Piece Setup",
+    btnAnalyzePositionText: "Analyze Position",
+    btnSharePositionText: "Share Position",
+    btnThemeText: "Dark Mode",
     needBothKings: "Both kings are required!",
     customGameStarted: "Custom game started!",
     squareOccupied: "Square is already occupied!",
@@ -374,6 +392,9 @@ const translations = {
     whitePlaying: "Beyaz Oynuyor",
     blackPlaying: "Siyah Oynuyor",
     moveHistory: "Hamle Geçmişi",
+    whitePlayer: "Beyaz Oyuncu",
+    blackPlayer: "Siyah Oyuncu",
+    gameHistory: "Oyun Geçmişi",
     switchedToBlack: "Artık SİYAH oynuyorsunuz!",
     switchedToWhite: "Artık BEYAZ oynuyorsunuz!",
     aiLevelSet: "AI zorluğu: Seviye",
@@ -403,6 +424,21 @@ const translations = {
     pieceSetup: "Taş Düzeni",
     analyzePosition: "Pozisyonu Analiz Et",
     sharePosition: "Pozisyonu Paylaş",
+    // Menu sections
+    menuGameControlsTitle: "Oyun Kontrolleri",
+    menuAppearanceTitle: "Görünüm",
+    menuPositionToolsTitle: "Pozisyon Araçları",
+    menuAdvancedTitle: "Gelişmiş Özellikler",
+    btnNewGameMenuText: "Yeni Oyun",
+    btnSwitchSidesMenuText: "Taraf Değiştir",
+    lblAiDifficultyMenu: "Yapay Zeka Zorluğu",
+    btnColorsMenuText: "Tahta Renkleri",
+    btnBackendModeMenuText: "Backend Modu",
+    btnAutoScrollMenuText: "Otomatik Kaydırma",
+    btnPieceSetupText: "Taş Düzeni",
+    btnAnalyzePositionText: "Pozisyonu Analiz Et",
+    btnSharePositionText: "Pozisyonu Paylaş",
+    btnThemeText: "Koyu Mod",
     needBothKings: "Her iki kral da gerekli!",
     customGameStarted: "Özel oyun başlatıldı!",
     squareOccupied: "Kare zaten dolu!",
@@ -729,6 +765,9 @@ const translations = {
     whitePlaying: "Juegan Blancas",
     blackPlaying: "Juegan Negras",
     moveHistory: "Historial",
+    whitePlayer: "Jugador Blanco",
+    blackPlayer: "Jugador Negro",
+    gameHistory: "Historial del Juego",
     switchedToBlack: "¡Ahora juegas con NEGRAS!",
     switchedToWhite: "¡Ahora juegas con BLANCAS!",
     aiLevelSet: "Dificultad IA: Nivel",
@@ -756,15 +795,44 @@ const translations = {
     pieceSetup: "Configuración de Piezas",
     analyzePosition: "Analizar Posición",
     sharePosition: "Compartir Posición",
+    // Menu sections
+    menuGameControlsTitle: "Controles del Juego",
+    menuAppearanceTitle: "Apariencia",
+    menuPositionToolsTitle: "Herramientas de Posición",
+    menuAdvancedTitle: "Funciones Avanzadas",
+    btnNewGameMenuText: "Nuevo Juego",
+    btnSwitchSidesMenuText: "Cambiar Lados",
+    lblAiDifficultyMenu: "Dificultad de IA",
+    btnColorsMenuText: "Colores del Tablero",
+    btnBackendModeMenuText: "Modo Backend",
+    btnAutoScrollMenuText: "Desplazamiento Automático",
+    btnPieceSetupText: "Configuración de Piezas",
+    btnAnalyzePositionText: "Analizar Posición",
+    btnSharePositionText: "Compartir Posición",
+    btnThemeText: "Modo Oscuro",
     needBothKings: "¡Se requieren ambos reyes!",
     customGameStarted: "¡Juego personalizado iniciado!",
     squareOccupied: "¡La casilla ya está ocupada!",
     invalidPawnPosition: "¡Los peones no pueden colocarse en esta fila!",
     tooManyPieces: "¡Demasiadas piezas de este tipo!",
     invalidMove: "¡Movimiento inválido!",
+    positionValid: "La posición es válida",
+    fixErrorsFirst: "Corrija primero los errores de posición",
+    startCustomGame: "Iniciar juego personalizado",
+    kingsAdjacent: "Los reyes no pueden estar adyacentes",
+    whiteInCheck: "¡El rey blanco está en jaque!",
+    blackInCheck: "¡El rey negro está en jaque!",
+    checkmate: "¡Jaque mate!",
+    stalemate: "¡Tablas!",
+    positionHasErrors: "La posición tiene errores",
+    positionHasWarnings: "La posición tiene advertencias",
     piecePlaced: "¡Pieza colocada exitosamente!",
     pieceDeleted: "¡Pieza eliminada!",
     dragCancelled: "Operación de arrastre cancelada",
+    randomSetupCreated: "¡Configuración aleatoria creada!",
+    presetLoaded: "¡Plantilla cargada!",
+    boardCleared: "¡Tablero limpiado!",
+    defaultSetup: "¡Posición por defecto restaurada!",
     classic: "Clásico",
     wood: "Madera",
     marble: "Mármol",
@@ -800,6 +868,94 @@ const translations = {
     complexPosition: "Esta es una posición compleja con muchas piezas",
     queensPresent: "Las reinas están presentes - oportunidades tácticas probables",
     setUpPieces: "Coloca piezas para ver análisis",
+    whitePiecesTitle: "Piezas Blancas",
+    blackPiecesTitle: "Piezas Negras",
+    clearBoardText: "Limpiar Tablero",
+    resetDefaultText: "Posición Por Defecto",
+    randomSetupText: "Configuración Aleatoria",
+    loadSetupText: "Cargar Configuración",
+    presetsTitle: "Configuraciones Rápidas:",
+    userPresetsTitle: "Mis Plantillas:",
+    loadPresetText: "Cargar",
+    deletePresetText: "Eliminar",
+    exportPresetsText: "Exportar",
+    importPresetsText: "Importar",
+    endgameText: "Final",
+    middlegameText: "Medio Juego",
+    puzzleText: "Puzzle",
+    trashText: "Suelta aquí para eliminar",
+    whiteKingsLabel: "Reyes Blancos:",
+    blackKingsLabel: "Reyes Negros:",
+    totalPiecesLabel: "Total de Piezas:",
+    materialBalanceLabel: "Balance Material:",
+    whiteFirstOption: "Blancas",
+    blackFirstOption: "Negras",
+    easyOption: "🟢 Fácil",
+    mediumOption: "🟡 Medio",
+    hardOption: "🔴 Difícil",
+    expertOption: "💀 Experto",
+    analysisTitle: "Análisis de Posición:",
+    analyzeText: "Analizar",
+    startGameText: "Comenzar Juego",
+    cancelText: "Cancelar",
+    
+    // Position Evaluation Report System
+    positionAnalysisReport: "Informe de Análisis de Posición",
+    positionType: "Tipo de Posición",
+    analysisOverview: "Resumen del Análisis",
+    materialBalance: "Balance Material",
+    pieceActivity: "Actividad de Piezas",
+    kingSafety: "Seguridad del Rey",
+    centerControl: "Control del Centro",
+    
+    // Position History Interface
+    positionHistory: "Historial de Posiciones",
+    toggleHistory: "Alternar Historial",
+    undo: "Deshacer",
+    redo: "Rehacer",
+    positions: "posiciones",
+    noHistoryYet: "Aún no hay historial. ¡Comienza a hacer movimientos!",
+    clearHistory: "Limpiar Historial",
+    export: "Exportar",
+    import: "Importar",
+    jumpToPosition: "Saltar a Posición",
+    previewPosition: "Vista Previa de Posición",
+    noDescription: "Sin descripción",
+    created: "Creado",
+    cancel: "Cancelar",
+    confirmClearHistory: "Confirmar Limpieza de Historial",
+    clearHistoryWarning: "Esto eliminará permanentemente todo el historial de posiciones.",
+    thisActionCannotBeUndone: "Esta acción no se puede deshacer.",
+    historyCleared: "Historial limpiado exitosamente",
+    historyExported: "Historial exportado exitosamente",
+    historyImported: "Historial importado exitosamente",
+    exportError: "Error al exportar historial",
+    importError: "Error al importar historial",
+    undoPerformed: "Deshacer realizado",
+    redoPerformed: "Rehacer realizado",
+    jumpedToPosition: "Saltado a la posición {0}",
+    exportHistory: "Exportar Historial",
+    importHistory: "Importar Historial",
+    strategicRecommendations: "Recomendaciones Estratégicas",
+    detailedStatistics: "Estadísticas Detalladas",
+    materialBreakdown: "Desglose Material",
+    activityDetails: "Detalles de Actividad",
+    kingSafetyDetails: "Detalles de Seguridad del Rey",
+    totalMoves: "Total de Movimientos",
+    avgMovesPerPiece: "Promedio de Movimientos/Pieza",
+    escapeSquares: "Casillas de escape",
+    position: "Posición",
+    analysisGeneratedAt: "Análisis generado en",
+    exportReport: "Exportar",
+    shareReport: "Compartir",
+    noRecommendationsAvailable: "Configura una posición para ver recomendaciones estratégicas",
+    balancedPosition: "Posición equilibrada",
+    whiteAdvantagePosition: "Las blancas tienen ventaja",
+    blackAdvantagePosition: "Las negras tienen ventaja",
+    slightWhiteAdvantage: "Ligera ventaja de las blancas",
+    slightBlackAdvantage: "Ligera ventaja de las negras",
+    whitePositionalAdvantage: "Ventaja posicional de las blancas",
+    blackPositionalAdvantage: "Ventaja posicional de las negras",
     
     // Enhanced Theme System
     themeToggle: "Cambiar Tema",
@@ -827,10 +983,12 @@ const translations = {
     usingFlaskBackend: "Usando Flask Backend",
     usingLocalMode: "Usando Modo Local",
     
-    lightTheme: "Claro",
-    darkTheme: "Oscuro",
-    systemTheme: "Sistema",
-    themeChanged: "Tema cambiado exitosamente",
+    // Settings Menu
+    settingsMenu: "Ajustes",
+    closeMenu: "Cerrar",
+    openSettingsMenu: "Abrir menú de ajustes",
+    closeSettingsMenu: "Cerrar menú de ajustes",
+    settingsControls: "Controles de ajustes",
     
     // Enhanced Drag & Drop
     dragToMove: "Arrastra para mover pieza",
@@ -975,6 +1133,9 @@ const translations = {
     whitePlaying: "Les Blancs jouent",
     blackPlaying: "Les Noirs jouent",
     moveHistory: "Historique",
+    whitePlayer: "Joueur Blanc",
+    blackPlayer: "Joueur Noir",
+    gameHistory: "Historique du Jeu",
     switchedToBlack: "Vous jouez maintenant les NOIRS!",
     switchedToWhite: "Vous jouez maintenant les BLANCS!",
     aiLevelSet: "Difficulté IA: Niveau",
@@ -1002,15 +1163,44 @@ const translations = {
     pieceSetup: "Configuration des Pièces",
     analyzePosition: "Analyser la Position",
     sharePosition: "Partager la Position",
+    // Menu sections
+    menuGameControlsTitle: "Contrôles du Jeu",
+    menuAppearanceTitle: "Apparence",
+    menuPositionToolsTitle: "Outils de Position",
+    menuAdvancedTitle: "Fonctionnalités Avancées",
+    btnNewGameMenuText: "Nouvelle Partie",
+    btnSwitchSidesMenuText: "Changer de Côté",
+    lblAiDifficultyMenu: "Difficulté IA",
+    btnColorsMenuText: "Couleurs de l'Échiquier",
+    btnBackendModeMenuText: "Mode Backend",
+    btnAutoScrollMenuText: "Défilement Automatique",
+    btnPieceSetupText: "Configuration des Pièces",
+    btnAnalyzePositionText: "Analyser la Position",
+    btnSharePositionText: "Partager la Position",
+    btnThemeText: "Mode Sombre",
     needBothKings: "Les deux rois sont requis!",
     customGameStarted: "Jeu personnalisé commencé!",
     squareOccupied: "La case est déjà occupée!",
     invalidPawnPosition: "Les pions ne peuvent pas être placés sur cette rangée!",
     tooManyPieces: "Trop de pièces de ce type!",
     invalidMove: "Mouvement invalide!",
+    positionValid: "Position valide",
+    fixErrorsFirst: "Corrigez d'abord les erreurs de position",
+    startCustomGame: "Démarrer le jeu personnalisé",
+    kingsAdjacent: "Les rois ne peuvent pas être adjacents",
+    whiteInCheck: "Le roi blanc est en échec!",
+    blackInCheck: "Le roi noir est en échec!",
+    checkmate: "Échec et mat!",
+    stalemate: "Pat!",
+    positionHasErrors: "La position contient des erreurs",
+    positionHasWarnings: "La position contient des avertissements",
     piecePlaced: "Pièce placée avec succès!",
     pieceDeleted: "Pièce supprimée!",
     dragCancelled: "Opération de glissement annulée",
+    randomSetupCreated: "Configuration aléatoire créée!",
+    presetLoaded: "Modèle chargé!",
+    boardCleared: "Échiquier effacé!",
+    defaultSetup: "Position par défaut restaurée!",
     classic: "Classique",
     wood: "Bois",
     marble: "Marbre",
@@ -1018,6 +1208,124 @@ const translations = {
     ocean: "Océan",
     reset: "Réinitialiser",
     language: "🌍 Langue:",
+    // Piece Setup
+    setupInstructions: "Faites glisser les pièces de la palette vers l'échiquier, ou cliquez pour sélectionner et placer. Créez votre position personnalisée!",
+    piecePaletteTitle: "Palette de Pièces",
+    setupBoardTitle: "Configuration de l'Échiquier",
+    lblFirstMove: "Premier Coup:",
+    btnClearBoard: "🗑️ Effacer l'Échiquier",
+    btnResetToDefault: "🔄 Position par Défaut",
+    btnStartCustomGame: "▶ Démarrer le Jeu",
+    btnCancelSetup: "Annuler",
+    // Enhanced piece setup
+    enterSetupName: "Entrez le nom de la configuration:",
+    setupSaved: "Configuration sauvegardée!",
+    noSavedSetups: "Aucune configuration sauvegardée trouvée!",
+    selectSetup: "Sélectionnez la configuration:",
+    setupLoaded: "Configuration chargée!",
+    invalidPosition: "Position invalide - besoin d'exactement un roi par côté",
+    whiteAdvantage: "Les blancs ont un avantage matériel",
+    blackAdvantage: "Les noirs ont un avantage matériel",
+    materialEqual: "Matériel égal",
+    endgamePosition: "Cela semble être une position de finale",
+    complexPosition: "C'est une position complexe avec de nombreuses pièces",
+    queensPresent: "Dames présentes - opportunités tactiques probables",
+    setUpPieces: "Placez les pièces pour voir l'analyse",
+    whitePiecesTitle: "Pièces Blanches",
+    blackPiecesTitle: "Pièces Noires",
+    clearBoardText: "Effacer l'Échiquier",
+    resetDefaultText: "Position par Défaut",
+    randomSetupText: "Configuration Aléatoire",
+    loadSetupText: "Charger la Configuration",
+    presetsTitle: "Configurations Rapides:",
+    userPresetsTitle: "Mes Modèles:",
+    loadPresetText: "Charger",
+    deletePresetText: "Supprimer",
+    exportPresetsText: "Exporter",
+    importPresetsText: "Importer",
+    endgameText: "Finale",
+    middlegameText: "Milieu de Jeu",
+    puzzleText: "Puzzle",
+    trashText: "Déposez ici pour supprimer",
+    whiteKingsLabel: "Rois Blancs:",
+    blackKingsLabel: "Rois Noirs:",
+    totalPiecesLabel: "Total des Pièces:",
+    materialBalanceLabel: "Équilibre Matériel:",
+    whiteFirstOption: "Blancs",
+    blackFirstOption: "Noirs",
+    easyOption: "🟢 Facile",
+    mediumOption: "🟡 Moyen",
+    hardOption: "🔴 Difficile",
+    expertOption: "💀 Expert",
+    analysisTitle: "Analyse de Position:",
+    analyzeText: "Analyser",
+    startGameText: "Démarrer le Jeu",
+    cancelText: "Annuler",
+    
+    // Position Evaluation Report System
+    positionAnalysisReport: "Rapport d'Analyse de Position",
+    positionType: "Type de Position",
+    analysisOverview: "Aperçu de l'Analyse",
+    materialBalance: "Équilibre Matériel",
+    pieceActivity: "Activité des Pièces",
+    kingSafety: "Sécurité du Roi",
+    centerControl: "Contrôle du Centre",
+    
+    // Position History Interface
+    positionHistory: "Historique des Positions",
+    toggleHistory: "Basculer l'Historique",
+    undo: "Annuler",
+    redo: "Refaire",
+    positions: "positions",
+    noHistoryYet: "Pas encore d'historique. Commencez à jouer!",
+    clearHistory: "Effacer l'Historique",
+    export: "Exporter",
+    import: "Importer",
+    jumpToPosition: "Aller à la Position",
+    previewPosition: "Aperçu de la Position",
+    noDescription: "Pas de description",
+    created: "Créé",
+    cancel: "Annuler",
+    confirmClearHistory: "Confirmer l'Effacement de l'Historique",
+    clearHistoryWarning: "Cela supprimera définitivement tout l'historique des positions.",
+    thisActionCannotBeUndone: "Cette action ne peut pas être annulée.",
+    historyCleared: "Historique effacé avec succès",
+    historyExported: "Historique exporté avec succès",
+    historyImported: "Historique importé avec succès",
+    exportError: "Erreur d'exportation de l'historique",
+    importError: "Erreur d'importation de l'historique",
+    undoPerformed: "Annulation effectuée",
+    redoPerformed: "Rétablissement effectué",
+    jumpedToPosition: "Sauté à la position {0}",
+    exportHistory: "Exporter l'Historique",
+    importHistory: "Importer l'Historique",
+    strategicRecommendations: "Recommandations Stratégiques",
+    detailedStatistics: "Statistiques Détaillées",
+    materialBreakdown: "Répartition Matérielle",
+    activityDetails: "Détails d'Activité",
+    kingSafetyDetails: "Détails de Sécurité du Roi",
+    totalMoves: "Total des Coups",
+    avgMovesPerPiece: "Coups Moyens/Pièce",
+    escapeSquares: "Cases d'échappement",
+    position: "Position",
+    analysisGeneratedAt: "Analyse générée à",
+    exportReport: "Exporter",
+    shareReport: "Partager",
+    noRecommendationsAvailable: "Configurez une position pour voir les recommandations stratégiques",
+    balancedPosition: "Position équilibrée",
+    whiteAdvantagePosition: "Les blancs ont l'avantage",
+    blackAdvantagePosition: "Les noirs ont l'avantage",
+    slightWhiteAdvantage: "Léger avantage blanc",
+    slightBlackAdvantage: "Léger avantage noir",
+    whitePositionalAdvantage: "Avantage positionnel blanc",
+    blackPositionalAdvantage: "Avantage positionnel noir",
+    
+    // Settings Menu
+    settingsMenu: "Paramètres",
+    closeMenu: "Fermer",
+    openSettingsMenu: "Ouvrir le menu des paramètres",
+    closeSettingsMenu: "Fermer le menu des paramètres",
+    settingsControls: "Contrôles des paramètres",
     
     // Enhanced Theme System
     themeToggle: "Basculer le Thème",
@@ -1188,6 +1496,9 @@ const translations = {
     whitePlaying: "Weiß am Zug",
     blackPlaying: "Schwarz am Zug",
     moveHistory: "Zughistorie",
+    whitePlayer: "Weißer Spieler",
+    blackPlayer: "Schwarzer Spieler",
+    gameHistory: "Spielverlauf",
     switchedToBlack: "Sie spielen jetzt SCHWARZ!",
     switchedToWhite: "Sie spielen jetzt WEISS!",
     aiLevelSet: "KI-Schwierigkeit: Stufe",
@@ -1215,6 +1526,21 @@ const translations = {
     pieceSetup: "Figurenaufstellung",
     analyzePosition: "Position Analysieren",
     sharePosition: "Position Teilen",
+    // Menu sections
+    menuGameControlsTitle: "Spielsteuerung",
+    menuAppearanceTitle: "Erscheinungsbild",
+    menuPositionToolsTitle: "Positionswerkzeuge",
+    menuAdvancedTitle: "Erweiterte Funktionen",
+    btnNewGameMenuText: "Neues Spiel",
+    btnSwitchSidesMenuText: "Seiten Wechseln",
+    lblAiDifficultyMenu: "KI-Schwierigkeit",
+    btnColorsMenuText: "Brettfarben",
+    btnBackendModeMenuText: "Backend-Modus",
+    btnAutoScrollMenuText: "Automatisches Scrollen",
+    btnPieceSetupText: "Figurenaufstellung",
+    btnAnalyzePositionText: "Position Analysieren",
+    btnSharePositionText: "Position Teilen",
+    btnThemeText: "Dunkler Modus",
     needBothKings: "Beide Könige sind erforderlich!",
     customGameStarted: "Benutzerdefiniertes Spiel gestartet!",
     squareOccupied: "Das Feld ist bereits besetzt!",
@@ -1401,6 +1727,9 @@ const translations = {
     whitePlaying: "Tocca al Bianco",
     blackPlaying: "Tocca al Nero",
     moveHistory: "Cronologia",
+    whitePlayer: "Giocatore Bianco",
+    blackPlayer: "Giocatore Nero",
+    gameHistory: "Storia del Gioco",
     switchedToBlack: "Ora giochi con il NERO!",
     switchedToWhite: "Ora giochi con il BIANCO!",
     aiLevelSet: "Difficoltà IA: Livello",
@@ -1428,6 +1757,21 @@ const translations = {
     pieceSetup: "Configurazione Pezzi",
     analyzePosition: "Analizza Posizione",
     sharePosition: "Condividi Posizione",
+    // Menu sections
+    menuGameControlsTitle: "Controlli di Gioco",
+    menuAppearanceTitle: "Aspetto",
+    menuPositionToolsTitle: "Strumenti di Posizione",
+    menuAdvancedTitle: "Funzionalità Avanzate",
+    btnNewGameMenuText: "Nuovo Gioco",
+    btnSwitchSidesMenuText: "Cambia Lati",
+    lblAiDifficultyMenu: "Difficoltà IA",
+    btnColorsMenuText: "Colori Scacchiera",
+    btnBackendModeMenuText: "Modalità Backend",
+    btnAutoScrollMenuText: "Scorrimento Automatico",
+    btnPieceSetupText: "Configurazione Pezzi",
+    btnAnalyzePositionText: "Analizza Posizione",
+    btnSharePositionText: "Condividi Posizione",
+    btnThemeText: "Modalità Scura",
     needBothKings: "Entrambi i re sono richiesti!",
     customGameStarted: "Gioco personalizzato iniziato!",
     squareOccupied: "La casella è già occupata!",
@@ -1614,11 +1958,193 @@ const translations = {
     whitePlaying: "Ход белых",
     blackPlaying: "Ход черных",
     moveHistory: "История ходов",
+    whitePlayer: "Белый Игрок",
+    blackPlayer: "Черный Игрок",
+    gameHistory: "История Игры",
     switchedToBlack: "Вы играете за ЧЕРНЫХ!",
     switchedToWhite: "Вы играете за БЕЛЫХ!",
     aiLevelSet: "Сложность ИИ: Уровень",
     footerText: "© 2025 VizyonEkibi",
+    startGame: "НАЧАТЬ ИГРУ",
+    gameTitle: "♔ 4×5 Шахматы Про ♚",
+    gameSubtitle: "Стратегическое Мастерство в Минимальном Пространстве",
+    playAgain: "ИГРАТЬ СНОВА",
+    mainMenu: "ГЛАВНОЕ МЕНЮ",
+    gameOver: "ИГРА ОКОНЧЕНА",
+    reviewGame: "ПРОСМОТР ИГРЫ",
+    // Color customization
+    colorSettings: "Настройки Цвета",
+    boardColors: "Цвета Доски",
+    lightSquares: "Светлые Клетки",
+    darkSquares: "Темные Клетки",
+    pieceColors: "Цвета Фигур",
+    whitePieces: "Белые Фигуры",
+    blackPieces: "Черные Фигуры",
+    colorPresets: "Цветовые Шаблоны",
+    boardColorsUpdated: "Цвета доски обновлены!",
+    pieceColorsUpdated: "Цвета фигур обновлены!",
+    invalidHexColor: "Неверный формат hex цвета!",
+    presetApplied: "Шаблон применен!",
+    colorsReset: "Цвета сброшены по умолчанию!",
+    // Piece setup
+    pieceSetup: "Расстановка Фигур",
+    analyzePosition: "Анализировать Позицию",
+    sharePosition: "Поделиться Позицией",
+    // Menu sections
+    menuGameControlsTitle: "Управление Игрой",
+    menuAppearanceTitle: "Внешний Вид",
+    menuPositionToolsTitle: "Инструменты Позиции",
+    menuAdvancedTitle: "Расширенные Функции",
+    btnNewGameMenuText: "Новая Игра",
+    btnSwitchSidesMenuText: "Сменить Сторону",
+    lblAiDifficultyMenu: "Сложность ИИ",
+    btnColorsMenuText: "Цвета Доски",
+    btnBackendModeMenuText: "Режим Backend",
+    btnAutoScrollMenuText: "Автопрокрутка",
+    btnPieceSetupText: "Расстановка Фигур",
+    btnAnalyzePositionText: "Анализ Позиции",
+    btnSharePositionText: "Поделиться Позицией",
+    btnThemeText: "Темный Режим",
+    needBothKings: "Требуются оба короля!",
+    customGameStarted: "Пользовательская игра начата!",
+    squareOccupied: "Клетка уже занята!",
+    invalidPawnPosition: "Пешки не могут быть размещены на этой линии!",
+    tooManyPieces: "Слишком много фигур этого типа!",
+    invalidMove: "Недопустимый ход!",
+    positionValid: "Позиция верна",
+    fixErrorsFirst: "Сначала исправьте ошибки позиции",
+    startCustomGame: "Начать пользовательскую игру",
+    kingsAdjacent: "Короли не могут быть рядом",
+    whiteInCheck: "Белый король под шахом!",
+    blackInCheck: "Черный король под шахом!",
+    checkmate: "Мат!",
+    stalemate: "Пат!",
+    positionHasErrors: "В позиции есть ошибки",
+    positionHasWarnings: "В позиции есть предупреждения",
+    piecePlaced: "Фигура успешно размещена!",
+    pieceDeleted: "Фигура удалена!",
+    dragCancelled: "Перетаскивание отменено",
+    randomSetupCreated: "Случайная расстановка создана!",
+    presetLoaded: "Шаблон загружен!",
+    boardCleared: "Доска очищена!",
+    defaultSetup: "Позиция по умолчанию восстановлена!",
+    // Color presets
+    classic: "Классический",
+    wood: "Дерево",
+    marble: "Мрамор",
+    neon: "Неон",
+    ocean: "Океан",
+    reset: "Сброс",
     language: "🌍 Язык:",
+    // Piece Setup
+    setupInstructions: "Перетащите фигуры с палитры на доску или щелкните, чтобы выбрать и разместить. Создайте свою позицию!",
+    piecePaletteTitle: "Палитра Фигур",
+    setupBoardTitle: "Настройка Доски",
+    lblFirstMove: "Первый Ход:",
+    btnClearBoard: "🗑️ Очистить Доску",
+    btnResetToDefault: "🔄 Позиция по Умолчанию",
+    btnStartCustomGame: "▶ Начать Игру",
+    btnCancelSetup: "Отмена",
+    // Enhanced piece setup
+    enterSetupName: "Введите название расстановки:",
+    setupSaved: "Расстановка сохранена!",
+    noSavedSetups: "Сохраненные расстановки не найдены!",
+    selectSetup: "Выберите расстановку:",
+    setupLoaded: "Расстановка загружена!",
+    invalidPosition: "Неверная позиция - нужен ровно один король на каждой стороне",
+    whiteAdvantage: "У белых материальное преимущество",
+    blackAdvantage: "У черных материальное преимущество",
+    materialEqual: "Материал равен",
+    endgamePosition: "Это похоже на эндшпильную позицию",
+    complexPosition: "Это сложная позиция с множеством фигур",
+    queensPresent: "Ферзи присутствуют - вероятны тактические возможности",
+    setUpPieces: "Расставьте фигуры для просмотра анализа",
+    whitePiecesTitle: "Белые Фигуры",
+    blackPiecesTitle: "Черные Фигуры",
+    clearBoardText: "Очистить Доску",
+    resetDefaultText: "Позиция по Умолчанию",
+    randomSetupText: "Случайная Расстановка",
+    loadSetupText: "Загрузить Расстановку",
+    presetsTitle: "Быстрые Расстановки:",
+    userPresetsTitle: "Мои Шаблоны:",
+    loadPresetText: "Загрузить",
+    deletePresetText: "Удалить",
+    exportPresetsText: "Экспорт",
+    importPresetsText: "Импорт",
+    endgameText: "Эндшпиль",
+    middlegameText: "Миттельшпиль",
+    puzzleText: "Головоломка",
+    trashText: "Перетащите сюда для удаления",
+    whiteKingsLabel: "Белые Короли:",
+    blackKingsLabel: "Черные Короли:",
+    totalPiecesLabel: "Всего Фигур:",
+    materialBalanceLabel: "Материальный Баланс:",
+    whiteFirstOption: "Белые",
+    blackFirstOption: "Черные",
+    easyOption: "🟢 Легко",
+    mediumOption: "🟡 Средне",
+    hardOption: "🔴 Сложно",
+    expertOption: "💀 Эксперт",
+    analysisTitle: "Анализ Позиции:",
+    analyzeText: "Анализировать",
+    startGameText: "Начать Игру",
+    cancelText: "Отмена",
+    
+    // Position Evaluation Report System
+    positionAnalysisReport: "Отчет об Анализе Позиции",
+    positionType: "Тип Позиции",
+    analysisOverview: "Обзор Анализа",
+    materialBalance: "Материальный Баланс",
+    pieceActivity: "Активность Фигур",
+    kingSafety: "Безопасность Короля",
+    centerControl: "Контроль Центра",
+    
+    // Position History Interface
+    positionHistory: "История Позиций",
+    toggleHistory: "Переключить Историю",
+    redo: "Повторить",
+    positions: "позиции",
+    noHistoryYet: "Истории пока нет. Начните делать ходы!",
+    clearHistory: "Очистить Историю",
+    export: "Экспорт",
+    import: "Импорт",
+    jumpToPosition: "Перейти к Позиции",
+    previewPosition: "Предпросмотр Позиции",
+    noDescription: "Нет описания",
+    created: "Создано",
+    cancel: "Отмена",
+    confirmClearHistory: "Подтвердить Очистку Истории",
+    clearHistoryWarning: "Это навсегда удалит всю историю позиций.",
+    thisActionCannotBeUndone: "Это действие нельзя отменить.",
+    historyExported: "История успешно экспортирована",
+    historyImported: "История успешно импортирована",
+    exportError: "Ошибка экспорта истории",
+    importError: "Ошибка импорта истории",
+    undoPerformed: "Отмена выполнена",
+    redoPerformed: "Повтор выполнен",
+    jumpedToPosition: "Переход к позиции {0}",
+    exportHistory: "Экспортировать Историю",
+    importHistory: "Импортировать Историю",
+    strategicRecommendations: "Стратегические Рекомендации",
+    detailedStatistics: "Подробная Статистика",
+    materialBreakdown: "Разбивка Материала",
+    activityDetails: "Детали Активности",
+    kingSafetyDetails: "Детали Безопасности Короля",
+    totalMoves: "Всего Ходов",
+    avgMovesPerPiece: "Средн. Ходов/Фигура",
+    escapeSquares: "Клетки для отхода",
+    position: "Позиция",
+    analysisGeneratedAt: "Анализ создан в",
+    exportReport: "Экспорт",
+    shareReport: "Поделиться",
+    noRecommendationsAvailable: "Расставьте позицию для просмотра стратегических рекомендаций",
+    balancedPosition: "Равная позиция",
+    whiteAdvantagePosition: "У белых преимущество",
+    blackAdvantagePosition: "У черных преимущество",
+    slightWhiteAdvantage: "Небольшое преимущество белых",
+    slightBlackAdvantage: "Небольшое преимущество черных",
+    whitePositionalAdvantage: "Позиционное преимущество белых",
+    blackPositionalAdvantage: "Позиционное преимущество черных",
     
     // Enhanced Theme System
     themeToggle: "Переключить Тему",
@@ -1645,6 +2171,13 @@ const translations = {
     backendConnected: "Backend Подключен",
     usingFlaskBackend: "Использование Flask Backend",
     usingLocalMode: "Использование Локального Режима",
+    
+    // Settings Menu
+    settingsMenu: "Настройки",
+    closeMenu: "Закрыть",
+    openSettingsMenu: "Открыть меню настроек",
+    closeSettingsMenu: "Закрыть меню настроек",
+    settingsControls: "Элементы управления настройками",
     
     // Enhanced Drag & Drop
     dragToMove: "Перетащите для перемещения фигуры",
@@ -1789,11 +2322,196 @@ const translations = {
     whitePlaying: "白方走棋",
     blackPlaying: "黑方走棋",
     moveHistory: "走棋记录",
+    whitePlayer: "白方玩家",
+    blackPlayer: "黑方玩家",
+    gameHistory: "游戏历史",
     switchedToBlack: "你现在执黑!",
     switchedToWhite: "你现在执白!",
     aiLevelSet: "AI 难度: 等级",
     footerText: "© 2025 VizyonEkibi",
+    startGame: "开始游戏",
+    gameTitle: "♔ 4×5 国际象棋专业版 ♚",
+    gameSubtitle: "最小空间中的战略精通",
+    playAgain: "再玩一次",
+    mainMenu: "主菜单",
+    gameOver: "游戏结束",
+    reviewGame: "回顾游戏",
+    // Color customization
+    colorSettings: "颜色设置",
+    boardColors: "棋盘颜色",
+    lightSquares: "浅色方格",
+    darkSquares: "深色方格",
+    pieceColors: "棋子颜色",
+    whitePieces: "白色棋子",
+    blackPieces: "黑色棋子",
+    colorPresets: "颜色预设",
+    boardColorsUpdated: "棋盘颜色已更新！",
+    pieceColorsUpdated: "棋子颜色已更新！",
+    invalidHexColor: "无效的十六进制颜色格式！",
+    presetApplied: "预设已应用！",
+    colorsReset: "颜色已重置为默认！",
+    // Piece setup
+    pieceSetup: "棋子设置",
+    analyzePosition: "分析位置",
+    sharePosition: "分享位置",
+    // Menu sections
+    menuGameControlsTitle: "游戏控制",
+    menuAppearanceTitle: "外观",
+    menuPositionToolsTitle: "位置工具",
+    menuAdvancedTitle: "高级功能",
+    btnNewGameMenuText: "新游戏",
+    btnSwitchSidesMenuText: "交换方",
+    lblAiDifficultyMenu: "AI 难度",
+    btnColorsMenuText: "棋盘颜色",
+    btnBackendModeMenuText: "后端模式",
+    btnAutoScrollMenuText: "自动滚动",
+    needBothKings: "需要两个王！",
+    customGameStarted: "自定义游戏已开始！",
+    squareOccupied: "方格已被占用！",
+    invalidPawnPosition: "兵不能放在这个位置！",
+    tooManyPieces: "这种类型的棋子太多了！",
+    invalidMove: "无效的移动！",
+    positionValid: "位置有效",
+    fixErrorsFirst: "请先修复位置错误",
+    startCustomGame: "开始自定义游戏",
+    kingsAdjacent: "王不能相邻",
+    whiteInCheck: "白王被将军！",
+    blackInCheck: "黑王被将军！",
+    checkmate: "将死！",
+    stalemate: "和棋！",
+    positionHasErrors: "位置有错误",
+    positionHasWarnings: "位置有警告",
+    piecePlaced: "棋子放置成功！",
+    pieceDeleted: "棋子已删除！",
+    dragCancelled: "拖动操作已取消",
+    randomSetupCreated: "随机设置已创建！",
+    presetLoaded: "预设已加载！",
+    boardCleared: "棋盘已清空！",
+    defaultSetup: "默认位置已恢复！",
+    // Color presets
+    classic: "经典",
+    wood: "木质",
+    marble: "大理石",
+    neon: "霓虹",
+    ocean: "海洋",
+    reset: "重置",
     language: "🌍 语言:",
+    // Piece Setup
+    setupInstructions: "从调色板拖动棋子到棋盘，或点击选择并放置。创建您的自定义位置！",
+    piecePaletteTitle: "棋子调色板",
+    setupBoardTitle: "棋盘设置",
+    lblFirstMove: "先手：",
+    btnClearBoard: "🗑️ 清空棋盘",
+    btnResetToDefault: "🔄 默认位置",
+    btnStartCustomGame: "▶ 开始游戏",
+    btnCancelSetup: "取消",
+    // Enhanced piece setup
+    enterSetupName: "输入设置名称：",
+    setupSaved: "设置已保存！",
+    noSavedSetups: "未找到已保存的设置！",
+    selectSetup: "选择设置：",
+    setupLoaded: "设置已加载！",
+    invalidPosition: "无效位置 - 每方需要恰好一个王",
+    whiteAdvantage: "白方有子力优势",
+    blackAdvantage: "黑方有子力优势",
+    materialEqual: "子力相等",
+    endgamePosition: "这似乎是一个残局位置",
+    complexPosition: "这是一个有很多棋子的复杂位置",
+    queensPresent: "后存在 - 可能有战术机会",
+    setUpPieces: "设置棋子以查看分析",
+    whitePiecesTitle: "白色棋子",
+    blackPiecesTitle: "黑色棋子",
+    clearBoardText: "清空棋盘",
+    resetDefaultText: "默认位置",
+    randomSetupText: "随机设置",
+    loadSetupText: "加载设置",
+    presetsTitle: "快速设置：",
+    userPresetsTitle: "我的预设：",
+    loadPresetText: "加载",
+    deletePresetText: "删除",
+    exportPresetsText: "导出",
+    importPresetsText: "导入",
+    endgameText: "残局",
+    middlegameText: "中局",
+    puzzleText: "谜题",
+    trashText: "拖到这里删除",
+    whiteKingsLabel: "白王：",
+    blackKingsLabel: "黑王：",
+    totalPiecesLabel: "总棋子数：",
+    materialBalanceLabel: "子力平衡：",
+    whiteFirstOption: "白方",
+    blackFirstOption: "黑方",
+    easyOption: "🟢 简单",
+    mediumOption: "🟡 中等",
+    hardOption: "🔴 困难",
+    expertOption: "💀 专家",
+    analysisTitle: "位置分析：",
+    analyzeText: "分析",
+    startGameText: "开始游戏",
+    cancelText: "取消",
+    
+    // Position Evaluation Report System
+    positionAnalysisReport: "位置分析报告",
+    positionType: "位置类型",
+    analysisOverview: "分析概述",
+    materialBalance: "子力平衡",
+    pieceActivity: "棋子活跃度",
+    kingSafety: "王的安全",
+    centerControl: "中心控制",
+    
+    // Position History Interface
+    positionHistory: "位置历史",
+    toggleHistory: "切换历史",
+    positions: "位置",
+    noHistoryYet: "还没有历史。开始走棋吧！",
+    clearHistory: "清除历史",
+    export: "导出",
+    import: "导入",
+    jumpToPosition: "跳转到位置",
+    previewPosition: "预览位置",
+    noDescription: "无描述",
+    created: "创建于",
+    cancel: "取消",
+    confirmClearHistory: "确认清除历史",
+    clearHistoryWarning: "这将永久删除所有位置历史。",
+    thisActionCannotBeUndone: "此操作无法撤消。",
+    historyCleared: "历史已成功清除",
+    historyExported: "历史已成功导出",
+    historyImported: "历史已成功导入",
+    exportError: "导出历史时出错",
+    importError: "导入历史时出错",
+    undoPerformed: "已执行撤消",
+    redoPerformed: "已执行重做",
+    jumpedToPosition: "已跳转到位置 {0}",
+    exportHistory: "导出历史",
+    importHistory: "导入历史",
+    strategicRecommendations: "战略建议",
+    detailedStatistics: "详细统计",
+    materialBreakdown: "子力分解",
+    activityDetails: "活跃度详情",
+    kingSafetyDetails: "王安全详情",
+    totalMoves: "总移动数",
+    avgMovesPerPiece: "每个棋子平均移动数",
+    escapeSquares: "逃脱方格",
+    position: "位置",
+    analysisGeneratedAt: "分析生成于",
+    exportReport: "导出",
+    shareReport: "分享",
+    noRecommendationsAvailable: "设置位置以查看战略建议",
+    balancedPosition: "平衡位置",
+    whiteAdvantagePosition: "白方有优势",
+    blackAdvantagePosition: "黑方有优势",
+    slightWhiteAdvantage: "白方略有优势",
+    slightBlackAdvantage: "黑方略有优势",
+    whitePositionalAdvantage: "白方位置优势",
+    blackPositionalAdvantage: "黑方位置优势",
+    
+    // Settings Menu
+    settingsMenu: "设置",
+    closeMenu: "关闭",
+    openSettingsMenu: "打开设置菜单",
+    closeSettingsMenu: "关闭设置菜单",
+    settingsControls: "设置控件",
     
     // Enhanced Theme System
     themeToggle: "切换主题",
@@ -1964,11 +2682,196 @@ const translations = {
     whitePlaying: "白の手番",
     blackPlaying: "黒の手番",
     moveHistory: "履歴",
+    whitePlayer: "白プレイヤー",
+    blackPlayer: "黒プレイヤー",
+    gameHistory: "ゲーム履歴",
     switchedToBlack: "あなたは今、黒です!",
     switchedToWhite: "あなたは今、白です!",
     aiLevelSet: "AI 難易度: レベル",
     footerText: "© 2025 VizyonEkibi",
+    startGame: "ゲーム開始",
+    gameTitle: "♔ 4×5 チェスプロ ♚",
+    gameSubtitle: "最小スペースでの戦略的マスタリー",
+    playAgain: "もう一度プレイ",
+    mainMenu: "メインメニュー",
+    gameOver: "ゲームオーバー",
+    reviewGame: "ゲームを振り返る",
+    // Color customization
+    colorSettings: "色設定",
+    boardColors: "ボードの色",
+    lightSquares: "明るいマス",
+    darkSquares: "暗いマス",
+    pieceColors: "駒の色",
+    whitePieces: "白い駒",
+    blackPieces: "黒い駒",
+    colorPresets: "色プリセット",
+    boardColorsUpdated: "ボードの色が更新されました！",
+    pieceColorsUpdated: "駒の色が更新されました！",
+    invalidHexColor: "無効な16進数カラー形式！",
+    presetApplied: "プリセットが適用されました！",
+    colorsReset: "色がデフォルトにリセットされました！",
+    // Piece setup
+    pieceSetup: "駒の配置",
+    analyzePosition: "ポジションを分析",
+    sharePosition: "ポジションを共有",
+    // Menu sections
+    menuGameControlsTitle: "ゲームコントロール",
+    menuAppearanceTitle: "外観",
+    menuPositionToolsTitle: "ポジションツール",
+    menuAdvancedTitle: "高度な機能",
+    btnNewGameMenuText: "新しいゲーム",
+    btnSwitchSidesMenuText: "サイド交代",
+    lblAiDifficultyMenu: "AI 難易度",
+    btnColorsMenuText: "ボードの色",
+    btnBackendModeMenuText: "バックエンドモード",
+    btnAutoScrollMenuText: "自動スクロール",
+    needBothKings: "両方のキングが必要です！",
+    customGameStarted: "カスタムゲームが開始されました！",
+    squareOccupied: "マスはすでに占有されています！",
+    invalidPawnPosition: "ポーンはこのランクに配置できません！",
+    tooManyPieces: "このタイプの駒が多すぎます！",
+    invalidMove: "無効な手！",
+    positionValid: "ポジションは有効です",
+    fixErrorsFirst: "最初にポジションエラーを修正してください",
+    startCustomGame: "カスタムゲームを開始",
+    kingsAdjacent: "キングは隣接できません",
+    whiteInCheck: "白のキングがチェックされています！",
+    blackInCheck: "黒のキングがチェックされています！",
+    checkmate: "チェックメイト！",
+    stalemate: "ステイルメイト！",
+    positionHasErrors: "ポジションにエラーがあります",
+    positionHasWarnings: "ポジションに警告があります",
+    piecePlaced: "駒が正常に配置されました！",
+    pieceDeleted: "駒が削除されました！",
+    dragCancelled: "ドラッグ操作がキャンセルされました",
+    randomSetupCreated: "ランダムセットアップが作成されました！",
+    presetLoaded: "プリセットが読み込まれました！",
+    boardCleared: "ボードがクリアされました！",
+    defaultSetup: "デフォルトポジションが復元されました！",
+    // Color presets
+    classic: "クラシック",
+    wood: "木",
+    marble: "大理石",
+    neon: "ネオン",
+    ocean: "オーシャン",
+    reset: "リセット",
     language: "🌍 言語:",
+    // Piece Setup
+    setupInstructions: "パレットからボードに駒をドラッグするか、クリックして選択して配置します。カスタムポジションを作成しましょう！",
+    piecePaletteTitle: "駒パレット",
+    setupBoardTitle: "ボードセットアップ",
+    lblFirstMove: "先手：",
+    btnClearBoard: "🗑️ ボードをクリア",
+    btnResetToDefault: "🔄 デフォルトポジション",
+    btnStartCustomGame: "▶ ゲーム開始",
+    btnCancelSetup: "キャンセル",
+    // Enhanced piece setup
+    enterSetupName: "セットアップ名を入力：",
+    setupSaved: "セットアップが保存されました！",
+    noSavedSetups: "保存されたセットアップが見つかりません！",
+    selectSetup: "セットアップを選択：",
+    setupLoaded: "セットアップが読み込まれました！",
+    invalidPosition: "無効なポジション - 各サイドに正確に1つのキングが必要です",
+    whiteAdvantage: "白に駒の優位性があります",
+    blackAdvantage: "黒に駒の優位性があります",
+    materialEqual: "駒は均等です",
+    endgamePosition: "これはエンドゲームポジションのようです",
+    complexPosition: "これは多くの駒がある複雑なポジションです",
+    queensPresent: "クイーンが存在 - 戦術的機会がある可能性",
+    setUpPieces: "分析を見るために駒を配置してください",
+    whitePiecesTitle: "白い駒",
+    blackPiecesTitle: "黒い駒",
+    clearBoardText: "ボードをクリア",
+    resetDefaultText: "デフォルトポジション",
+    randomSetupText: "ランダムセットアップ",
+    loadSetupText: "セットアップを読み込む",
+    presetsTitle: "クイックセットアップ：",
+    userPresetsTitle: "マイプリセット：",
+    loadPresetText: "読み込む",
+    deletePresetText: "削除",
+    exportPresetsText: "エクスポート",
+    importPresetsText: "インポート",
+    endgameText: "エンドゲーム",
+    middlegameText: "ミドルゲーム",
+    puzzleText: "パズル",
+    trashText: "ここにドロップして削除",
+    whiteKingsLabel: "白のキング：",
+    blackKingsLabel: "黒のキング：",
+    totalPiecesLabel: "総駒数：",
+    materialBalanceLabel: "駒のバランス：",
+    whiteFirstOption: "白",
+    blackFirstOption: "黒",
+    easyOption: "🟢 簡単",
+    mediumOption: "🟡 普通",
+    hardOption: "🔴 難しい",
+    expertOption: "💀 達人",
+    analysisTitle: "ポジション分析：",
+    analyzeText: "分析",
+    startGameText: "ゲーム開始",
+    cancelText: "キャンセル",
+    
+    // Position Evaluation Report System
+    positionAnalysisReport: "ポジション分析レポート",
+    positionType: "ポジションタイプ",
+    analysisOverview: "分析概要",
+    materialBalance: "駒のバランス",
+    pieceActivity: "駒の活動度",
+    kingSafety: "キングの安全性",
+    centerControl: "中央制御",
+    
+    // Position History Interface
+    positionHistory: "ポジション履歴",
+    toggleHistory: "履歴を切り替え",
+    positions: "ポジション",
+    noHistoryYet: "まだ履歴がありません。手を打ち始めましょう！",
+    clearHistory: "履歴をクリア",
+    export: "エクスポート",
+    import: "インポート",
+    jumpToPosition: "ポジションにジャンプ",
+    previewPosition: "ポジションをプレビュー",
+    noDescription: "説明なし",
+    created: "作成日",
+    cancel: "キャンセル",
+    confirmClearHistory: "履歴クリアの確認",
+    clearHistoryWarning: "これにより、すべてのポジション履歴が永久に削除されます。",
+    thisActionCannotBeUndone: "この操作は元に戻せません。",
+    historyCleared: "履歴が正常にクリアされました",
+    historyExported: "履歴が正常にエクスポートされました",
+    historyImported: "履歴が正常にインポートされました",
+    exportError: "履歴のエクスポートエラー",
+    importError: "履歴のインポートエラー",
+    undoPerformed: "元に戻すが実行されました",
+    redoPerformed: "やり直しが実行されました",
+    jumpedToPosition: "ポジション {0} にジャンプしました",
+    exportHistory: "履歴をエクスポート",
+    importHistory: "履歴をインポート",
+    strategicRecommendations: "戦略的推奨事項",
+    detailedStatistics: "詳細統計",
+    materialBreakdown: "駒の内訳",
+    activityDetails: "活動度の詳細",
+    kingSafetyDetails: "キング安全性の詳細",
+    totalMoves: "総手数",
+    avgMovesPerPiece: "駒あたりの平均手数",
+    escapeSquares: "逃げるマス",
+    position: "ポジション",
+    analysisGeneratedAt: "分析生成日時",
+    exportReport: "エクスポート",
+    shareReport: "共有",
+    noRecommendationsAvailable: "戦略的推奨事項を見るためにポジションを設定してください",
+    balancedPosition: "バランスの取れたポジション",
+    whiteAdvantagePosition: "白に優位性があります",
+    blackAdvantagePosition: "黒に優位性があります",
+    slightWhiteAdvantage: "白にわずかな優位性",
+    slightBlackAdvantage: "黒にわずかな優位性",
+    whitePositionalAdvantage: "白のポジション優位性",
+    blackPositionalAdvantage: "黒のポジション優位性",
+    
+    // Settings Menu
+    settingsMenu: "設定",
+    closeMenu: "閉じる",
+    openSettingsMenu: "設定メニューを開く",
+    closeSettingsMenu: "設定メニューを閉じる",
+    settingsControls: "設定コントロール",
     
     // Enhanced Theme System
     themeToggle: "テーマ切り替え",
@@ -2139,11 +3042,196 @@ const translations = {
     whitePlaying: "Vez das Brancas",
     blackPlaying: "Vez das Pretas",
     moveHistory: "Histórico",
+    whitePlayer: "Jogador Branco",
+    blackPlayer: "Jogador Preto",
+    gameHistory: "Histórico do Jogo",
     switchedToBlack: "Agora você joga com as PRETAS!",
     switchedToWhite: "Agora você joga com as BRANCAS!",
     aiLevelSet: "Dificuldade IA: Nível",
     footerText: "© 2025 VizyonEkibi",
+    startGame: "INICIAR JOGO",
+    gameTitle: "♔ 4×5 Xadrez Pro ♚",
+    gameSubtitle: "Maestria Estratégica em Espaço Mínimo",
+    playAgain: "JOGAR NOVAMENTE",
+    mainMenu: "MENU PRINCIPAL",
+    gameOver: "FIM DE JOGO",
+    reviewGame: "REVISAR JOGO",
+    // Color customization
+    colorSettings: "Configurações de Cor",
+    boardColors: "Cores do Tabuleiro",
+    lightSquares: "Casas Claras",
+    darkSquares: "Casas Escuras",
+    pieceColors: "Cores das Peças",
+    whitePieces: "Peças Brancas",
+    blackPieces: "Peças Pretas",
+    colorPresets: "Predefinições de Cor",
+    boardColorsUpdated: "Cores do tabuleiro atualizadas!",
+    pieceColorsUpdated: "Cores das peças atualizadas!",
+    invalidHexColor: "Formato de cor hexadecimal inválido!",
+    presetApplied: "Predefinição aplicada!",
+    colorsReset: "Cores redefinidas para o padrão!",
+    // Piece setup
+    pieceSetup: "Configuração de Peças",
+    analyzePosition: "Analisar Posição",
+    sharePosition: "Compartilhar Posição",
+    // Menu sections
+    menuGameControlsTitle: "Controles do Jogo",
+    menuAppearanceTitle: "Aparência",
+    menuPositionToolsTitle: "Ferramentas de Posição",
+    menuAdvancedTitle: "Recursos Avançados",
+    btnNewGameMenuText: "Novo Jogo",
+    btnSwitchSidesMenuText: "Trocar Lados",
+    lblAiDifficultyMenu: "Dificuldade IA",
+    btnColorsMenuText: "Cores do Tabuleiro",
+    btnBackendModeMenuText: "Modo Backend",
+    btnAutoScrollMenuText: "Rolagem Automática",
+    needBothKings: "Ambos os reis são necessários!",
+    customGameStarted: "Jogo personalizado iniciado!",
+    squareOccupied: "Casa já está ocupada!",
+    invalidPawnPosition: "Peões não podem ser colocados nesta fileira!",
+    tooManyPieces: "Muitas peças deste tipo!",
+    invalidMove: "Movimento inválido!",
+    positionValid: "Posição válida",
+    fixErrorsFirst: "Corrija os erros de posição primeiro",
+    startCustomGame: "Iniciar jogo personalizado",
+    kingsAdjacent: "Reis não podem estar adjacentes",
+    whiteInCheck: "Rei branco está em xeque!",
+    blackInCheck: "Rei preto está em xeque!",
+    checkmate: "Xeque-mate!",
+    stalemate: "Empate!",
+    positionHasErrors: "Posição tem erros",
+    positionHasWarnings: "Posição tem avisos",
+    piecePlaced: "Peça colocada com sucesso!",
+    pieceDeleted: "Peça excluída!",
+    dragCancelled: "Operação de arrastar cancelada",
+    randomSetupCreated: "Configuração aleatória criada!",
+    presetLoaded: "Predefinição carregada!",
+    boardCleared: "Tabuleiro limpo!",
+    defaultSetup: "Posição padrão restaurada!",
+    // Color presets
+    classic: "Clássico",
+    wood: "Madeira",
+    marble: "Mármore",
+    neon: "Neon",
+    ocean: "Oceano",
+    reset: "Redefinir",
     language: "🌍 Idioma:",
+    // Piece Setup
+    setupInstructions: "Arraste peças da paleta para o tabuleiro, ou clique para selecionar e colocar. Crie sua posição personalizada!",
+    piecePaletteTitle: "Paleta de Peças",
+    setupBoardTitle: "Configuração do Tabuleiro",
+    lblFirstMove: "Primeiro Movimento:",
+    btnClearBoard: "🗑️ Limpar Tabuleiro",
+    btnResetToDefault: "🔄 Posição Padrão",
+    btnStartCustomGame: "▶ Iniciar Jogo",
+    btnCancelSetup: "Cancelar",
+    // Enhanced piece setup
+    enterSetupName: "Digite o nome da configuração:",
+    setupSaved: "Configuração salva!",
+    noSavedSetups: "Nenhuma configuração salva encontrada!",
+    selectSetup: "Selecione a configuração:",
+    setupLoaded: "Configuração carregada!",
+    invalidPosition: "Posição inválida - precisa de exatamente um rei por lado",
+    whiteAdvantage: "Brancas têm vantagem material",
+    blackAdvantage: "Pretas têm vantagem material",
+    materialEqual: "Material está igual",
+    endgamePosition: "Esta parece ser uma posição de final de jogo",
+    complexPosition: "Esta é uma posição complexa com muitas peças",
+    queensPresent: "Rainhas presentes - oportunidades táticas prováveis",
+    setUpPieces: "Configure as peças para ver a análise",
+    whitePiecesTitle: "Peças Brancas",
+    blackPiecesTitle: "Peças Pretas",
+    clearBoardText: "Limpar Tabuleiro",
+    resetDefaultText: "Posição Padrão",
+    randomSetupText: "Configuração Aleatória",
+    loadSetupText: "Carregar Configuração",
+    presetsTitle: "Configurações Rápidas:",
+    userPresetsTitle: "Minhas Predefinições:",
+    loadPresetText: "Carregar",
+    deletePresetText: "Excluir",
+    exportPresetsText: "Exportar",
+    importPresetsText: "Importar",
+    endgameText: "Final de Jogo",
+    middlegameText: "Meio-jogo",
+    puzzleText: "Quebra-cabeça",
+    trashText: "Solte aqui para excluir",
+    whiteKingsLabel: "Reis Brancos:",
+    blackKingsLabel: "Reis Pretos:",
+    totalPiecesLabel: "Total de Peças:",
+    materialBalanceLabel: "Equilíbrio Material:",
+    whiteFirstOption: "Brancas",
+    blackFirstOption: "Pretas",
+    easyOption: "🟢 Fácil",
+    mediumOption: "🟡 Médio",
+    hardOption: "🔴 Difícil",
+    expertOption: "💀 Especialista",
+    analysisTitle: "Análise de Posição:",
+    analyzeText: "Analisar",
+    startGameText: "Iniciar Jogo",
+    cancelText: "Cancelar",
+    
+    // Position Evaluation Report System
+    positionAnalysisReport: "Relatório de Análise de Posição",
+    positionType: "Tipo de Posição",
+    analysisOverview: "Visão Geral da Análise",
+    materialBalance: "Equilíbrio Material",
+    pieceActivity: "Atividade das Peças",
+    kingSafety: "Segurança do Rei",
+    centerControl: "Controle do Centro",
+    
+    // Position History Interface
+    positionHistory: "Histórico de Posições",
+    toggleHistory: "Alternar Histórico",
+    positions: "posições",
+    noHistoryYet: "Ainda sem histórico. Comece a fazer movimentos!",
+    clearHistory: "Limpar Histórico",
+    export: "Exportar",
+    import: "Importar",
+    jumpToPosition: "Pular para Posição",
+    previewPosition: "Visualizar Posição",
+    noDescription: "Sem descrição",
+    created: "Criado",
+    cancel: "Cancelar",
+    confirmClearHistory: "Confirmar Limpeza de Histórico",
+    clearHistoryWarning: "Isso excluirá permanentemente todo o histórico de posições.",
+    thisActionCannotBeUndone: "Esta ação não pode ser desfeita.",
+    historyCleared: "Histórico limpo com sucesso",
+    historyExported: "Histórico exportado com sucesso",
+    historyImported: "Histórico importado com sucesso",
+    exportError: "Erro ao exportar histórico",
+    importError: "Erro ao importar histórico",
+    undoPerformed: "Desfazer executado",
+    redoPerformed: "Refazer executado",
+    jumpedToPosition: "Pulou para a posição {0}",
+    exportHistory: "Exportar Histórico",
+    importHistory: "Importar Histórico",
+    strategicRecommendations: "Recomendações Estratégicas",
+    detailedStatistics: "Estatísticas Detalhadas",
+    materialBreakdown: "Detalhamento Material",
+    activityDetails: "Detalhes de Atividade",
+    kingSafetyDetails: "Detalhes de Segurança do Rei",
+    totalMoves: "Total de Movimentos",
+    avgMovesPerPiece: "Média de Movimentos/Peça",
+    escapeSquares: "Casas de fuga",
+    position: "Posição",
+    analysisGeneratedAt: "Análise gerada em",
+    exportReport: "Exportar",
+    shareReport: "Compartilhar",
+    noRecommendationsAvailable: "Configure uma posição para ver recomendações estratégicas",
+    balancedPosition: "Posição equilibrada",
+    whiteAdvantagePosition: "Brancas têm vantagem",
+    blackAdvantagePosition: "Pretas têm vantagem",
+    slightWhiteAdvantage: "Ligeira vantagem das brancas",
+    slightBlackAdvantage: "Ligeira vantagem das pretas",
+    whitePositionalAdvantage: "Vantagem posicional das brancas",
+    blackPositionalAdvantage: "Vantagem posicional das pretas",
+    
+    // Settings Menu
+    settingsMenu: "Configurações",
+    closeMenu: "Fechar",
+    openSettingsMenu: "Abrir menu de configurações",
+    closeSettingsMenu: "Fechar menu de configurações",
+    settingsControls: "Controles de configurações",
     
     // Enhanced Theme System
     themeToggle: "Alternar Tema",
@@ -2314,11 +3402,196 @@ const translations = {
     whitePlaying: "دور الأبيض",
     blackPlaying: "دور الأسود",
     moveHistory: "سجل النقلات",
+    whitePlayer: "اللاعب الأبيض",
+    blackPlayer: "اللاعب الأسود",
+    gameHistory: "تاريخ اللعبة",
     switchedToBlack: "أنت تلعب الآن بالأسود!",
     switchedToWhite: "أنت تلعب الآن بالأبيض!",
     aiLevelSet: "صعوبة الذكاء الاصطناعي: مستوى",
     footerText: "© 2025 VizyonEkibi",
+    startGame: "ابدأ اللعبة",
+    gameTitle: "♔ 4×5 شطرنج برو ♚",
+    gameSubtitle: "إتقان استراتيجي في مساحة صغيرة",
+    playAgain: "العب مرة أخرى",
+    mainMenu: "القائمة الرئيسية",
+    gameOver: "انتهت اللعبة",
+    reviewGame: "مراجعة اللعبة",
+    // Color customization
+    colorSettings: "إعدادات الألوان",
+    boardColors: "ألوان اللوحة",
+    lightSquares: "المربعات الفاتحة",
+    darkSquares: "المربعات الداكنة",
+    pieceColors: "ألوان القطع",
+    whitePieces: "القطع البيضاء",
+    blackPieces: "القطع السوداء",
+    colorPresets: "قوالب الألوان",
+    boardColorsUpdated: "تم تحديث ألوان اللوحة!",
+    pieceColorsUpdated: "تم تحديث ألوان القطع!",
+    invalidHexColor: "تنسيق لون سداسي عشري غير صالح!",
+    presetApplied: "تم تطبيق القالب!",
+    colorsReset: "تم إعادة تعيين الألوان إلى الافتراضي!",
+    // Piece setup
+    pieceSetup: "إعداد القطع",
+    analyzePosition: "تحليل الموضع",
+    sharePosition: "مشاركة الموضع",
+    // Menu sections
+    menuGameControlsTitle: "عناصر التحكم في اللعبة",
+    menuAppearanceTitle: "المظهر",
+    menuPositionToolsTitle: "أدوات الموضع",
+    menuAdvancedTitle: "الميزات المتقدمة",
+    btnNewGameMenuText: "لعبة جديدة",
+    btnSwitchSidesMenuText: "تبديل الجوانب",
+    lblAiDifficultyMenu: "صعوبة الذكاء الاصطناعي",
+    btnColorsMenuText: "ألوان اللوحة",
+    btnBackendModeMenuText: "وضع الخادم",
+    btnAutoScrollMenuText: "التمرير التلقائي",
+    needBothKings: "كلا الملكين مطلوبان!",
+    customGameStarted: "بدأت اللعبة المخصصة!",
+    squareOccupied: "المربع محتل بالفعل!",
+    invalidPawnPosition: "لا يمكن وضع البيادق في هذا الصف!",
+    tooManyPieces: "عدد كبير جداً من القطع من هذا النوع!",
+    invalidMove: "حركة غير صالحة!",
+    positionValid: "الموضع صالح",
+    fixErrorsFirst: "قم بإصلاح أخطاء الموضع أولاً",
+    startCustomGame: "ابدأ لعبة مخصصة",
+    kingsAdjacent: "لا يمكن أن يكون الملكان متجاورين",
+    whiteInCheck: "الملك الأبيض في كش!",
+    blackInCheck: "الملك الأسود في كش!",
+    checkmate: "كش ملك!",
+    stalemate: "تعادل!",
+    positionHasErrors: "الموضع به أخطاء",
+    positionHasWarnings: "الموضع به تحذيرات",
+    piecePlaced: "تم وضع القطعة بنجاح!",
+    pieceDeleted: "تم حذف القطعة!",
+    dragCancelled: "تم إلغاء عملية السحب",
+    randomSetupCreated: "تم إنشاء إعداد عشوائي!",
+    presetLoaded: "تم تحميل القالب!",
+    boardCleared: "تم مسح اللوحة!",
+    defaultSetup: "تم استعادة الموضع الافتراضي!",
+    // Color presets
+    classic: "كلاسيكي",
+    wood: "خشبي",
+    marble: "رخامي",
+    neon: "نيون",
+    ocean: "محيط",
+    reset: "إعادة تعيين",
     language: "🌍 اللغة:",
+    // Piece Setup
+    setupInstructions: "اسحب القطع من اللوحة إلى الرقعة، أو انقر للاختيار والوضع. أنشئ موضعك المخصص!",
+    piecePaletteTitle: "لوحة القطع",
+    setupBoardTitle: "إعداد اللوحة",
+    lblFirstMove: "الحركة الأولى:",
+    btnClearBoard: "🗑️ مسح اللوحة",
+    btnResetToDefault: "🔄 الموضع الافتراضي",
+    btnStartCustomGame: "▶ ابدأ اللعبة",
+    btnCancelSetup: "إلغاء",
+    // Enhanced piece setup
+    enterSetupName: "أدخل اسم الإعداد:",
+    setupSaved: "تم حفظ الإعداد!",
+    noSavedSetups: "لم يتم العثور على إعدادات محفوظة!",
+    selectSetup: "اختر الإعداد:",
+    setupLoaded: "تم تحميل الإعداد!",
+    invalidPosition: "موضع غير صالح - يحتاج إلى ملك واحد بالضبط لكل جانب",
+    whiteAdvantage: "الأبيض لديه ميزة مادية",
+    blackAdvantage: "الأسود لديه ميزة مادية",
+    materialEqual: "المواد متساوية",
+    endgamePosition: "يبدو أن هذا موضع نهاية اللعبة",
+    complexPosition: "هذا موضع معقد مع العديد من القطع",
+    queensPresent: "الملكات موجودة - فرص تكتيكية محتملة",
+    setUpPieces: "قم بإعداد القطع لرؤية التحليل",
+    whitePiecesTitle: "القطع البيضاء",
+    blackPiecesTitle: "القطع السوداء",
+    clearBoardText: "مسح اللوحة",
+    resetDefaultText: "الموضع الافتراضي",
+    randomSetupText: "إعداد عشوائي",
+    loadSetupText: "تحميل الإعداد",
+    presetsTitle: "إعدادات سريعة:",
+    userPresetsTitle: "قوالبي:",
+    loadPresetText: "تحميل",
+    deletePresetText: "حذف",
+    exportPresetsText: "تصدير",
+    importPresetsText: "استيراد",
+    endgameText: "نهاية اللعبة",
+    middlegameText: "منتصف اللعبة",
+    puzzleText: "لغز",
+    trashText: "أسقط هنا للحذف",
+    whiteKingsLabel: "الملوك البيض:",
+    blackKingsLabel: "الملوك السود:",
+    totalPiecesLabel: "إجمالي القطع:",
+    materialBalanceLabel: "توازن المواد:",
+    whiteFirstOption: "أبيض",
+    blackFirstOption: "أسود",
+    easyOption: "🟢 سهل",
+    mediumOption: "🟡 متوسط",
+    hardOption: "🔴 صعب",
+    expertOption: "💀 خبير",
+    analysisTitle: "تحليل الموضع:",
+    analyzeText: "تحليل",
+    startGameText: "ابدأ اللعبة",
+    cancelText: "إلغاء",
+    
+    // Position Evaluation Report System
+    positionAnalysisReport: "تقرير تحليل الموضع",
+    positionType: "نوع الموضع",
+    analysisOverview: "نظرة عامة على التحليل",
+    materialBalance: "توازن المواد",
+    pieceActivity: "نشاط القطع",
+    kingSafety: "أمان الملك",
+    centerControl: "السيطرة على المركز",
+    
+    // Position History Interface
+    positionHistory: "تاريخ المواضع",
+    toggleHistory: "تبديل التاريخ",
+    positions: "مواضع",
+    noHistoryYet: "لا يوجد تاريخ بعد. ابدأ بالتحرك!",
+    clearHistory: "مسح التاريخ",
+    export: "تصدير",
+    import: "استيراد",
+    jumpToPosition: "الانتقال إلى الموضع",
+    previewPosition: "معاينة الموضع",
+    noDescription: "لا يوجد وصف",
+    created: "تم الإنشاء",
+    cancel: "إلغاء",
+    confirmClearHistory: "تأكيد مسح التاريخ",
+    clearHistoryWarning: "سيؤدي هذا إلى حذف جميع تاريخ المواضع بشكل دائم.",
+    thisActionCannotBeUndone: "لا يمكن التراجع عن هذا الإجراء.",
+    historyCleared: "تم مسح التاريخ بنجاح",
+    historyExported: "تم تصدير التاريخ بنجاح",
+    historyImported: "تم استيراد التاريخ بنجاح",
+    exportError: "خطأ في تصدير التاريخ",
+    importError: "خطأ في استيراد التاريخ",
+    undoPerformed: "تم التراجع",
+    redoPerformed: "تم الإعادة",
+    jumpedToPosition: "تم الانتقال إلى الموضع {0}",
+    exportHistory: "تصدير التاريخ",
+    importHistory: "استيراد التاريخ",
+    strategicRecommendations: "التوصيات الاستراتيجية",
+    detailedStatistics: "إحصائيات مفصلة",
+    materialBreakdown: "تفصيل المواد",
+    activityDetails: "تفاصيل النشاط",
+    kingSafetyDetails: "تفاصيل أمان الملك",
+    totalMoves: "إجمالي الحركات",
+    avgMovesPerPiece: "متوسط الحركات/القطعة",
+    escapeSquares: "مربعات الهروب",
+    position: "الموضع",
+    analysisGeneratedAt: "تم إنشاء التحليل في",
+    exportReport: "تصدير",
+    shareReport: "مشاركة",
+    noRecommendationsAvailable: "قم بإعداد موضع لرؤية التوصيات الاستراتيجية",
+    balancedPosition: "موضع متوازن",
+    whiteAdvantagePosition: "الأبيض لديه ميزة",
+    blackAdvantagePosition: "الأسود لديه ميزة",
+    slightWhiteAdvantage: "ميزة طفيفة للأبيض",
+    slightBlackAdvantage: "ميزة طفيفة للأسود",
+    whitePositionalAdvantage: "ميزة موضعية للأبيض",
+    blackPositionalAdvantage: "ميزة موضعية للأسود",
+    
+    // Settings Menu
+    settingsMenu: "الإعدادات",
+    closeMenu: "إغلاق",
+    openSettingsMenu: "فتح قائمة الإعدادات",
+    closeSettingsMenu: "إغلاق قائمة الإعدادات",
+    settingsControls: "عناصر التحكم في الإعدادات",
     
     // Enhanced Theme System
     themeToggle: "تبديل المظهر",
@@ -2477,7 +3750,7 @@ function setLanguage(lang) {
   if (!translations[lang]) return;
   currentLang = lang;
   updateUIText();
-  localStorage.setItem("4x5_lang", lang);
+  // Don't save to localStorage - always start fresh with English
 
   // Update HTML dir attribute for RTL support (Arabic)
   if (lang === "ar") {
@@ -2580,6 +3853,9 @@ function updateUIText() {
   const historyTitle = document.getElementById("historyTitle");
   if (historyTitle) historyTitle.innerHTML = `<span class="icon">📜</span> ${t("moveHistory")}`;
 
+  const moveHistoryTitle = document.getElementById("moveHistoryTitle");
+  if (moveHistoryTitle) moveHistoryTitle.textContent = t("moveHistory");
+
   // Update color customization labels
   const lblColorSettings = document.getElementById("lblColorSettings");
   if (lblColorSettings) lblColorSettings.textContent = `🎨 ${t("colorSettings")}`;
@@ -2604,6 +3880,17 @@ function updateUIText() {
 
   const lblColorPresets = document.getElementById("lblColorPresets");
   if (lblColorPresets) lblColorPresets.textContent = `🎯 ${t("colorPresets")}`;
+
+  // Update color panel title
+  const colorPanelTitle = document.getElementById("colorPanelTitle");
+  if (colorPanelTitle) colorPanelTitle.textContent = `🎨 ${t("colorSettings")}`;
+
+  // Update color panel preview labels
+  const lblWhitePiecesPreview = document.getElementById("lblWhitePiecesPreview");
+  if (lblWhitePiecesPreview) lblWhitePiecesPreview.textContent = t("whitePieces");
+
+  const lblBlackPiecesPreview = document.getElementById("lblBlackPiecesPreview");
+  if (lblBlackPiecesPreview) lblBlackPiecesPreview.textContent = t("blackPieces");
 
   const btnClassicColors = document.getElementById("btnClassicColors");
   if (btnClassicColors) btnClassicColors.textContent = t("classic");
@@ -2675,6 +3962,55 @@ function updateUIText() {
   const settingsMenuContent = document.querySelector('.settings-menu-content');
   if (settingsMenuContent) settingsMenuContent.setAttribute('aria-label', t("settingsControls"));
 
+  // Update settings menu section titles
+  const menuGameControlsTitle = document.getElementById("menuGameControlsTitle");
+  if (menuGameControlsTitle) menuGameControlsTitle.textContent = t("menuGameControlsTitle");
+
+  const menuAppearanceTitle = document.getElementById("menuAppearanceTitle");
+  if (menuAppearanceTitle) menuAppearanceTitle.textContent = t("menuAppearanceTitle");
+
+  const menuPositionToolsTitle = document.getElementById("menuPositionToolsTitle");
+  if (menuPositionToolsTitle) menuPositionToolsTitle.textContent = t("menuPositionToolsTitle");
+
+  const menuAdvancedTitle = document.getElementById("menuAdvancedTitle");
+  if (menuAdvancedTitle) menuAdvancedTitle.textContent = t("menuAdvancedTitle");
+
+  // Update settings menu button texts
+  const btnNewGameMenuText = document.getElementById("btnNewGameMenuText");
+  if (btnNewGameMenuText) btnNewGameMenuText.textContent = t("btnNewGameMenuText");
+
+  const btnSwitchSidesMenuText = document.getElementById("btnSwitchSidesMenuText");
+  if (btnSwitchSidesMenuText) btnSwitchSidesMenuText.textContent = t("btnSwitchSidesMenuText");
+
+  const lblAiDifficultyMenu = document.getElementById("lblAiDifficultyMenu");
+  if (lblAiDifficultyMenu) lblAiDifficultyMenu.textContent = t("lblAiDifficultyMenu");
+
+  const btnColorsMenuText = document.getElementById("btnColorsMenuText");
+  if (btnColorsMenuText) btnColorsMenuText.textContent = t("btnColorsMenuText");
+
+  const btnBackendModeMenuText = document.getElementById("btnBackendModeMenuText");
+  if (btnBackendModeMenuText) {
+    // Check if backend mode is enabled
+    const isBackendEnabled = localStorage.getItem('backendModeEnabled') === 'true';
+    btnBackendModeMenuText.textContent = isBackendEnabled ? t("disableBackendMode") : t("enableBackendMode");
+  }
+
+  const btnAutoScrollMenuText = document.getElementById("btnAutoScrollMenuText");
+  if (btnAutoScrollMenuText) {
+    // Check if auto-scroll is enabled
+    const isAutoScrollEnabled = localStorage.getItem('autoScrollEnabled') === 'true';
+    btnAutoScrollMenuText.textContent = isAutoScrollEnabled ? t("disableAutoScroll") : t("enableAutoScroll");
+  }
+
+  // Update AI difficulty select options in settings menu
+  const aiLevelMenu = document.getElementById("aiLevelMenu");
+  if (aiLevelMenu) {
+    aiLevelMenu.options[0].textContent = t("easy");
+    aiLevelMenu.options[1].textContent = t("medium");
+    aiLevelMenu.options[2].textContent = t("hard");
+    aiLevelMenu.options[3].textContent = t("expert");
+  }
+
   // Update piece setup modal elements
   const setupInstructions = document.getElementById("setupInstructions");
   if (setupInstructions) setupInstructions.textContent = t("setupInstructions");
@@ -2699,6 +4035,88 @@ function updateUIText() {
 
   const btnCancelSetup = document.getElementById("btnCancelSetup");
   if (btnCancelSetup) btnCancelSetup.textContent = t("btnCancelSetup");
+
+  // Update piece setup palette section titles
+  const whitePiecesTitle = document.getElementById("whitePiecesTitle");
+  if (whitePiecesTitle) whitePiecesTitle.textContent = t("whitePiecesTitle");
+
+  const blackPiecesTitle = document.getElementById("blackPiecesTitle");
+  if (blackPiecesTitle) blackPiecesTitle.textContent = t("blackPiecesTitle");
+
+  // Update piece setup tool buttons
+  const clearBoardText = document.getElementById("clearBoardText");
+  if (clearBoardText) clearBoardText.textContent = t("clearBoardText");
+
+  const resetDefaultText = document.getElementById("resetDefaultText");
+  if (resetDefaultText) resetDefaultText.textContent = t("resetDefaultText");
+
+  const randomSetupText = document.getElementById("randomSetupText");
+  if (randomSetupText) randomSetupText.textContent = t("randomSetupText");
+
+  const loadSetupText = document.getElementById("loadSetupText");
+  if (loadSetupText) loadSetupText.textContent = t("loadSetupText");
+
+  // Update preset titles
+  const presetsTitle = document.getElementById("presetsTitle");
+  if (presetsTitle) presetsTitle.textContent = t("presetsTitle");
+
+  const endgameText = document.getElementById("endgameText");
+  if (endgameText) endgameText.textContent = t("endgameText");
+
+  const middlegameText = document.getElementById("middlegameText");
+  if (middlegameText) middlegameText.textContent = t("middlegameText");
+
+  const puzzleText = document.getElementById("puzzleText");
+  if (puzzleText) puzzleText.textContent = t("puzzleText");
+
+  const trashText = document.getElementById("trashText");
+  if (trashText) trashText.textContent = `🗑️ ${t("trashText")}`;
+
+  // Update position stats labels
+  const whiteKingsLabel = document.getElementById("whiteKingsLabel");
+  if (whiteKingsLabel) whiteKingsLabel.textContent = t("whiteKingsLabel");
+
+  const blackKingsLabel = document.getElementById("blackKingsLabel");
+  if (blackKingsLabel) blackKingsLabel.textContent = t("blackKingsLabel");
+
+  const totalPiecesLabel = document.getElementById("totalPiecesLabel");
+  if (totalPiecesLabel) totalPiecesLabel.textContent = t("totalPiecesLabel");
+
+  const materialBalanceLabel = document.getElementById("materialBalanceLabel");
+  if (materialBalanceLabel) materialBalanceLabel.textContent = t("materialBalanceLabel");
+
+  // Update first move options
+  const whiteFirstOption = document.getElementById("whiteFirstOption");
+  if (whiteFirstOption) whiteFirstOption.textContent = t("whiteFirstOption");
+
+  const blackFirstOption = document.getElementById("blackFirstOption");
+  if (blackFirstOption) blackFirstOption.textContent = t("blackFirstOption");
+
+  // Update AI difficulty options in setup modal
+  const easyOption = document.getElementById("easyOption");
+  if (easyOption) easyOption.textContent = t("easyOption");
+
+  const mediumOption = document.getElementById("mediumOption");
+  if (mediumOption) mediumOption.textContent = t("mediumOption");
+
+  const hardOption = document.getElementById("hardOption");
+  if (hardOption) hardOption.textContent = t("hardOption");
+
+  const expertOption = document.getElementById("expertOption");
+  if (expertOption) expertOption.textContent = t("expertOption");
+
+  // Update analysis title and text
+  const analysisTitle = document.getElementById("analysisTitle");
+  if (analysisTitle) analysisTitle.textContent = t("analysisTitle");
+
+  const analyzeText = document.getElementById("analyzeText");
+  if (analyzeText) analyzeText.textContent = t("analyzeText");
+
+  const startGameText = document.getElementById("startGameText");
+  if (startGameText) startGameText.textContent = t("startGameText");
+
+  const cancelText = document.getElementById("cancelText");
+  if (cancelText) cancelText.textContent = t("cancelText");
 
   // Update user preset management elements
   const userPresetsTitle = document.getElementById("userPresetsTitle");
@@ -2838,39 +4256,86 @@ function updateUIText() {
     btnAutoScrollText.textContent = isAutoScrollEnabled ? t("disableAutoScroll") : t("enableAutoScroll");
   }
 
-  // Update game status if game is active
-  if (typeof bilgiGuncelle === "function") {
-    bilgiGuncelle();
+  // Update game status and move history if game is active
+  if (typeof window.bilgiGuncelle === "function") {
+    window.bilgiGuncelle();
+  }
+  
+  if (typeof window.gecmisiGuncelle === "function") {
+    window.gecmisiGuncelle();
   }
 }
 
-// Initialize language from local storage or default to English
+// Initialize language - ALWAYS start with English
 document.addEventListener("DOMContentLoaded", () => {
-  const savedLang = localStorage.getItem("4x5_lang");
-  if (savedLang && translations[savedLang]) {
-    // Update both language selectors
-    const startLanguageSelect = document.getElementById("startLanguage");
-    const settingsLanguageSelect = document.getElementById("languageSelect");
-    
-    if (startLanguageSelect) startLanguageSelect.value = savedLang;
-    if (settingsLanguageSelect) settingsLanguageSelect.value = savedLang;
-    
-    setLanguage(savedLang);
-  } else {
-    setLanguage("en");
-  }
+  // Always start with English, ignore localStorage
+  const startLanguageSelect = document.getElementById("startLanguage");
+  const settingsLanguageSelect = document.getElementById("languageSelect");
+  
+  if (startLanguageSelect) startLanguageSelect.value = "en";
+  if (settingsLanguageSelect) settingsLanguageSelect.value = "en";
+  
+  // Set language to English
+  setLanguage("en");
 });
 
-// Listen for language changes from other tabs/windows
-window.addEventListener('storage', function(e) {
-  if (e.key === '4x5_lang' && e.newValue && translations[e.newValue]) {
-    // Update both language selectors
-    const startLanguageSelect = document.getElementById("startLanguage");
-    const settingsLanguageSelect = document.getElementById("languageSelect");
-    
-    if (startLanguageSelect) startLanguageSelect.value = e.newValue;
-    if (settingsLanguageSelect) settingsLanguageSelect.value = e.newValue;
-    
-    setLanguage(e.newValue);
+// Helper function to update only color panel translations
+function updateColorPanelTranslations() {
+  console.log('[updateColorPanelTranslations] Updating color panel with language:', currentLang);
+  
+  const colorPanelTitle = document.getElementById("colorPanelTitle");
+  if (colorPanelTitle) {
+    colorPanelTitle.textContent = `🎨 ${t("colorSettings")}`;
+    console.log('[updateColorPanelTranslations] Updated colorPanelTitle:', colorPanelTitle.textContent);
   }
-});
+
+  const lblColorPresets = document.getElementById("lblColorPresets");
+  if (lblColorPresets) {
+    lblColorPresets.textContent = `🎯 ${t("colorPresets")}`;
+    console.log('[updateColorPanelTranslations] Updated lblColorPresets:', lblColorPresets.textContent);
+  }
+
+  const btnClassicColors = document.getElementById("btnClassicColors");
+  if (btnClassicColors) {
+    btnClassicColors.textContent = t("classic");
+    console.log('[updateColorPanelTranslations] Updated btnClassicColors:', btnClassicColors.textContent);
+  }
+
+  const btnWoodColors = document.getElementById("btnWoodColors");
+  if (btnWoodColors) {
+    btnWoodColors.textContent = t("wood");
+    console.log('[updateColorPanelTranslations] Updated btnWoodColors:', btnWoodColors.textContent);
+  }
+
+  const btnMarbleColors = document.getElementById("btnMarbleColors");
+  if (btnMarbleColors) {
+    btnMarbleColors.textContent = t("marble");
+    console.log('[updateColorPanelTranslations] Updated btnMarbleColors:', btnMarbleColors.textContent);
+  }
+
+  const btnNeonColors = document.getElementById("btnNeonColors");
+  if (btnNeonColors) {
+    btnNeonColors.textContent = t("neon");
+    console.log('[updateColorPanelTranslations] Updated btnNeonColors:', btnNeonColors.textContent);
+  }
+
+  const btnOceanColors = document.getElementById("btnOceanColors");
+  if (btnOceanColors) {
+    btnOceanColors.textContent = t("ocean");
+    console.log('[updateColorPanelTranslations] Updated btnOceanColors:', btnOceanColors.textContent);
+  }
+
+  const btnResetColors = document.getElementById("btnResetColors");
+  if (btnResetColors) {
+    btnResetColors.textContent = t("reset");
+    console.log('[updateColorPanelTranslations] Updated btnResetColors:', btnResetColors.textContent);
+  }
+  
+  console.log('[updateColorPanelTranslations] Color panel translations update complete');
+}
+
+// Expose functions globally for use in other scripts
+window.setLanguage = setLanguage;
+window.updateUIText = updateUIText;
+window.updateColorPanelTranslations = updateColorPanelTranslations;
+window.t = t;

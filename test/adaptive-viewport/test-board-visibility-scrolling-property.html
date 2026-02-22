@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Board Visibility During Scrolling</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    
+    .test-controls button:hover {
+      background: #5568d3;
+    }
+    
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    #test-output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      min-height: 400px;
+    }
+    
+    #test-output pre {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .status {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .status.running {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎯 Property Test: Board Visibility During Scrolling</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 10:</strong> Board Visibility Invariant During Scrolling</p>
+    <p><strong>Validates:</strong> Requirements 3.4</p>
+    <p><strong>Description:</strong> For any scroll operation on UI elements, the chess board should remain fully visible within the viewport throughout the scroll.</p>
+  </div>
+
+  <div class="test-controls">
+    <button id="run-test-btn" onclick="runTest()">▶ Run Property Test (100 iterations)</button>
+    <span id="loading-indicator" style="display: none;" class="loading"></span>
+    <div id="status-message"></div>
+  </div>
+
+  <div id="test-output">
+    <pre id="output-text">Click "Run Property Test" to start testing...</pre>
+  </div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+  
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+  
+  <!-- Load test file -->
+  <script src="board-visibility-scrolling-property.test.js"></script>
+
+  <script>
+    let isRunning = false;
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+    let outputBuffer = [];
+
+    function captureOutput() {
+      outputBuffer = [];
+      
+      console.log = function(...args) {
+        const message = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        outputBuffer.push(message);
+        updateOutput();
+        originalLog.apply(console, args);
+      };
+
+      console.error = function(...args) {
+        const message = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        outputBuffer.push('ERROR: ' + message);
+        updateOutput();
+        originalError.apply(console, args);
+      };
+    }
+
+    function restoreOutput() {
+      console.log = originalLog;
+      console.error = originalError;
+    }
+
+    function updateOutput() {
+      document.getElementById('output-text').textContent = outputBuffer.join('\n');
+    }
+
+    function setStatus(message, type) {
+      const statusDiv = document.getElementById('status-message');
+      statusDiv.className = 'status ' + type;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'block';
+    }
+
+    async function runTest() {
+      if (isRunning) {
+        return;
+      }
+
+      isRunning = true;
+      const btn = document.getElementById('run-test-btn');
+      const loading = document.getElementById('loading-indicator');
+      
+      btn.disabled = true;
+      loading.style.display = 'inline-block';
+      setStatus('Running property-based tests... This may take a minute.', 'running');
+
+      captureOutput();
+      outputBuffer = ['Starting property-based tests for board visibility during scrolling...\n'];
+      updateOutput();
+
+      try {
+        // Wait for fast-check to be available
+        let attempts = 0;
+        while (typeof fc === 'undefined' && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library failed to load');
+        }
+
+        // Run the property test
+        const results = await runBoardVisibilityScrollingPropertyTest(fc);
+
+        // Display results
+        if (results.failed === 0) {
+          setStatus(`✓ All tests passed! (${results.passed} properties, ${results.passed * 100} iterations)`, 'success');
+        } else {
+          setStatus(`✗ Some tests failed: ${results.failed} failed, ${results.passed} passed`, 'error');
+        }
+
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        setStatus('✗ Test execution failed: ' + error.message, 'error');
+      } finally {
+        restoreOutput();
+        btn.disabled = false;
+        loading.style.display = 'none';
+        isRunning = false;
+      }
+    }
+
+    // Auto-run on load (optional)
+    window.addEventListener('load', () => {
+      console.log('Page loaded. Ready to run tests.');
+      console.log('Click "Run Property Test" button to start.');
+    });
+  </script>
+</body>
+</html>

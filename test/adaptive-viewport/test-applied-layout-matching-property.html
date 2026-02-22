@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Applied Layout Matches Calculated Layout</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .status.running {
+      background: #fff3cd;
+      color: #856404;
+      border-left: 4px solid #ffc107;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+
+    .status.failure {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+
+    .status.hidden {
+      display: none;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #856404;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .test-info {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    .test-info h3 {
+      margin: 0 0 10px 0;
+      color: #1976D2;
+    }
+
+    .test-info ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    .test-info li {
+      margin: 5px 0;
+    }
+
+    /* Test visualization area */
+    #test-area {
+      position: relative;
+      min-height: 200px;
+      background: #fafafa;
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      margin: 20px 0;
+      padding: 10px;
+    }
+
+    .test-ui-element {
+      position: absolute;
+      border: 2px solid #4CAF50;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .board {
+      position: absolute;
+      border: 3px solid #8B4513;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎯 Property Test: Applied Layout Matches Calculated Layout</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 13:</strong> Applied Layout Matches Calculated Layout</p>
+    <p><strong>Validates:</strong> Requirements 4.2</p>
+  </div>
+
+  <div class="test-info">
+    <h3>Test Description</h3>
+    <p>This property-based test verifies that when a layout configuration is calculated and applied to the DOM, the actual element positions match the calculated positions within a tolerance of 1px.</p>
+    
+    <h3>Properties Being Tested:</h3>
+    <ul>
+      <li><strong>Property 1:</strong> Single element applied position matches calculated position</li>
+      <li><strong>Property 2:</strong> Multiple elements in batch update match calculated positions</li>
+      <li><strong>Property 3:</strong> Complete layout configuration matches when applied</li>
+      <li><strong>Property 4:</strong> Position accuracy maintained through multiple updates</li>
+      <li><strong>Property 5:</strong> Position tolerance is exactly 1px (boundary test)</li>
+    </ul>
+
+    <h3>Test Configuration:</h3>
+    <ul>
+      <li>Total iterations: 450 (100 + 100 + 100 + 50 + 100)</li>
+      <li>Position tolerance: 1px</li>
+      <li>Timeout per property: 60 seconds</li>
+    </ul>
+  </div>
+
+  <div class="controls">
+    <button id="runTests" class="btn">Run Property Tests</button>
+  </div>
+
+  <div id="status" class="status hidden"></div>
+
+  <div id="test-area"></div>
+
+  <div id="output"></div>
+
+  <!-- Load fast-check library -->
+  <script src="../setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+
+  <!-- Load test -->
+  <script src="applied-layout-matching-property.test.js"></script>
+
+  <script>
+    const runButton = document.getElementById('runTests');
+    const output = document.getElementById('output');
+    const statusDiv = document.getElementById('status');
+
+    // Redirect console to output
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      output.textContent += args.join(' ') + '\n';
+      output.scrollTop = output.scrollHeight;
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      output.textContent += '❌ ' + args.join(' ') + '\n';
+      output.scrollTop = output.scrollHeight;
+    };
+
+    runButton.addEventListener('click', async () => {
+      runButton.disabled = true;
+      output.textContent = '';
+      
+      // Show running status
+      statusDiv.className = 'status running';
+      statusDiv.innerHTML = '<span class="spinner"></span>Running property tests... This may take a minute.';
+
+      try {
+        console.log('Starting Applied Layout Matching Property Tests...');
+        console.log('Using fast-check version:', fc.version || 'unknown');
+        console.log('');
+
+        const results = await runAppliedLayoutMatchingPropertyTest(fc);
+
+        // Show results status
+        if (results.failed === 0) {
+          statusDiv.className = 'status success';
+          statusDiv.textContent = `✅ All tests passed! ${results.passed} properties verified across 450 iterations.`;
+        } else {
+          statusDiv.className = 'status failure';
+          statusDiv.textContent = `❌ Some tests failed. ${results.passed} passed, ${results.failed} failed.`;
+        }
+
+        console.log('\n' + '='.repeat(60));
+        console.log('Test execution completed!');
+        console.log('='.repeat(60));
+
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        statusDiv.className = 'status failure';
+        statusDiv.textContent = '❌ Test execution failed: ' + error.message;
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+
+    // Auto-run on load (optional)
+    // window.addEventListener('load', () => {
+    //   setTimeout(() => runButton.click(), 500);
+    // });
+  </script>
+</body>
+</html>

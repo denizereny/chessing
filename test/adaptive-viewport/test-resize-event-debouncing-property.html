@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Resize Event Debouncing</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .test-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .test-controls button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    
+    .test-controls button:hover {
+      background: #5568d3;
+    }
+    
+    .test-controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    #output {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #ffd700;
+      color: #333;
+    }
+    
+    .status.passed {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .status.failed {
+      background: #f44336;
+      color: white;
+    }
+    
+    .property-info {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    
+    .property-info h3 {
+      margin: 0 0 10px 0;
+      color: #1976d2;
+    }
+    
+    .property-info p {
+      margin: 5px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔄 Property Test: Resize Event Debouncing</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 25:</strong> Resize Event Debouncing</p>
+    <p><strong>Validates:</strong> Requirements 8.3</p>
+  </div>
+
+  <div class="property-info">
+    <h3>Property Under Test</h3>
+    <p>
+      <strong>For any</strong> rapid sequence of resize events (more than 10 events within 100ms), 
+      the number of layout recalculations should be significantly less than the number of events 
+      (at most 1-2 recalculations).
+    </p>
+    <p>
+      This property ensures that the ViewportAnalyzer properly debounces resize events to prevent 
+      excessive layout recalculations, which would degrade performance during window resizing.
+    </p>
+  </div>
+
+  <div class="test-controls">
+    <button id="runTest" onclick="runTest()">Run Property Test (100 iterations)</button>
+    <span id="status"></span>
+  </div>
+
+  <div id="output"></div>
+
+  <!-- Load fast-check library -->
+  <script src="../setup-fast-check.js"></script>
+
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+  <script src="../../js/adaptive-viewport/layout-state-manager.js"></script>
+  <script src="../../js/adaptive-viewport/viewport-analyzer.js"></script>
+
+  <!-- Load property test -->
+  <script src="resize-event-debouncing-property.test.js"></script>
+
+  <script>
+    const outputDiv = document.getElementById('output');
+    const statusSpan = document.getElementById('status');
+    const runButton = document.getElementById('runTest');
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    function captureOutput(message, isError = false) {
+      const color = isError ? '#f44336' : '#333';
+      const line = document.createElement('div');
+      line.style.color = color;
+      line.textContent = message;
+      outputDiv.appendChild(line);
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      captureOutput(args.join(' '));
+      originalLog.apply(console, args);
+    };
+
+    console.error = function(...args) {
+      captureOutput(args.join(' '), true);
+      originalError.apply(console, args);
+    };
+
+    async function runTest() {
+      outputDiv.innerHTML = '';
+      runButton.disabled = true;
+      statusSpan.innerHTML = '<span class="status running">RUNNING</span>';
+
+      try {
+        console.log('Starting Resize Event Debouncing Property Test...');
+        console.log('This test verifies that rapid resize events are properly debounced.\n');
+
+        // Check if fast-check is loaded
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded. Please ensure setup-fast-check.js is available.');
+        }
+
+        // Run the property test
+        const results = await runResizeEventDebouncingPropertyTest(fc);
+
+        // Display results
+        console.log('\n' + '='.repeat(60));
+        console.log('FINAL RESULTS');
+        console.log('='.repeat(60));
+        console.log(`Total Properties Tested: ${results.passed + results.failed}`);
+        console.log(`Passed: ${results.passed}`);
+        console.log(`Failed: ${results.failed}`);
+        
+        if (results.failed === 0) {
+          console.log('\n✓ ALL PROPERTY TESTS PASSED!');
+          statusSpan.innerHTML = '<span class="status passed">ALL TESTS PASSED</span>';
+        } else {
+          console.log('\n✗ SOME PROPERTY TESTS FAILED');
+          statusSpan.innerHTML = '<span class="status failed">TESTS FAILED</span>';
+        }
+
+        console.log('\nTest Details:');
+        results.tests.forEach(test => {
+          const icon = test.status === 'PASS' ? '✓' : '✗';
+          console.log(`${icon} ${test.name}: ${test.status}`);
+          if (test.error) {
+            console.error(`  Error: ${test.error}`);
+          }
+        });
+
+      } catch (error) {
+        console.error('\n✗ TEST EXECUTION FAILED');
+        console.error('Error:', error.message);
+        console.error('Stack:', error.stack);
+        statusSpan.innerHTML = '<span class="status failed">EXECUTION FAILED</span>';
+      } finally {
+        runButton.disabled = false;
+      }
+    }
+
+    // Auto-run on load
+    window.addEventListener('load', () => {
+      console.log('Page loaded. Click "Run Property Test" to start testing.');
+      console.log('This test uses fast-check to generate random test cases.\n');
+    });
+  </script>
+</body>
+</html>

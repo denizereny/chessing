@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Test - 4x5 Chess Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .language-selector {
+            text-align: center;
+            margin: 20px 0;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 2px solid #4CAF50;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-item:nth-child(even) {
+            background: #f0f0f0;
+        }
+        .key {
+            font-weight: bold;
+            color: #666;
+            flex: 1;
+        }
+        .value {
+            flex: 2;
+            color: #333;
+            text-align: right;
+        }
+        .missing {
+            color: red;
+            font-style: italic;
+        }
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.complete {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.incomplete {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌍 Translation Coverage Test</h1>
+    <h2 style="text-align: center; color: #666;">4×5 Chess Pro - All Languages</h2>
+    
+    <div class="language-selector">
+        <label for="languageSelect"><strong>Select Language:</strong></label>
+        <select id="languageSelect" onchange="testLanguage()">
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ar">🇸🇦 العربية</option>
+        </select>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="results"></div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        const testKeys = [
+            // Basic Game Controls
+            'settings', 'newGame', 'switchSides', 'undo', 'aiDifficulty',
+            'easy', 'medium', 'hard', 'expert',
+            
+            // Game Status
+            'moves', 'captured', 'whiteCaptured', 'blackCaptured',
+            'gameStarting', 'blackWon', 'whiteWon',
+            'whitePlaying', 'blackPlaying', 'moveHistory',
+            
+            // Menu Sections
+            'menuGameControlsTitle', 'menuAppearanceTitle',
+            'menuPositionToolsTitle', 'menuAdvancedTitle',
+            
+            // Color Settings
+            'colorSettings', 'boardColors', 'lightSquares', 'darkSquares',
+            'pieceColors', 'whitePieces', 'blackPieces', 'colorPresets',
+            'classic', 'wood', 'marble', 'neon', 'ocean', 'reset',
+            
+            // Piece Setup
+            'pieceSetup', 'analyzePosition', 'sharePosition',
+            'setupInstructions', 'piecePaletteTitle', 'setupBoardTitle',
+            'btnClearBoard', 'btnResetToDefault', 'btnStartCustomGame',
+            'btnCancelSetup', 'randomSetupCreated', 'presetLoaded',
+            
+            // Position Analysis
+            'positionAnalysisReport', 'positionType', 'analysisOverview',
+            'materialBalance', 'pieceActivity', 'kingSafety', 'centerControl',
+            
+            // Position History
+            'positionHistory', 'toggleHistory', 'redo',
+            'clearHistory', 'export', 'import', 'jumpToPosition',
+            
+            // Theme System
+            'themeToggle', 'switchToLight', 'switchToDark',
+            'currentTheme', 'lightTheme', 'darkTheme', 'systemTheme',
+            'darkMode', 'lightMode', 'autoScroll',
+            
+            // Backend Mode
+            'enableBackendMode', 'disableBackendMode',
+            'backendOnline', 'backendOffline', 'backendConnected',
+            
+            // Settings Menu
+            'settingsMenu', 'closeMenu', 'openSettingsMenu',
+            'closeSettingsMenu', 'settingsControls',
+            
+            // Drag & Drop
+            'dragToMove', 'dropToPlace', 'invalidDrop',
+            'pieceMovedSuccessfully', 'dragCancelledByUser',
+            
+            // Preset System
+            'presetCategories', 'openingPresets', 'middlegamePresets',
+            'endgamePresets', 'puzzlePresets', 'tacticalPresets',
+            
+            // Position Sharing
+            'generateShareCode', 'copyShareCode', 'shareCodeCopied',
+            'loadFromCode', 'shareViaURL', 'shareViaQR',
+            
+            // Mobile Optimization
+            'touchToSelect', 'doubleTapToPlace', 'pinchToZoom',
+            'swipeToNavigate', 'hapticFeedback', 'mobileLayout',
+            
+            // Loading & Performance
+            'loading', 'processing', 'analyzing', 'generating',
+            'validating', 'saving', 'operationCancelled',
+            
+            // Error Messages
+            'errorOccurred', 'invalidOperation', 'networkError',
+            'storageError', 'validationError', 'unexpectedError',
+            
+            // Success Messages
+            'operationSuccessful', 'positionSaved', 'settingsUpdated',
+            
+            // Accessibility
+            'screenReaderAnnouncement', 'keyboardNavigation',
+            'accessibilityMode', 'highContrast', 'largeText', 'reducedMotion'
+        ];
+
+        function testLanguage() {
+            const lang = document.getElementById('languageSelect').value;
+            setLanguage(lang);
+            
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+            
+            let missingCount = 0;
+            let totalCount = testKeys.length;
+            
+            const sections = {
+                'Game Controls': ['settings', 'newGame', 'switchSides', 'undo', 'aiDifficulty', 'easy', 'medium', 'hard', 'expert'],
+                'Game Status': ['moves', 'captured', 'whiteCaptured', 'blackCaptured', 'gameStarting', 'blackWon', 'whiteWon'],
+                'Menu Sections': ['menuGameControlsTitle', 'menuAppearanceTitle', 'menuPositionToolsTitle', 'menuAdvancedTitle'],
+                'Color Settings': ['colorSettings', 'boardColors', 'lightSquares', 'darkSquares', 'pieceColors', 'classic', 'wood', 'marble'],
+                'Piece Setup': ['pieceSetup', 'analyzePosition', 'sharePosition', 'setupInstructions', 'piecePaletteTitle'],
+                'Position Analysis': ['positionAnalysisReport', 'positionType', 'analysisOverview', 'materialBalance', 'pieceActivity'],
+                'Theme System': ['themeToggle', 'switchToLight', 'switchToDark', 'darkMode', 'lightMode', 'autoScroll'],
+                'Backend Mode': ['enableBackendMode', 'disableBackendMode', 'backendOnline', 'backendOffline'],
+                'Settings Menu': ['settingsMenu', 'closeMenu', 'openSettingsMenu', 'closeSettingsMenu'],
+                'Mobile & Accessibility': ['touchToSelect', 'doubleTapToPlace', 'hapticFeedback', 'accessibilityMode', 'highContrast']
+            };
+            
+            for (const [sectionName, keys] of Object.entries(sections)) {
+                const section = document.createElement('div');
+                section.className = 'test-section';
+                section.innerHTML = `<h2>${sectionName}</h2>`;
+                
+                keys.forEach(key => {
+                    const value = t(key);
+                    const isMissing = value === key || value === translations['en'][key];
+                    if (isMissing && lang !== 'en') missingCount++;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'test-item';
+                    item.innerHTML = `
+                        <span class="key">${key}:</span>
+                        <span class="value ${isMissing && lang !== 'en' ? 'missing' : ''}">${value}</span>
+                    `;
+                    section.appendChild(item);
+                });
+                
+                results.appendChild(section);
+            }
+            
+            const status = document.getElementById('status');
+            const completionRate = ((totalCount - missingCount) / totalCount * 100).toFixed(1);
+            
+            if (missingCount === 0 || lang === 'en') {
+                status.className = 'status complete';
+                status.innerHTML = `✅ Translation Complete: ${completionRate}% (${totalCount - missingCount}/${totalCount} keys)`;
+            } else {
+                status.className = 'status incomplete';
+                status.innerHTML = `⚠️ Translation Incomplete: ${completionRate}% (${missingCount} missing keys)`;
+            }
+        }
+        
+        // Test English by default
+        testLanguage();
+    </script>
+</body>
+</html>

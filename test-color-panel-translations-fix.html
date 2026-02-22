@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Panel Translation Fix Test</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #7e4fac 100%);
+      color: #333;
+    }
+    
+    .test-container {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .test-section h2 {
+      color: #667eea;
+      margin-top: 0;
+      font-size: 1.3em;
+    }
+    
+    .language-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .language-buttons button {
+      padding: 12px 24px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .language-buttons button:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .language-buttons button.active {
+      background: #667eea;
+      color: white;
+    }
+    
+    .test-button {
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      margin: 10px 10px 10px 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .test-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .test-button:active {
+      transform: translateY(0);
+    }
+    
+    .results {
+      margin-top: 20px;
+    }
+    
+    .result-item {
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+    
+    .result-item.pass {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      color: #155724;
+    }
+    
+    .result-item.fail {
+      background: #f8d7da;
+      border-left: 4px solid #dc3545;
+      color: #721c24;
+    }
+    
+    .result-item .icon {
+      font-size: 20px;
+    }
+    
+    .summary {
+      margin-top: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .color-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      z-index: 1000;
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    .color-panel.hidden {
+      display: none;
+    }
+    
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .panel-header h3 {
+      margin: 0;
+      color: #667eea;
+    }
+    
+    .close-panel {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    
+    .close-panel:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    .color-section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .color-section h4 {
+      margin-top: 0;
+      color: #667eea;
+    }
+    
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .preset-buttons button {
+      padding: 8px 16px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+    
+    .preset-buttons button:hover {
+      background: #667eea;
+      color: white;
+    }
+    
+    .instructions {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 6px;
+      color: #856404;
+    }
+    
+    .instructions h3 {
+      margin-top: 0;
+      color: #856404;
+    }
+    
+    .instructions ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🎨 Color Panel Translation Fix Test</h1>
+    <p class="subtitle">Testing that color panel elements translate correctly when language changes</p>
+    
+    <div class="instructions">
+      <h3>📋 Test Instructions</h3>
+      <ol>
+        <li>Click different language buttons to change the language</li>
+        <li>Click "Open Color Panel" to open the color customization panel</li>
+        <li>Verify that ALL text in the panel is in the selected language</li>
+        <li>Close the panel and change language again</li>
+        <li>Re-open the panel and verify it shows the NEW language</li>
+        <li>Click "Run Automated Test" to verify all elements programmatically</li>
+      </ol>
+    </div>
+    
+    <div class="test-section">
+      <h2>1️⃣ Select Language</h2>
+      <div class="language-buttons">
+        <button onclick="changeLanguage('en')" data-lang="en">🇬🇧 English</button>
+        <button onclick="changeLanguage('tr')" data-lang="tr">🇹🇷 Türkçe</button>
+        <button onclick="changeLanguage('es')" data-lang="es">🇪🇸 Español</button>
+        <button onclick="changeLanguage('fr')" data-lang="fr">🇫🇷 Français</button>
+        <button onclick="changeLanguage('de')" data-lang="de">🇩🇪 Deutsch</button>
+        <button onclick="changeLanguage('it')" data-lang="it">🇮🇹 Italiano</button>
+        <button onclick="changeLanguage('ru')" data-lang="ru">🇷🇺 Русский</button>
+        <button onclick="changeLanguage('zh')" data-lang="zh">🇨🇳 中文</button>
+        <button onclick="changeLanguage('ja')" data-lang="ja">🇯🇵 日本語</button>
+        <button onclick="changeLanguage('pt')" data-lang="pt">🇵🇹 Português</button>
+        <button onclick="changeLanguage('ar')" data-lang="ar">🇸🇦 العربية</button>
+      </div>
+      <p>Current Language: <strong id="currentLang">English</strong></p>
+    </div>
+    
+    <div class="test-section">
+      <h2>2️⃣ Manual Test</h2>
+      <button class="test-button" onclick="toggleColorPanel()">🎨 Open Color Panel</button>
+      <p>Open the panel and verify all text is translated correctly</p>
+    </div>
+    
+    <div class="test-section">
+      <h2>3️⃣ Automated Test</h2>
+      <button class="test-button" onclick="runAutomatedTest()">▶️ Run Automated Test</button>
+      <div id="results" class="results"></div>
+    </div>
+  </div>
+  
+  <!-- Color Panel (mimics the actual game's color panel) -->
+  <div id="colorPanel" class="color-panel hidden">
+    <div class="color-panel-content">
+      <div class="panel-header">
+        <h3 id="colorPanelTitle">🎨 Color Settings</h3>
+        <button onclick="toggleColorPanel()" class="close-panel">✖</button>
+      </div>
+      
+      <div class="color-sections">
+        <!-- Board Colors -->
+        <div class="color-section">
+          <h4 id="lblBoardColors">📋 Board Colors</h4>
+        </div>
+        
+        <!-- Piece Colors -->
+        <div class="color-section">
+          <h4 id="lblPieceColors">♔ Piece Colors</h4>
+          <div>
+            <span id="lblWhitePiecesPreview">White</span> | 
+            <span id="lblBlackPiecesPreview">Black</span>
+          </div>
+          <div style="margin-top: 10px;">
+            <label id="lblWhitePieces">White Pieces</label><br>
+            <label id="lblBlackPieces">Black Pieces</label>
+          </div>
+        </div>
+        
+        <!-- Color Presets -->
+        <div class="color-section">
+          <h4 id="lblColorPresets">🎯 Color Presets</h4>
+          <div class="preset-buttons">
+            <button id="btnClassicColors">Classic</button>
+            <button id="btnWoodColors">Wood</button>
+            <button id="btnMarbleColors">Marble</button>
+            <button id="btnNeonColors">Neon</button>
+            <button id="btnOceanColors">Ocean</button>
+            <button id="btnResetColors">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/translations.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    // Initialize with English
+    setLanguage('en');
+    updateActiveLanguageButton('en');
+    
+    function changeLanguage(lang) {
+      setLanguage(lang);
+      updateActiveLanguageButton(lang);
+      
+      // Update current language display
+      const langNames = {
+        en: 'English',
+        tr: 'Türkçe',
+        es: 'Español',
+        fr: 'Français',
+        de: 'Deutsch',
+        it: 'Italiano',
+        ru: 'Русский',
+        zh: '中文',
+        ja: '日本語',
+        pt: 'Português',
+        ar: 'العربية'
+      };
+      document.getElementById('currentLang').textContent = langNames[lang];
+    }
+    
+    function updateActiveLanguageButton(lang) {
+      document.querySelectorAll('.language-buttons button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-lang') === lang) {
+          btn.classList.add('active');
+        }
+      });
+    }
+    
+    function runAutomatedTest() {
+      const results = document.getElementById('results');
+      results.innerHTML = '<h3>🔍 Test Results</h3>';
+      
+      const languages = ['en', 'tr', 'es', 'fr', 'de', 'it', 'ru', 'zh', 'ja', 'pt', 'ar'];
+      const elementsToTest = [
+        { id: 'colorPanelTitle', key: 'colorSettings', label: 'Color Panel Title' },
+        { id: 'lblBoardColors', key: 'boardColors', label: 'Board Colors Label' },
+        { id: 'lblPieceColors', key: 'pieceColors', label: 'Piece Colors Label' },
+        { id: 'lblWhitePiecesPreview', key: 'whitePieces', label: 'White Pieces Preview' },
+        { id: 'lblBlackPiecesPreview', key: 'blackPieces', label: 'Black Pieces Preview' },
+        { id: 'lblWhitePieces', key: 'whitePieces', label: 'White Pieces Label' },
+        { id: 'lblBlackPieces', key: 'blackPieces', label: 'Black Pieces Label' },
+        { id: 'lblColorPresets', key: 'colorPresets', label: 'Color Presets Label' },
+        { id: 'btnClassicColors', key: 'classic', label: 'Classic Button' },
+        { id: 'btnWoodColors', key: 'wood', label: 'Wood Button' },
+        { id: 'btnMarbleColors', key: 'marble', label: 'Marble Button' },
+        { id: 'btnNeonColors', key: 'neon', label: 'Neon Button' },
+        { id: 'btnOceanColors', key: 'ocean', label: 'Ocean Button' },
+        { id: 'btnResetColors', key: 'reset', label: 'Reset Button' }
+      ];
+      
+      let totalTests = 0;
+      let passedTests = 0;
+      
+      languages.forEach(lang => {
+        setLanguage(lang);
+        
+        // Open the panel to trigger translation update
+        const panel = document.getElementById('colorPanel');
+        if (panel.classList.contains('hidden')) {
+          toggleColorPanel();
+        }
+        
+        elementsToTest.forEach(test => {
+          totalTests++;
+          const element = document.getElementById(test.id);
+          const expectedText = t(test.key);
+          
+          if (element) {
+            const actualText = element.textContent.trim();
+            // Remove emoji and extra spaces for comparison
+            const cleanActual = actualText.replace(/[🎨📋♔🎯]/g, '').trim();
+            const cleanExpected = expectedText.trim();
+            
+            if (cleanActual === cleanExpected || actualText.includes(cleanExpected)) {
+              passedTests++;
+              results.innerHTML += `
+                <div class="result-item pass">
+                  <span class="icon">✅</span>
+                  <span><strong>${lang.toUpperCase()}</strong> - ${test.label}: "${actualText}"</span>
+                </div>
+              `;
+            } else {
+              results.innerHTML += `
+                <div class="result-item fail">
+                  <span class="icon">❌</span>
+                  <span><strong>${lang.toUpperCase()}</strong> - ${test.label}: Expected "${expectedText}", got "${actualText}"</span>
+                </div>
+              `;
+            }
+          } else {
+            results.innerHTML += `
+              <div class="result-item fail">
+                <span class="icon">❌</span>
+                <span><strong>${lang.toUpperCase()}</strong> - ${test.label}: Element not found</span>
+              </div>
+            `;
+          }
+        });
+        
+        // Close the panel
+        if (!panel.classList.contains('hidden')) {
+          toggleColorPanel();
+        }
+      });
+      
+      // Add summary
+      const percentage = ((passedTests / totalTests) * 100).toFixed(1);
+      results.innerHTML += `
+        <div class="summary">
+          ${passedTests} / ${totalTests} tests passed (${percentage}%)
+          ${passedTests === totalTests ? ' 🎉' : ''}
+        </div>
+      `;
+      
+      // Reset to English
+      setLanguage('en');
+      updateActiveLanguageButton('en');
+    }
+  </script>
+</body>
+</html>

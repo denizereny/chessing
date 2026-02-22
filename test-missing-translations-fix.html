@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Translations Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4a90e2;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #4a90e2;
+        }
+        .language-selector {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 5px;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin: 0 10px;
+        }
+        .translation-test {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .translation-key {
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 5px;
+        }
+        .translation-value {
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 3px;
+            font-size: 18px;
+            min-height: 30px;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .info {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Missing Translations Fix Test</h1>
+        
+        <div class="info">
+            <strong>Test Purpose:</strong> Verify that the following translations are now working:
+            <ul>
+                <li>✅ Move History (Oyun Geçmişi)</li>
+                <li>✅ White Player (Beyaz Oyuncu)</li>
+                <li>✅ Black Player (Siyah Oyuncu)</li>
+                <li>✅ Game History (Oyun Geçmişi)</li>
+            </ul>
+        </div>
+
+        <div class="language-selector">
+            <label for="languageSelect"><strong>🌐 Select Language:</strong></label>
+            <select id="languageSelect" onchange="changeLanguage(this.value)">
+                <option value="en">🇬🇧 English</option>
+                <option value="tr">🇹🇷 Türkçe</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="de">🇩🇪 Deutsch</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="pt">🇵🇹 Português</option>
+                <option value="ar">🇸🇦 العربية</option>
+            </select>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Translation Tests</h2>
+            
+            <div class="translation-test">
+                <div class="translation-key">moveHistory:</div>
+                <div class="translation-value" id="moveHistory">-</div>
+            </div>
+
+            <div class="translation-test">
+                <div class="translation-key">whitePlayer:</div>
+                <div class="translation-value" id="whitePlayer">-</div>
+            </div>
+
+            <div class="translation-test">
+                <div class="translation-key">blackPlayer:</div>
+                <div class="translation-value" id="blackPlayer">-</div>
+            </div>
+
+            <div class="translation-test">
+                <div class="translation-key">gameHistory:</div>
+                <div class="translation-value" id="gameHistory">-</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>✅ Expected Translations</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #4a90e2; color: white;">
+                        <th style="padding: 10px; text-align: left;">Language</th>
+                        <th style="padding: 10px; text-align: left;">Move History</th>
+                        <th style="padding: 10px; text-align: left;">White Player</th>
+                        <th style="padding: 10px; text-align: left;">Black Player</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">🇬🇧 English</td>
+                        <td style="padding: 10px;">Move History</td>
+                        <td style="padding: 10px;">White Player</td>
+                        <td style="padding: 10px;">Black Player</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">🇹🇷 Türkçe</td>
+                        <td style="padding: 10px;">Hamle Geçmişi</td>
+                        <td style="padding: 10px;">Beyaz Oyuncu</td>
+                        <td style="padding: 10px;">Siyah Oyuncu</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">🇪🇸 Español</td>
+                        <td style="padding: 10px;">Historial</td>
+                        <td style="padding: 10px;">Jugador Blanco</td>
+                        <td style="padding: 10px;">Jugador Negro</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">🇫🇷 Français</td>
+                        <td style="padding: 10px;">Historique</td>
+                        <td style="padding: 10px;">Joueur Blanc</td>
+                        <td style="padding: 10px;">Joueur Noir</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px;">🇩🇪 Deutsch</td>
+                        <td style="padding: 10px;">Zughistorie</td>
+                        <td style="padding: 10px;">Weißer Spieler</td>
+                        <td style="padding: 10px;">Schwarzer Spieler</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script>
+        function changeLanguage(lang) {
+            setLanguage(lang);
+            updateTestDisplay();
+        }
+
+        function updateTestDisplay() {
+            document.getElementById('moveHistory').textContent = t('moveHistory');
+            document.getElementById('whitePlayer').textContent = t('whitePlayer');
+            document.getElementById('blackPlayer').textContent = t('blackPlayer');
+            document.getElementById('gameHistory').textContent = t('gameHistory');
+        }
+
+        // Initialize with English
+        window.addEventListener('load', function() {
+            setLanguage('en');
+            updateTestDisplay();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renk Paneli Çeviri Düzeltmesi - Doğrulama</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .test-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #4CAF50;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .fix-description {
+      background: #e8f5e9;
+      border-left: 5px solid #4CAF50;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    
+    .fix-description h3 {
+      color: #2e7d32;
+      margin-top: 0;
+    }
+    
+    .test-steps {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .test-steps h3 {
+      color: #1976d2;
+      margin-top: 0;
+    }
+    
+    .test-steps ol {
+      margin: 10px 0;
+      padding-left: 25px;
+    }
+    
+    .test-steps li {
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+    
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+    
+    .control-group {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    
+    .control-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #555;
+      font-size: 14px;
+    }
+    
+    select, button {
+      padding: 12px 16px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: #2196F3;
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .color-panel {
+      background: white;
+      padding: 25px;
+      border: 3px solid #4CAF50;
+      border-radius: 12px;
+      margin: 30px 0;
+      box-shadow: 0 5px 20px rgba(76, 175, 80, 0.2);
+    }
+    
+    .color-panel.hidden {
+      display: none;
+    }
+    
+    .color-panel h3 {
+      color: #2e7d32;
+      margin-top: 0;
+    }
+    
+    .color-panel h4 {
+      color: #388e3c;
+      margin: 20px 0 15px 0;
+    }
+    
+    .preset-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+    
+    .preset-buttons button {
+      padding: 15px;
+      background: white;
+      color: #333;
+      border: 2px solid #4CAF50;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    
+    .preset-buttons button:hover {
+      background: #4CAF50;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+    
+    .status {
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-weight: bold;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .status::before {
+      font-size: 24px;
+    }
+    
+    .status.info {
+      background: #e3f2fd;
+      border-left: 5px solid #2196F3;
+      color: #1565c0;
+    }
+    
+    .status.info::before {
+      content: 'ℹ️';
+    }
+    
+    .status.success {
+      background: #e8f5e9;
+      border-left: 5px solid #4CAF50;
+      color: #2e7d32;
+    }
+    
+    .status.success::before {
+      content: '✅';
+    }
+    
+    .status.error {
+      background: #ffebee;
+      border-left: 5px solid #f44336;
+      color: #c62828;
+    }
+    
+    .status.error::before {
+      content: '❌';
+    }
+    
+    .results-table {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+    
+    tr:hover {
+      background: #f5f5f5;
+    }
+    
+    .pass {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    
+    .fail {
+      color: #f44336;
+      font-weight: bold;
+    }
+    
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .summary-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .summary-card h4 {
+      margin: 0 0 10px 0;
+      color: #666;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .summary-card .value {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .summary-card.success .value {
+      color: #4CAF50;
+    }
+    
+    .summary-card.error .value {
+      color: #f44336;
+    }
+    
+    .summary-card.info .value {
+      color: #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>✅ Renk Paneli Çeviri Düzeltmesi - Doğrulama Testi</h1>
+    
+    <div class="fix-description">
+      <h3>🔧 Uygulanan Düzeltme:</h3>
+      <p><strong>Sorun:</strong> Renk panelindeki butonlar (Klasik, Ahşap, Mermer, vb.) dil değiştiğinde çevrilmiyordu.</p>
+      <p><strong>Çözüm:</strong> <code>updateColorPanelTranslations()</code> adında özel bir fonksiyon oluşturuldu ve renk paneli açıldığında bu fonksiyon çağrılıyor.</p>
+      <p><strong>Değişiklikler:</strong></p>
+      <ul>
+        <li><code>js/translations.js</code>: Yeni <code>updateColorPanelTranslations()</code> fonksiyonu eklendi</li>
+        <li><code>js/game.js</code>: <code>toggleColorPanel()</code> fonksiyonu güncellendi</li>
+      </ul>
+    </div>
+    
+    <div class="test-steps">
+      <h3>📋 Test Adımları:</h3>
+      <ol>
+        <li><strong>Dil Seçin:</strong> Aşağıdaki dropdown'dan bir dil seçin (örn: English)</li>
+        <li><strong>Paneli Açın:</strong> "Renk Panelini Aç" butonuna tıklayın</li>
+        <li><strong>Kontrol Edin:</strong> Renk preset butonlarının seçilen dilde olduğunu doğrulayın</li>
+        <li><strong>Tekrar Deneyin:</strong> Farklı diller ile test edin</li>
+        <li><strong>Beklenen Sonuç:</strong> Tüm butonlar seçilen dilde görünmeli ✅</li>
+      </ol>
+    </div>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label for="languageSelect">🌍 Dil Seçin:</label>
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+          <option value="en">🇬🇧 English</option>
+          <option value="tr" selected>🇹🇷 Türkçe</option>
+          <option value="es">🇪🇸 Español</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label>&nbsp;</label>
+        <button onclick="toggleColorPanel()">🎨 Renk Panelini Aç/Kapat</button>
+      </div>
+      
+      <div class="control-group">
+        <label>&nbsp;</label>
+        <button onclick="runFullTest()">🧪 Otomatik Test Çalıştır</button>
+      </div>
+    </div>
+    
+    <div id="statusMessage" class="status info">
+      Başlangıç dili: Türkçe. Dili değiştirin ve renk panelini açın.
+    </div>
+    
+    <div class="color-panel hidden" id="colorPanel">
+      <h3 id="colorPanelTitle">🎨 Renk Ayarları</h3>
+      <h4 id="lblColorPresets">🎯 Renk Şablonları</h4>
+      <div class="preset-buttons">
+        <button id="btnClassicColors">Klasik</button>
+        <button id="btnWoodColors">Ahşap</button>
+        <button id="btnMarbleColors">Mermer</button>
+        <button id="btnNeonColors">Neon</button>
+        <button id="btnOceanColors">Okyanus</button>
+        <button id="btnResetColors">Sıfırla</button>
+      </div>
+    </div>
+    
+    <div class="summary" id="summary" style="display: none;">
+      <div class="summary-card success">
+        <h4>Başarılı Testler</h4>
+        <div class="value" id="passCount">0</div>
+      </div>
+      <div class="summary-card error">
+        <h4>Başarısız Testler</h4>
+        <div class="value" id="failCount">0</div>
+      </div>
+      <div class="summary-card info">
+        <h4>Toplam Test</h4>
+        <div class="value" id="totalCount">0</div>
+      </div>
+    </div>
+    
+    <div class="results-table" id="resultsTable" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Çeviri Anahtarı</th>
+            <th>Beklenen Değer</th>
+            <th>Gerçek Değer</th>
+            <th>Durum</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="js/translations.js"></script>
+  <script>
+    const expectedTranslations = {
+      tr: {
+        colorPanelTitle: '🎨 Renk Ayarları',
+        lblColorPresets: '🎯 Renk Şablonları',
+        btnClassicColors: 'Klasik',
+        btnWoodColors: 'Ahşap',
+        btnMarbleColors: 'Mermer',
+        btnNeonColors: 'Neon',
+        btnOceanColors: 'Okyanus',
+        btnResetColors: 'Sıfırla'
+      },
+      en: {
+        colorPanelTitle: '🎨 Color Settings',
+        lblColorPresets: '🎯 Color Presets',
+        btnClassicColors: 'Classic',
+        btnWoodColors: 'Wood',
+        btnMarbleColors: 'Marble',
+        btnNeonColors: 'Neon',
+        btnOceanColors: 'Ocean',
+        btnResetColors: 'Reset'
+      },
+      es: {
+        colorPanelTitle: '🎨 Configuración de Colores',
+        lblColorPresets: '🎯 Plantillas de Color',
+        btnClassicColors: 'Clásico',
+        btnWoodColors: 'Madera',
+        btnMarbleColors: 'Mármol',
+        btnNeonColors: 'Neón',
+        btnOceanColors: 'Océano',
+        btnResetColors: 'Restablecer'
+      }
+    };
+    
+    const translationKeys = {
+      colorPanelTitle: 'colorSettings',
+      lblColorPresets: 'colorPresets',
+      btnClassicColors: 'classic',
+      btnWoodColors: 'wood',
+      btnMarbleColors: 'marble',
+      btnNeonColors: 'neon',
+      btnOceanColors: 'ocean',
+      btnResetColors: 'reset'
+    };
+    
+    function changeLanguage(lang) {
+      console.log(`\n=== Dil Değişikliği: ${lang} ===`);
+      
+      if (typeof window.setLanguage === 'function') {
+        window.setLanguage(lang);
+        updateStatus(`Dil değiştirildi: ${lang}. Şimdi renk panelini açın.`, 'success');
+      } else {
+        updateStatus('HATA: setLanguage fonksiyonu bulunamadı!', 'error');
+      }
+    }
+    
+    function toggleColorPanel() {
+      const panel = document.getElementById('colorPanel');
+      if (panel) {
+        const wasHidden = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden');
+        
+        console.log(`\n=== Panel Toggle ===`);
+        console.log(`Panel durumu: ${wasHidden ? 'Açılıyor' : 'Kapanıyor'}`);
+        
+        if (wasHidden) {
+          console.log('Panel açıldı, çeviriler güncelleniyor...');
+          
+          if (typeof window.updateColorPanelTranslations === 'function') {
+            setTimeout(() => {
+              window.updateColorPanelTranslations();
+              updateStatus('Panel açıldı ve çeviriler güncellendi!', 'success');
+              
+              // Auto-verify after opening
+              setTimeout(() => verifyTranslations(), 100);
+            }, 0);
+          } else {
+            updateStatus('UYARI: updateColorPanelTranslations fonksiyonu bulunamadı!', 'error');
+          }
+        } else {
+          updateStatus('Panel kapatıldı.', 'info');
+          document.getElementById('resultsTable').style.display = 'none';
+          document.getElementById('summary').style.display = 'none';
+        }
+      }
+    }
+    
+    function updateStatus(message, type = 'info') {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+    }
+    
+    function verifyTranslations() {
+      const panel = document.getElementById('colorPanel');
+      if (panel.classList.contains('hidden')) {
+        updateStatus('Panel kapalı. Önce paneli açın.', 'info');
+        return;
+      }
+      
+      const currentLang = document.getElementById('languageSelect').value;
+      const resultsBody = document.getElementById('resultsBody');
+      resultsBody.innerHTML = '';
+      
+      let passCount = 0;
+      let failCount = 0;
+      
+      Object.keys(expectedTranslations[currentLang]).forEach(elementId => {
+        const element = document.getElementById(elementId);
+        const expected = expectedTranslations[currentLang][elementId];
+        const actual = element ? element.textContent : 'Element bulunamadı';
+        const translationKey = translationKeys[elementId];
+        
+        const passed = actual === expected;
+        if (passed) passCount++;
+        else failCount++;
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><code>${elementId}</code></td>
+          <td><code>${translationKey}</code></td>
+          <td>${expected}</td>
+          <td>${actual}</td>
+          <td class="${passed ? 'pass' : 'fail'}">${passed ? '✓ BAŞARILI' : '✗ BAŞARISIZ'}</td>
+        `;
+        resultsBody.appendChild(row);
+        
+        console.log(`${elementId}: ${passed ? 'PASS' : 'FAIL'} - Expected: "${expected}", Actual: "${actual}"`);
+      });
+      
+      document.getElementById('passCount').textContent = passCount;
+      document.getElementById('failCount').textContent = failCount;
+      document.getElementById('totalCount').textContent = passCount + failCount;
+      
+      document.getElementById('resultsTable').style.display = 'block';
+      document.getElementById('summary').style.display = 'grid';
+      
+      if (failCount === 0) {
+        updateStatus(`Tüm testler başarılı! (${passCount}/${passCount + failCount})`, 'success');
+      } else {
+        updateStatus(`${failCount} test başarısız oldu. (${passCount}/${passCount + failCount} başarılı)`, 'error');
+      }
+    }
+    
+    async function runFullTest() {
+      updateStatus('Otomatik test başlatılıyor...', 'info');
+      
+      const languages = ['en', 'tr', 'es'];
+      let totalPass = 0;
+      let totalFail = 0;
+      
+      for (const lang of languages) {
+        console.log(`\n=== Testing ${lang} ===`);
+        
+        // Change language
+        document.getElementById('languageSelect').value = lang;
+        changeLanguage(lang);
+        await sleep(200);
+        
+        // Open panel if closed
+        const panel = document.getElementById('colorPanel');
+        if (panel.classList.contains('hidden')) {
+          toggleColorPanel();
+          await sleep(300);
+        }
+        
+        // Verify
+        verifyTranslations();
+        await sleep(500);
+        
+        const passCount = parseInt(document.getElementById('passCount').textContent);
+        const failCount = parseInt(document.getElementById('failCount').textContent);
+        totalPass += passCount;
+        totalFail += failCount;
+      }
+      
+      updateStatus(`Otomatik test tamamlandı! Toplam: ${totalPass} başarılı, ${totalFail} başarısız`, 
+                   totalFail === 0 ? 'success' : 'error');
+    }
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('=== Sayfa Yüklendi ===');
+      console.log('updateColorPanelTranslations fonksiyonu mevcut:', typeof window.updateColorPanelTranslations === 'function');
+    });
+  </script>
+</body>
+</html>

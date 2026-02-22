@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Orientation Handling</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    
+    .info-box {
+      background-color: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .info-box h3 {
+      margin-top: 0;
+      color: #1976D2;
+    }
+    
+    .warning-box {
+      background-color: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .warning-box h3 {
+      margin-top: 0;
+      color: #f57c00;
+    }
+    
+    #controls {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin: 20px 0;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    #output {
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background-color: #2196F3;
+      color: white;
+    }
+    
+    .status.passed {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .status.failed {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .property-list {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin: 20px 0;
+    }
+    
+    .property-list h3 {
+      color: #333;
+      margin-top: 0;
+    }
+    
+    .property-list ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    
+    .property-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .property-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .property-number {
+      font-weight: bold;
+      color: #2196F3;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Property Test: Orientation Handling</h1>
+  
+  <div class="info-box">
+    <h3>📋 Test Information</h3>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 18:</strong> Orientation Handling</p>
+    <p><strong>Validates:</strong> Requirements 5.4</p>
+    <p><strong>Description:</strong> For any device orientation (portrait or landscape), the layout optimizer should produce an appropriate layout configuration.</p>
+  </div>
+  
+  <div class="property-list">
+    <h3>Properties Being Tested</h3>
+    <ul>
+      <li>
+        <span class="property-number">Property 1:</span>
+        Portrait orientation produces valid layout (100 iterations)
+      </li>
+      <li>
+        <span class="property-number">Property 2:</span>
+        Landscape orientation produces valid layout (100 iterations)
+      </li>
+      <li>
+        <span class="property-number">Property 3:</span>
+        Orientation change produces appropriate layout adjustment (100 iterations)
+      </li>
+      <li>
+        <span class="property-number">Property 4:</span>
+        Common mobile device orientations work correctly (12 device tests)
+      </li>
+      <li>
+        <span class="property-number">Property 5:</span>
+        Square viewports produce valid layouts (100 iterations)
+      </li>
+    </ul>
+  </div>
+  
+  <div class="warning-box">
+    <h3>⚠️ Test Duration Warning</h3>
+    <p>This property-based test runs <strong>~412 iterations</strong> (400 property tests + 12 device tests). It may take 30-60 seconds to complete. Please be patient and do not close this window while the test is running.</p>
+  </div>
+  
+  <div id="controls">
+    <button id="runButton" onclick="runTest()">▶️ Run Property Test</button>
+    <button id="clearButton" onclick="clearOutput()">🗑️ Clear Output</button>
+    <span id="status"></span>
+  </div>
+  
+  <div id="output">Waiting to run test... Click "Run Property Test" to begin.</div>
+
+  <!-- Load fast-check library -->
+  <script src="../setup-fast-check.js"></script>
+  
+  <!-- Load adaptive viewport components -->
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/visibility-detector.js"></script>
+  <script src="../../js/adaptive-viewport/layout-optimizer.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+  <script src="../../js/adaptive-viewport/dom-updater.js"></script>
+  <script src="../../js/adaptive-viewport/layout-state-manager.js"></script>
+  <script src="../../js/adaptive-viewport/viewport-analyzer.js"></script>
+  
+  <!-- Load property test -->
+  <script src="orientation-handling-property.test.js"></script>
+  
+  <script>
+    let testRunning = false;
+    
+    async function runTest() {
+      if (testRunning) {
+        alert('Test is already running. Please wait for it to complete.');
+        return;
+      }
+      
+      // Check if fast-check is loaded
+      if (typeof fc === 'undefined') {
+        alert('Error: fast-check library not loaded. Please ensure setup-fast-check.js is available.');
+        return;
+      }
+      
+      testRunning = true;
+      const runButton = document.getElementById('runButton');
+      const statusElement = document.getElementById('status');
+      const outputElement = document.getElementById('output');
+      
+      // Disable button and show status
+      runButton.disabled = true;
+      statusElement.innerHTML = '<span class="status running">RUNNING</span>';
+      outputElement.textContent = 'Starting property-based test...\n\n';
+      
+      // Capture console output
+      const originalLog = console.log;
+      const originalError = console.error;
+      
+      console.log = function(...args) {
+        const message = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        outputElement.textContent += message + '\n';
+        outputElement.scrollTop = outputElement.scrollHeight;
+        originalLog.apply(console, args);
+      };
+      
+      console.error = function(...args) {
+        const message = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        outputElement.textContent += '❌ ' + message + '\n';
+        outputElement.scrollTop = outputElement.scrollHeight;
+        originalError.apply(console, args);
+      };
+      
+      try {
+        // Run the property test
+        const results = await runOrientationHandlingPropertyTest(fc);
+        
+        // Show final status
+        if (results.failed === 0) {
+          statusElement.innerHTML = '<span class="status passed">✓ ALL TESTS PASSED</span>';
+          outputElement.textContent += '\n🎉 All property tests passed successfully!\n';
+        } else {
+          statusElement.innerHTML = '<span class="status failed">✗ SOME TESTS FAILED</span>';
+          outputElement.textContent += '\n❌ Some property tests failed. See details above.\n';
+        }
+        
+      } catch (error) {
+        statusElement.innerHTML = '<span class="status failed">✗ ERROR</span>';
+        outputElement.textContent += '\n❌ Test execution error: ' + error.message + '\n';
+        outputElement.textContent += error.stack + '\n';
+        console.error('Test execution error:', error);
+        
+      } finally {
+        // Restore console
+        console.log = originalLog;
+        console.error = originalError;
+        
+        // Re-enable button
+        runButton.disabled = false;
+        testRunning = false;
+      }
+    }
+    
+    function clearOutput() {
+      const outputElement = document.getElementById('output');
+      const statusElement = document.getElementById('status');
+      outputElement.textContent = 'Output cleared. Click "Run Property Test" to begin.';
+      statusElement.innerHTML = '';
+    }
+    
+    // Auto-run test on page load (optional - comment out if you want manual control)
+    // window.addEventListener('load', () => {
+    //   setTimeout(runTest, 1000);
+    // });
+  </script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Settings Menu Test - Final Version</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive-settings-menu.css">
+    <style>
+        body {
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .test-info h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        
+        .test-info ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .test-info li {
+            margin: 5px 0;
+        }
+        
+        .open-menu-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .open-menu-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .status-display {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .status-display h4 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        
+        .status-item {
+            margin: 8px 0;
+            font-family: monospace;
+        }
+        
+        .feature-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Menu Button (Bottom Right) -->
+    <button 
+      id="mainMenuButton" 
+      class="main-menu-button"
+      aria-label="Return to main menu"
+      onclick="testAction('Main Menu Clicked')"
+      type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="visually-hidden">Main Menu</span>
+    </button>
+
+    <!-- Settings Menu Toggle Button (Top Right) -->
+    <button 
+      id="settingsMenuToggle" 
+      class="settings-menu-toggle settings-menu-toggle-top-right"
+      aria-label="Open settings menu"
+      aria-expanded="false"
+      aria-controls="settingsMenuPanel"
+      aria-haspopup="true"
+      type="button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="5" r="2" fill="currentColor"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        <circle cx="12" cy="19" r="2" fill="currentColor"/>
+      </svg>
+      <span class="visually-hidden">Settings Menu</span>
+    </button>
+
+    <!-- Settings Menu Backdrop -->
+    <div 
+      id="settingsMenuBackdrop" 
+      class="settings-menu-backdrop"
+      aria-hidden="true"
+      role="presentation"></div>
+
+    <!-- Settings Menu Panel -->
+    <aside 
+      id="settingsMenuPanel" 
+      class="settings-menu-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settingsMenuTitle"
+      aria-hidden="true">
+      <div 
+        id="settingsMenuAnnouncer" 
+        class="visually-hidden" 
+        role="status" 
+        aria-live="polite" 
+        aria-atomic="true"></div>
+      
+      <div class="settings-menu-header">
+        <h2 id="settingsMenuTitle" class="settings-menu-title">
+          <span class="icon" aria-hidden="true">⚙️</span>
+          <span id="settingsMenuTitleText">Settings</span>
+        </h2>
+        <button 
+          id="settingsMenuClose" 
+          class="settings-menu-close"
+          aria-label="Close settings menu"
+          type="button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="visually-hidden" id="closeMenuText">Close</span>
+        </button>
+      </div>
+      
+      <div class="settings-menu-content" role="group" aria-label="Settings controls">
+        <!-- Update Reports Section -->
+        <div class="menu-section update-reports-section">
+          <button class="update-reports-toggle" id="updateReportsToggle" onclick="toggleUpdateReports()">
+            <span class="icon">📋</span>
+            <span>Güncelleme Raporları</span>
+            <span class="chevron">▼</span>
+          </button>
+          
+          <div class="update-reports-content hidden" id="updateReportsContent">
+            <div class="report-item" onclick="testAction('Report: Adaptive Viewport')">
+              <span class="report-icon">🎯</span>
+              <span class="report-title">Adaptive Viewport Optimizer</span>
+            </div>
+            <div class="report-item" onclick="testAction('Report: Settings Menu')">
+              <span class="report-icon">⚙️</span>
+              <span class="report-title">Enhanced Settings Menu</span>
+            </div>
+            <div class="report-item" onclick="testAction('Report: Backend')">
+              <span class="report-icon">🔌</span>
+              <span class="report-title">Flask Chess Backend</span>
+            </div>
+            <div class="report-item" onclick="testAction('Report: Theme System')">
+              <span class="report-icon">🎨</span>
+              <span class="report-title">Theme System</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Controls Section -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">
+            <span class="icon">🎮</span>
+            <span id="menuGameControlsTitle">Game Controls</span>
+          </h3>
+          
+          <div class="menu-control-group">
+            <button onclick="testAction('New Game')" class="extra-btn menu-control-btn">
+              🔄 <span>New Game</span>
+            </button>
+          </div>
+
+          <div class="menu-control-group">
+            <button onclick="testAction('Switch Sides')" class="extra-btn menu-control-btn">
+              🔀 <span>Switch Sides</span>
+            </button>
+          </div>
+
+          <div class="menu-control-group">
+            <label for="aiLevelMenu" class="menu-control-label">
+              <span class="icon">⚙️</span>
+              <span>AI Difficulty</span>
+            </label>
+            <select id="aiLevelMenu" class="menu-control-select" onchange="testAction('AI Level: ' + this.value)">
+              <option value="1">🟢 Easy</option>
+              <option value="2" selected>🟡 Medium</option>
+              <option value="3">🔴 Hard</option>
+              <option value="4">💀 Expert</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Appearance Section -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">
+            <span class="icon">🎨</span>
+            <span>Appearance</span>
+          </h3>
+
+          <div class="menu-control-group">
+            <button onclick="testAction('Toggle Theme')" class="extra-btn menu-control-btn">
+              🌙 <span>Dark Mode</span>
+            </button>
+          </div>
+
+          <div class="menu-control-group">
+            <button onclick="testAction('Board Colors')" class="extra-btn menu-control-btn">
+              🎨 <span>Board Colors</span>
+            </button>
+          </div>
+
+          <div class="menu-control-group">
+            <label for="languageSelect" class="menu-control-label">
+              <span class="icon">🌐</span>
+              <span>Language</span>
+            </label>
+            <select id="languageSelect" class="menu-control-select" onchange="testAction('Language: ' + this.value)">
+              <option value="en">🇬🇧 English</option>
+              <option value="tr">🇹🇷 Türkçe</option>
+              <option value="es">🇪🇸 Español</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Position Tools Section -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">
+            <span class="icon">🛠️</span>
+            <span>Position Tools</span>
+          </h3>
+
+          <div class="menu-control-group">
+            <button onclick="testAction('Piece Setup')" class="extra-btn menu-control-btn">
+              ♔ <span>Piece Setup</span>
+            </button>
+          </div>
+
+          <div class="menu-control-group">
+            <button onclick="testAction('Analyze Position')" class="extra-btn menu-control-btn">
+              🔍 <span>Analyze Position</span>
+            </button>
+          </div>
+
+          <div class="menu-control-group">
+            <button onclick="testAction('Share Position')" class="extra-btn menu-control-btn">
+              🔗 <span>Share Position</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Advanced Features Section -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">
+            <span class="icon">⚡</span>
+            <span>Advanced Features</span>
+          </h3>
+
+          <div class="menu-control-group">
+            <button onclick="testAction('Backend Mode')" class="extra-btn menu-control-btn">
+              🔌 <span>Backend Mode</span>
+            </button>
+          </div>
+
+          <div class="menu-control-group">
+            <button onclick="testAction('Auto-Scroll')" class="extra-btn menu-control-btn">
+              📜 <span>Auto-Scroll</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🎮 Enhanced Settings Menu Test - Final Version</h1>
+            <p>Complete menu system with update reports and navigation</p>
+            <div>
+                <span class="feature-badge">📋 Update Reports</span>
+                <span class="feature-badge">🏠 Main Menu Button</span>
+                <span class="feature-badge">⋮ Top-Right Menu</span>
+                <span class="feature-badge">🌐 Multi-Language</span>
+            </div>
+        </div>
+
+        <div class="test-info">
+            <h3>✨ New Features</h3>
+            <ul>
+                <li>📋 <strong>Update Reports:</strong> Large button at top of menu with expandable report list</li>
+                <li>🏠 <strong>Main Menu Button:</strong> Bottom-right floating button to return to main menu</li>
+                <li>⋮ <strong>Top-Right Position:</strong> 3-dot menu moved to top-right corner</li>
+                <li>📂 <strong>Organized Sections:</strong> Game Controls, Appearance, Position Tools, Advanced Features</li>
+                <li>🎨 <strong>Visual Icons:</strong> Each section and button has descriptive icons</li>
+                <li>🌐 <strong>Multi-language Support:</strong> English, Turkish, Spanish translations</li>
+            </ul>
+        </div>
+
+        <div class="test-info">
+            <h3>🧪 Test Instructions</h3>
+            <ul>
+                <li>Click the 3-dot button (⋮) in the <strong>top-right corner</strong> to open the menu</li>
+                <li>Click "Güncelleme Raporları" at the top to expand/collapse reports</li>
+                <li>Try clicking on individual report items</li>
+                <li>Click the <strong>main menu button</strong> (☰) in the <strong>bottom-right corner</strong></li>
+                <li>Browse through the different sections</li>
+                <li>Test on different screen sizes (resize your browser)</li>
+                <li>Check keyboard navigation (Tab, Enter, Escape)</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="open-menu-btn" onclick="openTestMenu()">
+                ⋮ Open Settings Menu (Top-Right)
+            </button>
+        </div>
+
+        <div class="status-display">
+            <h4>📊 Action Log</h4>
+            <div id="actionLog" class="status-item">
+                No actions yet. Click buttons to see them logged here.
+            </div>
+        </div>
+    </div>
+
+    <script src="js/settings-menu-manager.js"></script>
+    <script>
+        // Initialize settings menu
+        let settingsMenuManager;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            settingsMenuManager = new SettingsMenuManager({
+                toggleButtonSelector: '#settingsMenuToggle',
+                backdropSelector: '#settingsMenuBackdrop',
+                panelSelector: '#settingsMenuPanel',
+                closeButtonSelector: '#settingsMenuClose',
+                contentSelector: '.settings-menu-content',
+                animationDuration: 300
+            });
+            
+            settingsMenuManager.initialize();
+            console.log('✅ Settings Menu initialized');
+        });
+        
+        function openTestMenu() {
+            if (settingsMenuManager) {
+                settingsMenuManager.open();
+            }
+        }
+        
+        function toggleUpdateReports() {
+            const content = document.getElementById('updateReportsContent');
+            const toggle = document.getElementById('updateReportsToggle');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                toggle.classList.add('active');
+                testAction('Update Reports Expanded');
+            } else {
+                content.classList.add('hidden');
+                toggle.classList.remove('active');
+                testAction('Update Reports Collapsed');
+            }
+        }
+        
+        function testAction(action) {
+            const log = document.getElementById('actionLog');
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML = `[${timestamp}] Action: <strong>${action}</strong><br>` + log.innerHTML;
+            console.log('Action:', action);
+        }
+    </script>
+</body>
+</html>

@@ -805,7 +805,13 @@ function startGame() {
 function toggleGameMenu() {
   const dropdown = document.getElementById("gameMenuDropdown");
   if (dropdown) {
+    const wasHidden = dropdown.classList.contains("hidden");
     dropdown.classList.toggle("hidden");
+    
+    // If we're showing the menu, update translations
+    if (wasHidden && window.updateUIText) {
+      setTimeout(() => window.updateUIText(), 0);
+    }
   }
 }
 
@@ -1403,7 +1409,24 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleColorPanel() {
   const panel = document.getElementById('colorPanel');
   if (panel) {
+    const wasHidden = panel.classList.contains('hidden');
     panel.classList.toggle('hidden');
+    
+    // If we're showing the panel, update color panel translations specifically
+    if (wasHidden) {
+      console.log('[toggleColorPanel] Panel opened, updating translations...');
+      // Use the dedicated color panel translation update function
+      if (window.updateColorPanelTranslations) {
+        setTimeout(() => {
+          window.updateColorPanelTranslations();
+        }, 0);
+      } else if (window.updateUIText) {
+        // Fallback to full UI update if dedicated function not available
+        setTimeout(() => {
+          window.updateUIText();
+        }, 0);
+      }
+    }
   }
 }
 
@@ -3806,6 +3829,8 @@ function shareCurrentPosition() {
 // Make functions available globally
 window.analyzeCurrentPosition = analyzeCurrentPosition;
 window.shareCurrentPosition = shareCurrentPosition;
+window.bilgiGuncelle = bilgiGuncelle;
+window.gecmisiGuncelle = gecmisiGuncelle;
 
 
 /**
@@ -3924,3 +3949,7 @@ function shareCurrentPosition() {
 // Make functions available globally
 window.analyzeCurrentPosition = analyzeCurrentPosition;
 window.shareCurrentPosition = shareCurrentPosition;
+
+// Expose bilgiGuncelle and gecmisiGuncelle for translation updates
+window.bilgiGuncelle = bilgiGuncelle;
+window.gecmisiGuncelle = gecmisiGuncelle;

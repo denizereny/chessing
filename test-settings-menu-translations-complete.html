@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings Menu Translations Test - Complete</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive-settings-menu.css">
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .test-header {
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    .language-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .language-buttons button {
+      padding: 10px 20px;
+      border: 2px solid #3498db;
+      background: white;
+      color: #3498db;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    .language-buttons button:hover {
+      background: #3498db;
+      color: white;
+    }
+    .language-buttons button.active {
+      background: #2ecc71;
+      border-color: #2ecc71;
+      color: white;
+    }
+    .test-result {
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .test-result.pass {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    .test-result.fail {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    .test-result.info {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+    }
+    .element-display {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border-left: 4px solid #3498db;
+    }
+    .element-display strong {
+      color: #2c3e50;
+    }
+    .element-display .value {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    .open-menu-btn {
+      padding: 15px 30px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .open-menu-btn:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <!-- Settings Menu Toggle Button -->
+  <button 
+    id="settingsMenuToggle" 
+    class="settings-menu-toggle settings-menu-toggle-top-right"
+    aria-label="Open settings menu"
+    aria-expanded="false"
+    type="button">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="5" r="2" fill="currentColor"/>
+      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      <circle cx="12" cy="19" r="2" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <!-- Settings Menu Backdrop -->
+  <div id="settingsMenuBackdrop" class="settings-menu-backdrop" aria-hidden="true"></div>
+
+  <!-- Settings Menu Panel -->
+  <aside 
+    id="settingsMenuPanel" 
+    class="settings-menu-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true">
+    <div id="settingsMenuAnnouncer" class="visually-hidden" role="status" aria-live="polite"></div>
+    
+    <div class="settings-menu-header">
+      <h2 id="settingsMenuTitle" class="settings-menu-title">
+        <span class="icon">⚙️</span>
+        <span id="settingsMenuTitleText">Settings</span>
+      </h2>
+      <button id="settingsMenuClose" class="settings-menu-close" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="visually-hidden" id="closeMenuText">Close</span>
+      </button>
+    </div>
+    
+    <div class="settings-menu-content">
+      <!-- Game Controls Section -->
+      <div class="menu-section">
+        <h3 class="menu-section-title">
+          <span class="icon">🎮</span>
+          <span id="menuGameControlsTitle">Game Controls</span>
+        </h3>
+        
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnNewGameMenu">
+            🔄 <span id="btnNewGameMenuText">New Game</span>
+          </button>
+        </div>
+
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnSwitchSidesMenu">
+            🔀 <span id="btnSwitchSidesMenuText">Switch Sides</span>
+          </button>
+        </div>
+
+        <div class="menu-control-group">
+          <label for="aiLevelMenu" class="menu-control-label">
+            <span class="icon">⚙️</span>
+            <span id="lblAiDifficultyMenu">AI Difficulty</span>
+          </label>
+          <select id="aiLevelMenu" class="menu-control-select">
+            <option value="1">🟢 Easy</option>
+            <option value="2" selected>🟡 Medium</option>
+            <option value="3">🔴 Hard</option>
+            <option value="4">💀 Expert</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Appearance Section -->
+      <div class="menu-section">
+        <h3 class="menu-section-title">
+          <span class="icon">🎨</span>
+          <span id="menuAppearanceTitle">Appearance</span>
+        </h3>
+
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnTheme">
+            🌙 <span id="btnThemeText">Dark Mode</span>
+          </button>
+        </div>
+
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnColorsMenu">
+            🎨 <span id="btnColorsMenuText">Board Colors</span>
+          </button>
+        </div>
+
+        <div class="menu-control-group">
+          <label for="languageSelect" class="menu-control-label">
+            <span class="icon">🌐</span>
+            <span id="lblLanguage">Language</span>
+          </label>
+          <select id="languageSelect" class="menu-control-select">
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ar">🇸🇦 العربية</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Position Tools Section -->
+      <div class="menu-section">
+        <h3 class="menu-section-title">
+          <span class="icon">🛠️</span>
+          <span id="menuPositionToolsTitle">Position Tools</span>
+        </h3>
+
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnPieceSetup">
+            ♔ <span id="btnPieceSetupText">Piece Setup</span>
+          </button>
+        </div>
+
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnAnalyzePosition">
+            🔍 <span id="btnAnalyzePositionText">Analyze Position</span>
+          </button>
+        </div>
+
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnSharePosition">
+            🔗 <span id="btnSharePositionText">Share Position</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Advanced Features Section -->
+      <div class="menu-section">
+        <h3 class="menu-section-title">
+          <span class="icon">⚡</span>
+          <span id="menuAdvancedTitle">Advanced Features</span>
+        </h3>
+
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnBackendModeMenu">
+            🔌 <span id="btnBackendModeMenuText">Backend Mode</span>
+          </button>
+        </div>
+
+        <div class="menu-control-group">
+          <button class="extra-btn menu-control-btn" id="btnAutoScrollMenu">
+            📜 <span id="btnAutoScrollMenuText">Auto-Scroll</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="test-container">
+    <div class="test-header">
+      <h1>🌍 Settings Menu Translations Test - Complete</h1>
+      <p>Testing all settings menu translations including section titles and button texts</p>
+    </div>
+
+    <div class="test-section">
+      <h2>Language Selection</h2>
+      <p>Click a language button to test translations:</p>
+      <div class="language-buttons">
+        <button onclick="testLanguage('en')" data-lang="en">🇬🇧 English</button>
+        <button onclick="testLanguage('tr')" data-lang="tr">🇹🇷 Türkçe</button>
+        <button onclick="testLanguage('es')" data-lang="es">🇪🇸 Español</button>
+        <button onclick="testLanguage('fr')" data-lang="fr">🇫🇷 Français</button>
+        <button onclick="testLanguage('de')" data-lang="de">🇩🇪 Deutsch</button>
+        <button onclick="testLanguage('it')" data-lang="it">🇮🇹 Italiano</button>
+        <button onclick="testLanguage('ru')" data-lang="ru">🇷🇺 Русский</button>
+        <button onclick="testLanguage('zh')" data-lang="zh">🇨🇳 中文</button>
+        <button onclick="testLanguage('ja')" data-lang="ja">🇯🇵 日本語</button>
+        <button onclick="testLanguage('pt')" data-lang="pt">🇵🇹 Português</button>
+        <button onclick="testLanguage('ar')" data-lang="ar">🇸🇦 العربية</button>
+      </div>
+      <button class="open-menu-btn" onclick="openMenu()">📋 Open Settings Menu</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Translation Test Results</h2>
+      <div id="testResults"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Current Element Values</h2>
+      <div id="elementValues"></div>
+    </div>
+  </div>
+
+  <script src="js/translations.js"></script>
+  <script src="js/settings-menu-manager.js"></script>
+  <script>
+    let settingsMenuManager;
+
+    // Initialize settings menu manager
+    document.addEventListener('DOMContentLoaded', function() {
+      settingsMenuManager = new SettingsMenuManager();
+      settingsMenuManager.initialize();
+      
+      // Set initial language to English
+      testLanguage('en');
+    });
+
+    function openMenu() {
+      if (settingsMenuManager) {
+        settingsMenuManager.open();
+      }
+    }
+
+    function testLanguage(lang) {
+      // Update active button
+      document.querySelectorAll('.language-buttons button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+
+      // Set language
+      setLanguage(lang);
+
+      // Run tests
+      setTimeout(() => {
+        runTests(lang);
+        displayElementValues();
+      }, 100);
+    }
+
+    function runTests(lang) {
+      const results = [];
+      
+      // Test menu section titles
+      results.push(testElement('menuGameControlsTitle', 'Menu section title: Game Controls'));
+      results.push(testElement('menuAppearanceTitle', 'Menu section title: Appearance'));
+      results.push(testElement('menuPositionToolsTitle', 'Menu section title: Position Tools'));
+      results.push(testElement('menuAdvancedTitle', 'Menu section title: Advanced Features'));
+      
+      // Test button texts
+      results.push(testElement('btnNewGameMenuText', 'Button: New Game'));
+      results.push(testElement('btnSwitchSidesMenuText', 'Button: Switch Sides'));
+      results.push(testElement('lblAiDifficultyMenu', 'Label: AI Difficulty'));
+      results.push(testElement('btnColorsMenuText', 'Button: Board Colors'));
+      results.push(testElement('btnPieceSetupText', 'Button: Piece Setup'));
+      results.push(testElement('btnAnalyzePositionText', 'Button: Analyze Position'));
+      results.push(testElement('btnSharePositionText', 'Button: Share Position'));
+      results.push(testElement('btnBackendModeMenuText', 'Button: Backend Mode'));
+      results.push(testElement('btnAutoScrollMenuText', 'Button: Auto-Scroll'));
+      results.push(testElement('btnThemeText', 'Button: Theme Toggle'));
+      
+      // Test AI difficulty select options
+      const aiLevelMenu = document.getElementById('aiLevelMenu');
+      if (aiLevelMenu) {
+        results.push({
+          pass: aiLevelMenu.options[0].textContent !== '🟢 Easy',
+          message: `AI Difficulty Option 1: ${aiLevelMenu.options[0].textContent}`
+        });
+        results.push({
+          pass: aiLevelMenu.options[1].textContent !== '🟡 Medium',
+          message: `AI Difficulty Option 2: ${aiLevelMenu.options[1].textContent}`
+        });
+      }
+      
+      // Test Move History title
+      results.push(testElement('moveHistoryTitle', 'Move History Title'));
+      
+      // Display results
+      displayResults(results, lang);
+    }
+
+    function testElement(elementId, description) {
+      const element = document.getElementById(elementId);
+      if (!element) {
+        return {
+          pass: false,
+          message: `❌ ${description}: Element not found (ID: ${elementId})`
+        };
+      }
+      
+      const value = element.textContent || element.value;
+      const isTranslated = value && value.trim() !== '';
+      
+      return {
+        pass: isTranslated,
+        message: `${isTranslated ? '✅' : '❌'} ${description}: "${value}"`
+      };
+    }
+
+    function displayResults(results, lang) {
+      const container = document.getElementById('testResults');
+      const passCount = results.filter(r => r.pass).length;
+      const totalCount = results.length;
+      
+      let html = `
+        <div class="test-result info">
+          <strong>Language: ${lang.toUpperCase()}</strong><br>
+          Tests Passed: ${passCount} / ${totalCount}
+        </div>
+      `;
+      
+      results.forEach(result => {
+        html += `
+          <div class="test-result ${result.pass ? 'pass' : 'fail'}">
+            ${result.message}
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    function displayElementValues() {
+      const elements = [
+        { id: 'menuGameControlsTitle', label: 'Game Controls Title' },
+        { id: 'menuAppearanceTitle', label: 'Appearance Title' },
+        { id: 'menuPositionToolsTitle', label: 'Position Tools Title' },
+        { id: 'menuAdvancedTitle', label: 'Advanced Features Title' },
+        { id: 'btnNewGameMenuText', label: 'New Game Button' },
+        { id: 'btnSwitchSidesMenuText', label: 'Switch Sides Button' },
+        { id: 'lblAiDifficultyMenu', label: 'AI Difficulty Label' },
+        { id: 'btnColorsMenuText', label: 'Board Colors Button' },
+        { id: 'btnPieceSetupText', label: 'Piece Setup Button' },
+        { id: 'btnAnalyzePositionText', label: 'Analyze Position Button' },
+        { id: 'btnSharePositionText', label: 'Share Position Button' },
+        { id: 'btnBackendModeMenuText', label: 'Backend Mode Button' },
+        { id: 'btnAutoScrollMenuText', label: 'Auto-Scroll Button' },
+        { id: 'btnThemeText', label: 'Theme Toggle Button' },
+        { id: 'moveHistoryTitle', label: 'Move History Title' }
+      ];
+      
+      let html = '';
+      elements.forEach(elem => {
+        const element = document.getElementById(elem.id);
+        const value = element ? (element.textContent || element.value) : 'NOT FOUND';
+        html += `
+          <div class="element-display">
+            <strong>${elem.label}:</strong> <span class="value">${value}</span>
+          </div>
+        `;
+      });
+      
+      document.getElementById('elementValues').innerHTML = html;
+    }
+  </script>
+</body>
+</html>

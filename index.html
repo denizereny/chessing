@@ -19,10 +19,10 @@
     <meta name="color-scheme" content="light dark" />
   </head>
   <body class="enhanced-piece-setup enhanced-piece-setup-complete">
-    <!-- Settings Menu Toggle Button -->
+    <!-- Settings Menu Toggle Button (Top Right) -->
     <button 
       id="settingsMenuToggle" 
-      class="settings-menu-toggle"
+      class="settings-menu-toggle settings-menu-toggle-top-right"
       aria-label="Open settings menu"
       aria-expanded="false"
       aria-controls="settingsMenuPanel"
@@ -77,53 +77,134 @@
       </div>
       
       <div class="settings-menu-content" role="group" aria-label="Settings controls">
-        <!-- Theme Toggle -->
-        <div class="menu-control-group">
-          <button onclick="toggleTheme()" class="extra-btn menu-control-btn" id="btnTheme">
-            🌙 <span id="btnThemeText">Dark Mode</span>
-          </button>
+        <!-- Game Controls Section -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">
+            <span class="icon">🎮</span>
+            <span id="menuGameControlsTitle">Game Controls</span>
+          </h3>
+          
+          <!-- New Game -->
+          <div class="menu-control-group">
+            <button onclick="yeniOyun()" class="extra-btn menu-control-btn" id="btnNewGameMenu">
+              🔄 <span id="btnNewGameMenuText">New Game</span>
+            </button>
+          </div>
+
+          <!-- Switch Sides -->
+          <div class="menu-control-group">
+            <button onclick="tarafDegistir()" class="extra-btn menu-control-btn" id="btnSwitchSidesMenu">
+              🔀 <span id="btnSwitchSidesMenuText">Switch Sides</span>
+            </button>
+          </div>
+
+          <!-- AI Difficulty -->
+          <div class="menu-control-group">
+            <label for="aiLevelMenu" class="menu-control-label">
+              <span class="icon">⚙️</span>
+              <span id="lblAiDifficultyMenu">AI Difficulty</span>
+            </label>
+            <select id="aiLevelMenu" class="menu-control-select" onchange="aiSeviyesiDegisti(this.value)">
+              <option value="1">🟢 Easy</option>
+              <option value="2" selected>🟡 Medium</option>
+              <option value="3">🔴 Hard</option>
+              <option value="4">💀 Expert</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Language Selector -->
-        <div class="menu-control-group">
-          <label for="languageSelect" class="menu-control-label">
-            <span class="icon">🌐</span>
-            <span id="lblLanguage">Language</span>
-          </label>
-          <select id="languageSelect" class="menu-control-select" onchange="setLanguage(this.value)">
-            <option value="en">🇬🇧 English</option>
-            <option value="tr">🇹🇷 Türkçe</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="de">🇩🇪 Deutsch</option>
-            <option value="it">🇮🇹 Italiano</option>
-            <option value="ru">🇷🇺 Русский</option>
-            <option value="zh">🇨🇳 中文</option>
-            <option value="ja">🇯🇵 日本語</option>
-            <option value="pt">🇵🇹 Português</option>
-            <option value="ar">🇸🇦 العربية</option>
-          </select>
+        <!-- Appearance Section -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">
+            <span class="icon">🎨</span>
+            <span id="menuAppearanceTitle">Appearance</span>
+          </h3>
+
+          <!-- Theme Toggle -->
+          <div class="menu-control-group">
+            <button onclick="toggleTheme()" class="extra-btn menu-control-btn" id="btnTheme">
+              🌙 <span id="btnThemeText">Dark Mode</span>
+            </button>
+          </div>
+
+          <!-- Colors -->
+          <div class="menu-control-group">
+            <button onclick="toggleColorPanel()" class="extra-btn menu-control-btn" id="btnColorsMenu">
+              🎨 <span id="btnColorsMenuText">Board Colors</span>
+            </button>
+          </div>
+
+          <!-- Language Selector -->
+          <div class="menu-control-group">
+            <label for="languageSelect" class="menu-control-label">
+              <span class="icon">🌐</span>
+              <span id="lblLanguage">Language</span>
+            </label>
+            <select id="languageSelect" class="menu-control-select" onchange="setLanguage(this.value)">
+              <option value="en">🇬🇧 English</option>
+              <option value="tr">🇹🇷 Türkçe</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              <option value="it">🇮🇹 Italiano</option>
+              <option value="ru">🇷🇺 Русский</option>
+              <option value="zh">🇨🇳 中文</option>
+              <option value="ja">🇯🇵 日本語</option>
+              <option value="pt">🇵🇹 Português</option>
+              <option value="ar">🇸🇦 العربية</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Piece Setup -->
-        <div class="menu-control-group">
-          <button onclick="openPieceSetup()" class="extra-btn menu-control-btn" id="btnPieceSetup">
-            ♔ <span id="btnPieceSetupText">Piece Setup</span>
-          </button>
+        <!-- Position Tools Section -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">
+            <span class="icon">🛠️</span>
+            <span id="menuPositionToolsTitle">Position Tools</span>
+          </h3>
+
+          <!-- Piece Setup -->
+          <div class="menu-control-group">
+            <button onclick="openPieceSetup()" class="extra-btn menu-control-btn" id="btnPieceSetup">
+              ♔ <span id="btnPieceSetupText">Piece Setup</span>
+            </button>
+          </div>
+
+          <!-- Position Analysis -->
+          <div class="menu-control-group">
+            <button onclick="analyzeCurrentPosition()" class="extra-btn menu-control-btn" id="btnAnalyzePosition">
+              🔍 <span id="btnAnalyzePositionText">Analyze Position</span>
+            </button>
+          </div>
+
+          <!-- Position Sharing -->
+          <div class="menu-control-group">
+            <button onclick="shareCurrentPosition()" class="extra-btn menu-control-btn" id="btnSharePosition">
+              🔗 <span id="btnSharePositionText">Share Position</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Position Analysis -->
-        <div class="menu-control-group">
-          <button onclick="analyzeCurrentPosition()" class="extra-btn menu-control-btn" id="btnAnalyzePosition">
-            🔍 <span id="btnAnalyzePositionText">Analyze Position</span>
-          </button>
-        </div>
+        <!-- Advanced Features Section -->
+        <div class="menu-section">
+          <h3 class="menu-section-title">
+            <span class="icon">⚡</span>
+            <span id="menuAdvancedTitle">Advanced Features</span>
+          </h3>
 
-        <!-- Position Sharing -->
-        <div class="menu-control-group">
-          <button onclick="shareCurrentPosition()" class="extra-btn menu-control-btn" id="btnSharePosition">
-            🔗 <span id="btnSharePositionText">Share Position</span>
-          </button>
+          <!-- Backend Mode -->
+          <div class="menu-control-group">
+            <button onclick="toggleBackendMode()" class="extra-btn menu-control-btn" id="btnBackendModeMenu">
+              🔌 <span id="btnBackendModeMenuText">Backend Mode</span>
+            </button>
+          </div>
+
+          <!-- Auto-Scroll Mode -->
+          <div class="menu-control-group">
+            <button onclick="toggleAutoScroll()" class="extra-btn menu-control-btn" id="btnAutoScrollMenu">
+              📜 <span id="btnAutoScrollMenuText">Auto-Scroll</span>
+            </button>
+          </div>
         </div>
       </div>
     </aside>
@@ -337,7 +418,7 @@
       <div id="historyPanel" class="side-panel card">
         <div class="collapsible-header" onclick="togglePanel('history')">
           <h3 id="historyTitle" style="color: white; margin-bottom: 0; display: flex; align-items: center; gap: 8px">
-            <span class="icon">📜</span> Move History
+            <span class="icon">📜</span> <span id="moveHistoryTitle">Move History</span>
           </h3>
           <span class="chevron">▾</span>
         </div>

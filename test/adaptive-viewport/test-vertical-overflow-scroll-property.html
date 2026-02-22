@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Test: Vertical Overflow Scroll Container</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .test-info {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .test-info h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 20px;
+    }
+    
+    .test-info ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .test-info li {
+      margin: 8px 0;
+      color: #555;
+    }
+    
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    #output:empty::before {
+      content: 'Test output will appear here...';
+      color: #888;
+      font-style: italic;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+    
+    .status.running {
+      background: #ffd700;
+      color: #333;
+    }
+    
+    .status.passed {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .status.failed {
+      background: #f44336;
+      color: white;
+    }
+    
+    .warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      color: #856404;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    
+    .warning strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧪 Property Test: Vertical Overflow Scroll Container</h1>
+    <p><strong>Feature:</strong> adaptive-viewport-optimizer</p>
+    <p><strong>Property 8:</strong> Vertical Overflow Creates Scroll Container</p>
+    <p><strong>Validates:</strong> Requirements 3.1</p>
+  </div>
+
+  <div class="test-info">
+    <h2>📋 Test Description</h2>
+    <p>
+      This property-based test verifies that for any set of vertically stacked elements 
+      whose total height exceeds the viewport height, a scrollable container is created 
+      to contain them.
+    </p>
+    
+    <h3>Properties Being Tested:</h3>
+    <ul>
+      <li><strong>Property 1:</strong> Scrollable container created when content exceeds maxHeight</li>
+      <li><strong>Property 2:</strong> Smooth scroll behavior applied when configured</li>
+      <li><strong>Property 3:</strong> All elements contained and vertically stacked</li>
+      <li><strong>Property 4:</strong> Container has proper ARIA attributes</li>
+      <li><strong>Property 5:</strong> Vertical stacking maintains minimum spacing (16px)</li>
+    </ul>
+    
+    <h3>Test Configuration:</h3>
+    <ul>
+      <li>Minimum 100 iterations per property</li>
+      <li>Random element counts (2-10 elements)</li>
+      <li>Random element heights (50-300px)</li>
+      <li>Random maxHeight values (200-800px)</li>
+      <li>Tests both smooth scroll enabled and disabled</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ Long-Running Test Warning</strong>
+    This is a property-based test that runs 500 total iterations (5 properties × 100 iterations each).
+    The test may take 30-60 seconds to complete. Please be patient and do not close this window.
+  </div>
+
+  <div class="controls">
+    <button id="runTests" class="btn">▶️ Run Property Tests</button>
+    <span id="status"></span>
+  </div>
+
+  <div id="output"></div>
+
+  <!-- Load fast-check library -->
+  <script src="../adaptive-viewport/setup-fast-check.js"></script>
+  
+  <!-- Load dependencies -->
+  <script src="../../js/adaptive-viewport/error-handler.js"></script>
+  <script src="../../js/adaptive-viewport/constants.js"></script>
+  <script src="../../js/adaptive-viewport/types.js"></script>
+  <script src="../../js/adaptive-viewport/base-component.js"></script>
+  <script src="../../js/adaptive-viewport/overflow-handler.js"></script>
+  
+  <!-- Load property test -->
+  <script src="vertical-overflow-scroll-property.test.js"></script>
+
+  <script>
+    const outputDiv = document.getElementById('output');
+    const runButton = document.getElementById('runTests');
+    const statusSpan = document.getElementById('status');
+
+    // Capture console output
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    function appendOutput(message, isError = false) {
+      const color = isError ? '#ff6b6b' : '#d4d4d4';
+      const span = document.createElement('span');
+      span.style.color = color;
+      span.textContent = message + '\n';
+      outputDiv.appendChild(span);
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      appendOutput(args.join(' '));
+      originalLog.apply(console, args);
+    };
+    
+    console.error = function(...args) {
+      appendOutput(args.join(' '), true);
+      originalError.apply(console, args);
+    };
+
+    runButton.addEventListener('click', async () => {
+      // Clear previous output
+      outputDiv.innerHTML = '';
+      
+      // Update UI
+      runButton.disabled = true;
+      statusSpan.innerHTML = '<span class="status running">RUNNING</span>';
+      
+      console.log('Starting property-based tests...');
+      console.log('This may take 30-60 seconds...\n');
+      
+      const startTime = Date.now();
+      
+      try {
+        // Wait for fast-check to load
+        if (typeof fc === 'undefined') {
+          throw new Error('fast-check library not loaded');
+        }
+        
+        // Run the property tests
+        const results = await runVerticalOverflowScrollPropertyTest(fc);
+        
+        const endTime = Date.now();
+        const duration = ((endTime - startTime) / 1000).toFixed(2);
+        
+        console.log(`\n⏱️  Total test duration: ${duration} seconds`);
+        
+        // Update status
+        if (results.failed === 0) {
+          statusSpan.innerHTML = '<span class="status passed">ALL TESTS PASSED ✓</span>';
+        } else {
+          statusSpan.innerHTML = '<span class="status failed">SOME TESTS FAILED ✗</span>';
+        }
+        
+      } catch (error) {
+        console.error('\n❌ Test execution failed:');
+        console.error(error.message);
+        console.error(error.stack);
+        statusSpan.innerHTML = '<span class="status failed">ERROR</span>';
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+
+    // Auto-run tests on load (optional)
+    // Uncomment the next line to automatically run tests when page loads
+    // window.addEventListener('load', () => runButton.click());
+  </script>
+</body>
+</html>
